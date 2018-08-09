@@ -599,8 +599,11 @@ namespace Nashet.EconomicSimulation
                         }
                     }
             }
-            //force DSB recalculation
-            AllMarkets().PerformAction(x => x.getDemandSupplyBalance(null, true));
+            //force DSB recalculation. Helped with precise calculation of DSB & how much money seller should get
+            //AllMarkets().PerformAction(x =>
+            ////x.ForceDSBRecalculation()
+            //x.getDemandSupplyBalance(null, true)
+            //);
             if (Game.logMarket)
             {
                 //Money res = new Money(0m);
@@ -717,5 +720,25 @@ namespace Nashet.EconomicSimulation
         }
         public static event EventHandler DayPassed;
 
+        /// <summary>
+        /// /
+        /// </summary>
+        public void TestOldDSB()
+        {
+            AllMarkets().PerformAction(x =>
+           //x.ForceDSBRecalculation()
+           x.getDemandSupplyBalance(null, true)
+           );
+            MainCamera.tradeWindow.Refresh();
+        }
+
+        public void TestNewDSB()
+        {
+            AllMarkets().PerformAction(x =>
+           x.ForceDSBRecalculation()
+           //x.getDemandSupplyBalance(null, true)
+           );
+            MainCamera.tradeWindow.Refresh();
+        }
     }
 }

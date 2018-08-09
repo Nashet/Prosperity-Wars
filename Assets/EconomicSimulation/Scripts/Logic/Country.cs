@@ -195,7 +195,7 @@ namespace Nashet.EconomicSimulation
 
             markInvented(Invention.Banking);
 
-            
+
 
             //markInvented(Invention.individualRights);
             //markInvented(Invention.ProfessionalArmy);
@@ -873,13 +873,13 @@ namespace Nashet.EconomicSimulation
                 if (!province.isThereFactoriesInUpgradeMoreThan(1)//Options.maximumFactoriesInUpgradeToBuildNew)
                     && province.getUnemployedWorkers() > 0)
                 {
-                    var industrialProduct = getMostDeficitProductAllowedHere(Product.getAllSpecificProductsInvented(x => x.isIndustrial(), this), province);
+                    var industrialProduct = getMostDeficitProductAllowedHere(Product.AllNonAbstract().Where(x => x.isIndustrial() && Invented(x)), province);
                     if (industrialProduct == null)
                     {
-                        var militaryProduct = getMostDeficitProductAllowedHere(Product.getAllSpecificProductsInvented(x => x.isMilitary(), this), province);
+                        var militaryProduct = getMostDeficitProductAllowedHere(Product.AllNonAbstract().Where(x => x.isMilitary() && Invented(x)), province);
                         if (militaryProduct == null)
                         {
-                            var consumerProduct = getMostDeficitProductAllowedHere(Product.getAllSpecificProductsInvented(x => x.isConsumerProduct(), this), province);
+                            var consumerProduct = getMostDeficitProductAllowedHere(Product.AllNonAbstract().Where(x => x.isConsumerProduct() && Invented(x)), province);
                             if (consumerProduct != null)
                             {
                                 //if there is no enough some consumer product - build it
@@ -1151,7 +1151,7 @@ namespace Nashet.EconomicSimulation
             //1 day trade
             //TODO add x day buying or split buying somehow
 
-            foreach (var product in Product.getAll().Where(x => !x.isAbstract()))
+            foreach (var product in Product.AllNonAbstract())
                 //if (product.isInventedBy(this) || product == Product.Cattle)
                 if (product.isTradable())
                 {
@@ -1204,7 +1204,7 @@ namespace Nashet.EconomicSimulation
         {
             // planned economy buying
             //1 day buying
-            foreach (var product in Product.getAllNonAbstractTradableInPEOrder(this))
+            foreach (var product in Product.AllNonAbstractTradableInPEOrder(this))
             //if (product.isInvented(this)) // already checked
             //foreach (var currentStorage in countryStorageSet)
             {
@@ -1223,7 +1223,7 @@ namespace Nashet.EconomicSimulation
             }
             // x day buying +sells
             //foreach (var currentStorage in countryStorageSet)
-            foreach (var product in Product.getAllNonAbstractTradableInPEOrder(this))
+            foreach (var product in Product.AllNonAbstractTradableInPEOrder(this))
             {
                 var takenFromStorage = new Storage(countryStorageSet.used.GetFirstSubstituteStorage(product));
                 Storage desiredMinimum;
@@ -1377,6 +1377,9 @@ namespace Nashet.EconomicSimulation
                 yield return province;
         }
 
+        /// <summary>
+        /// Doesn't include markets
+        /// </summary>        
         public IEnumerable<Agent> getAllAgents()
         {
             foreach (var province in ownedProvinces)
@@ -1384,6 +1387,16 @@ namespace Nashet.EconomicSimulation
                     yield return agent;
             if (Bank != null)
                 yield return Bank;
+        }
+
+        /// Doesn't include markets
+        /// </summary>        
+        public IEnumerable<Consumer> AllConsumers()
+        {
+            foreach (var province in ownedProvinces)
+                foreach (var agent in province.getAllConsumers())
+                    yield return agent;
+           yield return this;
         }
 
         public IEnumerable<Factory> getAllFactories()
@@ -1777,6 +1790,16 @@ namespace Nashet.EconomicSimulation
                 return LastAttackDate[country];
             else
                 return Date.Never.Copy();
+        }
+        public IEnumerable<ISeller> AllSellers
+        {
+            get
+            {
+                foreach (var province in ownedProvinces)
+                    foreach (var agent in province.getAllProducers())
+                        yield return agent;
+                yield return this;
+            }
         }
     }
 }

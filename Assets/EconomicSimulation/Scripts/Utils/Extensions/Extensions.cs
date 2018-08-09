@@ -385,7 +385,7 @@ namespace Nashet.Utils
                 dictionary.Add(what, size);
         }
 
-        public static void addMy<T>(this Dictionary<T, Value> dictionary, T what, Value value)
+        public static void AddAndSum<T>(this Dictionary<T, Value> dictionary, T what, Value value)
         {
             if (dictionary.ContainsKey(what))
                 dictionary[what].Add(value);

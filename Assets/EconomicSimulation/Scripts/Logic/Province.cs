@@ -288,7 +288,7 @@ namespace Nashet.EconomicSimulation
                     yield return pop;
         }
 
-        public IEnumerable<Consumer> getAllBuyers()
+        public IEnumerable<Consumer> getAllConsumers()
         {
             foreach (Factory factory in allFactories)
                 // if (!factory.Type.isResourceGathering()) // every fabric is buyer (upgrading)
@@ -298,7 +298,7 @@ namespace Nashet.EconomicSimulation
                     yield return pop;
         }
 
-        public IEnumerable<Producer> getAllAgents()
+        public IEnumerable<Agent> getAllAgents()
         {
             foreach (Factory factory in allFactories)
                 yield return factory;
@@ -875,7 +875,7 @@ namespace Nashet.EconomicSimulation
         public MoneyView getGDP()
         {
             Money result = new Money(0m);
-            foreach (var producer in getAllAgents())
+            foreach (var producer in getAllProducers())
                 if (producer.getGainGoodsThisTurn().get() > 0f)
                     result.Add(Country.market.getCost(producer.getGainGoodsThisTurn())); //- Country.market.getCost(producer.getConsumedTotal()).get());
             return result;

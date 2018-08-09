@@ -104,7 +104,7 @@ namespace Nashet.EconomicSimulation
                 // consuming made in artisansProduction.consumeNeeds()
                 // here is data transferring
                 // todo rework data transferring from artisans?
-                foreach (var item in artisansProduction.getAllConsumedInMarket())
+                foreach (var item in artisansProduction.AllConsumedInMarket())
                 {
                     consumedInMarket.Add(item);
                 }

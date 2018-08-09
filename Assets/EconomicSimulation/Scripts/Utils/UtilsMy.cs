@@ -370,7 +370,7 @@ namespace Nashet.Utils
 
         public PricePool()
         {
-            foreach (var product in Product.getAll().Where(x => !x.isAbstract()))
+            foreach (var product in Product.AllNonAbstract())
                 if (product != Product.Gold)
                     for (int i = 0; i < lenght; i++)
                         addData(product, new Value(0f));

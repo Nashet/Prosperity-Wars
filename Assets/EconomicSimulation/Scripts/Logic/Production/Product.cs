@@ -150,10 +150,16 @@ namespace Nashet.EconomicSimulation
             this.substitutes = substitutes;
         }
 
-        public static IEnumerable<Product> getAll()
+        public static IEnumerable<Product> All()
         {
             foreach (var item in allProducts)
                 yield return item;
+        }
+        public static IEnumerable<Product> AllNonAbstract()
+        {
+            foreach (var item in allProducts)
+                if (!item.isAbstract())
+                    yield return item;
         }
 
         //public static IEnumerable<Product> getAll(Predicate<Product> selector)
@@ -170,29 +176,29 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Products go in industrial-military-consumer order
         /// </summary>
-        public static IEnumerable<Product> getAllNonAbstractTradableInPEOrder(Country country)
+        public static IEnumerable<Product> AllNonAbstractTradableInPEOrder(Country country)
         {
-            foreach (var item in getAllSpecificProductsTradable(x => x.isIndustrial()))
+            foreach (var item in AllNonAbstract().Where(x => x.isIndustrial() && country.Invented(x)))
                 yield return item;
-            foreach (var item in getAllSpecificProductsTradable(x => x.isMilitary()))
+            foreach (var item in AllNonAbstract().Where(x => x.isMilitary() && country.Invented(x)))
                 yield return item;
-            foreach (var item in getAllSpecificProductsTradable(x => x.isConsumerProduct()))
+            foreach (var item in AllNonAbstract().Where(x => x.isConsumerProduct() && country.Invented(x)))
                 yield return item;
         }
 
-        public static IEnumerable<Product> getAllSpecificProductsInvented(Func<Product, bool> selector, Country country)
-        {
-            foreach (var item in getAll().Where(x => !x.isAbstract()))
-                if (selector(item) && country.Invented(item))
-                    yield return item;
-        }
+        //public static IEnumerable<Product> getAllSpecificProductsInvented(Func<Product, bool> selector, Country country)
+        //{
+        //    foreach (var item in getAll().Where(x => !x.isAbstract()))
+        //        if (selector(item) && country.Invented(item))
+        //            yield return item;
+        //}
 
-        public static IEnumerable<Product> getAllSpecificProductsTradable(Func<Product, bool> selector)
-        {
-            foreach (var item in getAll().Where(x => !x.isAbstract()))
-                if (selector(item) && item.isTradable())
-                    yield return item;
-        }
+        //public static IEnumerable<Product> getAllSpecificProductsTradable(Func<Product, bool> selector)
+        //{
+        //    foreach (var item in getAll().Where(x => !x.isAbstract()))
+        //        if (selector(item) && item.isTradable())
+        //            yield return item;
+        //}
 
         public static int howMuchProductsTotal()
         {
@@ -249,7 +255,7 @@ namespace Nashet.EconomicSimulation
 
         public static void sortSubstitutes(Market market)
         {
-            foreach (var item in getAll().Where(x => x.isAbstract()))
+            foreach (var item in All().Where(x => x.isAbstract()))
             //if (item.isTradable())
             // Abstract are always invented and not gold
             {
