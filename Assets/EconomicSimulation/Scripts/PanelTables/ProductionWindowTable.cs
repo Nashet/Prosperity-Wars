@@ -30,7 +30,7 @@ namespace Nashet.EconomicSimulation
             {
                 var selectedProvince = MainCamera.productionWindow.SelectedProvince;
                 if (selectedProvince == null)
-                    return Game.Player.AllFactories;
+                    return Game.Player.provinces.AllFactories;
                 else
                     return selectedProvince.AllFactories;
             }

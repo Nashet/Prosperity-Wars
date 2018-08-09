@@ -80,33 +80,18 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public static void setUnityAPI()
         {
-            // Assigns a material named "Assets/Resources/..." to the object.
-            //defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;
-            //defaultCountryBorderMaterial = GameObject.Find("CountryBorderMaterial").GetComponent<MeshRenderer>().material;
-
-            ////defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
-            //defaultProvinceBorderMaterial = GameObject.Find("ProvinceBorderMaterial").GetComponent<MeshRenderer>().material;
-
-            ////selectedProvinceBorderMaterial = Resources.Load("materials/SelectedProvinceBorder", typeof(Material)) as Material;
-            //selectedProvinceBorderMaterial = GameObject.Find("SelectedProvinceBorderMaterial").GetComponent<MeshRenderer>().material;
-
-            ////impassableBorder = Resources.Load("materials/ImpassableBorder", typeof(Material)) as Material;
-            //impassableBorder = GameObject.Find("ImpassableBorderMaterial").GetComponent<MeshRenderer>().material;
-
-            //r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
-            //r3DProvinceTextPrefab = GameObject.Find("3DProvinceNameText");
-            //r3DCountryTextPrefab = GameObject.Find("3DCountryNameText");
-
+            // has to be separate circle
             World.AllProvinces.PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
             World.AllSeaProvinces.PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
-            foreach (var item in World.AllProvinces)
-            {
-                var node = item.GameObject.GetComponent<Node>();
-                node.Set(item, item.AllNeighbors());
-                World.Get.graph.AddNode(node);
-            }
 
-            World.AllProvinces.PerformAction(x => x.SetBorderMaterials());
+            foreach (var province in World.AllProvinces)
+            {
+                var node = province.GameObject.GetComponent<Node>();
+                node.Set(province, province.AllNeighbors());
+                World.Get.graph.AddNode(node);
+                province.SetBorderMaterials();
+            }
+            
             Country.setUnityAPI();
             //seaProvinces = null;
             // todo clear resources

@@ -13,15 +13,15 @@ namespace Nashet.EconomicSimulation
         public void Awake()// start doesn't work somehow
         {
             countryOrder = new SortOrder(this, x => x.GetNameWeight());
-            populationOrder = new SortOrder(this, x => x.AllPops.Sum(y => y.population.Get()));
+            populationOrder = new SortOrder(this, x => x.provinces.AllPops.Sum(y => y.population.Get()));
             GDPOrder = new SortOrder(this, x => (float)x.getGDP().Get());
             GDPPerCapitaOrder = new SortOrder(this, x => (float)x.getGDPPer1000().Get());
-            unemploymentOrder = new SortOrder(this, x => x.AllPops.GetAverageProcent(y => y.getUnemployment()).get());
-            averageNeedsOrder = new SortOrder(this, x => x.AllPops.GetAverageProcent(y => y.needsFulfilled).get());
+            unemploymentOrder = new SortOrder(this, x => x.provinces.AllPops.GetAverageProcent(y => y.getUnemployment()).get());
+            averageNeedsOrder = new SortOrder(this, x => x.provinces.AllPops.GetAverageProcent(y => y.needsFulfilled).get());
             richTaxOrder = new SortOrder(this, x => (x.taxationForRich.getValue() as TaxationForRich.ReformValue).tax.get());
             economyTypeOrder = new SortOrder(this, x => x.economy.GetType().GetHashCode());
             GDPShareOrder = new SortOrder(this, x => (float)x.getGDP().Get());
-            educationOrder = new SortOrder(this, x => x.AllPops.GetAverageProcent(y => y.Education).get());
+            educationOrder = new SortOrder(this, x => x.provinces.AllPops.GetAverageProcent(y => y.Education).get());
         }
 
         protected override IEnumerable<Country> ContentSelector()
@@ -40,7 +40,7 @@ namespace Nashet.EconomicSimulation
             else
                 AddCell(country.ToString(), country, () => country.ToString());
             ////Adding population
-            AddCell(country.getFamilyPopulation().ToString("N0"), country);
+            AddCell(country.provinces.getFamilyPopulation().ToString("N0"), country);
 
             AddCell(country.getGDP().Get().ToString("N3"), country);
 
@@ -48,12 +48,12 @@ namespace Nashet.EconomicSimulation
 
             AddCell(country.getGDPShare().ToString(), country);
 
-            AddCell(country.AllPops.GetAverageProcent(x => x.getUnemployment()).ToString(), country);
-            AddCell(country.AllPops.GetAverageProcent(y => y.Education).ToString(), country);
+            AddCell(country.provinces.AllPops.GetAverageProcent(x => x.getUnemployment()).ToString(), country);
+            AddCell(country.provinces.AllPops.GetAverageProcent(y => y.Education).ToString(), country);
 
             AddCell(country.economy.getValue().ToString(), country);
 
-            AddCell(country.AllPops.GetAverageProcent(x => x.needsFulfilled).ToString(), country);
+            AddCell(country.provinces.AllPops.GetAverageProcent(x => x.needsFulfilled).ToString(), country);
 
             AddCell((country.taxationForRich.getValue() as TaxationForRich.ReformValue).tax.ToString(), country);
         }

@@ -663,7 +663,7 @@ namespace Nashet.EconomicSimulation
                             {
                                 if (Province.Country == Game.Player && !Game.isPlayerSurrended())
                                     Message.NewMessage("Province lost!", "Commander, " + isCountryOwner + " took " + Province, "Fine", false, Province.Position);
-                                isCountryOwner.TakeProvince(Province, true);
+                                isCountryOwner.provinces.TakeProvince(Province, true);
 
                             }
                         }

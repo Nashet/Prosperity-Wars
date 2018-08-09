@@ -130,7 +130,7 @@ namespace Nashet.EconomicSimulation
         //    //    cores.Add(taker);
 
         //}
-        public void setInitial(Country ini)
+        public void AddCore(Country ini)
         {
             if (ini != World.UncolonizedLand)
                 cores.Add(country);
@@ -254,7 +254,8 @@ namespace Nashet.EconomicSimulation
         {
             //graphic stuff
             ProvinceColor = taker.getColor().getAlmostSameColor();
-            meshRenderer.material.color = getColorAccordingToMapMode();
+            if (meshRenderer != null)
+                meshRenderer.material.color = getColorAccordingToMapMode();
             SetBorderMaterials();
         }
 
@@ -405,13 +406,13 @@ namespace Nashet.EconomicSimulation
             Country.mobilize(new List<Province> { this });
         }
 
-       
+
 
         //not called with capitalism
         public void shareWithAllAristocrats(Storage fromWho, Value taxTotalToPay)
         {
             int aristoctratAmount = 0;
-            foreach (Aristocrats aristocrats in AllPops.Where(x=>x.Type== PopType.Aristocrats))
+            foreach (Aristocrats aristocrats in AllPops.Where(x => x.Type == PopType.Aristocrats))
                 aristoctratAmount += aristocrats.population.Get();
             foreach (Aristocrats aristocrat in AllPops.Where(x => x.Type == PopType.Aristocrats))
             {
@@ -851,7 +852,7 @@ namespace Nashet.EconomicSimulation
                         {
                             float maxColor = 3000;
                             //can improve performance
-                            var change = Country.AllPops.Sum(x => x.getAllPopulationChanges()
+                            var change = Country.provinces.AllPops.Sum(x => x.getAllPopulationChanges()
                              .Where(y => y.Key == null || y.Key is Province || y.Key is Staff).Sum(y => y.Value));
                             if (change > 0)
                                 return Color.Lerp(Color.grey, Color.green, change / maxColor);

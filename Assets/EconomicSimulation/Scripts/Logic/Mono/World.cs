@@ -27,8 +27,19 @@ namespace Nashet.EconomicSimulation
         public static List<BattleResult> allBattles = new List<BattleResult>();
 
         //public static Market market;
+        /// <summary>
+        /// province connection graph
+        /// </summary>
         public Graph graph;
 
+        public static event EventHandler DayPassed;
+
+        /// <summary>
+        /// Little bugged - returns RANDOM badboy, not biggest
+        /// </summary>        
+        private static Date DateOfIsThereBadboyCountry = new Date(Date.Never);
+
+        private static Country BadboyCountry;
 
         private static World thisObject;
         public static World Get
@@ -140,7 +151,7 @@ namespace Nashet.EconomicSimulation
             get
             {
                 foreach (var item in getAllExistingCountries())
-                    foreach (var factory in item.AllFactories)
+                    foreach (var factory in item.provinces.AllFactories)
                         yield return factory;
             }
         }
@@ -152,7 +163,7 @@ namespace Nashet.EconomicSimulation
                 foreach (var country in getAllExistingCountries())
                 {
                     yield return country;
-                    foreach (var item in country.AllAgents)
+                    foreach (var item in country.provinces.AllAgents)
                         yield return item;
                 }
             }
@@ -164,7 +175,7 @@ namespace Nashet.EconomicSimulation
             foreach (Country country in getAllExistingCountries())
             {
                 allMoney.Add(country.Cash);
-                foreach (var agent in country.AllAgents)
+                foreach (var agent in country.provinces.AllAgents)
                 {
                     allMoney.Add(agent.Cash);
                     //var isArtisan = agent as Artisans;
@@ -447,7 +458,7 @@ namespace Nashet.EconomicSimulation
         public static IEnumerable<KeyValuePair<IShareOwner, Procent>> GetAllShares()
         {
             foreach (var item in getAllExistingCountries())
-                foreach (var factory in item.AllFactories)
+                foreach (var factory in item.provinces.AllFactories)
                     foreach (var record in factory.ownership.GetAllShares())
                         yield return record;
         }
@@ -456,7 +467,7 @@ namespace Nashet.EconomicSimulation
         public static IEnumerable<KeyValuePair<IShareable, Procent>> GetAllShares(IShareOwner owner)
         {
             foreach (var item in getAllExistingCountries())
-                foreach (var factory in item.AllFactories)
+                foreach (var factory in item.provinces.AllFactories)
                     foreach (var record in factory.ownership.GetAllShares())
                         if (record.Key == owner)
                             yield return new KeyValuePair<IShareable, Procent>(factory, record.Value);
@@ -468,7 +479,7 @@ namespace Nashet.EconomicSimulation
             {
                 foreach (var country in getAllExistingCountries())
                 {
-                    foreach (var item in country.AllPops)
+                    foreach (var item in country.provinces.AllPops)
                         yield return item;
                 }
             }
@@ -479,7 +490,7 @@ namespace Nashet.EconomicSimulation
             {
                 foreach (var country in getAllExistingCountries())
                 {
-                    foreach (var item in country.AllProducers)
+                    foreach (var item in country.provinces.AllProducers)
                         yield return item;
                 }
             }
@@ -491,7 +502,7 @@ namespace Nashet.EconomicSimulation
             {
                 foreach (var country in getAllExistingCountries())
                 {
-                    foreach (var item in country.AllConsumers)
+                    foreach (var item in country.provinces.AllConsumers)
                         yield return item;
                 }
             }
@@ -502,7 +513,7 @@ namespace Nashet.EconomicSimulation
             {
                 foreach (var country in getAllExistingCountries())
                 {
-                    foreach (var item in country.AllSellers)
+                    foreach (var item in country.provinces.AllSellers)
                         yield return item;
                 }
             }
@@ -616,20 +627,20 @@ namespace Nashet.EconomicSimulation
                 if (country.economy.getValue() == Economy.PlannedEconomy)
                 {
                     //consume in PE order
-                    foreach (Factory factory in country.AllFactories)
+                    foreach (Factory factory in country.provinces.AllFactories)
                         factory.consumeNeeds();
 
                     if (country.Invented(Invention.ProfessionalArmy))
-                        foreach (var item in country.AllPops.Where(x => x.Type == PopType.Soldiers))
+                        foreach (var item in country.provinces.AllPops.Where(x => x.Type == PopType.Soldiers))
                             item.consumeNeeds();
 
-                    foreach (var item in country.AllPops.Where(x => x.Type == PopType.Workers))
+                    foreach (var item in country.provinces.AllPops.Where(x => x.Type == PopType.Workers))
                         item.consumeNeeds();
 
-                    foreach (var item in country.AllPops.Where(x => x.Type == PopType.Farmers))
+                    foreach (var item in country.provinces.AllPops.Where(x => x.Type == PopType.Farmers))
                         item.consumeNeeds();
 
-                    foreach (var item in country.AllPops.Where(x => x.Type == PopType.Tribesmen))
+                    foreach (var item in country.provinces.AllPops.Where(x => x.Type == PopType.Tribesmen))
                         item.consumeNeeds();
                 }
                 else  //consume in regular order
@@ -772,7 +783,7 @@ namespace Nashet.EconomicSimulation
                     country.AIThink();
             }
         }
-        public static event EventHandler DayPassed;
+        
 
         /// <summary>
         /// /
@@ -793,6 +804,19 @@ namespace Nashet.EconomicSimulation
            //x.getDemandSupplyBalance(null, true)
            );
             MainCamera.tradeWindow.Refresh();
+        }
+        public static Country GetBadboyCountry()
+        {
+            if (!DateOfIsThereBadboyCountry.IsToday)
+            {
+                DateOfIsThereBadboyCountry.set(Date.Today);
+                float worldStrenght = 0f;
+                foreach (var item in World.getAllExistingCountries())
+                    worldStrenght += item.getStrengthExluding(null);
+                float streghtLimit = worldStrenght * Options.CountryBadBoyWorldLimit;
+                BadboyCountry = World.getAllExistingCountries().Where(x => x != World.UncolonizedLand && x.getStrengthExluding(null) >= streghtLimit).MaxBy(x => x.getStrengthExluding(null));
+            }
+            return BadboyCountry;
         }
     }
 }

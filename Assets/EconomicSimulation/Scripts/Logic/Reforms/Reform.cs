@@ -110,7 +110,7 @@ namespace Nashet.EconomicSimulation
 
         public virtual void setValue(AbstractReformValue selectedReformValue)
         {
-            foreach (PopUnit pop in country.AllPops)
+            foreach (PopUnit pop in country.provinces.AllPops)
                 if (pop.getSayingYes(selectedReformValue))
                 {
                     pop.loyalty.Add(Options.PopLoyaltyBoostOnDiseredReformEnacted);
@@ -651,7 +651,7 @@ namespace Nashet.EconomicSimulation
                     Country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[5]);
                 if (Country.taxationForPoor.getTypedValue().tax.get() > 0.5f)
                     Country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
-                Country.AllFactories.PerformAction(
+                Country.provinces.AllFactories.PerformAction(
                      x =>
                      {
                          x.setSubsidized(false);

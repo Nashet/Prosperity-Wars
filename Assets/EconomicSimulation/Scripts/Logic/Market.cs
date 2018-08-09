@@ -389,7 +389,7 @@ namespace Nashet.EconomicSimulation
             // get all MarketSupply            
             foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (var agent in country.AllAgents)
+                foreach (var agent in country.provinces.AllAgents)
                 {
                     //if (found.isExactlySameProduct(product))
                     var isSeller = agent as Producer;
@@ -470,7 +470,7 @@ namespace Nashet.EconomicSimulation
             // get all MarketSupply            
             foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (var seller in country.AllSellers)
+                foreach (var seller in country.provinces.AllSellers)
                 {
                     //if (found.isExactlySameProduct(product))
                     foreach (var deal in seller.AllSellDeals())
@@ -484,7 +484,7 @@ namespace Nashet.EconomicSimulation
             // get all getBoughtOnMarket            
             foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (var consumer in country.AllConsumers)
+                foreach (var consumer in country.provinces.AllConsumers)
                 {
                     //if (found.isExactlySameProduct(product))
                     foreach (var deal in consumer.AllConsumedInMarket(this))

@@ -65,7 +65,7 @@ namespace Nashet.EconomicSimulation
             sb.Clear();
             sb.Append("Expenses: ");
             sb.Append("\n Unemployment subsidies: ").Append(Game.Player.UnemploymentSubsidiesExpense)
-                .Append(" unemployment: ").Append(Game.Player.AllPops.GetAverageProcent(x => x.getUnemployment()));
+                .Append(" unemployment: ").Append(Game.Player.provinces.AllPops.GetAverageProcent(x => x.getUnemployment()));
             sb.Append("\n Enterprises subsidies: ").Append(Game.Player.FactorySubsidiesExpense);
             if (Game.Player.Invented(Invention.ProfessionalArmy))
                 sb.Append("\n Soldiers paychecks: ").Append(Game.Player.SoldiersWageExpense);
@@ -174,7 +174,7 @@ namespace Nashet.EconomicSimulation
         private void refreshSoldierWageText()
         {
             sb.Clear();
-            sb.Append("Soldiers wage: ").Append(string.Format("{0:N3}", ssSoldiersWage.exponentialValue)).Append(" men: ").Append(Game.Player.getPopulationAmountByType(PopType.Soldiers));
+            sb.Append("Soldiers wage: ").Append(string.Format("{0:N3}", ssSoldiersWage.exponentialValue)).Append(" men: ").Append(Game.Player.provinces.getPopulationAmountByType(PopType.Soldiers));
             ssSoldiersWage.GetComponentInChildren<Text>().text = sb.ToString();
         }
 

@@ -38,7 +38,7 @@ namespace Nashet.EconomicSimulation
         {
             var selectedProvince = MainCamera.populationPanel.SelectedProvince;
             if (selectedProvince == null)
-                return Game.Player.AllPops;
+                return Game.Player.provinces.AllPops;
             else
                 return selectedProvince.AllPops;
         }
