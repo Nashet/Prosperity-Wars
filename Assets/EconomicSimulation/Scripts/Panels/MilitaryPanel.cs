@@ -102,7 +102,7 @@ namespace Nashet.EconomicSimulation
             Show();
             if (province != null)
             {
-                var list = Game.Player.Provinces.AllNeighborProvinces().Distinct().Where(x => Country.canAttack.isAllTrue(x, Game.Player)).OrderBy(x => x.Country.GetNameWeight());
+                var list = Game.Player.Provinces.AllNeighborProvinces().Distinct().Where(x => Diplomacy.canAttack.isAllTrue(x, Game.Player)).OrderBy(x => x.Country.GetNameWeight());
                 //var found = list.IndexOf(province);
                 var found = list.FindIndex(x => x == province);
 
@@ -118,7 +118,7 @@ namespace Nashet.EconomicSimulation
             ddProvinceSelect.ClearOptions();
             byte count = 0;
             availableProvinces.Clear();
-            foreach (Province next in Game.Player.Provinces.AllNeighborProvinces().Distinct().Where(x => Country.canAttack.isAllTrue(x, Game.Player)).OrderBy(x => x.Country.GetNameWeight()))
+            foreach (Province next in Game.Player.Provinces.AllNeighborProvinces().Distinct().Where(x => Diplomacy.canAttack.isAllTrue(x, Game.Player)).OrderBy(x => x.Country.GetNameWeight()))
             {
                 //if (next.isAvailable(Game.player))
                 {

@@ -74,7 +74,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\n\nOpinion of myself: I'm cool!");
             else
             {
-                sb.Append("\n\n").Append(selectedCountry.FullName).Append("'s opinion of us: ").Append(selectedCountry.getRelationTo(Game.Player));
+                sb.Append("\n\n").Append(selectedCountry.FullName).Append("'s opinion of us: ").Append(selectedCountry.Diplomacy.GetRelationTo(Game.Player));
                 string str;
                 selectedCountry.modMyOpinionOfXCountry.getModifier(Game.Player, out str);
                 sb.Append(" Dynamics: ").Append(str);

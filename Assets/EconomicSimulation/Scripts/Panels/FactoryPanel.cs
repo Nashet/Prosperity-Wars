@@ -243,7 +243,7 @@ namespace Nashet.EconomicSimulation
                 factory.upgrade(Game.Player);
                 MainCamera.refreshAllActive();
                 if (Game.Player != factory.Country)
-                    factory.Country.changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
+                    factory.Country.Diplomacy.ChangeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
             }
         }
 

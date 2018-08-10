@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
         /// Sum of existing armies men + unmobilized reserve
         /// </summary>
         /// <returns></returns>
-        /// //todo performance hit 7% 420 calls 1.4mb 82 ms
+        //todo performance hit 7% 420 calls 1.4mb 82 ms
         public float getStrengthExluding(Staff againstWho)
         {
             return howMuchCanMobilize(againstWho) + getAllArmiesSize();

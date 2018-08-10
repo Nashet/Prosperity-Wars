@@ -5,12 +5,14 @@ using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Country : MultiSeller, IClickable, IShareOwner, ISortableName, INameable, IProvinceOwner, ICanInvent
+    public class Country : MultiSeller, IClickable, IShareOwner, ISortableName, INameable, IProvinceOwner, ICanInvent, IDiplomat
     {
+        public readonly List<AbstractReform> reforms = new List<AbstractReform>();
+        public readonly List<Movement> movements = new List<Movement>();
+
         public readonly Government government;
         public readonly Economy economy;
         public readonly Serfdom serfdom;
@@ -28,9 +30,6 @@ namespace Nashet.EconomicSimulation
         public Market market;
 
 
-
-        public readonly Dictionary<Country, Date> LastAttackDate = new Dictionary<Country, Date>();
-
         /// <summary>
         /// Encapsulates ability to own provinces 
         /// </summary>
@@ -38,17 +37,12 @@ namespace Nashet.EconomicSimulation
 
         public Science Science { get; protected set; }
 
-        private readonly Dictionary<Country, Procent> opinionOf = new Dictionary<Country, Procent>();
-
+        public Diplomacy Diplomacy { get; protected set; }
 
         /// <summary>
         /// Gives list of allowed IInvestable with pre-calculated Margin in Value. Doesn't check if it's invented
         /// </summary>
         public readonly CashedData<Dictionary<IInvestable, Procent>> allInvestmentProjects;
-
-
-        public readonly List<AbstractReform> reforms = new List<AbstractReform>();
-        public readonly List<Movement> movements = new List<Movement>();
 
         private string name;
         public Culture Culture { get; protected set; }
@@ -120,31 +114,8 @@ namespace Nashet.EconomicSimulation
         private TextMesh meshCapitalText;
         private Material borderMaterial;
 
-        private readonly Modifier modXHasMyCores;
         public readonly ModifiersList modMyOpinionOfXCountry;
-
-        public static readonly DoubleConditionsList canAttack = new DoubleConditionsList(new List<Condition>
-    {
-        new DoubleCondition((province, country)=>(province as Province).AllNeighbors().Any(x => x.Country == country)
-        && (province as Province) .Country != country, x=>"Is neighbor province", true),
-        new DoubleCondition((province, country)=>!Government.isDemocracy.checkIfTrue(country)
-        || !Government.isDemocracy.checkIfTrue((province as Province).Country), x=>"Democracies can't attack each other", true)
-    });
-
-        public static readonly ModifiersList modSciencePoints = new ModifiersList(new List<Condition>
-        {
-        //new Modifier(Government.isTribal, 0f, false),
-        //new Modifier(Government.isTheocracy, 0f, false),
-        new Modifier(Government.isDespotism, Government.Despotism.getScienceModifier(), false),
-        new Modifier(Government.isJunta, Government.Junta.getScienceModifier(), false),
-        new Modifier(Government.isAristocracy, Government.Aristocracy.getScienceModifier(), false),
-        new Modifier(Government.isProletarianDictatorship, Government.ProletarianDictatorship.getScienceModifier(), false),
-        new Modifier(Government.isDemocracy, Government.Democracy.getScienceModifier(), false),
-        new Modifier(Government.isPolis, Government.Polis.getScienceModifier(), false),
-        new Modifier(Government.isWealthDemocracy, Government.WealthDemocracy.getScienceModifier(), false),
-        new Modifier(Government.isBourgeoisDictatorship, Government.BourgeoisDictatorship.getScienceModifier(), false),
-        new Modifier(x=>(x as Country).Provinces.AllPops.GetAverageProcent(y=>y.Education).RawUIntValue, "Education", 1f / Procent.Precision, false)
-    });
+        private readonly Modifier modXHasMyCores;
 
         /// <summary>
         /// Don't call it directly, only from World.cs
@@ -153,26 +124,15 @@ namespace Nashet.EconomicSimulation
         {
             Provinces = new ProvinceOwner(this);
             Science = new Science(this);
+            Diplomacy = new Diplomacy(this);
 
             allInvestmentProjects = new CashedData<Dictionary<IInvestable, Procent>>(Provinces.GetAllInvestmentProjects2);
             SetName(name);
 
             Country = this;
             market = Market.TemporalSingleMarket; // new Market();
-            modXHasMyCores = new Modifier(x => (x as Country).Provinces.HasCore(this), "You have my cores", -0.05f, false);
-            modMyOpinionOfXCountry = new ModifiersList(new List<Condition> { modXHasMyCores,
-            new Modifier(x=>(x as Country).government.getValue() != government.getValue(), "You have different form of government", -0.002f, false),
-            new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > Options.CountryTimeToForgetBattle
-            && getLastAttackDateOn(x as Country).getYearsSince() > Options.CountryTimeToForgetBattle,"You live in peace with us", 0.005f, false),
-            new Modifier (x=>!((x as Country).getLastAttackDateOn(this).getYearsSince() > Options.CountryTimeToForgetBattle) && (x as Country).getLastAttackDateOn(this).getYearsSince() < 15,
-            "Recently attacked us", -0.06f, false), //x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > 0
-            new Modifier (x=> isThreatenBy(x as Country),"We are weaker", -0.05f, false),
-            new Modifier (delegate(object x) {World.GetBadboyCountry();  return World.GetBadboyCountry()!= null && World.GetBadboyCountry()!= x as Country  && World.GetBadboyCountry()!= this; },
-                delegate  { return "There is bigger threat to the world - " + World.GetBadboyCountry(); },  0.05f, false),
-            new Modifier (x=>World.GetBadboyCountry() ==x,"You are very bad boy", -0.05f, false),
-            new Modifier(x=>(x as Country).government.getValue() == government.getValue() && government.getValue()==Government.ProletarianDictatorship,
-            "Comintern aka Third International", 0.2f, false)
-            });
+
+
 
             bank = new Bank(this);
 
@@ -217,7 +177,21 @@ namespace Nashet.EconomicSimulation
             //markInvented(Invention.Welfare);
 
             //markInvented(Invention.Collectivism);
+            modXHasMyCores = new Modifier(x => (x as Country).Provinces.HasCore(this), "You have my cores", -0.05f, false);
 
+            modMyOpinionOfXCountry = new ModifiersList(new List<Condition> { modXHasMyCores,
+            new Modifier(x=>(x as Country).government.getValue() != government.getValue(), "You have different form of government", -0.002f, false),
+            new Modifier (x=>(x as Country).Diplomacy.GetLastAttackDateOn(this).getYearsSince() > Options.CountryTimeToForgetBattle
+            && Diplomacy.GetLastAttackDateOn(x as Country).getYearsSince() > Options.CountryTimeToForgetBattle,"You live in peace with us", 0.005f, false),
+            new Modifier (x=>!((x as Country).Diplomacy.GetLastAttackDateOn(this).getYearsSince() > Options.CountryTimeToForgetBattle) && (x as Country).Diplomacy.GetLastAttackDateOn(this).getYearsSince() < 15,
+            "Recently attacked us", -0.06f, false), //x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > 0
+            new Modifier (x=> isThreatenBy(x as Country),"We are weaker", -0.05f, false),
+            new Modifier (delegate(object x) {World.GetBadboyCountry();  return World.GetBadboyCountry()!= null && World.GetBadboyCountry()!= x as Country  && World.GetBadboyCountry()!= this; },
+                delegate  { return "There is bigger threat to the world - " + World.GetBadboyCountry(); },  0.05f, false),
+            new Modifier (x=>World.GetBadboyCountry() ==x,"You are very bad boy", -0.05f, false),
+            new Modifier(x=>(x as Country).government.getValue() == government.getValue() && government.getValue()==Government.ProletarianDictatorship,
+            "Comintern aka Third International", 0.2f, false)
+            });
         }
 
         public void SetName(string name)
@@ -237,8 +211,8 @@ namespace Nashet.EconomicSimulation
         public void onGrantedProvince(Province province)
         {
             var oldCountry = province.Country;
-            changeRelation(oldCountry, 1.00f);
-            oldCountry.changeRelation(this, 1.00f);
+            Diplomacy.ChangeRelation(oldCountry, 1.00f);
+            oldCountry.Diplomacy.ChangeRelation(this, 1.00f);
             if (!IsAlive)
             {
                 ressurect(province, oldCountry.government.getTypedValue());
@@ -308,46 +282,6 @@ namespace Nashet.EconomicSimulation
         {
             return soldiersWage;
         }
-
-        //todo performance hit 7% 420 calls 1.4mb 82 ms
-        private bool isThreatenBy(Country country)
-        {
-            if (country == this)
-                return false;
-            if (country.getStrengthExluding(null) > getStrengthExluding(null) * 2)
-                return true;
-            else
-                return false;
-        }
-
-        /// <summary>
-        /// Returns null if used on itself
-        /// </summary>        
-        public Procent getRelationTo(Country country)
-        {
-            if (this == country)
-                return null;
-            Procent opinion;
-            if (opinionOf.TryGetValue(country, out opinion))
-                return opinion;
-            else
-            {
-                opinion = new Procent(0.5f);
-                opinionOf.Add(country, opinion);
-                return opinion;
-            }
-        }
-
-        /// <summary>
-        /// Changes that country opinion of another country
-        /// </summary>
-        public void changeRelation(Country another, float change)
-        {
-            var relation = getRelationTo(another);
-            relation.Add(change, false);
-            relation.clamp100();
-        }
-
 
         /// <summary>
         /// Also transfers enterprises to local governments
@@ -593,8 +527,8 @@ namespace Nashet.EconomicSimulation
                         if (thisStrength > 0)
                         {
                             var targetCountry = Provinces.AllNeighborCountries().Distinct()
-                                .Where(x => getRelationTo(x).get() < 0.9f || Rand.Get.Next(200) == 1)
-                                .MinBy(x => getRelationTo(x.Country).get());
+                                .Where(x => Diplomacy.GetRelationTo(x).get() < 0.9f || Rand.Get.Next(200) == 1)
+                                .MinBy(x => Diplomacy.GetRelationTo(x.Country).get());
 
 
                             var targetPool = Provinces.AllNeighborProvinces().Distinct().Where(x => x.Country == targetCountry).ToList();
@@ -608,7 +542,7 @@ namespace Nashet.EconomicSimulation
                             && (thisStrength > targetProvince.Country.getStrengthExluding(null) * 0.25f
                                 || targetProvince.Country == World.UncolonizedLand
                                 || targetProvince.Country.isAI() && getStrengthExluding(null) > targetProvince.Country.getStrengthExluding(null) * 0.1f)
-                            && canAttack.isAllTrue(targetProvince, this)
+                            && Diplomacy.canAttack.isAllTrue(targetProvince, this)
                             && (targetProvince.Country.isAI() || Options.AIFisrtAllowedAttackOnHuman.isPassed())
                             )
                             {
@@ -749,9 +683,7 @@ namespace Nashet.EconomicSimulation
             ownershipSecurity.clamp100();
 
             // get science points
-            Science.AddPoints(Options.defaultSciencePointMultiplier * modSciencePoints.getModifier(this));
-
-
+            Science.AddPoints(Options.defaultSciencePointMultiplier * Science.modSciencePoints.getModifier(this));
 
             // put extra money in bank
             if (economy.getValue() != Economy.PlannedEconomy)
@@ -768,7 +700,7 @@ namespace Nashet.EconomicSimulation
             foreach (var item in World.getAllExistingCountries())
                 if (item != this)
                 {
-                    changeRelation(item, modMyOpinionOfXCountry.getModifier(item));
+                    Diplomacy.ChangeRelation(item, modMyOpinionOfXCountry.getModifier(item));
                 }
             //movements
             movements.RemoveAll(x => x.isEmpty());
@@ -1279,18 +1211,11 @@ namespace Nashet.EconomicSimulation
                     {
                         var countryOwner = owner.Key as Country;
                         if (countryOwner != null)
-                            countryOwner.changeRelation(this, Options.PopLoyaltyDropOnNationalization.get());
+                            countryOwner.Diplomacy.ChangeRelation(this, Options.PopLoyaltyDropOnNationalization.get());
                     }
                 }
         }
 
-        public Date getLastAttackDateOn(Country country)
-        {
-            if (LastAttackDate.ContainsKey(country))
-                return LastAttackDate[country];
-            else
-                return Date.Never.Copy();
-        }
         public IEnumerable<Province> AllProvinces
         {
             get
@@ -1299,7 +1224,15 @@ namespace Nashet.EconomicSimulation
                     yield return province;
             }
         }
-
-
+        //todo performance hit 7% 420 calls 1.4mb 82 ms
+        private bool isThreatenBy(Staff country)
+        {
+            if (country == this)
+                return false;
+            if (country.getStrengthExluding(null) > getStrengthExluding(null) * 2)
+                return true;
+            else
+                return false;
+        }
     }
 }

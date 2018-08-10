@@ -635,15 +635,9 @@ namespace Nashet.EconomicSimulation
                                     Province.Country.AllArmies().PerformAction(x => x.SetPathTo(Province.Country.Capital));
                                 }
                             }
-                            var attackerIsCountry = owner as Country;
-                            if (attackerIsCountry != null)
-                            {
-                                Province.Country.changeRelation(attackerIsCountry, -0.5f);
-                                if (attackerIsCountry.LastAttackDate.ContainsKey(Province.Country))
-                                    attackerIsCountry.LastAttackDate[Province.Country].set(Date.Today);
-                                else
-                                    attackerIsCountry.LastAttackDate.Add(Province.Country, Date.Today.Copy());
-                            }
+                            var attackerIsDiplomat = owner as IDiplomat;
+                            if (attackerIsDiplomat != null)                            
+                                attackerIsDiplomat.Diplomacy.OnAttack(Province.Country);                                
                         }
 
 

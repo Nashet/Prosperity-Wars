@@ -169,7 +169,7 @@ namespace Nashet.EconomicSimulation
 
             //if (Game.devMode)
             //    sb.Append("\nColor: ").Append(province.getColorID());
-            btAttackThat.interactable = Country.canAttack.isAllTrue(Game.selectedProvince, Game.Player, out btAttackThat.GetComponent<ToolTipHandler>().text);
+            btAttackThat.interactable = Diplomacy.canAttack.isAllTrue(Game.selectedProvince, Game.Player, out btAttackThat.GetComponent<ToolTipHandler>().text);
             btAttackThat.GetComponent<ToolTipHandler>().AddText("\nHotkey is " + "T" + " button");
             btGrandIndependence.interactable = Province.canGetIndependence.isAllTrue(Game.selectedProvince, Game.Player, out btGrandIndependence.GetComponent<ToolTipHandler>().text);
             generaltext.text = sb.ToString();

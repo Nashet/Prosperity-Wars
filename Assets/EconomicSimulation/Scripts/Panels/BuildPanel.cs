@@ -52,7 +52,7 @@ namespace Nashet.EconomicSimulation
                     buildSomething = true;
                     MainCamera.factoryPanel.show(factory);
                     if (Game.Player != factory.Country)
-                        factory.Country.changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
+                        factory.Country.Diplomacy.ChangeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
                 }
             }
             else // non market
@@ -67,7 +67,7 @@ namespace Nashet.EconomicSimulation
                     buildSomething = true;
                     MainCamera.factoryPanel.show(factory);
                     if (Game.Player != factory.Country)
-                        factory.Country.changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
+                        factory.Country.Diplomacy.ChangeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
                 }
             }
 

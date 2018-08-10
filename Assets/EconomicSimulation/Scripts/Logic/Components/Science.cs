@@ -1,4 +1,6 @@
-﻿using Nashet.Utils;
+﻿using Nashet.Conditions;
+using Nashet.Utils;
+using Nashet.ValueSpace;
 using System;
 using System.Collections.Generic;
 
@@ -9,6 +11,20 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class Science : Component<ICanInvent>
     {
+        public static readonly ModifiersList modSciencePoints = new ModifiersList(new List<Condition>
+        {
+        //new Modifier(Government.isTribal, 0f, false),
+        //new Modifier(Government.isTheocracy, 0f, false),
+        new Modifier(Government.isDespotism, Government.Despotism.getScienceModifier(), false),
+        new Modifier(Government.isJunta, Government.Junta.getScienceModifier(), false),
+        new Modifier(Government.isAristocracy, Government.Aristocracy.getScienceModifier(), false),
+        new Modifier(Government.isProletarianDictatorship, Government.ProletarianDictatorship.getScienceModifier(), false),
+        new Modifier(Government.isDemocracy, Government.Democracy.getScienceModifier(), false),
+        new Modifier(Government.isPolis, Government.Polis.getScienceModifier(), false),
+        new Modifier(Government.isWealthDemocracy, Government.WealthDemocracy.getScienceModifier(), false),
+        new Modifier(Government.isBourgeoisDictatorship, Government.BourgeoisDictatorship.getScienceModifier(), false),
+        new Modifier(x=>(x as IPopulated).AllPops.GetAverageProcent(y=>y.Education).RawUIntValue, "Education", 1f / Procent.Precision, false)
+    });
         protected readonly Dictionary<Invention, bool> inventions = new Dictionary<Invention, bool>();
         public float Points { get; protected set; }
 
@@ -101,7 +117,7 @@ namespace Nashet.EconomicSimulation
                 return true;
         }
 
-        internal void AddPoints(float points)
+        public void AddPoints(float points)
         {
             Points += points;
         }

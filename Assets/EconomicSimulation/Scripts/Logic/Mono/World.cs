@@ -39,7 +39,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>        
         private static Date DateOfIsThereBadboyCountry = new Date(Date.Never);
 
-        private static Country BadboyCountry;
+        private static Country Badboy;
 
         private static World thisObject;
         public static World Get
@@ -805,7 +805,7 @@ namespace Nashet.EconomicSimulation
            );
             MainCamera.tradeWindow.Refresh();
         }
-        public static Country GetBadboyCountry()
+        public static IDiplomat GetBadboyCountry()
         {
             if (!DateOfIsThereBadboyCountry.IsToday)
             {
@@ -814,9 +814,9 @@ namespace Nashet.EconomicSimulation
                 foreach (var item in World.getAllExistingCountries())
                     worldStrenght += item.getStrengthExluding(null);
                 float streghtLimit = worldStrenght * Options.CountryBadBoyWorldLimit;
-                BadboyCountry = World.getAllExistingCountries().Where(x => x != World.UncolonizedLand && x.getStrengthExluding(null) >= streghtLimit).MaxBy(x => x.getStrengthExluding(null));
+                Badboy = World.getAllExistingCountries().Where(x => x != World.UncolonizedLand && x.getStrengthExluding(null) >= streghtLimit).MaxBy(x => x.getStrengthExluding(null));
             }
-            return BadboyCountry;
+            return Badboy;
         }
     }
 }
