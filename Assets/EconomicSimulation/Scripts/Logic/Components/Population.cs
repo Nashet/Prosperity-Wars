@@ -1,4 +1,5 @@
-﻿using Nashet.ValueSpace;
+﻿using Nashet.Utils;
+using Nashet.ValueSpace;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,15 +7,16 @@ using System.Text;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Population
+    /// <summary>
+    /// Represents ability to have people
+    /// </summary>
+    public class Population : Component<PopUnit>
     {
         public static readonly float PopulationMultiplier = 1000f;
         private int population;
-        private readonly PopUnit pop;
 
-        public Population(int population, PopUnit pop)
+        public Population(int population, PopUnit pop) : base (pop)
         {            
-            this.pop = pop;
             Change(population);
         }
 
@@ -44,19 +46,19 @@ namespace Nashet.EconomicSimulation
                 population = newPopulation;
 
                 lifeNeeds.Clear();
-                foreach (var item in pop.Type.getLifeNeedsPer1000Men())                
+                foreach (var item in owner.Type.getLifeNeedsPer1000Men())
                     lifeNeeds.Add(item.Copy().Multiply(population / PopulationMultiplier));
 
                 everydayNeeds.Clear();
-                foreach (var item in pop.Type.getEveryDayNeedsPer1000Men())
+                foreach (var item in owner.Type.getEveryDayNeedsPer1000Men())
                     everydayNeeds.Add(item.Copy().Multiply(population / PopulationMultiplier));
-                
+
                 luxuryNeeds.Clear();
-                foreach (var item in pop.Type.getLuxuryNeedsPer1000Men())
+                foreach (var item in owner.Type.getLuxuryNeedsPer1000Men())
                     luxuryNeeds.Add(item.Copy().Multiply(population / PopulationMultiplier));
             }
             else
-                pop.Kill();
+                owner.Kill();
         }
 
         private readonly List<Storage> lifeNeeds = new List<Storage>();

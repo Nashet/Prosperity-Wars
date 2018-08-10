@@ -1,13 +1,18 @@
 ﻿using Nashet.Utils;
+using System;
 using System.Collections.Generic;
 
 namespace Nashet.EconomicSimulation
 {
-    public class InventionsHolder : Component<Country>
+    /// <summary>
+    /// Represents ability to invent Inventions
+    /// </summary>
+    public class Science : Component<ICanInvent>
     {
         protected readonly Dictionary<Invention, bool> inventions = new Dictionary<Invention, bool>();
+        public float Points { get; protected set; }
 
-        public InventionsHolder(Country owner) : base(owner)
+        public Science(ICanInvent owner) : base(owner)
         {
             foreach (var each in Invention.All)
                 inventions.Add(each, false);
@@ -37,7 +42,9 @@ namespace Nashet.EconomicSimulation
         public void Invent(Invention type)
         {
             inventions[type] = true;
-            owner.sciencePoints.Subtract(type.getCost(), false);
+            Points -= type.getCost().get();
+            if (Points < 0f)
+                Points = 0f;
         }
 
         public bool IsInvented(Invention type)
@@ -92,6 +99,11 @@ namespace Nashet.EconomicSimulation
                 return false;
             else
                 return true;
+        }
+
+        internal void AddPoints(float points)
+        {
+            Points += points;
         }
     }
 }

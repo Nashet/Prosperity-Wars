@@ -7,9 +7,9 @@
     {
         protected T owner;
 
-        public Component(T owner)
+        protected Component(T owner)
         {
             this.owner = owner;
-        }
+        }        
     }
 }

@@ -178,11 +178,11 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public static IEnumerable<Product> AllNonAbstractTradableInPEOrder(Country country)
         {
-            foreach (var item in AllNonAbstract().Where(x => x.isIndustrial() && country.Inventions.IsInvented(x)))
+            foreach (var item in AllNonAbstract().Where(x => x.isIndustrial() && country.Science.IsInvented(x)))
                 yield return item;
-            foreach (var item in AllNonAbstract().Where(x => x.isMilitary() && country.Inventions.IsInvented(x)))
+            foreach (var item in AllNonAbstract().Where(x => x.isMilitary() && country.Science.IsInvented(x)))
                 yield return item;
-            foreach (var item in AllNonAbstract().Where(x => x.isConsumerProduct() && country.Inventions.IsInvented(x)))
+            foreach (var item in AllNonAbstract().Where(x => x.isConsumerProduct() && country.Science.IsInvented(x)))
                 yield return item;
         }
 
@@ -341,7 +341,7 @@ namespace Nashet.EconomicSimulation
             if (isAbstract())
                 return true;
             foreach (var country in World.getAllExistingCountries())
-                if (country.Inventions.IsInvented(this))
+                if (country.Science.IsInvented(this))
                     return true;
             return false;
         }

@@ -2,7 +2,10 @@
 
 namespace Nashet.EconomicSimulation
 {
-    public interface IProvinceHolder
+    /// <summary>
+    /// Represents ability to own provinces 
+    /// </summary>
+    public interface IProvinceOwner
     {
         IEnumerable<Province> AllProvinces{ get; }
     }

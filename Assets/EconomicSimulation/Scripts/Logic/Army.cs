@@ -46,21 +46,21 @@ namespace Nashet.EconomicSimulation
         public Province Province { get; protected set; }
         private float getHorsesSupply()
         {
-            if (getOwner().Country.Inventions.IsInvented(Invention.Domestication))
+            if (getOwner().Country.Science.IsInvented(Invention.Domestication))
                 return new Procent(getConsumption(Product.Cattle), getNeeds(Product.Cattle), false).get();
             else return 0f;
         }
 
         private float getColdArmsSupply()
         {
-            if (getOwner().Country.Inventions.IsInvented(Product.ColdArms))
+            if (getOwner().Country.Science.IsInvented(Product.ColdArms))
                 return new Procent(getConsumption(Product.ColdArms), getNeeds(Product.ColdArms), false).get();
             else return 0f;
         }
 
         private float getEquippedFirearmsSupply()
         {
-            if (getOwner().Country.Inventions.IsInvented(Product.Firearms))
+            if (getOwner().Country.Science.IsInvented(Product.Firearms))
                 return Mathf.Min(
              new Procent(getConsumption(Product.Firearms), getNeeds(Product.Firearms), false).get(),
              new Procent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
@@ -70,7 +70,7 @@ namespace Nashet.EconomicSimulation
 
         private float getEquippedArtillerySupply()
         {
-            if (getOwner().Country.Inventions.IsInvented(Product.Artillery))
+            if (getOwner().Country.Science.IsInvented(Product.Artillery))
                 return Mathf.Min(
              new Procent(getConsumption(Product.Artillery), getNeeds(Product.Artillery), false).get(),
              new Procent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
@@ -80,7 +80,7 @@ namespace Nashet.EconomicSimulation
 
         private float getEquippedCarsSupply()
         {
-            if (getOwner().Country.Inventions.IsInvented(Product.Cars))
+            if (getOwner().Country.Science.IsInvented(Product.Cars))
                 return Mathf.Min(
              new Procent(getConsumption(Product.Cars), getNeeds(Product.Cars), false).get(),
              new Procent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get()
@@ -90,7 +90,7 @@ namespace Nashet.EconomicSimulation
 
         private float getEquippedTanksSupply()
         {
-            if (getOwner().Country.Inventions.IsInvented(Product.Tanks))
+            if (getOwner().Country.Science.IsInvented(Product.Tanks))
                 return Mathf.Min(
              new Procent(getConsumption(Product.Tanks), getNeeds(Product.Tanks), false).get(),
              new Procent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get(),
@@ -101,7 +101,7 @@ namespace Nashet.EconomicSimulation
 
         private float getEquippedAirplanesSupply()
         {
-            if (getOwner().Country.Inventions.IsInvented(Product.Airplanes))
+            if (getOwner().Country.Science.IsInvented(Product.Airplanes))
                 return Mathf.Min(
              new Procent(getConsumption(Product.Airplanes), getNeeds(Product.Airplanes), false).get(),
              new Procent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get(),

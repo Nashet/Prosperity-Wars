@@ -172,7 +172,7 @@ namespace Nashet.EconomicSimulation
             //{ }
             public override bool isAvailable(Country country)
             {
-                if (ID == 4 && !country.Inventions.IsInvented(Invention.Collectivism))
+                if (ID == 4 && !country.Science.IsInvented(Invention.Collectivism))
                     return false;
                 else
                     return true;
@@ -560,7 +560,7 @@ namespace Nashet.EconomicSimulation
                 if (requested.ID == 1)
                     return true;
                 else
-                if (requested.ID == 2 && country.Inventions.IsInvented(Invention.Collectivism))
+                if (requested.ID == 2 && country.Science.IsInvented(Invention.Collectivism))
                     return true;
                 else
                 if (requested.ID == 3)
@@ -714,10 +714,10 @@ namespace Nashet.EconomicSimulation
             {
                 ReformValue requested = this;
 
-                if ((requested.ID == 4) && country.Inventions.IsInvented(Invention.Collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
+                if ((requested.ID == 4) && country.Science.IsInvented(Invention.Collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
                     return true;
                 else
-                if ((requested.ID == 3) && country.Inventions.IsInvented(Invention.Banking) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 3))
+                if ((requested.ID == 3) && country.Science.IsInvented(Invention.Banking) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 3))
                     return true;
                 else
                 if ((requested.ID == 2) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 2))
@@ -1042,7 +1042,7 @@ namespace Nashet.EconomicSimulation
 
         public override bool isAvailable(Country country)
         {
-            if (country.Inventions.IsInvented(Invention.Welfare))
+            if (country.Science.IsInvented(Invention.Welfare))
                 return true;
             else
                 return false;
@@ -1232,7 +1232,7 @@ namespace Nashet.EconomicSimulation
 
         public override bool isAvailable(Country country)
         {
-            if (country.Inventions.IsInvented(Invention.Welfare))
+            if (country.Science.IsInvented(Invention.Welfare))
                 return true;
             else
                 return false;
@@ -1496,10 +1496,10 @@ namespace Nashet.EconomicSimulation
             public override bool isAvailable(Country country)
             {
                 ReformValue requested = this;
-                if ((requested.ID == 4) && country.Inventions.IsInvented(Invention.Collectivism) && (country.serfdom.getValue().ID == 0 || country.serfdom.getValue().ID == 1 || country.serfdom.getValue().ID == 4))
+                if ((requested.ID == 4) && country.Science.IsInvented(Invention.Collectivism) && (country.serfdom.getValue().ID == 0 || country.serfdom.getValue().ID == 1 || country.serfdom.getValue().ID == 4))
                     return true;
                 else
-                if ((requested.ID == 3) && country.Inventions.IsInvented(Invention.Banking) && (country.serfdom.getValue().ID == 0 || country.serfdom.getValue().ID == 1 || country.serfdom.getValue().ID == 3))
+                if ((requested.ID == 3) && country.Science.IsInvented(Invention.Banking) && (country.serfdom.getValue().ID == 0 || country.serfdom.getValue().ID == 1 || country.serfdom.getValue().ID == 3))
                     return true;
                 else
                 if ((requested.ID == 2) && (country.serfdom.getValue().ID == 0 || country.serfdom.getValue().ID == 1 || country.serfdom.getValue().ID == 2))

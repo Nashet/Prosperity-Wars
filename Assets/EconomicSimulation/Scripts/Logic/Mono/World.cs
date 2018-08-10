@@ -409,17 +409,17 @@ namespace Nashet.EconomicSimulation
         {
             foreach (var item in getAllExistingCountries())
             {
-                item.Inventions.Invent(Invention.Universities);
-                item.Inventions.Invent(Invention.Manufactures);
-                item.Inventions.Invent(Invention.Metal);
-                item.Inventions.Invent(Invention.Gunpowder);
+                item.Science.Invent(Invention.Universities);
+                item.Science.Invent(Invention.Manufactures);
+                item.Science.Invent(Invention.Metal);
+                item.Science.Invent(Invention.Gunpowder);
 
 
                 
                 var resurceEnterprise = ProductionType.whoCanProduce(item.Capital.getResource());
                 var aristocrats = item.Capital.AllPops.Where(x => x.Type == PopType.Aristocrats).First() as Aristocrats;
 
-                if (resurceEnterprise != null && item.Inventions.IsInvented(resurceEnterprise.basicProduction.Product))
+                if (resurceEnterprise != null && item.Science.IsInvented(resurceEnterprise.basicProduction.Product))
                 {
                     item.Capital.BuildFactory(aristocrats, resurceEnterprise, resurceEnterprise.GetBuildCost(item.market), true);
                 }
@@ -630,7 +630,7 @@ namespace Nashet.EconomicSimulation
                     foreach (Factory factory in country.Provinces.AllFactories)
                         factory.consumeNeeds();
 
-                    if (country.Inventions.IsInvented(Invention.ProfessionalArmy))
+                    if (country.Science.IsInvented(Invention.ProfessionalArmy))
                         foreach (var item in country.Provinces.AllPops.Where(x => x.Type == PopType.Soldiers))
                             item.consumeNeeds();
 
@@ -718,7 +718,7 @@ namespace Nashet.EconomicSimulation
                         if (pop.canSellProducts())
                             Market.GiveMoneyForSoldProduct(pop);
                         pop.takeUnemploymentSubsidies();
-                        if (country.Inventions.IsInvented(Invention.ProfessionalArmy) && country.economy.getValue() != Economy.PlannedEconomy)
+                        if (country.Science.IsInvented(Invention.ProfessionalArmy) && country.economy.getValue() != Economy.PlannedEconomy)
                         // don't need salary with PE
                         {
                             var soldier = pop as Soldiers;

@@ -1309,7 +1309,7 @@ namespace Nashet.EconomicSimulation
 
         public virtual void invest()
         {
-            if (Country.Inventions.IsInvented(Invention.Banking))
+            if (Country.Science.IsInvented(Invention.Banking))
             {
                 //Hmm.. Here it's about some world average price..
                 MoneyView extraMoney = Cash.Copy().Subtract(

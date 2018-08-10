@@ -115,7 +115,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public bool GiveLackingMoneyInCredit(Agent taker, MoneyView desirableSum)
         {
-            if (taker.Country.Inventions.IsInvented(Invention.Banking))// find money in bank?
+            if (taker.Country.Science.IsInvented(Invention.Banking))// find money in bank?
             {
                 MoneyView lackOfSum = desirableSum.Copy().Subtract(taker.getMoneyAvailable(), false); 
                 if (lackOfSum.isNotZero())
@@ -132,7 +132,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public MoneyView ReturnDeposit(Agent toWhom, MoneyView howMuchWants)
         {
-            if (toWhom.Country.Inventions.IsInvented(Invention.Banking))// find money in bank? //todo remove checks, make bank==null if uninvented
+            if (toWhom.Country.Science.IsInvented(Invention.Banking))// find money in bank? //todo remove checks, make bank==null if uninvented
             {
                 var maxReturnLimit = HowMuchDepositCanReturn(toWhom);
                 if (maxReturnLimit.isBiggerOrEqual(howMuchWants))

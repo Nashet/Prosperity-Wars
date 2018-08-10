@@ -217,7 +217,7 @@ namespace Nashet.EconomicSimulation
         public static IEnumerable<ProductionType> getAllInventedFactories(Country country)
         {
             foreach (var next in allTypes)
-                if (country.Inventions.IsInventedFactory(next))
+                if (country.Science.IsInventedFactory(next))
                     yield return next;
         }
 
@@ -231,7 +231,7 @@ namespace Nashet.EconomicSimulation
         public static IEnumerable<ProductionType> getAllInventedArtisanships(Country country)
         {
             foreach (var next in allTypes)
-                if (country.Inventions.IsInventedArtisanship(next))
+                if (country.Science.IsInventedArtisanship(next))
                     yield return next;
         }
 
@@ -415,7 +415,7 @@ namespace Nashet.EconomicSimulation
             if (where.hasFactory(this))
                 return false;
             if (isResourceGathering() && basicProduction.Product != where.getResource()
-                || (builder != null && !builder.Country.Inventions.IsInventedFactory(this)) // check it out side
+                || (builder != null && !builder.Country.Science.IsInventedFactory(this)) // check it out side
                 || (builder != null && !allowsForeignInvestments.checkIftrue(builder, where))// check it out side
                                                                                              //|| !basicProduction.Product.IsInventedByAnyOne()
                 )

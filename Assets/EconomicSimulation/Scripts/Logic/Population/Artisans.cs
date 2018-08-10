@@ -27,7 +27,7 @@ namespace Nashet.EconomicSimulation
 
         public override bool canThisPromoteInto(PopType targetType)
         {
-            if (targetType == PopType.Capitalists && Country.Inventions.IsInvented(Invention.Manufactures))
+            if (targetType == PopType.Capitalists && Country.Science.IsInvented(Invention.Manufactures))
                 return true;
             else
                 return false;
@@ -86,7 +86,7 @@ namespace Nashet.EconomicSimulation
                 PayWithoutRecord(artisansProduction, Cash);
 
                 // take loan if don't have enough money to buy inputs
-                if (Country.Inventions.IsInvented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected()
+                if (Country.Science.IsInvented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected()
                     && artisansProduction.Type.getPossibleProfit(Country.market).isNotZero())
                 {
                     var needs = artisansProduction.getRealAllNeeds();

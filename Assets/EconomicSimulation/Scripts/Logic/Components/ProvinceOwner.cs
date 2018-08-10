@@ -7,17 +7,16 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Nashet.EconomicSimulation
-{
-
+{   
     /// <summary>
-    /// Encapsulates ability to own provinces 
+    /// Represents ability to own provinces 
     /// </summary>
-    public class ProvinceHolder : Component<Country>, IProvinceHolder, IPopulated
+    public class ProvinceOwner : Component<Country>, IProvinceOwner, IPopulated
     {
         protected readonly List<Province> ownedProvinces = new List<Province>();
        
 
-        public ProvinceHolder(Country owner):base (owner)
+        public ProvinceOwner(Country owner):base (owner)
         {
             
         }

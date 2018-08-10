@@ -3,8 +3,7 @@
 namespace Nashet.EconomicSimulation
 {
     public interface IPopulated
-    {
-        
+    {        
         IEnumerable<Producer> AllProducers { get; }
         IEnumerable<Consumer> AllConsumers { get; }
         IEnumerable<ISeller> AllSellers { get; }

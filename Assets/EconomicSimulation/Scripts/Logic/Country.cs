@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Country : MultiSeller, IClickable, IShareOwner, ISortableName, INameable, IProvinceHolder
+    public class Country : MultiSeller, IClickable, IShareOwner, ISortableName, INameable, IProvinceOwner, ICanInvent
     {
         public readonly Government government;
         public readonly Economy economy;
@@ -34,9 +34,9 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Encapsulates ability to own provinces 
         /// </summary>
-        public readonly ProvinceHolder Provinces;
+        public readonly ProvinceOwner Provinces;
 
-        public readonly InventionsHolder Inventions;
+        public Science Science { get; protected set; }
 
         private readonly Dictionary<Country, Procent> opinionOf = new Dictionary<Country, Procent>();
 
@@ -56,8 +56,10 @@ namespace Nashet.EconomicSimulation
         private Province capital;
         public bool IsAlive { get; protected set; } = true;
 
-    private readonly Money soldiersWage = new Money(0m);
-        public readonly Value sciencePoints = new Value(0f);
+        private readonly Money soldiersWage = new Money(0m);
+        //public readonly Value sciencePoints = new Value(0f);
+
+
         public bool failedToPaySoldiers;
         public Money autoPutInBankLimit = new Money(2000);
 
@@ -149,8 +151,8 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public Country(string name, Culture culture, Color color, Province capital, float money) : base(money, null)
         {
-            Provinces = new ProvinceHolder(this);
-            Inventions = new InventionsHolder(this);
+            Provinces = new ProvinceOwner(this);
+            Science = new Science(this);
 
             allInvestmentProjects = new CashedData<Dictionary<IInvestable, Procent>>(Provinces.GetAllInvestmentProjects2);
             SetName(name);
@@ -206,9 +208,9 @@ namespace Nashet.EconomicSimulation
             //economy.setValue(Economy.StateCapitalism);
             taxationForRich.setValue(TaxationForRich.PossibleStatuses[2]);
 
-            Inventions.Invent(Invention.Farming);
+            Science.Invent(Invention.Farming);
 
-            Inventions.Invent(Invention.Banking);
+            Science.Invent(Invention.Banking);
 
             //markInvented(Invention.individualRights);
             //markInvented(Invention.ProfessionalArmy);
@@ -264,9 +266,9 @@ namespace Nashet.EconomicSimulation
                     //item.secedeTo(this, false);
                 }
             ressurect(BestCapitalCandidate(), government.getTypedValue());
-            foreach (var item in oldCountry.Inventions.AllInvented()) // copying inventions
+            foreach (var item in oldCountry.Science.AllInvented()) // copying inventions
             {
-                Inventions.Invent(item);
+                Science.Invent(item);
             }
         }
 
@@ -358,7 +360,7 @@ namespace Nashet.EconomicSimulation
             if (this != Game.Player)
             {
                 //take all money from bank
-                if (byWhom.Inventions.IsInvented(Invention.Banking))
+                if (byWhom.Science.IsInvented(Invention.Banking))
                     byWhom.Bank.Annex(Bank); // deposits transfered in province.OnSecede()
                 else
                     Bank.destroy(byWhom);
@@ -501,7 +503,7 @@ namespace Nashet.EconomicSimulation
         {
             Storage minFound = null;
             foreach (var item in selector)
-                if (Inventions.IsInvented(item))
+                if (Science.IsInvented(item))
                 {
                     var proposition = ProductionType.whoCanProduce(item);
                     if (proposition != null)
@@ -520,17 +522,17 @@ namespace Nashet.EconomicSimulation
 
         public void invest(Province province)
         {
-            if (economy.getValue() == Economy.PlannedEconomy && Inventions.IsInvented(Invention.Manufactures))
+            if (economy.getValue() == Economy.PlannedEconomy && Science.IsInvented(Invention.Manufactures))
                 if (!province.isThereFactoriesInUpgradeMoreThan(1)//Options.maximumFactoriesInUpgradeToBuildNew)
                     && province.getUnemployedWorkers() > 0)
                 {
-                    var industrialProduct = getMostDeficitProductAllowedHere(Product.AllNonAbstract().Where(x => x.isIndustrial() && Inventions.IsInvented(x)), province);
+                    var industrialProduct = getMostDeficitProductAllowedHere(Product.AllNonAbstract().Where(x => x.isIndustrial() && Science.IsInvented(x)), province);
                     if (industrialProduct == null)
                     {
-                        var militaryProduct = getMostDeficitProductAllowedHere(Product.AllNonAbstract().Where(x => x.isMilitary() && Inventions.IsInvented(x)), province);
+                        var militaryProduct = getMostDeficitProductAllowedHere(Product.AllNonAbstract().Where(x => x.isMilitary() && Science.IsInvented(x)), province);
                         if (militaryProduct == null)
                         {
-                            var consumerProduct = getMostDeficitProductAllowedHere(Product.AllNonAbstract().Where(x => x.isConsumerProduct() && Inventions.IsInvented(x)), province);
+                            var consumerProduct = getMostDeficitProductAllowedHere(Product.AllNonAbstract().Where(x => x.isConsumerProduct() && Science.IsInvented(x)), province);
                             if (consumerProduct != null)
                             {
                                 //if there is no enough some consumer product - build it
@@ -625,7 +627,7 @@ namespace Nashet.EconomicSimulation
                 aiInvent();
             // changing salary for soldiers
             if (economy.getValue() != Economy.PlannedEconomy)
-                if (Inventions.IsInvented(Invention.ProfessionalArmy) && Rand.Get.Next(10) == 1)
+                if (Science.IsInvented(Invention.ProfessionalArmy) && Rand.Get.Next(10) == 1)
                 {
                     Money newWage;
                     Money soldierAllNeedsCost = Country.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).Copy();
@@ -683,12 +685,12 @@ namespace Nashet.EconomicSimulation
                             {
                                 var isFactory = x.Key as Factory;
                                 if (isFactory != null)
-                                    return Inventions.IsInventedFactory(isFactory.Type);
+                                    return Science.IsInventedFactory(isFactory.Type);
                                 else
                                 {
                                     var newFactory = x.Key as NewFactoryProject;
                                     if (newFactory != null)
-                                        return Inventions.IsInventedFactory(newFactory.Type);
+                                        return Science.IsInventedFactory(newFactory.Type);
                                     else
                                     {
                                         var isBuyingShare = x.Key as Owners;
@@ -745,8 +747,11 @@ namespace Nashet.EconomicSimulation
 
             ownershipSecurity.Add(Options.CountryOwnershipRiskRestoreSpeed, false);
             ownershipSecurity.clamp100();
+
             // get science points
-            sciencePoints.Add(Options.defaultSciencePointMultiplier * modSciencePoints.getModifier(this));
+            Science.AddPoints(Options.defaultSciencePointMultiplier * modSciencePoints.getModifier(this));
+
+
 
             // put extra money in bank
             if (economy.getValue() != Economy.PlannedEconomy)
@@ -775,9 +780,9 @@ namespace Nashet.EconomicSimulation
 
         private void aiInvent()
         {
-            var invention = Inventions.AllUninvented().Where(x => sciencePoints.isBiggerOrEqual(x.getCost())).Random();//.ToList()
+            var invention = Science.AllUninvented().Where(x => Science.Points >= x.getCost().get()).Random();//.ToList()
             if (invention != null)
-                Inventions.Invent(invention);
+                Science.Invent(invention);
         }
 
         private void tradeNonPE(bool usePlayerTradeSettings)//, int buyProductsForXDays)
@@ -1294,6 +1299,7 @@ namespace Nashet.EconomicSimulation
                     yield return province;
             }
         }
+
 
     }
 }

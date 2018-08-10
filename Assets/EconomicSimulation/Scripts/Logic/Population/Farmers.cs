@@ -14,7 +14,7 @@ namespace Nashet.EconomicSimulation
         public override bool canThisPromoteInto(PopType targetType)
         {
             if (targetType == PopType.Aristocrats
-              || targetType == PopType.Capitalists && Country.Inventions.IsInvented(Invention.Manufactures)
+              || targetType == PopType.Capitalists && Country.Science.IsInvented(Invention.Manufactures)
                 )
                 return true;
             else

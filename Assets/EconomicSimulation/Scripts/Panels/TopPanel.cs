@@ -53,7 +53,7 @@ namespace Nashet.EconomicSimulation
                     .Append(")");
 
             sb.Append("\nMoney: ").Append(Game.Player.Cash)
-            .Append("   Tech points: ").Append(Game.Player.sciencePoints.get().ToString("F0"));
+            .Append("   Tech points: ").Append(Game.Player.Science.Points.ToString("F0"));
 
             if (Game.Player.IsAlive)                
                 sb.Append("   Loyalty: ").Append(Game.Player.Provinces.AllPops.GetAverageProcent(x => x.loyalty))
