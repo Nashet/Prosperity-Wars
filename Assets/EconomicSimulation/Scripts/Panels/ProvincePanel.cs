@@ -34,9 +34,9 @@ namespace Nashet.EconomicSimulation
 
         public void onGrantIndependenceClick()
         {
-            Country whomGrant = Game.selectedProvince.getRandomCore(x => x != Game.Player && !x.IsAlive);
+            Country whomGrant = Game.selectedProvince.AllCores().Where(x => x != Game.Player && !x.IsAlive).Random();
             if (whomGrant == null)
-                whomGrant = Game.selectedProvince.getRandomCore(x => x != Game.Player);
+                whomGrant = Game.selectedProvince.AllCores().Where(x => x != Game.Player).Random();
 
             whomGrant.onGrantedProvince(Game.selectedProvince);
             MainCamera.refreshAllActive();

@@ -23,7 +23,7 @@ namespace Nashet.EconomicSimulation
         new Modifier(Government.isPolis, Government.Polis.getScienceModifier(), false),
         new Modifier(Government.isWealthDemocracy, Government.WealthDemocracy.getScienceModifier(), false),
         new Modifier(Government.isBourgeoisDictatorship, Government.BourgeoisDictatorship.getScienceModifier(), false),
-        new Modifier(x=>(x as IPopulated).AllPops.GetAverageProcent(y=>y.Education).RawUIntValue, "Education", 1f / Procent.Precision, false)
+        new Modifier(x=>(x as Country).Provinces.AllPops.GetAverageProcent(y=>y.Education).RawUIntValue, "Education", 1f / Procent.Precision, false)
     });
         protected readonly Dictionary<Invention, bool> inventions = new Dictionary<Invention, bool>();
         public float Points { get; protected set; }

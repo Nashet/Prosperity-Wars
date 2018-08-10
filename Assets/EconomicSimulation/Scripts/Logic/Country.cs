@@ -29,7 +29,6 @@ namespace Nashet.EconomicSimulation
         public Bank Bank { get { return bank; } }
         public Market market;
 
-
         /// <summary>
         /// Encapsulates ability to own provinces 
         /// </summary>
@@ -131,8 +130,6 @@ namespace Nashet.EconomicSimulation
 
             Country = this;
             market = Market.TemporalSingleMarket; // new Market();
-
-
 
             bank = new Bank(this);
 
