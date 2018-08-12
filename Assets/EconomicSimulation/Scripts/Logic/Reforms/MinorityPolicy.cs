@@ -17,16 +17,16 @@ namespace Nashet.EconomicSimulation
             public override bool isAvailable(Country country)
             {
                 ReformValue requested = this;
-                if ((requested.ID == 4) && country.Science.IsInvented(Invention.Collectivism) && (country.serfdom.getValue().ID == 0 || country.serfdom.getValue().ID == 1 || country.serfdom.getValue().ID == 4))
+                if ((requested.ID == 4) && country.Science.IsInvented(Invention.Collectivism) && (country.serfdom ==Serfdom.Brutal || country.serfdom ==Serfdom.Allowed || country.serfdom==Serfdom.AbolishedAndNationalized))
                     return true;
                 else
-                if ((requested.ID == 3) && country.Science.IsInvented(Invention.Banking) && (country.serfdom.getValue().ID == 0 || country.serfdom.getValue().ID == 1 || country.serfdom.getValue().ID == 3))
+                if ((requested.ID == 3) && country.Science.IsInvented(Invention.Banking) && (country.serfdom== Serfdom.Brutal || country.serfdom == Serfdom.Allowed || country.serfdom==Serfdom.AbolishedWithLandPayment))
                     return true;
                 else
-                if ((requested.ID == 2) && (country.serfdom.getValue().ID == 0 || country.serfdom.getValue().ID == 1 || country.serfdom.getValue().ID == 2))
+                if ((requested.ID == 2) && (country.serfdom == Serfdom.Brutal || country.serfdom == Serfdom.Allowed || country.serfdom == Serfdom.Abolished))
                     return true;
                 else
-                    if ((requested.ID == 1) && (country.serfdom.getValue().ID == 0 || country.serfdom.getValue().ID == 1))
+                    if ((requested.ID == 1) && (country.serfdom == Serfdom.Brutal || country.serfdom == Serfdom.Allowed))
                     return true;
                 else
                 if ((requested.ID == 0))

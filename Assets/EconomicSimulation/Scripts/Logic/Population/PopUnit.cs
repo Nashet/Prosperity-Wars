@@ -985,7 +985,7 @@ namespace Nashet.EconomicSimulation
         // Not called in capitalism
         public void payTaxToAllAristocrats()
         {
-            Value taxSize = getGainGoodsThisTurn().Multiply(Country.serfdom.status.getTax());
+            Value taxSize = getGainGoodsThisTurn().Multiply(Country.serfdom.typedValue.getTax());
             Province.shareWithAllAristocrats(storage, taxSize);
         }
 

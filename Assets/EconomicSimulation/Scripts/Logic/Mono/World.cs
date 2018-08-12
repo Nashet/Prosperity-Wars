@@ -654,7 +654,7 @@ namespace Nashet.EconomicSimulation
                         {
                             //That placed here to avoid issues with Aristocrats and Clerics
                             //Otherwise Aristocrats starts to consume BEFORE they get all what they should
-                            if (country.serfdom.getValue() == Serfdom.Allowed || country.serfdom.getValue() == Serfdom.Brutal)
+                            if (country.serfdom == Serfdom.Allowed || country.serfdom == Serfdom.Brutal)
                                 if (pop.shouldPayAristocratTax())
                                     pop.payTaxToAllAristocrats();
                         }

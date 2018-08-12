@@ -161,7 +161,7 @@ namespace Nashet.EconomicSimulation
 
 
             //economy.setValue( Econ.NaturalEconomy);
-            serfdom.setValue(Serfdom.Abolished);
+            serfdom.SetValue(Serfdom.Abolished);
             //government.setValue(Government.Tribal, false);
 
             government.SetValue(Gov.Aristocracy);
