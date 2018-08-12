@@ -14,7 +14,7 @@ namespace Nashet.EconomicSimulation
         public readonly List<Movement> movements = new List<Movement>();
 
         public readonly Gov government;
-        public readonly Economy economy;
+        public readonly Econ economy;
         public readonly Serfdom serfdom;
         public readonly MinimalWage minimalWage;
         public readonly UnemploymentSubsidies unemploymentSubsidies;
@@ -135,7 +135,7 @@ namespace Nashet.EconomicSimulation
 
             
 
-            economy = new Economy(this);
+            economy = new Econ(this);
 
             government = new Gov(this);
 
@@ -160,12 +160,12 @@ namespace Nashet.EconomicSimulation
             }
 
 
-            //economy.setValue( Economy.NaturalEconomy);
+            //economy.setValue( Econ.NaturalEconomy);
             serfdom.setValue(Serfdom.Abolished);
             //government.setValue(Government.Tribal, false);
 
             government.SetValue(Gov.Aristocracy);
-            //economy.setValue(Economy.StateCapitalism);
+            //economy.setValue(Econ.StateCapitalism);
             taxationForRich.setValue(TaxationForRich.PossibleStatuses[2]);
 
             Science.Invent(Invention.Farming);
@@ -456,7 +456,7 @@ namespace Nashet.EconomicSimulation
 
         public void invest(Province province)
         {
-            if (economy.getValue() == Economy.PlannedEconomy && Science.IsInvented(Invention.Manufactures))
+            if (economy == Econ.PlannedEconomy && Science.IsInvented(Invention.Manufactures))
                 if (!province.isThereFactoriesInUpgradeMoreThan(1)//Options.maximumFactoriesInUpgradeToBuildNew)
                     && province.getUnemployedWorkers() > 0)
                 {
@@ -560,7 +560,7 @@ namespace Nashet.EconomicSimulation
             if (Rand.Get.Next(90) == 1)
                 aiInvent();
             // changing salary for soldiers
-            if (economy.getValue() != Economy.PlannedEconomy)
+            if (economy != Econ.PlannedEconomy)
                 if (Science.IsInvented(Invention.ProfessionalArmy) && Rand.Get.Next(10) == 1)
                 {
                     Money newWage;
@@ -592,7 +592,7 @@ namespace Nashet.EconomicSimulation
                     setSoldierWage(newWage);
                 }
             // dealing with enterprises
-            if (economy.getValue() == Economy.Interventionism)
+            if (economy == Econ.Interventionism)
                 Rand.Call(() => Provinces.AllFactories.Where(
                     x => x.ownership.HowMuchOwns(this).Copy().Subtract(x.ownership.HowMuchSelling(this))
                     .isBiggerOrEqual(Procent._50Procent)).PerformAction(
@@ -600,7 +600,7 @@ namespace Nashet.EconomicSimulation
                     30);
             else
             //State Capitalism invests in own country only, Interventionists don't invests in any country
-            if (economy.getValue() == Economy.StateCapitalism)
+            if (economy == Econ.StateCapitalism)
                 Rand.Call(
                     () =>
                     {
@@ -686,7 +686,7 @@ namespace Nashet.EconomicSimulation
             Science.AddPoints(Options.defaultSciencePointMultiplier * Science.modSciencePoints.getModifier(this));
 
             // put extra money in bank
-            if (economy.getValue() != Economy.PlannedEconomy)
+            if (economy != Econ.PlannedEconomy)
                 if (autoPutInBankLimit.isNotZero())
                 {
                     var extraMoney = Cash.Copy().Subtract(autoPutInBankLimit, false);
@@ -706,7 +706,7 @@ namespace Nashet.EconomicSimulation
             movements.RemoveAll(x => x.isEmpty());
             foreach (var item in movements.ToArray())
                 item.Simulate();
-            if (economy.getValue() == Economy.LaissezFaire)
+            if (economy == Econ.LaissezFaire)
                 Rand.Call(() => Provinces.AllFactories.PerformAction(x => x.ownership.SetToSell(this, Procent.HundredProcent, false)), 30);
         }
 
@@ -845,7 +845,7 @@ namespace Nashet.EconomicSimulation
             }
             // Should go After all Armies consumption
 
-            if (economy.getValue() == Economy.PlannedEconomy)
+            if (economy == Econ.PlannedEconomy)
                 tradeWithPE(!isAI());
             else
             {

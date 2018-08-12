@@ -51,7 +51,7 @@ namespace Nashet.EconomicSimulation
             AddCell(country.Provinces.AllPops.GetAverageProcent(x => x.getUnemployment()).ToString(), country);
             AddCell(country.Provinces.AllPops.GetAverageProcent(y => y.Education).ToString(), country);
 
-            AddCell(country.economy.getValue().ToString(), country);
+            AddCell(country.economy.ToString(), country);
 
             AddCell(country.Provinces.AllPops.GetAverageProcent(x => x.needsFulfilled).ToString(), country);
 

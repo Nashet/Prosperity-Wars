@@ -31,7 +31,7 @@ namespace Nashet.EconomicSimulation
                 storage.add(getGainGoodsThisTurn());
                 calcStatistics();
             }
-            if (Economy.isMarket.checkIfTrue(Country))
+            if (Econ.isMarket.checkIfTrue(Country))
             {
                 //sentToMarket.set(gainGoodsThisTurn);
                 //Country.market.sentToMarket.add(gainGoodsThisTurn);
@@ -40,7 +40,7 @@ namespace Nashet.EconomicSimulation
             }
             else
             {
-                if (Country.economy.getValue() == Economy.PlannedEconomy)
+                if (Country.economy == Econ.PlannedEconomy)
                 {
                     Country.countryStorageSet.Add(getGainGoodsThisTurn());
                 }
@@ -49,7 +49,7 @@ namespace Nashet.EconomicSimulation
 
         public override bool canSellProducts()
         {
-            if (Economy.isMarket.checkIfTrue(Country))
+            if (Econ.isMarket.checkIfTrue(Country))
                 return true;
             else
                 return false;

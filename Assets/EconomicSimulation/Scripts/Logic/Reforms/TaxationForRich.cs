@@ -72,7 +72,7 @@ namespace Nashet.EconomicSimulation
         static TaxationForRich()
         {
             for (int i = 0; i <= 10; i++)
-                PossibleStatuses.Add(new ReformValue(" tax for rich", "", new Procent(i * 0.1f), i, new DoubleConditionsList(new List<Condition> { Economy.isNotPlanned, Economy.taxesInsideLFLimit, Economy.taxesInsideSCLimit })));
+                PossibleStatuses.Add(new ReformValue(" tax for rich", "", new Procent(i * 0.1f), i, new DoubleConditionsList(new List<Condition> { Econ.isNotPlanned, Econ.taxesInsideLFLimit, Econ.taxesInsideSCLimit })));
         }
 
         public TaxationForRich(Country country) : base("Taxation for rich", "", country)

@@ -111,10 +111,10 @@ namespace Nashet.EconomicSimulation
             new Modifier(Invention.SteamPowerInvented, x=>(x as PopUnit).Country, 0.25f, false),
             new Modifier(Invention.CombustionEngineInvented, x=>(x as PopUnit).Country, 0.5f, false),
 
-            new Modifier(Economy.isStateCapitlism, x=>(x as PopUnit).Country,  0.10f, false),
-            new Modifier(Economy.isInterventionism, x=>(x as PopUnit).Country,  0.30f, false),
-            new Modifier(Economy.isLF, x=>(x as PopUnit).Country,  0.50f, false),
-            new Modifier(Economy.isPlanned, x=>(x as PopUnit).Country,  -0.10f, false),
+            new Modifier(Econ.isStateCapitlism, x=>(x as PopUnit).Country,  0.10f, false),
+            new Modifier(Econ.isInterventionism, x=>(x as PopUnit).Country,  0.30f, false),
+            new Modifier(Econ.isLF, x=>(x as PopUnit).Country,  0.50f, false),
+            new Modifier(Econ.isPlanned, x=>(x as PopUnit).Country,  -0.10f, false),
             new Modifier(x=>(x as PopUnit).Education.RawUIntValue, "Education",  2f / Procent.Precision, true),
 
             //new Modifier(Serfdom.Allowed,  -20f, false)
@@ -530,7 +530,7 @@ namespace Nashet.EconomicSimulation
 
         //public void payTaxes() // should be abstract
         //{
-        //    if (Economy.isMarket.checkIftrue(Country) && popType != PopType.Tribesmen)
+        //    if (Econ.isMarket.checkIftrue(Country) && popType != PopType.Tribesmen)
         //    {
         //        Value taxSize;
         //        if (this.popType.isPoorStrata())
@@ -843,7 +843,7 @@ namespace Nashet.EconomicSimulation
             {
                 consumeNeedsWithMarket();
             }
-            else if (Country.economy.getValue() == Economy.PlannedEconomy)//non - market consumption
+            else if (Country.economy == Econ.PlannedEconomy)//non - market consumption
             {
                 // todo - !! - check for substitutes
                 consumeWithPlannedEconomy(population.getRealLifeNeeds());
@@ -876,7 +876,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public virtual bool canTrade()
         {
-            if (Economy.isMarket.checkIfTrue(Country))
+            if (Econ.isMarket.checkIfTrue(Country))
                 return true;
             else
                 return false;
@@ -1078,7 +1078,7 @@ namespace Nashet.EconomicSimulation
         {
             // no subsidies with PE
             // may replace by trigger
-            if (Country.economy.getValue() != Economy.PlannedEconomy)
+            if (Country.economy != Econ.PlannedEconomy)
             {
                 var reform = Country.unemploymentSubsidies.getValue();
                 var unemployment = getUnemployment();

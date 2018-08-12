@@ -59,10 +59,9 @@ namespace Nashet.EconomicSimulation
 
             return !(x == y);
         }
-        // private readonly Country country;
+        
         //public abstract bool isAvailable(Country country);
-
-        //public abstract IEnumerator GetEnumerator();
+        
 
         //public abstract bool canHaveThatValue(AbstractNamdRfrmValue abstractNamdRfrmValue);
         public abstract void OnReformEnactedInProvince(Province province);
@@ -73,13 +72,13 @@ namespace Nashet.EconomicSimulation
         }
         public virtual void SetValue(IReformValue reformValue)
         {
-            // todo return it!!
-            //foreach (PopUnit pop in owner.Provinces.AllPops)
-            //    if (pop.getSayingYes(reformValue))
-            //    {
-            //        pop.loyalty.Add(Options.PopLoyaltyBoostOnDiseredReformEnacted);
-            //        pop.loyalty.clamp100();
-            //    }
+           
+            foreach (PopUnit pop in owner.Provinces.AllPops)
+                if (pop.getSayingYes(reformValue))
+                {
+                    pop.loyalty.Add(Options.PopLoyaltyBoostOnDiseredReformEnacted);
+                    pop.loyalty.clamp100();
+                }
             var isThereSuchMovement = owner.movements.Find(x => x.getGoal() == reformValue);
             if (isThereSuchMovement != null)
             {
@@ -95,17 +94,7 @@ namespace Nashet.EconomicSimulation
         {
             get { return name; }
         }
-
-        public bool Is(NamdRfrmValue value)
-        {
-            throw new System.NotImplementedException();
-        }
-        //public abstract AbstractNamdRfrmValue getValue();
-
-
-
-        //abstract public AbstractNamdRfrmValue getValue(int value);
-        //abstract public void setValue(int value);
+       
         public void OnClicked()
         {
             //MainCamera.politicsPanel.selectReform(this);
@@ -116,7 +105,7 @@ namespace Nashet.EconomicSimulation
         {
             return nameWeight;
         }
-        public IEnumerable<IReformValue> PossibleValues
+        public IEnumerable<IReformValue> AllPossibleValues
         {
             get
             {

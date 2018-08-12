@@ -122,27 +122,27 @@ namespace Nashet.EconomicSimulation
 
         public static readonly ReformValue Scanty = new ReformValue("Bread Lines", "-The people are starving. Let them eat bread.", 1, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Econ.isNotPlanned
         }));
 
         public static readonly ReformValue Minimal = new ReformValue("Food Stamps", "- Let the people buy what they need.", 2, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Econ.isNotPlanned
         }));
 
         public static readonly ReformValue Trinket = new ReformValue("Housing & Food Assistance", "- Affordable Housing for the Unemployed.", 3, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Econ.isNotPlanned
         }));
 
         public static readonly ReformValue Middle = new ReformValue("Welfare Ministry", "- Now there is a minister granting greater access to benefits.", 4, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Econ.isNotPlanned
         }));
 
         public static readonly ReformValue Big = new ReformValue("Full State Unemployment Benefits", "- Full State benefits for the downtrodden.", 5, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Econ.isNotPlanned
         }));
 
         public UnemploymentSubsidies(Country country) : base("Unemployment Subsidies", "", country)

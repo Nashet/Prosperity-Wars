@@ -38,12 +38,11 @@ public class ReformsTests
                     yield return new KeyValuePair<AbstrRefrm, IReformValue>(arg1, null);
                 else
                 {
-                    foreach (var arg2 in arg1.PossibleValues)
+                    foreach (var arg2 in arg1.AllPossibleValues)
                     {
                         yield return new KeyValuePair<AbstrRefrm, IReformValue>(arg1, arg2);
 
-                    }
-                    //yield return new KeyValuePair<AbstrRefrm, IReformValue>(null, null);
+                    }                    
                 }
             }
         }

@@ -4,5 +4,6 @@
     {
         string FullName { get; }
         string ShortName { get; }
+        string ToString();
     }
 }

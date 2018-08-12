@@ -132,27 +132,27 @@ namespace Nashet.EconomicSimulation
 
         public static readonly ReformValue Scanty = new ReformValue("Scant Minimum Wage", "- Half-hungry", 1, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Econ.isNotPlanned
         }));
 
         public static readonly ReformValue Minimal = new ReformValue("Subsistence Minimum Wage", "- Just enough to feed yourself", 2, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Econ.isNotPlanned
         }));
 
         public static readonly ReformValue Trinket = new ReformValue("Mid-Level Minimum Wage", "- You can buy some small stuff", 3, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Econ.isNotPlanned
         }));
 
         public static readonly ReformValue Middle = new ReformValue("Social Security", "- Minimum Wage & Retirement benefits", 4, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Econ.isNotPlanned
         }));
 
         public static readonly ReformValue Big = new ReformValue("Generous Minimum Wage", "- Can live almost like a king. Almost..", 5, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented,AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented,AbstractReformValue.isNotLFOrMoreConservative, Econ.isNotPlanned
         }));
 
         public MinimalWage(Country country) : base("Minimum wage", "", country)

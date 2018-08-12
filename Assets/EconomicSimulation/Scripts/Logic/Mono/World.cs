@@ -58,7 +58,7 @@ namespace Nashet.EconomicSimulation
             UncolonizedLand = new Country("Uncolonized lands", culture, culture.getColor(), null, 0f);
             allCountries.Add(UncolonizedLand);
             UncolonizedLand.government.SetValue(Gov.Tribal);
-            UncolonizedLand.economy.setValue(Economy.NaturalEconomy);
+            UncolonizedLand.economy.SetValue(Econ.NaturalEconomy);
         }
 
         public static IEnumerable<Army> AllArmies()
@@ -140,7 +140,7 @@ namespace Nashet.EconomicSimulation
         public static IEnumerable<KeyValuePair<IInvestable, Procent>> GetAllAllowedInvestments(Agent investor)
         {
             Country includingCountry = investor.Country;
-            var countriesAllowingInvestments = getAllExistingCountries().Where(x => x.economy.getTypedValue().AllowForeignInvestments || x == includingCountry);
+            var countriesAllowingInvestments = getAllExistingCountries().Where(x => x.economy.AllowForeignInvestments || x == includingCountry);
             foreach (var country in countriesAllowingInvestments)
                 foreach (var item in country.allInvestmentProjects.Get())//investor
                     yield return item;
@@ -624,7 +624,7 @@ namespace Nashet.EconomicSimulation
             foreach (Country country in World.getAllExistingCountries())
             {
                 country.consumeNeeds();
-                if (country.economy.getValue() == Economy.PlannedEconomy)
+                if (country.economy == Econ.PlannedEconomy)
                 {
                     //consume in PE order
                     foreach (Factory factory in country.Provinces.AllFactories)
@@ -690,7 +690,7 @@ namespace Nashet.EconomicSimulation
                 {
                     foreach (Factory factory in province.AllFactories)
                     {
-                        if (country.economy.getValue() == Economy.PlannedEconomy)
+                        if (country.economy == Econ.PlannedEconomy)
                         {
                             if (country.isAI() && factory.IsClosed && !factory.isBuilding())
                                 Rand.Call(() => factory.open(country, false), Options.howOftenCheckForFactoryReopenning);
@@ -718,7 +718,7 @@ namespace Nashet.EconomicSimulation
                         if (pop.canSellProducts())
                             Market.GiveMoneyForSoldProduct(pop);
                         pop.takeUnemploymentSubsidies();
-                        if (country.Science.IsInvented(Invention.ProfessionalArmy) && country.economy.getValue() != Economy.PlannedEconomy)
+                        if (country.Science.IsInvented(Invention.ProfessionalArmy) && country.economy != Econ.PlannedEconomy)
                         // don't need salary with PE
                         {
                             var soldier = pop as Soldiers;
@@ -757,7 +757,7 @@ namespace Nashet.EconomicSimulation
                 {
                     foreach (var pop in province.AllPops)
                     {
-                        if (country.economy.getValue() != Economy.PlannedEconomy)
+                        if (country.economy != Econ.PlannedEconomy)
                             Rand.Call(() => pop.invest(), Options.PopInvestRate);
                     }
 

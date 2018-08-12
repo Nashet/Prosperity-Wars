@@ -36,7 +36,7 @@ namespace Nashet.EconomicSimulation
         public override void produce()
         {
             // artisan shouldn't work with PE
-            if (Country.economy.getValue() == Economy.PlannedEconomy)
+            if (Country.economy == Econ.PlannedEconomy)
                 artisansProduction = null;
             else
             {
@@ -48,18 +48,18 @@ namespace Nashet.EconomicSimulation
                     //if (artisansProduction.isAllInputProductsCollected())
                     {
                         artisansProduction.produce();
-                        if (Economy.isMarket.checkIfTrue(Country))
+                        if (Econ.isMarket.checkIfTrue(Country))
                         {
                             if (getGainGoodsThisTurn().isNotZero())
                                 SendToMarket(getGainGoodsThisTurn());
                         }
-                        else if (Country.economy.getValue() == Economy.NaturalEconomy)
+                        else if (Country.economy == Econ.NaturalEconomy)
                         {
                             // send to market?
                             if (getGainGoodsThisTurn().isNotZero())
                                 SendToMarket(getGainGoodsThisTurn());
                         }
-                        else if (Country.economy.getValue() == Economy.PlannedEconomy)
+                        else if (Country.economy == Econ.PlannedEconomy)
                         {
                             storage.sendAll(Country.countryStorageSet);
                         }
@@ -120,7 +120,7 @@ namespace Nashet.EconomicSimulation
 
         public override bool canTrade()
         {
-            if (Country.economy.getValue() == Economy.PlannedEconomy)
+            if (Country.economy == Econ.PlannedEconomy)
                 return false;
             else
                 return true;

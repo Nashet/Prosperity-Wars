@@ -35,8 +35,8 @@ namespace Nashet.EconomicSimulation
         ///duplicated in Factory
         public static DoubleCondition allowsForeignInvestments = new DoubleCondition((agent, province) =>
         (province as Province).Country == (agent as Agent).Country
-        || ((province as Province).Country.economy.getTypedValue().AllowForeignInvestments
-        && (agent as Agent).Country.economy.getTypedValue() != Economy.PlannedEconomy),
+        || ((province as Province).Country.economy.AllowForeignInvestments
+        && (agent as Agent).Country.economy != Econ.PlannedEconomy),
             agent => "Local government allows foreign investments or it isn't foreign investment", true);
 
         // empty trade
@@ -175,7 +175,7 @@ namespace Nashet.EconomicSimulation
                 delegate (object forWhom)
                 {
                     var agent = forWhom as Agent;
-                    if (agent.Country.economy.getValue() == Economy.PlannedEconomy)
+                    if (agent.Country.economy == Econ.PlannedEconomy)
                     {
                         return agent.Country.countryStorageSet.has(GetBuildNeeds());
                     }
@@ -191,7 +191,7 @@ namespace Nashet.EconomicSimulation
                     // var cost = GetBuildCost(agent.Country.market);
                     //sb.Append("Has ").Append(cost).Append(" coins");
                     sb.Append("Has enough coins");
-                    sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") has ").Append(GetBuildNeeds().getString(", "));
+                    sb.Append(" or (with ").Append(Econ.PlannedEconomy).Append(") has ").Append(GetBuildNeeds().getString(", "));
                     return sb.ToString();
                 }, true);
 
@@ -201,7 +201,7 @@ namespace Nashet.EconomicSimulation
             // Ideally: Agent, FactoryProject
             // or put it in FactoryProject
             conditionsBuildThis = new DoubleConditionsList(new List<Condition> {
-                Economy.isNotLF, Economy.isNotInterventionism, enoughMoneyOrResourcesToBuild,
+                Econ.isNotLF, Econ.isNotInterventionism, enoughMoneyOrResourcesToBuild,
                 allowsForeignInvestments}); //
             this.shaft = shaft;
         }

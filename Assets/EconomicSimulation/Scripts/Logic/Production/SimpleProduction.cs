@@ -60,7 +60,7 @@ namespace Nashet.EconomicSimulation
 
         {
             //return (float)(moneyIncomeThisTurn.Get() - getExpences().Get());
-            if (Country.economy.getValue() == Economy.PlannedEconomy)
+            if (Country.economy == Econ.PlannedEconomy)
                 return 0m;
             else
                 //return base.getProfit() - (float)getSalaryCost().Get();

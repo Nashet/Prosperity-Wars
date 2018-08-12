@@ -60,9 +60,9 @@ namespace Nashet.EconomicSimulation
                 Tribal, Aristocracy
             })
         {
-            //SetValue(Aristocracy);
-            typedValue = Aristocracy;
-            value = Aristocracy;
+            SetValue(Aristocracy);
+            //typedValue = Aristocracy;
+            //value = Aristocracy;
         }
         public float getScienceModifier()
         {
@@ -136,7 +136,7 @@ namespace Nashet.EconomicSimulation
 
             if (typedValue == Tribal)
             {
-                owner.economy.setValue(Economy.StateCapitalism);
+                owner.economy.SetValue(Econ.StateCapitalism);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalized);
                 owner.minimalWage.setValue(MinimalWage.None);
                 owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -147,7 +147,7 @@ namespace Nashet.EconomicSimulation
             else
             if (typedValue == Aristocracy)
             {
-                owner.economy.setValue(Economy.StateCapitalism);
+                owner.economy.SetValue(Econ.StateCapitalism);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 owner.minimalWage.setValue(MinimalWage.None);
                 owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -158,8 +158,8 @@ namespace Nashet.EconomicSimulation
             else
             if (typedValue == Polis)
             {
-                if (owner.economy.getValue() == Economy.PlannedEconomy)
-                    owner.economy.setValue(Economy.StateCapitalism);
+                if (owner.economy == Econ.PlannedEconomy)
+                    owner.economy.SetValue(Econ.StateCapitalism);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 //owner.minimalWage.setValue(MinimalWage.None);
                 //owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -170,7 +170,7 @@ namespace Nashet.EconomicSimulation
             else
             if (typedValue == Despotism)
             {
-                owner.economy.setValue(Economy.StateCapitalism);
+                owner.economy.SetValue(Econ.StateCapitalism);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 //owner.minimalWage.setValue(MinimalWage.None);
                 //owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -181,7 +181,7 @@ namespace Nashet.EconomicSimulation
             else
         if (typedValue == Theocracy)
             {
-                owner.economy.setValue(Economy.StateCapitalism);
+                owner.economy.SetValue(Econ.StateCapitalism);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 //owner.minimalWage.setValue(MinimalWage.None);
                 //owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -192,7 +192,7 @@ namespace Nashet.EconomicSimulation
             else
             if (typedValue == WealthDemocracy)
             {
-                owner.economy.setValue(Economy.Interventionism);
+                owner.economy.SetValue(Econ.Interventionism);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 //owner.minimalWage.setValue(MinimalWage.None);
                 //owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -203,8 +203,8 @@ namespace Nashet.EconomicSimulation
             else
             if (typedValue == Democracy)
             {
-                if (owner.economy.getValue() == Economy.PlannedEconomy)
-                    owner.economy.setValue(Economy.LaissezFaire);
+                if (owner.economy == Econ.PlannedEconomy)
+                    owner.economy.SetValue(Econ.LaissezFaire);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 //owner.minimalWage.setValue(MinimalWage.None);
                 //owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -215,7 +215,7 @@ namespace Nashet.EconomicSimulation
             else
         if (typedValue == BourgeoisDictatorship)
             {
-                owner.economy.setValue(Economy.LaissezFaire);
+                owner.economy.SetValue(Econ.LaissezFaire);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 owner.minimalWage.setValue(MinimalWage.None);
                 owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -226,7 +226,7 @@ namespace Nashet.EconomicSimulation
             else
         if (typedValue == Junta)
             {
-                owner.economy.setValue(Economy.StateCapitalism);
+                owner.economy.SetValue(Econ.StateCapitalism);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 //owner.minimalWage.setValue(MinimalWage.None);
                 //owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -237,7 +237,7 @@ namespace Nashet.EconomicSimulation
             else
         if (typedValue == ProletarianDictatorship)
             {
-                owner.economy.setValue(Economy.PlannedEconomy);
+                owner.economy.SetValue(Econ.PlannedEconomy);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 owner.minimalWage.setValue(MinimalWage.None);
                 owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -490,7 +490,7 @@ namespace Nashet.EconomicSimulation
 
     //        if (reform == Tribal)
     //        {
-    //            country.economy.setValue(Economy.StateCapitalism);
+    //            country.economy.setValue(Econ.StateCapitalism);
     //            //country.serfdom.setValue(Serfdom.AbolishedAndNationalized);
     //            country.minimalWage.setValue(MinimalWage.None);
     //            country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -501,7 +501,7 @@ namespace Nashet.EconomicSimulation
     //        else
     //        if (reform == Aristocracy)
     //        {
-    //            country.economy.setValue(Economy.StateCapitalism);
+    //            country.economy.setValue(Econ.StateCapitalism);
     //            //country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
     //            country.minimalWage.setValue(MinimalWage.None);
     //            country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -512,8 +512,8 @@ namespace Nashet.EconomicSimulation
     //        else
     //        if (reform == Polis)
     //        {
-    //            if (country.economy.getValue() == Economy.PlannedEconomy)
-    //                country.economy.setValue(Economy.StateCapitalism);
+    //            if (country.economy == Econ.PlannedEconomy)
+    //                country.economy.setValue(Econ.StateCapitalism);
     //            //country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
     //            //country.minimalWage.setValue(MinimalWage.None);
     //            //country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -524,7 +524,7 @@ namespace Nashet.EconomicSimulation
     //        else
     //        if (reform == Despotism)
     //        {
-    //            country.economy.setValue(Economy.StateCapitalism);
+    //            country.economy.setValue(Econ.StateCapitalism);
     //            //country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
     //            //country.minimalWage.setValue(MinimalWage.None);
     //            //country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -535,7 +535,7 @@ namespace Nashet.EconomicSimulation
     //        else
     //    if (reform == Theocracy)
     //        {
-    //            country.economy.setValue(Economy.StateCapitalism);
+    //            country.economy.setValue(Econ.StateCapitalism);
     //            //country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
     //            //country.minimalWage.setValue(MinimalWage.None);
     //            //country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -546,7 +546,7 @@ namespace Nashet.EconomicSimulation
     //        else
     //        if (reform == WealthDemocracy)
     //        {
-    //            country.economy.setValue(Economy.Interventionism);
+    //            country.economy.setValue(Econ.Interventionism);
     //            //country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
     //            //country.minimalWage.setValue(MinimalWage.None);
     //            //country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -557,8 +557,8 @@ namespace Nashet.EconomicSimulation
     //        else
     //        if (reform == Democracy)
     //        {
-    //            if (country.economy.getValue() == Economy.PlannedEconomy)
-    //                country.economy.setValue(Economy.LaissezFaire);
+    //            if (country.economy == Econ.PlannedEconomy)
+    //                country.economy.setValue(Econ.LaissezFaire);
     //            //country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
     //            //country.minimalWage.setValue(MinimalWage.None);
     //            //country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -569,7 +569,7 @@ namespace Nashet.EconomicSimulation
     //        else
     //    if (reform == BourgeoisDictatorship)
     //        {
-    //            country.economy.setValue(Economy.LaissezFaire);
+    //            country.economy.setValue(Econ.LaissezFaire);
     //            //country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
     //            country.minimalWage.setValue(MinimalWage.None);
     //            country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -580,7 +580,7 @@ namespace Nashet.EconomicSimulation
     //        else
     //    if (reform == Junta)
     //        {
-    //            country.economy.setValue(Economy.StateCapitalism);
+    //            country.economy.setValue(Econ.StateCapitalism);
     //            //country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
     //            //country.minimalWage.setValue(MinimalWage.None);
     //            //country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -591,7 +591,7 @@ namespace Nashet.EconomicSimulation
     //        else
     //    if (reform == ProletarianDictatorship)
     //        {
-    //            country.economy.setValue(Economy.PlannedEconomy);
+    //            country.economy.setValue(Econ.PlannedEconomy);
     //            //country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
     //            country.minimalWage.setValue(MinimalWage.None);
     //            country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);

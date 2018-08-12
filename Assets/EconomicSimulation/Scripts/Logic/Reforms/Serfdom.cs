@@ -101,13 +101,13 @@ namespace Nashet.EconomicSimulation
                 Allowed = new ReformValue("Allowed", "- Peasants and other plebes pay 10% of income to Aristocrats", 1,
                     new DoubleConditionsList(new List<Condition>
                     {
-            Economy.isNotMarket,  Condition.IsNotImplemented
+            Econ.isNotMarket,  Condition.IsNotImplemented
                     }));
             if (Brutal == null)
                 Brutal = new ReformValue("Brutal", "- Peasants and other plebes pay 20% of income to Aristocrats", 0,
                 new DoubleConditionsList(new List<Condition>
                 {
-            Economy.isNotMarket, Condition.IsNotImplemented
+            Econ.isNotMarket, Condition.IsNotImplemented
                 }));
 
             status = Allowed;

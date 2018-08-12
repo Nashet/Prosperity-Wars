@@ -26,7 +26,7 @@ namespace Nashet.EconomicSimulation
 
         public override bool canTrade()
         {
-            if (Country.economy.getValue() == Economy.PlannedEconomy)
+            if (Country.economy == Econ.PlannedEconomy)
                 return false;
             else
                 return true;
@@ -61,8 +61,7 @@ namespace Nashet.EconomicSimulation
         public override void invest()
         {
             //should I invest?
-            if (Economy.isMarket.checkIfTrue(Country) && Country.Science.IsInvented(Invention.Manufactures))
-
+            if (Econ.isMarket.checkIfTrue(Country) && Country.Science.IsInvented(Invention.Manufactures))                
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
 

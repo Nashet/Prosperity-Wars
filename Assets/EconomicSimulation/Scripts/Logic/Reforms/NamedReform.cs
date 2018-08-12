@@ -12,13 +12,11 @@ namespace Nashet.EconomicSimulation
         {
         }
     }
-
-
-
+    
     public class NamdRfrmValue : Name, IReformValue
     {
         protected readonly string description;
-        protected readonly int ID;
+        public int ID { get; protected set; }
         protected readonly DoubleConditionsList allowed;
         public NamdRfrmValue(string name, string description, int id, DoubleConditionsList condition) : base(name)
         {
@@ -94,7 +92,7 @@ namespace Nashet.EconomicSimulation
     }
     public interface IReformValue
     {
-        
+        int ID { get; }
     }
 
 }

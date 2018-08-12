@@ -175,7 +175,7 @@ namespace Nashet.Conditions
         //public Condition(Economy.ReformValue economy, bool showAchievedConditionDescribtion):base("Economical policy is " + economy.ToString())
         //{
         //    //check2 = economy.isEconomyEqualsThat;
-        //    check3 = x => (x as Country).economy.status == economy;
+        //    check3 = x => (x as Country).economy == economy;
         //    //this.text = "Economical policy is " + economy.ToString(); // invention.getInventedPhrase();
         //    this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
         //}

@@ -7,7 +7,7 @@ namespace Nashet.EconomicSimulation
 {
     public abstract class AbstractReformValue : Name
     {
-        public static readonly DoubleCondition isNotLFOrMoreConservative = new DoubleCondition((country, newReform) => (country as Country).economy.getValue() != Economy.LaissezFaire
+        public static readonly DoubleCondition isNotLFOrMoreConservative = new DoubleCondition((country, newReform) => (country as Country).economy != Econ.LaissezFaire
         || (newReform as AbstractReformValue).isMoreConservative(
             (country as Country).getReform((newReform as AbstractReformValue)).getValue()
             ), x => "Economy policy is not Laissez Faire or that is reform rollback", true);

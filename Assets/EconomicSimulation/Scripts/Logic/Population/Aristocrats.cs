@@ -36,7 +36,7 @@ namespace Nashet.EconomicSimulation
 
         public override bool canTrade()
         {
-            if (Country.economy.getValue() == Economy.PlannedEconomy)
+            if (Country.economy == Econ.PlannedEconomy)
                 return false;
             else
                 return true;

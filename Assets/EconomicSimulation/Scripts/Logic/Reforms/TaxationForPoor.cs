@@ -65,7 +65,7 @@
 //        static TaxationForPoor()
 //        {
 //            for (int i = 0; i <= 10; i++)
-//                PossibleStatuses.Add(new ReformValue(" tax for poor", "", new Procent(i * 0.1f), i, new DoubleConditionsList(new List<Condition> { Economy.isNotPlanned, Economy.taxesInsideLFLimit, Economy.taxesInsideSCLimit })));
+//                PossibleStatuses.Add(new ReformValue(" tax for poor", "", new Procent(i * 0.1f), i, new DoubleConditionsList(new List<Condition> { Econ.isNotPlanned, Economy.taxesInsideLFLimit, Economy.taxesInsideSCLimit })));
 //        }
 
 //        public TaxationForPoor(Country country) : base("Taxation for poor", "", country)

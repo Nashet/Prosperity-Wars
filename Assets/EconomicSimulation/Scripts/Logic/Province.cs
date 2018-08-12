@@ -431,7 +431,7 @@ namespace Nashet.EconomicSimulation
             {
                 // workforceList = workforceList.OrderByDescending(o => o.population).ToList();
                 Func<Factory, float> order;
-                if (Country.economy.getValue() == Economy.PlannedEconomy)
+                if (Country.economy == Econ.PlannedEconomy)
                     order = (x => x.getPriority());
                 else
                     order = (x => (float)x.getSalary().Get());
@@ -449,7 +449,7 @@ namespace Nashet.EconomicSimulation
 
                     int hiredInThatGroup = 0;
                     foreach (var factory in factoryGroup)
-                        if (factory.getSalary().isNotZero() || Country.economy.getValue() == Economy.PlannedEconomy)
+                        if (factory.getSalary().isNotZero() || Country.economy == Econ.PlannedEconomy)
                         {
                             int factoryWants = factory.howMuchWorkForceWants();
 
@@ -969,9 +969,9 @@ namespace Nashet.EconomicSimulation
                     }
                     else if (pop.Type.isRichStrata())
                     {
-                        if (Country.economy.getValue() == Economy.LaissezFaire)
+                        if (Country.economy == Econ.LaissezFaire)
                             lifeQuality.Add(0.05f);
-                        else if (Country.economy.getValue() == Economy.Interventionism)
+                        else if (Country.economy == Econ.Interventionism)
                             lifeQuality.Add(0.02f);
                     }
 
