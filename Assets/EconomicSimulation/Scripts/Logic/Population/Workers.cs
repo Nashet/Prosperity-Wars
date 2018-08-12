@@ -29,7 +29,7 @@
         public override bool canVote(Gov reform)
         {
             if ((reform == Gov.Democracy || reform == Gov.ProletarianDictatorship) // temporally
-                && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality)
+                && (isStateCulture() || Country.minorityPolicy == MinorityPolicy.Equality)
                 )
                 return true;
             else

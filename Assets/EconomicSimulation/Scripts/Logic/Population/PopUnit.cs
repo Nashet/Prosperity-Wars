@@ -89,8 +89,8 @@ namespace Nashet.EconomicSimulation
             modifierNotGivenUnemploymentSubsidies = new Modifier(x => (x as PopUnit).didntGetPromisedUnemloymentSubsidy, "Didn't got promised Unemployment Subsidies", -1.0f, false);
             modifierMinorityPolicy = //new Modifier(MinorityPolicy.IsResidencyPop, 0.02f);
             new Modifier(x => !(x as PopUnit).isStateCulture()
-            && ((x as PopUnit).Country.minorityPolicy.getValue() == MinorityPolicy.Residency
-            || (x as PopUnit).Country.minorityPolicy.getValue() == MinorityPolicy.NoRights), "Is minority", -0.05f, false);
+            && ((x as PopUnit).Country.minorityPolicy == MinorityPolicy.Residency
+            || (x as PopUnit).Country.minorityPolicy == MinorityPolicy.NoRights), "Is minority", -0.05f, false);
 
             //MinorityPolicy.IsResidency
             modifiersLoyaltyChange = new ModifiersList(new List<Condition>
@@ -1291,7 +1291,7 @@ namespace Nashet.EconomicSimulation
             else
             {
                 int assimilationSize;
-                if (Country.minorityPolicy.getValue() == MinorityPolicy.Equality)
+                if (Country.minorityPolicy == MinorityPolicy.Equality)
                     assimilationSize = (int)(population.Get() * Options.PopAssimilationSpeedWithEquality.get());
                 else
                     assimilationSize = (int)(population.Get() * Options.PopAssimilationSpeed.get());

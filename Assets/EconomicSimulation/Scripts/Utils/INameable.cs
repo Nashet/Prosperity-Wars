@@ -3,7 +3,6 @@
     public interface INameable
     {
         string FullName { get; }
-        string ShortName { get; }
-        string ToString();
+        string ShortName { get; }        
     }
 }

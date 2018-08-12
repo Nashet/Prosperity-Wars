@@ -56,7 +56,7 @@ namespace Nashet.EconomicSimulation
         {
             if ((reform == Gov.Democracy || reform == Gov.Polis || reform == Gov.WealthDemocracy
                 || reform == Gov.Aristocracy || reform == Gov.Tribal)
-                && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality))
+                && (isStateCulture() || Country.minorityPolicy == MinorityPolicy.Equality))
                 return true;
             else
                 return false;

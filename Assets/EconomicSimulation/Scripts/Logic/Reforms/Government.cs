@@ -140,7 +140,7 @@ namespace Nashet.EconomicSimulation
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalized);
                 owner.minimalWage.setValue(MinimalWage.None);
                 owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
-                owner.minorityPolicy.setValue(MinorityPolicy.Residency);
+                owner.minorityPolicy.SetValue(MinorityPolicy.Residency);
                 owner.taxationForPoor.SetValue(Tribal.defaultPoorTax);
                 //owner.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);
             }
@@ -151,7 +151,7 @@ namespace Nashet.EconomicSimulation
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 owner.minimalWage.setValue(MinimalWage.None);
                 owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
-                owner.minorityPolicy.setValue(MinorityPolicy.Residency);
+                owner.minorityPolicy.SetValue(MinorityPolicy.Residency);
                 //owner.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
                 owner.taxationForRich.setValue(TaxationForRich.PossibleStatuses[2]);
             }
@@ -185,7 +185,7 @@ namespace Nashet.EconomicSimulation
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 //owner.minimalWage.setValue(MinimalWage.None);
                 //owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
-                owner.minorityPolicy.setValue(MinorityPolicy.Equality);
+                owner.minorityPolicy.SetValue(MinorityPolicy.Equality);
                 //owner.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
                 //owner.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);
             }
@@ -219,7 +219,7 @@ namespace Nashet.EconomicSimulation
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 owner.minimalWage.setValue(MinimalWage.None);
                 owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
-                owner.minorityPolicy.setValue(MinorityPolicy.Equality);
+                owner.minorityPolicy.SetValue(MinorityPolicy.Equality);
                 owner.taxationForPoor.SetValue(BourgeoisDictatorship.defaultPoorTax);
                 owner.taxationForRich.setValue(TaxationForRich.PossibleStatuses[1]);
             }
@@ -241,7 +241,7 @@ namespace Nashet.EconomicSimulation
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 owner.minimalWage.setValue(MinimalWage.None);
                 owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
-                owner.minorityPolicy.setValue(MinorityPolicy.Equality);
+                owner.minorityPolicy.SetValue(MinorityPolicy.Equality);
                 owner.taxationForPoor.SetValue(ProletarianDictatorship.defaultPoorTax);
                 owner.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);
 

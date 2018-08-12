@@ -141,10 +141,10 @@ namespace Nashet.EconomicSimulation
 
             serfdom = new Serfdom(this);
 
-            minimalWage = new MinimalWage(this);
-            unemploymentSubsidies = new UnemploymentSubsidies(this);
+            //minimalWage = new MinimalWage(this);
+            //unemploymentSubsidies = new UnemploymentSubsidies(this);
             taxationForPoor = new TaxRerfr("Taxation for poor", "", this, new List<IReformValue> { new Procent(0f), new Procent(0.5f), new Procent(1f) });
-            taxationForRich = new TaxationForRich(this);
+            //taxationForRich = new TaxationForRich(this);
             minorityPolicy = new MinorityPolicy(this);
 
 

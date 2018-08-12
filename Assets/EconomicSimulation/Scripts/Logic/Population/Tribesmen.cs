@@ -53,7 +53,7 @@ namespace Nashet.EconomicSimulation
         public override bool canVote(Gov reform)
         {
             if ((reform == Gov.Tribal || reform == Gov.Democracy)
-                && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality))
+                && (isStateCulture() || Country.minorityPolicy == MinorityPolicy.Equality))
                 return true;
             else
                 return false;

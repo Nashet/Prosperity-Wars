@@ -57,7 +57,7 @@ namespace Nashet.EconomicSimulation
             sb.Append("\n\nPops average needs fulfilling: ").Append(selectedCountry.Provinces.AllPops.GetAverageProcent(x => x.needsFulfilled));
             sb.Append(", loyalty: ").Append(selectedCountry.Provinces.AllPops.GetAverageProcent(x => x.loyalty));
             sb.Append(", education: ").Append(selectedCountry.Provinces.AllPops.GetAverageProcent(x => x.Education));
-            sb.Append("\n\nReforms: ").Append(selectedCountry.government).Append("; ").Append(selectedCountry.economy).Append("; ").Append(selectedCountry.minorityPolicy.getValue());
+            sb.Append("\n\nReforms: ").Append(selectedCountry.government).Append("; ").Append(selectedCountry.economy).Append("; ").Append(selectedCountry.minorityPolicy);
             sb.AppendFormat("; {0}", selectedCountry.unemploymentSubsidies.getValue());
             sb.AppendFormat("; {0}", selectedCountry.minimalWage.getValue());
             sb.AppendFormat("; {0}", selectedCountry.taxationForPoor);

@@ -982,7 +982,7 @@ namespace Nashet.EconomicSimulation
                     if (!pop.canVote(Country.government)) // includes Minority politics, but not only
                         lifeQuality.Subtract(-0.10f, false);
 
-                    if (country.Culture != pop.culture && country.minorityPolicy.getValue() != MinorityPolicy.Equality)
+                    if (country.Culture != pop.culture && country.minorityPolicy != MinorityPolicy.Equality)
                         //lifeQuality.Subtract(Options.PopMinorityMigrationBarier, false);
                         return ReadOnlyValue.Zero;
                 }
