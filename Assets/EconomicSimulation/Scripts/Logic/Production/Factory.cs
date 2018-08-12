@@ -211,11 +211,11 @@ namespace Nashet.EconomicSimulation
             modifierHasResourceInProvince,
             modifierConcentrationBonus, modifierBelongsToCountry, modifierIsSubsidised,
             // copied in popUnit
-             new Modifier(x => Government.isPolis.checkIfTrue((x as Factory).Country)
+             new Modifier(x => Gov.isPolis.checkIfTrue((x as Factory).Country)
              && (x as Factory).Country.Capital == (x as Factory).Province, "Capital of Polis", 0.50f, false),
              new Modifier(x=>(x as Factory).Province.hasModifier(TemporaryModifier.recentlyConquered), TemporaryModifier.recentlyConquered.ToString(), -0.20f, false),
-             new Modifier(Government.isTribal, x=>(x as Factory).Country, -0.3f, false),
-             new Modifier(Government.isDespotism, x=>(x as Factory).Country, -0.20f, false), // remove this?
+             new Modifier(Gov.isTribal, x=>(x as Factory).Country, -0.3f, false),
+             new Modifier(Gov.isDespotism, x=>(x as Factory).Country, -0.20f, false), // remove this?
              new Modifier(x=>!(x as Factory).Country.Science.IsInventedFactory((x as Factory).Type), "Uses uninvented technologies", -0.3f, false)
             });
 

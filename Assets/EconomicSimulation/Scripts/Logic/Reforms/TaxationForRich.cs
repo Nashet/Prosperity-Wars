@@ -99,10 +99,7 @@ namespace Nashet.EconomicSimulation
         //{
         //    return PossibleStatuses[value];
         //}
-        public override bool canChange()
-        {
-            return true;
-        }
+        
 
         public override IEnumerator GetEnumerator()
         {

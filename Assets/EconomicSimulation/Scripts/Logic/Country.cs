@@ -13,12 +13,12 @@ namespace Nashet.EconomicSimulation
         public readonly List<AbstractReform> reforms = new List<AbstractReform>();
         public readonly List<Movement> movements = new List<Movement>();
 
-        public readonly Government government;
+        public readonly Gov government;
         public readonly Economy economy;
         public readonly Serfdom serfdom;
         public readonly MinimalWage minimalWage;
         public readonly UnemploymentSubsidies unemploymentSubsidies;
-        public readonly TaxationForPoor taxationForPoor;
+        public readonly TaxRerfr taxationForPoor;
         public readonly TaxationForRich taxationForRich;
 
         public readonly MinorityPolicy minorityPolicy;
@@ -133,14 +133,17 @@ namespace Nashet.EconomicSimulation
 
             bank = new Bank(this);
 
-            government = new Government(this);
+            
 
             economy = new Economy(this);
+
+            government = new Gov(this);
+
             serfdom = new Serfdom(this);
 
             minimalWage = new MinimalWage(this);
             unemploymentSubsidies = new UnemploymentSubsidies(this);
-            taxationForPoor = new TaxationForPoor(this);
+            taxationForPoor = new TaxRerfr("Taxation for poor", "", this, new List<IReformValue> { new Procent(0f), new Procent(0.5f), new Procent(1f) });
             taxationForRich = new TaxationForRich(this);
             minorityPolicy = new MinorityPolicy(this);
 
@@ -161,7 +164,7 @@ namespace Nashet.EconomicSimulation
             serfdom.setValue(Serfdom.Abolished);
             //government.setValue(Government.Tribal, false);
 
-            government.setValue(Government.Aristocracy);
+            government.SetValue(Gov.Aristocracy);
             //economy.setValue(Economy.StateCapitalism);
             taxationForRich.setValue(TaxationForRich.PossibleStatuses[2]);
 
@@ -177,7 +180,7 @@ namespace Nashet.EconomicSimulation
             modXHasMyCores = new Modifier(x => (x as Country).Provinces.HasCore(this), "You have my cores", -0.05f, false);
 
             modMyOpinionOfXCountry = new ModifiersList(new List<Condition> { modXHasMyCores,
-            new Modifier(x=>(x as Country).government.getValue() != government.getValue(), "You have different form of government", -0.002f, false),
+            new Modifier(x=>(x as Country).government != this.government, "You have different form of government", -0.002f, false),
             new Modifier (x=>(x as Country).Diplomacy.GetLastAttackDateOn(this).getYearsSince() > Options.CountryTimeToForgetBattle
             && Diplomacy.GetLastAttackDateOn(x as Country).getYearsSince() > Options.CountryTimeToForgetBattle,"You live in peace with us", 0.005f, false),
             new Modifier (x=>!((x as Country).Diplomacy.GetLastAttackDateOn(this).getYearsSince() > Options.CountryTimeToForgetBattle) && (x as Country).Diplomacy.GetLastAttackDateOn(this).getYearsSince() < 15,
@@ -186,7 +189,7 @@ namespace Nashet.EconomicSimulation
             new Modifier (delegate(object x) {World.GetBadboyCountry();  return World.GetBadboyCountry()!= null && World.GetBadboyCountry()!= x as Country  && World.GetBadboyCountry()!= this; },
                 delegate  { return "There is bigger threat to the world - " + World.GetBadboyCountry(); },  0.05f, false),
             new Modifier (x=>World.GetBadboyCountry() ==x,"You are very bad boy", -0.05f, false),
-            new Modifier(x=>(x as Country).government.getValue() == government.getValue() && government.getValue()==Government.ProletarianDictatorship,
+            new Modifier(x=>(x as Country).government == this.government && government==Gov.ProletarianDictatorship,
             "Comintern aka Third International", 0.2f, false)
             });
         }
@@ -197,11 +200,11 @@ namespace Nashet.EconomicSimulation
             this.name = name;
         }
 
-        private void ressurect(Province capital, Government.ReformValue newGovernment)
+        private void ressurect(Province capital, Gov newGovernment)
         {
             IsAlive = true;
             MoveCapitalTo(capital);
-            government.setValue(newGovernment);
+            government.SetValue(newGovernment);
             setPrefix();
         }
 
@@ -212,7 +215,7 @@ namespace Nashet.EconomicSimulation
             oldCountry.Diplomacy.ChangeRelation(this, 1.00f);
             if (!IsAlive)
             {
-                ressurect(province, oldCountry.government.getTypedValue());
+                ressurect(province, oldCountry.government);
             }
             //province.secedeTo(this, false);
             Provinces.TakeProvince(province, false);
@@ -236,7 +239,7 @@ namespace Nashet.EconomicSimulation
                     Provinces.TakeProvince(item, false);
                     //item.secedeTo(this, false);
                 }
-            ressurect(BestCapitalCandidate(), government.getTypedValue());
+            ressurect(BestCapitalCandidate(), government);
             foreach (var item in oldCountry.Science.AllInvented()) // copying inventions
             {
                 Science.Invent(item);
@@ -1081,13 +1084,13 @@ namespace Nashet.EconomicSimulation
             if (pop != null
                 && pop.Type == PopType.Aristocrats
                 //&& Serfdom.IsNotAbolishedInAnyWay.checkIfTrue(Country))
-                && government.getTypedValue() == Government.Aristocracy)
+                && government == Gov.Aristocracy)
                 return MoneyView.Zero; // don't pay with monarchy
             Procent tax;
             Money statistics;
             if (isPoorStrata)
             {
-                tax = taxationForPoor.getTypedValue().tax;
+                tax = taxationForPoor.tax;
                 statistics = incomeTaxStaticticPoor;
             }
             else //if (type is TaxationForRich)

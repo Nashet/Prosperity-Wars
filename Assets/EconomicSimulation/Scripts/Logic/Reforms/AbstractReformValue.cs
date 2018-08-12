@@ -20,11 +20,7 @@ namespace Nashet.EconomicSimulation
         public abstract bool isAvailable(Country country);
 
         protected abstract Procent howIsItGoodForPop(PopUnit pop);
-
-        static AbstractReformValue()
-        {
-            //allowed.add();
-        }
+        
 
         protected AbstractReformValue(string name, string indescription, int ID, DoubleConditionsList condition) : base(name)
         {

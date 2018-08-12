@@ -306,7 +306,7 @@ namespace Nashet.EconomicSimulation
                 oldCountry.MoveCapitalTo(oldCountry.BestCapitalCandidate());
             }
 
-            owner.government.onReformEnacted(province);
+            owner.government.OnReformEnactedInProvince(province);
         }
         public int Count
         {

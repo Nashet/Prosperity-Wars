@@ -170,11 +170,7 @@ namespace Nashet.EconomicSimulation
             base.setValue(selectedReform);
             status = (ReformValue)selectedReform;
         }
-
-        public override bool canChange()
-        {
-            return true;
-        }
+       
 
         public override IEnumerator GetEnumerator()
         {

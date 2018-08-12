@@ -18,8 +18,7 @@ namespace Nashet.EconomicSimulation
         public abstract bool isAvailable(Country country);
 
         public abstract IEnumerator GetEnumerator();
-
-        public abstract bool canChange();
+        
 
         public virtual void setValue(AbstractReformValue selectedReformValue)
         {

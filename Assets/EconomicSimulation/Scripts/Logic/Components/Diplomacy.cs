@@ -15,8 +15,8 @@ namespace Nashet.EconomicSimulation
     {
         new DoubleCondition((province, country)=>(province as Province).AllNeighbors().Any(x => x.Country == country)
         && (province as Province) .Country != country, x=>"Is neighbor province", true),
-        new DoubleCondition((province, country)=>!Government.isDemocracy.checkIfTrue(country)
-        || !Government.isDemocracy.checkIfTrue((province as Province).Country), x=>"Democracies can't attack each other", true)
+        new DoubleCondition((province, country)=>!Gov.isDemocracy.checkIfTrue(country)
+        || !Gov.isDemocracy.checkIfTrue((province as Province).Country), x=>"Democracies can't attack each other", true)
     });
         private static readonly Dictionary<IDiplomat, IDiplomat> wars = new Dictionary<IDiplomat, IDiplomat>();
 

@@ -26,9 +26,9 @@
             return true;
         }
 
-        public override bool canVote(Government.ReformValue reform)
+        public override bool canVote(Gov reform)
         {
-            if ((reform == Government.Democracy || reform == Government.ProletarianDictatorship) // temporally
+            if ((reform == Gov.Democracy || reform == Gov.ProletarianDictatorship) // temporally
                 && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality)
                 )
                 return true;
@@ -36,7 +36,7 @@
                 return false;
         }
 
-        public override int getVotingPower(Government.ReformValue reformValue)
+        public override int getVotingPower(Gov reformValue)
         {
             if (canVote(reformValue))
                 return 1;

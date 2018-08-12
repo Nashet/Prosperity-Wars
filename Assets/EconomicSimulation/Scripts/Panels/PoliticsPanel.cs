@@ -123,6 +123,7 @@ namespace Nashet.EconomicSimulation
             if (newSelection == null)
                 dropDown.interactable = false;
         }
+       
 
         private void refresh(bool callRebuildDropDown)
         {
@@ -163,7 +164,7 @@ namespace Nashet.EconomicSimulation
 
                 if (selectedReformValue != selectedReform.getValue())
                 {
-                    if (Game.Player.government.getValue() != Government.Despotism)
+                    if (Game.Player.government!= Gov.Despotism)
                     {
                         descriptionText.text += "\n" + procentVotersSayedYes + " of voters want this reform ( ";
                         foreach (PopType type in PopType.getAllPopTypes())
@@ -189,7 +190,7 @@ namespace Nashet.EconomicSimulation
 
                 if (selectedReformValue != null)// && selectedReformValue != selectedReform.getValue())
                 {
-                    if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.Player.government.getValue() == Government.Despotism)
+                    if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.Player.government== Gov.Despotism)
                     { // has enough voters
                         voteButton.interactable = selectedReformValue.allowed.isAllTrue(Game.Player, selectedReformValue, out voteButton.GetComponent<ToolTipHandler>().text);
                         forceDecisionButton.GetComponent<ToolTipHandler>().SetText(voteButton.GetComponent<ToolTipHandler>().GetText());

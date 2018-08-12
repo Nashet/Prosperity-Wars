@@ -979,7 +979,7 @@ namespace Nashet.EconomicSimulation
                         lifeQuality.Add(0.05f, false);
                     //todo - serfdom
 
-                    if (!pop.canVote(Country.government.getTypedValue())) // includes Minority politics, but not only
+                    if (!pop.canVote(Country.government)) // includes Minority politics, but not only
                         lifeQuality.Subtract(-0.10f, false);
 
                     if (country.Culture != pop.culture && country.minorityPolicy.getValue() != MinorityPolicy.Equality)

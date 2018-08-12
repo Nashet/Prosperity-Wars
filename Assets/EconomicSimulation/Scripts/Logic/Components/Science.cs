@@ -15,14 +15,14 @@ namespace Nashet.EconomicSimulation
         {
         //new Modifier(Government.isTribal, 0f, false),
         //new Modifier(Government.isTheocracy, 0f, false),
-        new Modifier(Government.isDespotism, Government.Despotism.getScienceModifier(), false),
-        new Modifier(Government.isJunta, Government.Junta.getScienceModifier(), false),
-        new Modifier(Government.isAristocracy, Government.Aristocracy.getScienceModifier(), false),
-        new Modifier(Government.isProletarianDictatorship, Government.ProletarianDictatorship.getScienceModifier(), false),
-        new Modifier(Government.isDemocracy, Government.Democracy.getScienceModifier(), false),
-        new Modifier(Government.isPolis, Government.Polis.getScienceModifier(), false),
-        new Modifier(Government.isWealthDemocracy, Government.WealthDemocracy.getScienceModifier(), false),
-        new Modifier(Government.isBourgeoisDictatorship, Government.BourgeoisDictatorship.getScienceModifier(), false),
+        new Modifier(Gov.isDespotism, Gov.Despotism.getScienceModifier(), false),
+        new Modifier(Gov.isJunta, Gov.Junta.getScienceModifier(), false),
+        new Modifier(Gov.isAristocracy, Gov.Aristocracy.getScienceModifier(), false),
+        new Modifier(Gov.isProletarianDictatorship, Gov.ProletarianDictatorship.getScienceModifier(), false),
+        new Modifier(Gov.isDemocracy, Gov.Democracy.getScienceModifier(), false),
+        new Modifier(Gov.isPolis, Gov.Polis.getScienceModifier(), false),
+        new Modifier(Gov.isWealthDemocracy, Gov.WealthDemocracy.getScienceModifier(), false),
+        new Modifier(Gov.isBourgeoisDictatorship, Gov.BourgeoisDictatorship.getScienceModifier(), false),
         new Modifier(x=>(x as Country).Provinces.AllPops.GetAverageProcent(y=>y.Education).RawUIntValue, "Education", 1f / Procent.Precision, false)
     });
         protected readonly Dictionary<Invention, bool> inventions = new Dictionary<Invention, bool>();

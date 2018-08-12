@@ -4,7 +4,7 @@ using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Separatism : AbstractReformValue
+    public class Separatism : AbstractReformValue, IHasCountry
     {
         private static readonly List<Separatism> allSeparatists = new List<Separatism>();
         private static readonly Procent willing = new Procent(3f);

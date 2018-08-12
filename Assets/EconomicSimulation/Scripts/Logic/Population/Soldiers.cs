@@ -26,16 +26,16 @@ namespace Nashet.EconomicSimulation
             return false;
         }
 
-        public override bool canVote(Government.ReformValue reform)
+        public override bool canVote(Gov reform)
         {
-            if ((reform == Government.Democracy || reform == Government.Junta)
+            if ((reform == Gov.Democracy || reform == Gov.Junta)
                 && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality))
                 return true;
             else
                 return false;
         }
 
-        public override int getVotingPower(Government.ReformValue reformValue)
+        public override int getVotingPower(Gov reformValue)
         {
             if (canVote(reformValue))
                 return 1;

@@ -57,7 +57,7 @@ namespace Nashet.EconomicSimulation
             allCultures.Add(culture);
             UncolonizedLand = new Country("Uncolonized lands", culture, culture.getColor(), null, 0f);
             allCountries.Add(UncolonizedLand);
-            UncolonizedLand.government.setValue(Government.Tribal);
+            UncolonizedLand.government.SetValue(Gov.Tribal);
             UncolonizedLand.economy.setValue(Economy.NaturalEconomy);
         }
 

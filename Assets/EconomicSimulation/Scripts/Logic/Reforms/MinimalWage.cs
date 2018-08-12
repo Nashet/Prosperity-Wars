@@ -175,10 +175,7 @@ namespace Nashet.EconomicSimulation
         //    return PossibleStatuses.Find(x => x.ID == value);
         //    //return PossibleStatuses[value];
         //}
-        public override bool canChange()
-        {
-            return true;
-        }
+       
 
         public override IEnumerator GetEnumerator()
         {

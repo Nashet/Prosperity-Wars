@@ -46,7 +46,7 @@ namespace Nashet.EconomicSimulation
 
             sb.Clear();
             sb.Append("Income:");
-            sb.Append("\n Income tax for Poor (").Append(Game.Player.taxationForPoor.getTypedValue().tax).Append("): ").Append(Game.Player.IncomeTaxStaticticPoor);
+            sb.Append("\n Income tax for Poor (").Append(Game.Player.taxationForPoor.tax).Append("): ").Append(Game.Player.IncomeTaxStaticticPoor);
             sb.Append("\n Income tax for Rich (").Append(Game.Player.taxationForRich.getTypedValue().tax).Append("): ").Append(Game.Player.IncomeTaxStatisticRich);
             sb.Append("\n Income tax for Foreigners (").Append(Game.Player.taxationForRich.getTypedValue().tax).Append("): ").Append(Game.Player.IncomeTaxForeigner);
             sb.Append("\n Gold mines: ").Append(Game.Player.GoldMinesIncome);

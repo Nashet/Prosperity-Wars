@@ -57,10 +57,10 @@ namespace Nashet.EconomicSimulation
             sb.Append("\n\nPops average needs fulfilling: ").Append(selectedCountry.Provinces.AllPops.GetAverageProcent(x => x.needsFulfilled));
             sb.Append(", loyalty: ").Append(selectedCountry.Provinces.AllPops.GetAverageProcent(x => x.loyalty));
             sb.Append(", education: ").Append(selectedCountry.Provinces.AllPops.GetAverageProcent(x => x.Education));
-            sb.Append("\n\nReforms: ").Append(selectedCountry.government.getValue()).Append("; ").Append(selectedCountry.economy.getValue()).Append("; ").Append(selectedCountry.minorityPolicy.getValue());
+            sb.Append("\n\nReforms: ").Append(selectedCountry.government).Append("; ").Append(selectedCountry.economy.getValue()).Append("; ").Append(selectedCountry.minorityPolicy.getValue());
             sb.AppendFormat("; {0}", selectedCountry.unemploymentSubsidies.getValue());
             sb.AppendFormat("; {0}", selectedCountry.minimalWage.getValue());
-            sb.AppendFormat("; {0}", selectedCountry.taxationForPoor.getValue());
+            sb.AppendFormat("; {0}", selectedCountry.taxationForPoor);
             sb.AppendFormat("; {0}", selectedCountry.taxationForRich.getValue());
             sb.Append("\n\nState culture: ").Append(selectedCountry.Culture);
             sb.Append("\nCultures: ").Append(selectedCountry.Provinces.AllPops.Group(x => x.culture, y => y.population.Get())

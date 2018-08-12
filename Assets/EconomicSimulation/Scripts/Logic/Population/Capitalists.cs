@@ -37,20 +37,20 @@ namespace Nashet.EconomicSimulation
             return false;
         }
 
-        public override bool canVote(Government.ReformValue reform)
+        public override bool canVote(Gov reform)
         {
-            if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
-                || reform == Government.BourgeoisDictatorship)
+            if ((reform == Gov.Democracy || reform == Gov.Polis || reform == Gov.WealthDemocracy
+                || reform == Gov.BourgeoisDictatorship)
                 && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality))
                 return true;
             else
                 return false;
         }
 
-        public override int getVotingPower(Government.ReformValue reformValue)
+        public override int getVotingPower(Gov reformValue)
         {
             if (canVote(reformValue))
-                if (reformValue == Government.WealthDemocracy)
+                if (reformValue == Gov.WealthDemocracy)
                     return Options.PopRichStrataVotePower;
                 else
                     return 1;

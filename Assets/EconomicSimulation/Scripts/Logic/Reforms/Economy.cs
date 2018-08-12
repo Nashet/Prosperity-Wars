@@ -10,6 +10,7 @@ namespace Nashet.EconomicSimulation
     {
         private readonly Country country;
 
+
         public static readonly Condition isNotLF = new Condition(delegate (object forWhom) { return (forWhom as Country).economy.status != LaissezFaire; }, "Economy policy is not Laissez Faire", true);
         public static readonly Condition isLF = new Condition(delegate (object forWhom) { return (forWhom as Country).economy.status == LaissezFaire; }, "Economy policy is Laissez Faire", true);
 
@@ -29,10 +30,10 @@ namespace Nashet.EconomicSimulation
         delegate (object x, object y)
         {
             //if it's poor taxes
-            var taxesForPoor = y as TaxationForPoor.ReformValue;
-            if (taxesForPoor != null)
-                return (x as Country).economy.status != LaissezFaire || taxesForPoor.tax.get() <= 0.5f;
-            else
+            //var taxesForPoor = y as TaxationForPoor.ReformValue;
+            //if (taxesForPoor != null)
+            //    return (x as Country).economy.status != LaissezFaire || taxesForPoor.tax.get() <= 0.5f;
+            //else
             {
                 var taxesForRich = y as TaxationForRich.ReformValue;
                 return (x as Country).economy.status != LaissezFaire || taxesForRich.tax.get() <= 0.5f;
@@ -44,10 +45,10 @@ namespace Nashet.EconomicSimulation
         delegate (object x, object y)
         {
             //if it's poor taxes
-            var taxesForPoor = y as TaxationForPoor.ReformValue;
-            if (taxesForPoor != null)
-                return (x as Country).economy.status != StateCapitalism || taxesForPoor.tax.get() >= 0.2f;
-            else
+            //var taxesForPoor = y as TaxationForPoor.ReformValue;
+            //if (taxesForPoor != null)
+            //    return (x as Country).economy.status != StateCapitalism || taxesForPoor.tax.get() >= 0.2f;
+            //else
             {
                 var taxesForRich = y as TaxationForRich.ReformValue;
                 return (x as Country).economy.status != StateCapitalism || taxesForRich.tax.get() >= 0.2f;
@@ -65,14 +66,17 @@ namespace Nashet.EconomicSimulation
         public class ReformValue : AbstractReformValue
         {
             private readonly bool _allowForeignIvestments;
-
+            public Procent maxPoorTax;
+            public Procent minPoorTax;
             public bool AllowForeignInvestments
             {
                 get { return _allowForeignIvestments; }
             }
 
-            public ReformValue(string name, string description, int id, bool _allowForeighnIvestments, DoubleConditionsList condition) : base(name, description, id, condition)
+            public ReformValue(string name, string description, int id, bool _allowForeighnIvestments, DoubleConditionsList condition, Procent maxPoorTax = null, Procent minPoorTax = null) : base(name, description, id, condition)
             {
+                this.maxPoorTax = maxPoorTax;
+                this.minPoorTax = minPoorTax;
                 PossibleStatuses.Add(this);
                 _allowForeignIvestments = _allowForeighnIvestments;
             }
@@ -142,12 +146,12 @@ namespace Nashet.EconomicSimulation
 
         public static readonly ReformValue PlannedEconomy = new ReformValue("Planned economy", "", 0, false,
             new DoubleConditionsList(new List<Condition> {
-            Invention.CollectivismInvented, Government.isProletarianDictatorship }));
+            Invention.CollectivismInvented, Gov.isProletarianDictatorship }));
 
         public static readonly ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, false, new DoubleConditionsList(Condition.IsNotImplemented));//new ConditionsList(Condition.AlwaysYes));
-        public static readonly ReformValue StateCapitalism = new ReformValue("State capitalism", "", 2, false, new DoubleConditionsList(capitalism));
+        public static readonly ReformValue StateCapitalism = new ReformValue("State capitalism", "", 2, false, new DoubleConditionsList(capitalism), null, new Procent(0.2f));
         public static readonly ReformValue Interventionism = new ReformValue("Limited interventionism", "", 3, true, new DoubleConditionsList(capitalism));
-        public static readonly ReformValue LaissezFaire = new ReformValue("Laissez faire", "", 4, true, new DoubleConditionsList(capitalism));
+        public static readonly ReformValue LaissezFaire = new ReformValue("Laissez faire", "", 4, true, new DoubleConditionsList(capitalism), new Procent(0.5f));
 
         /// ////////////
         public Economy(Country country) : base("Economy", "Your economy policy", country)
@@ -175,8 +179,8 @@ namespace Nashet.EconomicSimulation
             {
                 if (Country.taxationForRich.getTypedValue().tax.get() > 0.5f)
                     Country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[5]);
-                if (Country.taxationForPoor.getTypedValue().tax.get() > 0.5f)
-                    Country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
+                if (Country.taxationForPoor.tax.get() > 0.5f)
+                    Country.taxationForPoor.SetValue(LaissezFaire.maxPoorTax);
                 Country.Provinces.AllFactories.PerformAction(
                      x =>
                      {
@@ -184,13 +188,12 @@ namespace Nashet.EconomicSimulation
                          x.ownership.SetToSell(Country, Procent.HundredProcent, false);
                      });
             }
-            else
-                if (status == StateCapitalism)
+            else if (status == StateCapitalism)
             {
                 if (Country.taxationForRich.getTypedValue().tax.get() < 0.2f)
                     Country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[2]);
-                if (Country.taxationForPoor.getTypedValue().tax.get() < 0.2f)
-                    Country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[2]);
+                if (Country.taxationForPoor.tax.get() < 0.2f)
+                    Country.taxationForPoor.SetValue(StateCapitalism.minPoorTax);
             }
         }
 
@@ -203,10 +206,6 @@ namespace Nashet.EconomicSimulation
         //{
         //    return PossibleStatuses[value];
         //}
-        public override bool canChange()
-        {
-            return true;
-        }
 
         public override IEnumerator GetEnumerator()
         {

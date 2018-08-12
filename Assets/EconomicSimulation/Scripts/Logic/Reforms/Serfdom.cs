@@ -92,7 +92,7 @@ namespace Nashet.EconomicSimulation
         public static ReformValue AbolishedAndNationalized = new ReformValue("Abolished and Nationalized land", "- Aristocrats loose property", 4,
             new DoubleConditionsList(new List<Condition>
             {
-            Government.isProletarianDictatorship, Condition.IsNotImplemented
+            Gov.isProletarianDictatorship, Condition.IsNotImplemented
             }));
 
         public Serfdom(Country country) : base("Serfdom", "- Aristocratic Privileges", country)
@@ -123,10 +123,7 @@ namespace Nashet.EconomicSimulation
         //    //return PossibleStatuses.Find(x => x.ID == value);
         //    return PossibleStatuses[value];
         //}
-        public override bool canChange()
-        {
-            return true;
-        }
+        
 
         public override IEnumerator GetEnumerator()
         {

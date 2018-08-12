@@ -53,7 +53,7 @@ namespace Nashet.EconomicSimulation
             modifierMinorityPolicy, modifierSomeEverydayNeedsFulfilled;
 
 
-        private static readonly Modifier modCountryIsToBig = new Modifier(x => (x as PopUnit).Country.Provinces.Count > (x as PopUnit).Country.government.getTypedValue().getLoyaltySizeLimit(), "That country is too big for good management", -0.5f, false);
+        private static readonly Modifier modCountryIsToBig = new Modifier(x => (x as PopUnit).Country.Provinces.Count > (x as PopUnit).Country.government.getLoyaltySizeLimit(), "That country is too big for good management", -0.5f, false);
 
         private readonly Date born;
         private Movement movement;
@@ -120,12 +120,12 @@ namespace Nashet.EconomicSimulation
             //new Modifier(Serfdom.Allowed,  -20f, false)
 
             // copied in Factory
-             new Modifier(x => Government.isPolis.checkIfTrue((x as PopUnit).Country)
+             new Modifier(x => Gov.isPolis.checkIfTrue((x as PopUnit).Country)
              && (x as PopUnit).Country.Capital == (x as PopUnit).Province, "Capital of Polis", 0.5f, false),
              new Modifier(x=>(x as PopUnit).Province.hasModifier(TemporaryModifier.recentlyConquered), TemporaryModifier.recentlyConquered.ToString(), -0.20f, false),
-             new Modifier(x=>(x as PopUnit).Country.government.getValue() == Government.Tribal
+             new Modifier(x=>(x as PopUnit).Country.government == Gov.Tribal
              && (x as PopUnit).type!=PopType.Tribesmen, "Government is Tribal", -0.3f, false),
-             new Modifier(Government.isDespotism, x=>(x as PopUnit).Country, -0.20f, false) // remove this?
+             new Modifier(Gov.isDespotism, x=>(x as PopUnit).Country, -0.20f, false) // remove this?
         });
         }
 
@@ -333,11 +333,11 @@ namespace Nashet.EconomicSimulation
         //    return culture;
         //}
         // have to be this way!
-        public abstract int getVotingPower(Government.ReformValue reformValue);
+        public abstract int getVotingPower(Gov reformValue);
 
         public int getVotingPower()
         {
-            return getVotingPower(Country.government.getTypedValue());
+            return getVotingPower(Country.government);
         }
 
         public override void SetStatisticToZero()
@@ -785,7 +785,7 @@ namespace Nashet.EconomicSimulation
 
         protected void consumeWithNaturalEconomy(IEnumerable<Storage> lifeNeeds)
         {
-            Country.TakeNaturalTax(this, Country.taxationForPoor.getTypedValue().tax); //payTaxes(); // that is here because pop should pay taxes from all income
+            Country.TakeNaturalTax(this, Country.taxationForPoor.tax); //payTaxes(); // that is here because pop should pay taxes from all income
             foreach (Storage need in lifeNeeds)
                 if (storage.has(need))// don't need to buy on market
                 {
@@ -887,12 +887,13 @@ namespace Nashet.EconomicSimulation
             return false;
         }
 
+        // todo what is it?? canVote()
         public bool canVote()
         {
-            return canVote(Country.government.getTypedValue());
+            return canVote(Country.government);
         }
 
-        public abstract bool canVote(Government.ReformValue reform);
+        public abstract bool canVote(Gov reform);
 
         public Dictionary<AbstractReformValue, float> getIssues()
         {
