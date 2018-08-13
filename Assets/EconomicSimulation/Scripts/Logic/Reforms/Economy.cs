@@ -8,8 +8,8 @@ namespace Nashet.EconomicSimulation
 {
     public class Economy : NamedReform
     {
-        protected EconReformValue typedValue;
-        public static readonly EconReformValue PlannedEconomy = new EconReformValue("Planned economy", "", 0,
+        protected EconomyReformValue typedValue;
+        public static readonly EconomyReformValue PlannedEconomy = new EconomyReformValue("Planned economy", "", 0,
             new DoubleConditionsList(new List<Condition> {
             Invention.CollectivismInvented, Government.isProletarianDictatorship }), false);
 
@@ -20,10 +20,14 @@ namespace Nashet.EconomicSimulation
             Serfdom.IsAbolishedInAnyWay
         });
 
-        public static readonly EconReformValue NaturalEconomy = new EconReformValue("Natural economy", " ", 1, new DoubleConditionsList(Condition.IsNotImplemented), false);//new ConditionsList(Condition.AlwaysYes));
-        public static readonly EconReformValue StateCapitalism = new EconReformValue("State capitalism", "", 2, new DoubleConditionsList(capitalism), false, null, new Procent(0.2f));
-        public static readonly EconReformValue Interventionism = new EconReformValue("Limited interventionism", "", 3, new DoubleConditionsList(capitalism), true);
-        public static readonly EconReformValue LaissezFaire = new EconReformValue("Laissez faire", "", 4, new DoubleConditionsList(capitalism), true, new Procent(0.5f));
+        public static readonly EconomyReformValue NaturalEconomy = new EconomyReformValue("Natural economy", " ", 1, new DoubleConditionsList(Condition.IsNotImplemented), false);//new ConditionsList(Condition.AlwaysYes));
+        public static readonly EconomyReformValue StateCapitalism = new EconomyReformValue("State capitalism", "", 2, new DoubleConditionsList(capitalism), false, null, new Procent(0.2f));
+        public static readonly EconomyReformValue Interventionism = new EconomyReformValue("Limited interventionism", "", 3, new DoubleConditionsList(capitalism), true);
+        public static readonly EconomyReformValue LaissezFaire = new EconomyReformValue("Laissez faire", "", 4, new DoubleConditionsList(capitalism), true, new Procent(0.5f));
+
+        public static readonly DoubleCondition isNotLFOrMoreConservative = new DoubleCondition((country, newReform) => (country as Country).economy != Economy.LaissezFaire
+        || (newReform as IReformValue).isMoreConservative((country as Country).economy), 
+            x => "Economy policy is not Laissez Faire or that is reform rollback", true);
 
         public static readonly Condition isNotLF = new Condition(delegate (object forWhom) { return (forWhom as Country).economy != LaissezFaire; }, "Economy policy is not Laissez Faire", true);
         public static readonly Condition isLF = new Condition(delegate (object forWhom) { return (forWhom as Country).economy == LaissezFaire; }, "Economy policy is Laissez Faire", true);
@@ -50,8 +54,8 @@ namespace Nashet.EconomicSimulation
             //    return (x as Country).economy != LaissezFaire || taxesForPoor.tax.get() <= 0.5f;
             //else
             {
-                var taxesForRich = y as TaxationForRich.ReformValue;
-                return (x as Country).economy != LaissezFaire || taxesForRich.tax.get() <= 0.5f;
+                var taxesForRich = y as ProcentReform .ProcentReformVal;
+                return (x as Country).economy != LaissezFaire || taxesForRich.get() <= 0.5f;
             }
         },
             x => "Economy policy is Laissez Faire and tax is not higher than 50%", false);
@@ -66,8 +70,8 @@ namespace Nashet.EconomicSimulation
             //    return (x as Country).economy != StateCapitalism || taxesForPoor.tax.get() >= 0.2f;
             //else
             {
-                var taxesForRich = y as TaxationForRich.ReformValue;
-                return (x as Country).economy != StateCapitalism || taxesForRich.tax.get() >= 0.2f;
+                var taxesForRich = y as ProcentReform.ProcentReformVal;
+                return (x as Country).economy != StateCapitalism || taxesForRich.get() >= 0.2f;
             }
         },
             x => "Economy policy is State capitalism and tax is not lower than 20%", false);
@@ -79,7 +83,7 @@ namespace Nashet.EconomicSimulation
             || (x as Country).economy == LaissezFaire
             , "Economy is market economy", true);
 
-        public Economy(Country country) : base("Economy", "Your economy policy", country, new List<IReformValue>{})
+        public Economy(Country country) : base("Economy", "Your economy policy", country, new List<IReformValue> { })
         {
         }
 
@@ -88,40 +92,9 @@ namespace Nashet.EconomicSimulation
             throw new System.NotImplementedException();
         }
 
-        protected override Procent howIsItGoodForPop(PopUnit pop)
-        {
-            Procent result;
-            //if (pop.Type == PopType.Capitalists)
-            if (pop.Type.isRichStrata())
-            {
-                //positive - more liberal
-                int change = value.ID - pop.Country.economy.value.ID;
-                //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
-                if (change > 0)
-                    result = new Procent(1f + change / 10f);
-                else
-                    //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
-                    result = new Procent(0f);
-            }
-            else
-            {
-                if (this == PlannedEconomy)
-                    result = new Procent(0f); // that can be achieved only by government reform
-                else if (this == LaissezFaire)
-                {
-                    result = new Procent(0.6f);
-                }
-                else if (this == Interventionism)
-                {
-                    result = new Procent(0.7f);
-                }
-                else
-                    result = new Procent(0.5f);
-            }
-            return result;
-        }
+       
 
-        public void SetValue(EconReformValue reformValue)
+        public void SetValue(EconomyReformValue reformValue)
         {
             base.SetValue(reformValue);
             typedValue = reformValue;
@@ -129,10 +102,10 @@ namespace Nashet.EconomicSimulation
 
         public bool AllowForeignInvestments
         {
-            get {return typedValue.AllowForeignInvestments; }
+            get { return typedValue.AllowForeignInvestments; }
         }
-        public class EconReformValue : NamedReformValue
-        {            
+        public class EconomyReformValue : NamedReformValue
+        {
             public Procent maxPoorTax;
             public Procent minPoorTax;
             public bool AllowForeignInvestments
@@ -140,12 +113,44 @@ namespace Nashet.EconomicSimulation
                 get; protected set;
             }
 
-            public EconReformValue(string name, string description, int id, DoubleConditionsList condition,
+            public EconomyReformValue(string name, string description, int id, DoubleConditionsList condition,
                 bool allowForeighnIvestments, Procent maxPoorTax = null, Procent minPoorTax = null) : base(name, description, id, condition)
             {
                 AllowForeignInvestments = allowForeighnIvestments;
                 this.minPoorTax = minPoorTax;
                 this.maxPoorTax = maxPoorTax;
+            }
+            public override Procent howIsItGoodForPop(PopUnit pop)
+            {
+                Procent result;
+                //if (pop.Type == PopType.Capitalists)
+                if (pop.Type.isRichStrata())
+                {
+                    //positive - more liberal
+                    int change = ID - pop.Country.economy.value.ID;
+                    //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
+                    if (change > 0)
+                        result = new Procent(1f + change / 10f);
+                    else
+                        //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
+                        result = new Procent(0f);
+                }
+                else
+                {
+                    if (this == PlannedEconomy)
+                        result = new Procent(0f); // that can be achieved only by government reform
+                    else if (this == LaissezFaire)
+                    {
+                        result = new Procent(0.6f);
+                    }
+                    else if (this == Interventionism)
+                    {
+                        result = new Procent(0.7f);
+                    }
+                    else
+                        result = new Procent(0.5f);
+                }
+                return result;
             }
         }
     }

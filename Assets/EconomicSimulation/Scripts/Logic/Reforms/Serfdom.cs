@@ -7,10 +7,12 @@ namespace Nashet.EconomicSimulation
 {
     public class Serfdom : NamedReform
     {
-        public SerfValue typedValue;
+        protected SerfValue typedValue;
 
         public static SerfValue SerfdomAllowed;
         public static SerfValue Brutal;
+
+        public Procent AristocratTax { get {return typedValue.AristocratTax;  } }
 
         public static SerfValue Abolished = new SerfValue("Abolished", "- Abolished with no obligations", 2,
             new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented, Condition.IsNotImplemented }));
@@ -67,33 +69,16 @@ namespace Nashet.EconomicSimulation
         {
             throw new System.NotImplementedException();
         }
-        protected override Procent howIsItGoodForPop(PopUnit pop)
-        {
-            Procent result;
-            int change = value.ID - pop.Country.serfdom.value.ID; //positive - more liberal
-            if (pop.Type == PopType.Aristocrats)
-            {
-                if (change > 0)
-                    result = new Procent(0f);
-                else
-                    result = new Procent(1f);
-            }
-            else
-            {
-                if (change > 0)
-                    result = new Procent(1f);
-                else
-                    result = new Procent(0f);
-            }
-            return result;
-        }
+       
         public class SerfValue : NamedReformValue
         {
-            private static Procent br = new Procent(0.2f);
-            private static Procent al = new Procent(0.1f);
-            private static Procent nu = new Procent(0.0f);
+            //private static Procent brutalTax = new Procent(0.2f);
+            //private static Procent allowedTax = new Procent(0.1f);
+            //private static Procent nullTax = new Procent(0.0f);
 
-            public SerfValue(string inname, string indescription, int idin, DoubleConditionsList condition) : base(inname, indescription, idin, condition)
+            public Procent AristocratTax { get; protected set; }
+
+            public SerfValue(string name, string description, int id, DoubleConditionsList condition) : base(name, description, id, condition)
             {                
                 // this.allowed = condition;
             }
@@ -122,17 +107,36 @@ namespace Nashet.EconomicSimulation
 
 
 
-            public Procent getTax()
+            //public Procent getTax()
+            //{
+            //    if (this == Brutal)
+            //        return brutalTax;
+            //    else
+            //        if (this == SerfdomAllowed)
+            //        return allowedTax;
+            //    else
+            //        return nullTax;
+            //}
+            public override Procent howIsItGoodForPop(PopUnit pop)
             {
-                if (this == Brutal)
-                    return br;
+                Procent result;
+                int change = ID - pop.Country.serfdom.value.ID; //positive - more liberal
+                if (pop.Type == PopType.Aristocrats)
+                {
+                    if (change > 0)
+                        result = new Procent(0f);
+                    else
+                        result = new Procent(1f);
+                }
                 else
-                    if (this == SerfdomAllowed)
-                    return al;
-                else
-                    return nu;
+                {
+                    if (change > 0)
+                        result = new Procent(1f);
+                    else
+                        result = new Procent(0f);
+                }
+                return result;
             }
-
 
         }
 

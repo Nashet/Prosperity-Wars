@@ -81,16 +81,16 @@ namespace Nashet.EconomicSimulation
         }
 
         /// <summary>Need it for sorting</summary>
-        public int getID()
-        {
-            if (getGoal() == null)//separatists
-            {
-                var separatists = targetReformValue as Separatism;
-                return separatists.ID;
-            }
-            else
-                return getGoal().ID;
-        }
+        //public int getID()
+        //{
+        //    if (getGoal() == null)//separatists
+        //    {
+        //        var separatists = targetReformValue as Separatism;
+        //        return separatists.ID;
+        //    }
+        //    else
+        //        return getGoal().ID;
+        //}
 
         private void add(PopUnit pop)
         {
@@ -104,7 +104,7 @@ namespace Nashet.EconomicSimulation
 
         public bool isValidGoal()
         {
-            return targetReformValue.allowed.isAllTrue(Country, targetReformValue);
+            return targetReformValue.IsAllowed(Country, targetReformValue);
         }
 
         public IReformValue getGoal()

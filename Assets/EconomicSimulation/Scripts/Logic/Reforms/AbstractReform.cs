@@ -24,8 +24,16 @@ public abstract class AbstractReform : Component<Country>, INameable, ISortableN
         this.possibleValues = possibleValues;
 
     }
-    protected abstract Procent howIsItGoodForPop(PopUnit pop);
+    public float getVotingPower(PopUnit forWhom)
+    {
+        return value.getVotingPower(forWhom);
+    }
+    
+    //public abstract bool isAvailable(Country country);
 
+
+    //public abstract bool canHaveThatValue(AbstractNamdRfrmValue abstractNamdRfrmValue);
+    public abstract void OnReformEnactedInProvince(Province province);
     public override bool Equals(Object another)
     {
         if (ReferenceEquals(another, null))
@@ -60,11 +68,7 @@ public abstract class AbstractReform : Component<Country>, INameable, ISortableN
         return !(x == y);
     }
 
-    //public abstract bool isAvailable(Country country);
 
-
-    //public abstract bool canHaveThatValue(AbstractNamdRfrmValue abstractNamdRfrmValue);
-    public abstract void OnReformEnactedInProvince(Province province);
 
     public virtual void SetValue(AbstractReform reform)
     {

@@ -1161,15 +1161,15 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Gets reform which can take given value
         /// </summary>
-        public AbstractReform getReform(IReformValue abstractReformValue)
-        {
-            foreach (var item in reforms)
-            {
-                if (item.canHaveValue(abstractReformValue))
-                    return item;
-            }
-            return null;
-        }
+        //public AbstractReform getReform(IReformValue abstractReformValue)
+        //{
+        //    foreach (var item in reforms)
+        //    {
+        //        if (item.canHaveValue(abstractReformValue))
+        //            return item;
+        //    }
+        //    return null;
+        //}
 
         public void OnClicked()
         {

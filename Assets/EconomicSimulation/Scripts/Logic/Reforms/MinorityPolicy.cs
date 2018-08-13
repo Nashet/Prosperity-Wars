@@ -7,28 +7,28 @@ namespace Nashet.EconomicSimulation
 {
     public class MinorityPolicy : NamedReform
     {
-        protected MinPOlValue typedValue;
+        protected MinorityPolicyValue typedValue;
         
-        public static MinPOlValue Equality; // all can vote
-        public static MinPOlValue Residency; // state culture only can vote
-        public static readonly MinPOlValue NoRights = new MinPOlValue("No Rights for Minorities", "-Slavery?", 0, new DoubleConditionsList(Condition.IsNotImplemented));
+        public static MinorityPolicyValue Equality; // all can vote
+        public static MinorityPolicyValue Residency; // state culture only can vote
+        public static readonly MinorityPolicyValue NoRights = new MinorityPolicyValue("No Rights for Minorities", "-Slavery?", 0, new DoubleConditionsList(Condition.IsNotImplemented));
      
         //public readonly static Condition isEquality = new Condition(x => (x as Country).minorityPolicy.getValue() == MinorityPolicy.Equality, "Minority policy is " + MinorityPolicy.Equality.getName(), true);
         //public static Condition IsResidencyPop;
         public MinorityPolicy(Country country) : base("Minority Policy", "- Minority Policy", country, new List<IReformValue> { Equality, Residency, NoRights})
         {
             if (Equality == null)
-                Equality = new MinPOlValue("Equality for Minorities", "- All cultures have same rights, assimilation is slower.", 2,
+                Equality = new MinorityPolicyValue("Equality for Minorities", "- All cultures have same rights, assimilation is slower.", 2,
                     new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }));
             if (Residency == null)
-                Residency = new MinPOlValue("Restricted Rights for Minorities", "- Only state culture can vote, assimilation occurs except foreign core provinces", 1, new DoubleConditionsList());
+                Residency = new MinorityPolicyValue("Restricted Rights for Minorities", "- Only state culture can vote, assimilation occurs except foreign core provinces", 1, new DoubleConditionsList());
 
             typedValue = Residency;
             //IsResidencyPop = new Condition(x => (x as PopUnit).province.getOwner().minorityPolicy.status == MinorityPolicy.Residency,
             //Residency.FullName, true);
         }    
 
-        public  void SetValue(MinPOlValue selectedReform)
+        public  void SetValue(MinorityPolicyValue selectedReform)
         {
             base.SetValue(selectedReform);
             typedValue =selectedReform;
@@ -52,33 +52,14 @@ namespace Nashet.EconomicSimulation
         {
             throw new System.NotImplementedException();
         }
-        protected override Procent howIsItGoodForPop(PopUnit pop)
+        
+        public class MinorityPolicyValue : NamedReformValue
         {
-            Procent result;
-            if (pop.isStateCulture())
-            {
-                result = new Procent(0f);//0.5f);
-            }
-            else
-            {
-                //positive - more rights for minorities
-                int change = value.ID - pop.Country.minorityPolicy.value.ID;
-                //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
-                if (change > 0)
-                    result = new Procent(0.3f);// 1f);
-                else
-                    //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
-                    result = new Procent(0f);
-            }
-            return result;
-        }
-        public class MinPOlValue : NamedReformValue
-        {
-            public MinPOlValue(string inname, string indescription, int idin, DoubleConditionsList condition) : base(inname, indescription, idin, condition)
+            public MinorityPolicyValue(string inname, string indescription, int idin, DoubleConditionsList condition) : base(inname, indescription, idin, condition)
             {
 
             }
-            
+
             //public override bool isAvailable(Country country)
             //{
             //    MinPOlValue requested = this;
@@ -100,7 +81,26 @@ namespace Nashet.EconomicSimulation
             //        return false;
             //}
 
-            
+            public override Procent howIsItGoodForPop(PopUnit pop)
+            {
+                Procent result;
+                if (pop.isStateCulture())
+                {
+                    result = new Procent(0f);//0.5f);
+                }
+                else
+                {
+                    //positive - more rights for minorities
+                    int change = ID - pop.Country.minorityPolicy.value.ID;
+                    //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
+                    if (change > 0)
+                        result = new Procent(0.3f);// 1f);
+                    else
+                        //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
+                        result = new Procent(0f);
+                }
+                return result;
+            }
         }
     }
     //public class OldMinorityPolicy : AbstractReform

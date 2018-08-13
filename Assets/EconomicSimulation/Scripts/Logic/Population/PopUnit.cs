@@ -335,10 +335,10 @@ namespace Nashet.EconomicSimulation
         // have to be this way!
         public abstract int getVotingPower(Government reformValue);
 
-        public int getVotingPower()
-        {
-            return getVotingPower(Country.government);
-        }
+        //public abstract int getVotingPower();
+        //{
+        //    return getVotingPower(Country.government);
+        //}
 
         public override void SetStatisticToZero()
         {
@@ -467,7 +467,7 @@ namespace Nashet.EconomicSimulation
 
         public bool getSayingYes(IReformValue reform)
         {
-            return reform.modVoting.getModifier(this) > Options.votingPassBillLimit;
+            return reform.getVotingPower(this) > Options.votingPassBillLimit;
         }
 
         public static int getRandomPopulationAmount(int minGeneratedPopulation, int maxGeneratedPopulation)
@@ -902,17 +902,17 @@ namespace Nashet.EconomicSimulation
                 foreach (IReformValue reformValue in reform.AllPossibleValues)
                     if (reformValue.IsAllowed(Country, reformValue))
                     {
-                        var howGood = reformValue.modVoting.getModifier(this);//.howIsItGoodForPop(this);
+                        var howGood = reformValue.getVotingPower(this);//.howIsItGoodForPop(this);
                                                                               //if (howGood.isExist())
                         if (howGood > 0f)
                             result.Add(reformValue, Value.Convert(howGood));
                     }
-            var target = getPotentialSeparatismTarget();
-            if (!ReferenceEquals(target, null))
+            var separatismTarget = getPotentialSeparatismTarget();
+            if (!ReferenceEquals(separatismTarget, null))
             {
-                var howGood = target.modVoting.getModifier(this);
+                var howGood = separatismTarget.getVotingPower(this);
                 if (howGood > 0f)
-                    result.Add(target, Value.Convert(howGood));
+                    result.Add(separatismTarget, Value.Convert(howGood));
             }
             return result;
         }
@@ -924,17 +924,17 @@ namespace Nashet.EconomicSimulation
                 foreach (IReformValue reformValue in reform.AllPossibleValues)
                     if (reformValue.IsAllowed(Country, reformValue))
                     {
-                        var howGood = reformValue.modVoting.getModifier(this);//.howIsItGoodForPop(this);
+                        var howGood = reformValue.getVotingPower(this);//.howIsItGoodForPop(this);
                                                                               //if (howGood.isExist())
                         if (howGood > 0f)
                             list.Add(new KeyValuePair<AbstractReform, IReformValue>(reform, reformValue), howGood);
                     }
-            var target = getPotentialSeparatismTarget();
-            if (!(ReferenceEquals(target, null)))
+            var separatismTarget = getPotentialSeparatismTarget();
+            if (!(ReferenceEquals(separatismTarget, null)))
             {
-                var howGood = target.modVoting.getModifier(this);
+                var howGood = separatismTarget.getVotingPower(this);
                 if (howGood > 0f)
-                    list.Add(new KeyValuePair<AbstractReform, IReformValue>(null, target), howGood);
+                    list.Add(new KeyValuePair<AbstractReform, IReformValue>(null, separatismTarget), howGood);
             }
             return list.MaxByRandom(x => x.Value).Key;
         }
@@ -985,7 +985,7 @@ namespace Nashet.EconomicSimulation
         // Not called in capitalism
         public void payTaxToAllAristocrats()
         {
-            Value taxSize = getGainGoodsThisTurn().Multiply(Country.serfdom.typedValue.getTax());
+            Value taxSize = getGainGoodsThisTurn().Multiply(Country.serfdom.AristocratTax);
             Province.shareWithAllAristocrats(storage, taxSize);
         }
 

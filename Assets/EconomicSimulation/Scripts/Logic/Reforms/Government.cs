@@ -12,34 +12,34 @@ namespace Nashet.EconomicSimulation
 {
     public class Government : NamedReform
     {
-        public static readonly GvrnReformName Tribal = new GvrnReformName("Tribal Federation", "- Democracy-lite; Tribesmen and Aristocrats vote.", 0,
+        public static readonly GovernmentReformName Tribal = new GovernmentReformName("Tribal Federation", "- Democracy-lite; Tribesmen and Aristocrats vote.", 0,
             new DoubleConditionsList(), "Tribe", 10, 0f, new ProcentReform.ProcentReformVal(0.2f));
 
-        public static readonly GvrnReformName Aristocracy = new GvrnReformName("Aristocracy", "- Aristocrats and Clerics make the rules.", 1,
+        public static readonly GovernmentReformName Aristocracy = new GovernmentReformName("Aristocracy", "- Aristocrats and Clerics make the rules.", 1,
             new DoubleConditionsList(), "Kingdom", 20, 0.5f, new ProcentReform.ProcentReformVal(0f), new ProcentReform.ProcentReformVal(0.2f));
 
-        public static readonly GvrnReformName Polis = new GvrnReformName("Polis", "- Landed individuals allowed to vote. Farmers, Aristocrats, and Clerics share equal voting power.", 8,
+        public static readonly GovernmentReformName Polis = new GovernmentReformName("Polis", "- Landed individuals allowed to vote. Farmers, Aristocrats, and Clerics share equal voting power.", 8,
             new DoubleConditionsList(), "Polis", 5, 1f);
 
-        public static readonly GvrnReformName Despotism = new GvrnReformName("Despotism", "- Who needs elections? All the power belongs to you!", 2,
+        public static readonly GovernmentReformName Despotism = new GovernmentReformName("Despotism", "- Who needs elections? All the power belongs to you!", 2,
             new DoubleConditionsList(), "Empire", 40, 0.25f);
 
-        public static readonly GvrnReformName Theocracy = new GvrnReformName("Theocracy", "- God decreed only Clerics should have power because of their heavenly connections.", 5,
+        public static readonly GovernmentReformName Theocracy = new GovernmentReformName("Theocracy", "- God decreed only Clerics should have power because of their heavenly connections.", 5,
             new DoubleConditionsList(Condition.IsNotImplemented), "", 40, 0f);
 
-        public static readonly GvrnReformName WealthDemocracy = new GvrnReformName("Wealth Democracy", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, etc. Wealthy individuals have more votes (5 to 1)", 9,
+        public static readonly GovernmentReformName WealthDemocracy = new GovernmentReformName("Wealth Democracy", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, etc. Wealthy individuals have more votes (5 to 1)", 9,
             new DoubleConditionsList(Condition.IsNotImplemented), "States", 40, 1f);
 
-        public static readonly GvrnReformName Democracy = new GvrnReformName("Universal Democracy", "- The ideal democracy. Everyone's vote is equal.", 3,
+        public static readonly GovernmentReformName Democracy = new GovernmentReformName("Universal Democracy", "- The ideal democracy. Everyone's vote is equal.", 3,
             new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "Republic", 100, 1f);
 
-        public static readonly GvrnReformName BourgeoisDictatorship = new GvrnReformName("Bourgeois Dictatorship", "- Robber Barons or Captains of Industry? You decide!", 6,
+        public static readonly GovernmentReformName BourgeoisDictatorship = new GovernmentReformName("Bourgeois Dictatorship", "- Robber Barons or Captains of Industry? You decide!", 6,
             new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "Oligarchy", 20, 1f, new ProcentReform.ProcentReformVal(0.1f), new ProcentReform.ProcentReformVal(0.1f));
 
-        public static readonly GvrnReformName Junta = new GvrnReformName("Junta", "- The military knows what's best for the people...", 7,
+        public static readonly GovernmentReformName Junta = new GovernmentReformName("Junta", "- The military knows what's best for the people...", 7,
             new DoubleConditionsList(new List<Condition> { Invention.ProfessionalArmyInvented }), "Junta", 20, 0.3f);
 
-        public static readonly GvrnReformName ProletarianDictatorship = new GvrnReformName("Proletarian Dictatorship", "- Bureaucrats ruling with a terrifying hammer and a friendly sickle.", 4,
+        public static readonly GovernmentReformName ProletarianDictatorship = new GovernmentReformName("Proletarian Dictatorship", "- Bureaucrats ruling with a terrifying hammer and a friendly sickle.", 4,
             new DoubleConditionsList(new List<Condition> { Invention.CollectivismInvented, Invention.ManufacturesInvented }), "SSR", 20, 0.5f, new ProcentReform.ProcentReformVal(0.5f), new ProcentReform.ProcentReformVal(1f));
         public static readonly Condition isPolis = new Condition(x => (x as Country).government == Polis, "Government is " + Polis, true);
         public static readonly Condition isTribal = new Condition(x => (x as Country).government == Tribal, "Government is " + Tribal, true);
@@ -53,7 +53,7 @@ namespace Nashet.EconomicSimulation
         public static readonly Condition isJunta = new Condition(x => (x as Country).government == Junta, "Government is " + Junta, true);
         public static readonly Condition isProletarianDictatorship = new Condition(x => (x as Country).government == ProletarianDictatorship, "Government is " + ProletarianDictatorship, true);
 
-        protected GvrnReformName typedValue;
+        protected GovernmentReformName typedValue;
 
         public Government(Country country) : base("Government", "Form of government", country,
             new List<IReformValue> {
@@ -77,26 +77,7 @@ namespace Nashet.EconomicSimulation
             return typedValue.getPrefix();
         }
 
-        protected override Procent howIsItGoodForPop(PopUnit pop)
-        {
-            Procent result;
-            if (pop.getVotingPower(this) > pop.getVotingPower(pop.Country.government))
-            {
-                //if (this == Tribal)
-                //    result = new Procent(0.8f);
-                //else
-                result = new Procent(1f);
-            }
-            else if (this == ProletarianDictatorship)
-                result = new Procent(0.5f);
-            else if (this == Despotism && pop.needsFulfilled.get() < 0.1f)
-                result = new Procent(1f);
-            else if (this == Tribal)
-                result = new Procent(0.3f);
-            else
-                result = new Procent(0f);
-            return result;
-        }
+       
 
         public override void OnReformEnactedInProvince(Province province)
         {
@@ -128,7 +109,7 @@ namespace Nashet.EconomicSimulation
                 }
             }
         }
-        public  void SetValue(GvrnReformName selectedReform)
+        public  void SetValue(GovernmentReformName selectedReform)
         {
             base.SetValue(selectedReform);
             typedValue = selectedReform;
@@ -256,14 +237,33 @@ namespace Nashet.EconomicSimulation
             if (owner == Game.Player)
                 MainCamera.refreshAllActive();
         }
-        public class GvrnReformName : NamedReformValue
+        public class GovernmentReformName : NamedReformValue
         {
             private readonly int MaxSizeLimitForDisloyaltyModifier;
             private readonly string prefix;
             private readonly float scienceModifier;
             public ProcentReform.ProcentReformVal defaultPoorTax;
             public ProcentReform.ProcentReformVal defaultRichTax;
-
+            public override Procent howIsItGoodForPop(PopUnit pop)
+            {
+                Procent result;
+                if (pop.getVotingPower(this) > pop.getVotingPower(pop.Country.government))
+                {
+                    //if (this == Tribal)
+                    //    result = new Procent(0.8f);
+                    //else
+                    result = new Procent(1f);
+                }
+                else if (this == ProletarianDictatorship)
+                    result = new Procent(0.5f);
+                else if (this == Despotism && pop.needsFulfilled.get() < 0.1f)
+                    result = new Procent(1f);
+                else if (this == Tribal)
+                    result = new Procent(0.3f);
+                else
+                    result = new Procent(0f);
+                return result;
+            }
             public float getScienceModifier()
             {
                 return scienceModifier;
@@ -280,7 +280,7 @@ namespace Nashet.EconomicSimulation
                 return prefix;
             }
 
-            public GvrnReformName(string name, string description, int id, DoubleConditionsList condition,
+            public GovernmentReformName(string name, string description, int id, DoubleConditionsList condition,
                 string prefix, int MaxSizeLimitForDisloyaltyModifier, float scienceModifier, ProcentReform.ProcentReformVal defaultPoorTax = null, ProcentReform.ProcentReformVal defaultRichTax = null) : base(name, description, id, condition)
             {
                 this.prefix = prefix;

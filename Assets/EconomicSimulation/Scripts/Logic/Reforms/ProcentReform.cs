@@ -29,10 +29,7 @@ namespace Nashet.EconomicSimulation
             this.tax.Set(tax);
         }
 
-        protected override Procent howIsItGoodForPop(PopUnit pop)
-        {
-            throw new NotImplementedException();
-        }
+       
         public class ProcentReformVal : Procent, IReformValue//  AbstrRefrmValue
         {
             public ProcentReformVal(float number, bool showMessageAboutNegativeValue = true) : base(number, showMessageAboutNegativeValue)
@@ -47,12 +44,27 @@ namespace Nashet.EconomicSimulation
                 }
             }
 
+            public float getVotingPower(PopUnit forWhom)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Procent howIsItGoodForPop(PopUnit pop)
+            {
+                throw new NotImplementedException();
+            }
+
             public bool IsAllowed(object firstObject, object secondObject, out string description)
             {
                 throw new NotImplementedException();
             }
 
             public bool IsAllowed(object firstObject, object secondObject)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool isMoreConservative(AbstractReform another)
             {
                 throw new NotImplementedException();
             }

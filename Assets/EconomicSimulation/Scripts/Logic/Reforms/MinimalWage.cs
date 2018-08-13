@@ -7,41 +7,41 @@ namespace Nashet.EconomicSimulation
 {
     public class MinimalWage : ProcentReform
     {
-        protected MinWageRefValue typedValue;
+        protected MinWageReformValue typedValue;
 
-        public static readonly MinWageRefValue None = new MinWageRefValue("No Minimum Wage", "", 0, new DoubleConditionsList(new List<Condition> { AbstrRefrmValue.isNotLFOrMoreConservative }));
+        public static readonly MinWageReformValue None = new MinWageReformValue("No Minimum Wage", "", 0, new DoubleConditionsList(new List<Condition> { Economy.isNotLFOrMoreConservative }));
 
-        public static readonly MinWageRefValue Scanty = new MinWageRefValue("Scant Minimum Wage", "- Half-hungry", 1, new DoubleConditionsList(new List<Condition>
+        public static readonly MinWageReformValue Scanty = new MinWageReformValue("Scant Minimum Wage", "- Half-hungry", 1, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstrRefrmValue.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
-        public static readonly MinWageRefValue Minimal = new MinWageRefValue("Subsistence Minimum Wage", "- Just enough to feed yourself", 2, new DoubleConditionsList(new List<Condition>
+        public static readonly MinWageReformValue Minimal = new MinWageReformValue("Subsistence Minimum Wage", "- Just enough to feed yourself", 2, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstrRefrmValue.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
-        public static readonly MinWageRefValue Trinket = new MinWageRefValue("Mid-Level Minimum Wage", "- You can buy some small stuff", 3, new DoubleConditionsList(new List<Condition>
+        public static readonly MinWageReformValue Trinket = new MinWageReformValue("Mid-Level Minimum Wage", "- You can buy some small stuff", 3, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstrRefrmValue.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
-        public static readonly MinWageRefValue Middle = new MinWageRefValue("Social Security", "- Minimum Wage & Retirement benefits", 4, new DoubleConditionsList(new List<Condition>
+        public static readonly MinWageReformValue Middle = new MinWageReformValue("Social Security", "- Minimum Wage & Retirement benefits", 4, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstrRefrmValue.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
-        public static readonly MinWageRefValue Big = new MinWageRefValue("Generous Minimum Wage", "- Can live almost like a king. Almost..", 5, new DoubleConditionsList(new List<Condition>
+        public static readonly MinWageReformValue Big = new MinWageReformValue("Generous Minimum Wage", "- Can live almost like a king. Almost..", 5, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented,AbstrRefrmValue.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
-        public MinimalWage(Country country) : base("Minimum wage", "", country, new List<IReformValue> {None, Scanty, Minimal, Trinket, Middle, Big })
+        public MinimalWage(Country country) : base("Minimum wage", "", country, new List<IReformValue> { None, Scanty, Minimal, Trinket, Middle, Big })
         {
             typedValue = None;
         }
 
-        public void SetValue(MinWageRefValue selectedReform)
+        public void SetValue(MinWageReformValue selectedReform)
         {
             base.SetValue(selectedReform);
             typedValue = selectedReform;
@@ -97,35 +97,7 @@ namespace Nashet.EconomicSimulation
             else
                 return new Money(0m);
         }
-        protected override Procent howIsItGoodForPop(PopUnit pop)
-        {
-            Procent result;
-            if (pop.Type == PopType.Workers)
-            {
-                //positive - reform will be better for worker, [-5..+5]
-                int change = value.ID - pop.Country.minimalWage.value.ID;
-                //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
-                if (change > 0)
-                    result = new Procent(1f);
-                else
-                    //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
-                    result = new Procent(0f);
-            }
-            else if (pop.Type.isPoorStrata())
-                result = new Procent(0.5f);
-            else // rich strata
-            {
-                //positive - reform will be better for rich strata, [-5..+5]
-                int change = pop.Country.minimalWage.value.ID - value.ID;
-                //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
-                if (change > 0)
-                    result = new Procent(1f);
-                else
-                    //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
-                    result = new Procent(0f);
-            }
-            return result;
-        }
+        
         //public override bool isAvailable(Country country)
         //{
         //    if (country.Science.IsInvented(Invention.Welfare))
@@ -137,13 +109,13 @@ namespace Nashet.EconomicSimulation
 
 
 
-        public class MinWageRefValue : NamedReformValue
+        public class MinWageReformValue : NamedReformValue
         {
-            public MinWageRefValue(string inname, string indescription, int id, DoubleConditionsList condition)
+            public MinWageReformValue(string inname, string indescription, int id, DoubleConditionsList condition)
                 : base(inname, indescription, id, condition)
             {
                 //// if (!PossibleStatuses.Contains(this))
-                
+
                 //var totalSteps = 6;
                 //var previousID = ID - 1;
                 //var nextID = ID + 1;
@@ -162,21 +134,49 @@ namespace Nashet.EconomicSimulation
                 //}
             }
 
-            
+            public override Procent howIsItGoodForPop(PopUnit pop)
+            {
+                Procent result;
+                if (pop.Type == PopType.Workers)
+                {
+                    //positive - reform will be better for worker, [-5..+5]
+                    int change = ID - pop.Country.minimalWage.value.ID;
+                    //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
+                    if (change > 0)
+                        result = new Procent(1f);
+                    else
+                        //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
+                        result = new Procent(0f);
+                }
+                else if (pop.Type.isPoorStrata())
+                    result = new Procent(0.5f);
+                else // rich strata
+                {
+                    //positive - reform will be better for rich strata, [-5..+5]
+                    int change = pop.Country.minimalWage.value.ID - ID;
+                    //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
+                    if (change > 0)
+                        result = new Procent(1f);
+                    else
+                        //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
+                        result = new Procent(0f);
+                }
+                return result;
+            }
 
-            
 
-            
+
+
 
             public override string ToString()//Market market
             {
                 return base.ToString();// +" (" + "getwage back" + ")";//getMinimalWage(market)
             }
 
-            
+
         }
-        
-               
+
+
     }
     //public class OldMinimalWage : AbstractReform
     //{

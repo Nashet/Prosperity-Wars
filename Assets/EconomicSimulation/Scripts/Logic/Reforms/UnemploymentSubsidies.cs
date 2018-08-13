@@ -9,33 +9,33 @@ namespace Nashet.EconomicSimulation
     public class UnemploymentSubsidies : ProcentReform
     {       
 
-        private UnempRefVal typedvalue;
+        protected UnemploymentReformValue typedvalue;
         
-        public static readonly UnempRefVal None = new UnempRefVal("No Unemployment Benefits", "", 0, new DoubleConditionsList(new List<Condition>()));
+        public static readonly UnemploymentReformValue None = new UnemploymentReformValue("No Unemployment Benefits", "", 0, new DoubleConditionsList(new List<Condition>()));
 
-        public static readonly UnempRefVal Scanty = new UnempRefVal("Bread Lines", "-The people are starving. Let them eat bread.", 1, new DoubleConditionsList(new List<Condition>
+        public static readonly UnemploymentReformValue Scanty = new UnemploymentReformValue("Bread Lines", "-The people are starving. Let them eat bread.", 1, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReform.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
-        public static readonly UnempRefVal Minimal = new UnempRefVal("Food Stamps", "- Let the people buy what they need.", 2, new DoubleConditionsList(new List<Condition>
+        public static readonly UnemploymentReformValue Minimal = new UnemploymentReformValue("Food Stamps", "- Let the people buy what they need.", 2, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReform.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
-        public static readonly UnempRefVal Trinket = new UnempRefVal("Housing & Food Assistance", "- Affordable Housing for the Unemployed.", 3, new DoubleConditionsList(new List<Condition>
+        public static readonly UnemploymentReformValue Trinket = new UnemploymentReformValue("Housing & Food Assistance", "- Affordable Housing for the Unemployed.", 3, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReform.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
-        public static readonly UnempRefVal Middle = new UnempRefVal("Welfare Ministry", "- Now there is a minister granting greater access to benefits.", 4, new DoubleConditionsList(new List<Condition>
+        public static readonly UnemploymentReformValue Middle = new UnemploymentReformValue("Welfare Ministry", "- Now there is a minister granting greater access to benefits.", 4, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReform.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
-        public static readonly UnempRefVal Big = new UnempRefVal("Full State Unemployment Benefits", "- Full State benefits for the downtrodden.", 5, new DoubleConditionsList(new List<Condition>
+        public static readonly UnemploymentReformValue Big = new UnemploymentReformValue("Full State Unemployment Benefits", "- Full State benefits for the downtrodden.", 5, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReform.isNotLFOrMoreConservative, Economy.isNotPlanned
+            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
         public UnemploymentSubsidies(Country country) : base("Unemployment Subsidies", "", country, new List<IReformValue> { None, Scanty, Minimal, Trinket, Middle, Big })
@@ -49,7 +49,7 @@ namespace Nashet.EconomicSimulation
         //}
 
        
-        public  void SetValue(UnempRefVal selectedReform)
+        public  void SetValue(UnemploymentReformValue selectedReform)
         {
             base.SetValue(selectedReform);
             typedvalue = selectedReform;
@@ -63,27 +63,7 @@ namespace Nashet.EconomicSimulation
         //    else
         //        return false;
         //}
-        protected override Procent howIsItGoodForPop(PopUnit pop)
-        {
-            Procent result;
-            //positive - higher subsidies
-            int change = ID - pop.Country.unemploymentSubsidies.status.ID;
-            if (pop.Type.isPoorStrata())
-            {
-                if (change > 0)
-                    result = new Procent(1f);
-                else
-                    result = new Procent(0f);
-            }
-            else
-            {
-                if (change > 0)
-                    result = new Procent(0f);
-                else
-                    result = new Procent(1f);
-            }
-            return result;
-        }
+        
         /// <summary>
         /// Calculates Unemployment Subsidies basing on consumption cost for 1000 workers
         /// </summary>
@@ -137,25 +117,25 @@ namespace Nashet.EconomicSimulation
                 return MoneyView.Zero;
             }
         }
-        public class UnempRefVal : ProcentReformVal
+        public class UnemploymentReformValue : NamedReformValue
         {
-            public UnempRefVal(string inname, string indescription, int idin, DoubleConditionsList condition)
-                : base(inname, indescription, idin, condition, 6)
+            public UnemploymentReformValue(string name, string description, int id, DoubleConditionsList condition)
+                : base(name, description, id, condition)
             {
                 //if (!PossibleStatuses.Contains(this))
          
-                var totalSteps = 6;
-                var previousID = ID - 1;
-                var nextID = ID + 1;
-                if (previousID >= 0 && nextID < totalSteps)
-                    condition.add(new Condition(x => (x as Country).unemploymentSubsidies.isThatReformEnacted(previousID)
-                    || (x as Country).unemploymentSubsidies.isThatReformEnacted(nextID), "Previous reform enacted", true));
-                else
-                if (nextID < totalSteps)
-                    condition.add(new Condition(x => (x as Country).unemploymentSubsidies.isThatReformEnacted(nextID), "Previous reform enacted", true));
-                else
-                if (previousID >= 0)
-                    condition.add(new Condition(x => (x as Country).unemploymentSubsidies.isThatReformEnacted(previousID), "Previous reform enacted", true));
+                //var totalSteps = 6;
+                //var previousID = ID - 1;
+                //var nextID = ID + 1;
+                //if (previousID >= 0 && nextID < totalSteps)
+                //    condition.add(new Condition(x => (x as Country).unemploymentSubsidies.isThatReformEnacted(previousID)
+                //    || (x as Country).unemploymentSubsidies.isThatReformEnacted(nextID), "Previous reform enacted", true));
+                //else
+                //if (nextID < totalSteps)
+                //    condition.add(new Condition(x => (x as Country).unemploymentSubsidies.isThatReformEnacted(nextID), "Previous reform enacted", true));
+                //else
+                //if (previousID >= 0)
+                //    condition.add(new Condition(x => (x as Country).unemploymentSubsidies.isThatReformEnacted(previousID), "Previous reform enacted", true));
             }
 
             //public override bool isAvailable(Country country)
@@ -169,8 +149,28 @@ namespace Nashet.EconomicSimulation
             {
                 return base.ToString() + " (" + "get back getSubsidiesRate()" + ")";//getSubsidiesRate()
             }
+            public override Procent howIsItGoodForPop(PopUnit pop)
+            {
+                Procent result;
+                //positive - higher subsidies
+                int change = ID - pop.Country.unemploymentSubsidies.value.ID;
+                if (pop.Type.isPoorStrata())
+                {
+                    if (change > 0)
+                        result = new Procent(1f);
+                    else
+                        result = new Procent(0f);
+                }
+                else
+                {
+                    if (change > 0)
+                        result = new Procent(0f);
+                    else
+                        result = new Procent(1f);
+                }
+                return result;
+            }
 
-            
         }
     }
     //public class OldUnemploymentSubsidies : AbstractReform

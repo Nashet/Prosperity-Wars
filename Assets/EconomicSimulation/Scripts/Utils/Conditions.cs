@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
-using Nashet.EconomicSimulation;
 using Nashet.Utils;
 
 namespace Nashet.Conditions
@@ -612,14 +611,14 @@ namespace Nashet.Conditions
             return summ;
         }
 
-        public float find(AbstractReform reformValue)
-        {
-            var foundModifier = list.Find(x => reformValue.allowed.contains(x)) as Modifier;
-            if (foundModifier == null)
-                return 0f;
-            else
-                return foundModifier.getValue();
-        }
+        //public float find(AbstractReform reformValue)
+        //{
+        //    var foundModifier = list.Find(x => reformValue.allowed.contains(x)) as Modifier;
+        //    if (foundModifier == null)
+        //        return 0f;
+        //    else
+        //        return foundModifier.getValue();
+        //}
 
         public string GetDescription(object forWhom)
         {
