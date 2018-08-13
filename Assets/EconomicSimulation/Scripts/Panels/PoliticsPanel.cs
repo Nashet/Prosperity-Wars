@@ -65,7 +65,7 @@ namespace Nashet.EconomicSimulation
         {
             foreach (PopUnit pop in Game.Player.Provinces.AllPops)
             {
-                if (pop.canVote() && !pop.getSayingYes(selectedReformValue))// can vote and voted no
+                if (pop.CanVoteInOwnCountry() && !pop.getSayingYes(selectedReformValue))// can vote and voted no
                 {
                     pop.addDaysUpsetByForcedReform(Options.PopDaysUpsetByForcedReform);
                 }

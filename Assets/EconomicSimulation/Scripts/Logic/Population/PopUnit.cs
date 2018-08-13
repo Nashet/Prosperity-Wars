@@ -79,10 +79,10 @@ namespace Nashet.EconomicSimulation
 
             //Game.threadDangerSB.Clear();
             //Game.threadDangerSB.Append("Likes that government because can vote with ").Append(this.province.getOwner().government.ToString());
-            modifierCanVote = new Modifier(x => (x as PopUnit).canVote(), "Can vote with that government ", 0.1f, false);
+            modifierCanVote = new Modifier(x => (x as PopUnit).CanVoteInOwnCountry(), "Can vote with that government ", 0.1f, false);
             //Game.threadDangerSB.Clear();
             //Game.threadDangerSB.Append("Dislikes that government because can't vote with ").Append(this.province.getOwner().government.ToString());
-            modifierCanNotVote = new Modifier(x => !(x as PopUnit).canVote(), "Can't vote with that government ", -0.1f, false);
+            modifierCanNotVote = new Modifier(x => !(x as PopUnit).CanVoteInOwnCountry(), "Can't vote with that government ", -0.1f, false);
             //Game.threadDangerSB.Clear();
             //Game.threadDangerSB.Append("Upset by forced reform - ").Append(daysUpsetByForcedReform).Append(" days");
             modifierUpsetByForcedReform = new Modifier(x => (x as PopUnit).daysUpsetByForcedReform > 0, "Upset by forced reform", -3.0f, false);
@@ -333,7 +333,7 @@ namespace Nashet.EconomicSimulation
         //    return culture;
         //}
         // have to be this way!
-        public abstract int getVotingPower(Government reformValue);
+        public abstract int getVotingPower(Government.GovernmentReformName reformValue);
 
         //public abstract int getVotingPower();
         //{
@@ -886,35 +886,35 @@ namespace Nashet.EconomicSimulation
         {
             return false;
         }
-
-        // todo what is it?? canVote()
-        public bool canVote()
+                
+        public bool CanVoteInOwnCountry()
         {
-            return canVote(Country.government);
+            return CanVoteWithThatGovernment(Country.government.typedValue);
         }
+        //public bool canVote(Government reform)
+        //{
+        //    return canVote(reform);
+        //}
+        public abstract bool CanVoteWithThatGovernment(Government.GovernmentReformName reform);
 
-        public abstract bool canVote(Government reform);
-
-        public Dictionary<IReformValue, float> getIssues()
+        public IEnumerable<KeyValuePair<IReformValue, float>> getIssues()
         {
-            var result = new Dictionary<IReformValue, float>();
             foreach (var reform in Country.reforms)
                 foreach (IReformValue reformValue in reform.AllPossibleValues)
                     if (reformValue.IsAllowed(Country, reformValue))
                     {
                         var howGood = reformValue.getVotingPower(this);//.howIsItGoodForPop(this);
-                                                                              //if (howGood.isExist())
+                                                                       //if (howGood.isExist())
                         if (howGood > 0f)
-                            result.Add(reformValue, Value.Convert(howGood));
+                            yield return new KeyValuePair<IReformValue, float>(reformValue, Value.Convert(howGood));
                     }
             var separatismTarget = getPotentialSeparatismTarget();
             if (!ReferenceEquals(separatismTarget, null))
             {
                 var howGood = separatismTarget.getVotingPower(this);
                 if (howGood > 0f)
-                    result.Add(separatismTarget, Value.Convert(howGood));
-            }
-            return result;
+                    yield return new KeyValuePair<IReformValue, float>(separatismTarget, Value.Convert(howGood));
+            }            
         }
 
         public KeyValuePair<AbstractReform, IReformValue> getMostImportantIssue()
@@ -925,7 +925,7 @@ namespace Nashet.EconomicSimulation
                     if (reformValue.IsAllowed(Country, reformValue))
                     {
                         var howGood = reformValue.getVotingPower(this);//.howIsItGoodForPop(this);
-                                                                              //if (howGood.isExist())
+                                                                       //if (howGood.isExist())
                         if (howGood > 0f)
                             list.Add(new KeyValuePair<AbstractReform, IReformValue>(reform, reformValue), howGood);
                     }

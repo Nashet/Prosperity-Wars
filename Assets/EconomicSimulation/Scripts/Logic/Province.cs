@@ -963,9 +963,9 @@ namespace Nashet.EconomicSimulation
                     // reforms preferences
                     if (pop.Type.isPoorStrata())
                     {
-                        lifeQuality.Add(Country.unemploymentSubsidies.ID * 2 / 100f);
-                        lifeQuality.Add(Country.minimalWage.ID * 1 / 100f);
-                        lifeQuality.Add(Country.taxationForRich.ID * 1 / 100f);
+                        lifeQuality.Add(Country.unemploymentSubsidies.LifeQualityImpact);// . ID * 2 / 100f);
+                        lifeQuality.Add(Country.minimalWage.LifeQualityImpact);//.ID * 1 / 100f);
+                        lifeQuality.Add(Country.taxationForRich.LifeQualityImpact);//.ID * 1 / 100f);
                     }
                     else if (pop.Type.isRichStrata())
                     {
@@ -979,7 +979,7 @@ namespace Nashet.EconomicSimulation
                         lifeQuality.Add(0.05f, false);
                     //todo - serfdom
 
-                    if (!pop.canVote(Country.government)) // includes Minority politics, but not only
+                    if (!pop.CanVoteWithThatGovernment(Country.government.typedValue)) // includes Minority politics, but not only
                         lifeQuality.Subtract(-0.10f, false);
 
                     if (country.Culture != pop.culture && country.minorityPolicy != MinorityPolicy.Equality)

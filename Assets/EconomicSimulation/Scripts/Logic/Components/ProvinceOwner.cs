@@ -191,7 +191,7 @@ namespace Nashet.EconomicSimulation
             foreach (Province province in ownedProvinces)
                 foreach (PopUnit pop in province.AllPops)
                 {
-                    if (pop.canVote())
+                    if (pop.CanVoteInOwnCountry())
                     {
                         if (pop.getSayingYes(reform))
                         {
@@ -232,7 +232,7 @@ namespace Nashet.EconomicSimulation
                         if (pop.getSayingYes(reform))
                         {
                             divisionPopulationResult[popType] += pop.population.Get();// * pop.getVotingPower();
-                            if (pop.canVote())
+                            if (pop.CanVoteInOwnCountry())
                                 divisionVotersResult[popType] += pop.population.Get();// * pop.getVotingPower();
                         }
                 }

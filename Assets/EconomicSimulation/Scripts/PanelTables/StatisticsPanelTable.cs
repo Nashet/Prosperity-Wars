@@ -18,7 +18,7 @@ namespace Nashet.EconomicSimulation
             GDPPerCapitaOrder = new SortOrder(this, x => (float)x.getGDPPer1000().Get());
             unemploymentOrder = new SortOrder(this, x => x.Provinces.AllPops.GetAverageProcent(y => y.getUnemployment()).get());
             averageNeedsOrder = new SortOrder(this, x => x.Provinces.AllPops.GetAverageProcent(y => y.needsFulfilled).get());
-            richTaxOrder = new SortOrder(this, x => (x.taxationForRich.getValue() as TaxationForRich.ReformValue).tax.get());
+            richTaxOrder = new SortOrder(this, x => x.taxationForRich.tax.get());
             economyTypeOrder = new SortOrder(this, x => x.economy.GetType().GetHashCode());
             GDPShareOrder = new SortOrder(this, x => (float)x.getGDP().Get());
             educationOrder = new SortOrder(this, x => x.Provinces.AllPops.GetAverageProcent(y => y.Education).get());
@@ -55,7 +55,7 @@ namespace Nashet.EconomicSimulation
 
             AddCell(country.Provinces.AllPops.GetAverageProcent(x => x.needsFulfilled).ToString(), country);
 
-            AddCell((country.taxationForRich.getValue() as TaxationForRich.ReformValue).tax.ToString(), country);
+            AddCell(country.taxationForRich.tax.ToString(), country);
         }
 
         protected override void AddHeader()

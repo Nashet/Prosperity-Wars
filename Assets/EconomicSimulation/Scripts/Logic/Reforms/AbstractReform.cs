@@ -28,7 +28,8 @@ public abstract class AbstractReform : Component<Country>, INameable, ISortableN
     {
         return value.getVotingPower(forWhom);
     }
-    
+
+    public Procent LifeQualityImpact { get { return value.LifeQualityImpact; } }
     //public abstract bool isAvailable(Country country);
 
 

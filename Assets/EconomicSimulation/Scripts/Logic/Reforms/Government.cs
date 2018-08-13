@@ -53,7 +53,7 @@ namespace Nashet.EconomicSimulation
         public static readonly Condition isJunta = new Condition(x => (x as Country).government == Junta, "Government is " + Junta, true);
         public static readonly Condition isProletarianDictatorship = new Condition(x => (x as Country).government == ProletarianDictatorship, "Government is " + ProletarianDictatorship, true);
 
-        protected GovernmentReformName typedValue;
+        public GovernmentReformName typedValue { get; protected set; }
 
         public Government(Country country) : base("Government", "Form of government", country,
             new List<IReformValue> {
@@ -66,7 +66,7 @@ namespace Nashet.EconomicSimulation
         }
         public float getScienceModifier()
         {
-            return typedValue.getScienceModifier();         
+            return typedValue.getScienceModifier();
         }
         public int getLoyaltySizeLimit()
         {
@@ -77,7 +77,7 @@ namespace Nashet.EconomicSimulation
             return typedValue.getPrefix();
         }
 
-       
+
 
         public override void OnReformEnactedInProvince(Province province)
         {
@@ -109,7 +109,7 @@ namespace Nashet.EconomicSimulation
                 }
             }
         }
-        public  void SetValue(GovernmentReformName selectedReform)
+        public void SetValue(GovernmentReformName selectedReform)
         {
             base.SetValue(selectedReform);
             typedValue = selectedReform;
@@ -247,7 +247,7 @@ namespace Nashet.EconomicSimulation
             public override Procent howIsItGoodForPop(PopUnit pop)
             {
                 Procent result;
-                if (pop.getVotingPower(this) > pop.getVotingPower(pop.Country.government))
+                if (pop.getVotingPower(this) > pop.getVotingPower(pop.Country.government.typedValue))
                 {
                     //if (this == Tribal)
                     //    result = new Procent(0.8f);

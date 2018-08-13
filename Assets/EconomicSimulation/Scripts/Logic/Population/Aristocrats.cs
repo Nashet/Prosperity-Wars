@@ -52,7 +52,7 @@ namespace Nashet.EconomicSimulation
             return false;
         }
 
-        public override bool canVote(Government reform)
+        public override bool CanVoteWithThatGovernment(Government.GovernmentReformName reform)
         {
             if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
                 || reform == Government.Aristocracy || reform == Government.Tribal)
@@ -62,9 +62,9 @@ namespace Nashet.EconomicSimulation
                 return false;
         }
 
-        public override int getVotingPower(Government reformValue)
+        public override int getVotingPower(Government.GovernmentReformName reformValue)
         {
-            if (canVote(reformValue))
+            if (CanVoteWithThatGovernment(reformValue))
                 if (reformValue == Government.WealthDemocracy)
                     return Options.PopRichStrataVotePower;
                 else

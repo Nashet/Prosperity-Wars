@@ -402,7 +402,7 @@ namespace Nashet.EconomicSimulation
         public Procent GetPossibleMargin(Province province)
         {
             var profit = getPossibleProfit(province).Copy();
-            var taxes = profit.Copy().Multiply(province.Country.taxationForRich.getTypedValue().tax);
+            var taxes = profit.Copy().Multiply(province.Country.taxationForRich.tax);
             profit.Subtract(taxes);
             return new Procent(profit, GetBuildCost(province.Country.market));
         }

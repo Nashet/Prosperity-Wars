@@ -18,7 +18,7 @@ namespace Nashet.EconomicSimulation
         protected readonly Modifier wantsReform;
         protected readonly ModifiersList modVoting;
 
-
+        public Procent LifeQualityImpact { get; }
 
         public AbstrRefrmValue(int id, DoubleConditionsList condition)
         {

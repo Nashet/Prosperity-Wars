@@ -59,6 +59,7 @@ namespace Nashet.EconomicSimulation
         float getVotingPower(PopUnit forWhom);
         bool isMoreConservative(AbstractReform another);
         Procent howIsItGoodForPop(PopUnit pop);
+        Procent LifeQualityImpact { get; }
     }
 
 }

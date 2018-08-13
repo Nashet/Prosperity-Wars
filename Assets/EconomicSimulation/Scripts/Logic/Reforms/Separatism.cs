@@ -6,10 +6,10 @@ namespace Nashet.EconomicSimulation
 {
     public class Separatism : AbstractReform
     {        
-        private static readonly Procent willing = new Procent(3f);
-        private readonly Condition separatismAllowed;
+        protected static readonly Procent willing = new Procent(3f);
+        protected readonly Condition separatismAllowed;
 
-        private readonly Country separatismTarget;
+        public Country separatismTarget;
 
         private Separatism(Country country) : base(country.ShortName + " independence", "", country,
             null)//new ConditionsList(Condition.AlwaysYes))
@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
         //        return found;
         //}
 
-        protected override Procent howIsItGoodForPop(PopUnit pop)
+        public Procent howIsItGoodForPop(PopUnit pop)
         {
             //return Procent.HundredProcent;
             return willing;

@@ -15,7 +15,7 @@ namespace Nashet.EconomicSimulation
     public class Movement : Staff, INameable
     {
         private readonly IReformValue targetReformValue;
-        //private readonly AbstractReform targetReform;
+        private readonly AbstractReform targetReform;
 
         //private readonly Country separatism;
         private readonly List<PopUnit> members = new List<PopUnit>();
@@ -33,7 +33,7 @@ namespace Nashet.EconomicSimulation
         {
             members.Add(firstPop);
             Country.movements.Add(this);
-           // targetReform = reform;
+            // targetReform = reform;
             targetReformValue = goal;
             Flag = Nashet.Flag.Rebels;
         }
@@ -42,7 +42,7 @@ namespace Nashet.EconomicSimulation
         {
             if (pop.getMovement() == null)
             {
-                var goal = pop.getMostImportantIssue();
+                var goal = pop.getMostImportantIssue();// getIssues().MaxByRandom(x => x.Value);
                 if (!goal.Equals(default(KeyValuePair<AbstractReform, IReformValue>)))
                 {
                     //find reasonable goal and join
@@ -194,15 +194,15 @@ namespace Nashet.EconomicSimulation
         public void OnSeparatistsWon()
         {
             var separatists = getGoal() as Separatism;
-            separatists.Country.onSeparatismWon(Country);
+            separatists.separatismTarget.onSeparatismWon(Country);
             if (!Country.isAI())//separatists.C
-                Message.NewMessage("", "Separatists won revolution - " + separatists.Country.FullName, "hmm", false, separatists.Country.Capital.Position);
+                Message.NewMessage("", "Separatists won revolution - " + separatists.separatismTarget.FullName, "hmm", false, separatists.separatismTarget.Capital.Position);
         }
         public void onRevolutionWon(bool setReform)
         {
             siegeCapitalTurns = 0;
             _isInRevolt = false;
-            if (targetReform == null) // meaning separatism
+            if (ReferenceEquals(targetReform, null)) // meaning separatism
             {
                 OnSeparatistsWon();
             }
@@ -210,11 +210,11 @@ namespace Nashet.EconomicSimulation
             {
                 if (setReform)
                 {
-                    targetReform.setValue(getGoal());//to avoid recursion            
+                    targetReform.SetValue(getGoal());//to avoid recursion            
                     if (!Country.isAI())
                         Message.NewMessage("Rebels won", "Now you have " + targetReformValue, "Ok", false, Game.Player.Capital.Position);
                 }
-                
+
             }
             foreach (var pop in members)
             {
@@ -268,9 +268,9 @@ namespace Nashet.EconomicSimulation
                     siegeCapitalTurns = 0;
                 if (siegeCapitalTurns > Options.ArmyTimeToOccupy)
                 {
-                    
+
                     //if (targetReform == null) // meaning separatism
-                        onRevolutionWon(true);
+                    onRevolutionWon(true);
                     //else
                     //    getReformType().setValue(getGoal()); // just to avoid recursion
                 }

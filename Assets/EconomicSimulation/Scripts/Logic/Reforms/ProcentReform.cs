@@ -44,6 +44,14 @@ namespace Nashet.EconomicSimulation
                 }
             }
 
+            public Procent LifeQualityImpact
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
             public float getVotingPower(PopUnit forWhom)
             {
                 throw new NotImplementedException();
