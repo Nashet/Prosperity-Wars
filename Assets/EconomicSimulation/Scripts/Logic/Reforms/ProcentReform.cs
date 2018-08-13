@@ -35,8 +35,9 @@ namespace Nashet.EconomicSimulation
             public ProcentReformVal(float number, bool showMessageAboutNegativeValue = true) : base(number, showMessageAboutNegativeValue)
             {
             }
+            
 
-            public int ID
+            public Procent LifeQualityImpact
             {
                 get
                 {
@@ -44,7 +45,7 @@ namespace Nashet.EconomicSimulation
                 }
             }
 
-            public Procent LifeQualityImpact
+            public int ID
             {
                 get
                 {

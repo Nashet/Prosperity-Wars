@@ -106,9 +106,12 @@ public abstract class AbstractReform : Component<Country>, INameable, ISortableN
         MainCamera.politicsPanel.Refresh();
     }
 
-    public float GetNameWeight()
+    public float NameWeight
     {
-        return nameWeight;
+        get
+        {
+            return nameWeight;
+        }
     }
     public IEnumerable<IReformValue> AllPossibleValues
     {

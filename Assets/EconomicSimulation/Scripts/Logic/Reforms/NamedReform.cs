@@ -6,12 +6,12 @@ using System.Collections.Generic;
 
 namespace Nashet.EconomicSimulation
 {
-    public abstract class NamedReform : AbstractReform
-    {
-        public NamedReform(string name, string indescription, Country country, List<IReformValue> possibleValues) : base(name, indescription, country, possibleValues)
-        {
-        }
-    }
+    //public abstract class NamedReform : AbstractReform
+    //{
+    //    public NamedReform(string name, string indescription, Country country, List<IReformValue> possibleValues) : base(name, indescription, country, possibleValues)
+    //    {
+    //    }
+    //}
 
     public abstract class NamedReformValue : AbstrRefrmValue, INameable
     {

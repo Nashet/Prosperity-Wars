@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Government : NamedReform
+    public class Government : AbstractReform
     {
         public static readonly GovernmentReformName Tribal = new GovernmentReformName("Tribal Federation", "- Democracy-lite; Tribesmen and Aristocrats vote.", 0,
             new DoubleConditionsList(), "Tribe", 10, 0f, new ProcentReform.ProcentReformVal(0.2f));
@@ -68,6 +68,7 @@ namespace Nashet.EconomicSimulation
         {
             return typedValue.getScienceModifier();
         }
+        
         public int getLoyaltySizeLimit()
         {
             return typedValue.getLoyaltySizeLimit();

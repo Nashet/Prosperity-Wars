@@ -939,13 +939,13 @@ namespace Nashet.EconomicSimulation
             return list.MaxByRandom(x => x.Value).Key;
         }
 
-        private Separatism getPotentialSeparatismTarget()
+        private Separatism.Goal getPotentialSeparatismTarget()
         {
-            foreach (var item in Province.AllCores())
+            foreach (var country in Province.AllCores())
             {
-                if (!item.IsAlive && item != Country && item.Culture == culture)//todo doesn't supports different countries for same culture
+                if (!country.IsAlive && country != Country && country.Culture == culture)//todo doesn't supports different countries for same culture
                 {
-                    return Separatism.find(item);
+                    return Separatism.Get(country);
                 }
             }
             return null;

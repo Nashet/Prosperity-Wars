@@ -5,7 +5,7 @@ using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
-    public class MinorityPolicy : NamedReform
+    public class MinorityPolicy : AbstractReform
     {
         protected MinorityPolicyValue typedValue;
         

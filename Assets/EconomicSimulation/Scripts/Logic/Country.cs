@@ -1184,9 +1184,12 @@ namespace Nashet.EconomicSimulation
                 MainCamera.diplomacyPanel.show(this);
         }
 
-        public float GetNameWeight()
+        public float NameWeight
         {
-            return nameWeight;
+            get
+            {
+                return nameWeight;
+            }
         }
 
         public void annexTo(Country country)

@@ -2,6 +2,6 @@
 {
     public interface ISortableName
     {
-        float GetNameWeight();
+        float NameWeight { get; }
     }
 }

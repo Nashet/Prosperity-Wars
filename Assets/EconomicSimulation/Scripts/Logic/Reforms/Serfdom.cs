@@ -5,7 +5,7 @@ using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Serfdom : NamedReform
+    public class Serfdom : AbstractReform
     {
         protected SerfValue typedValue;
 

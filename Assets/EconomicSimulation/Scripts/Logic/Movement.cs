@@ -194,9 +194,9 @@ namespace Nashet.EconomicSimulation
         public void OnSeparatistsWon()
         {
             var separatists = getGoal() as Separatism;
-            separatists.separatismTarget.onSeparatismWon(Country);
+            separatists.goal.onSeparatismWon(Country);
             if (!Country.isAI())//separatists.C
-                Message.NewMessage("", "Separatists won revolution - " + separatists.separatismTarget.FullName, "hmm", false, separatists.separatismTarget.Capital.Position);
+                Message.NewMessage("", "Separatists won revolution - " + separatists.goal.FullName, "hmm", false, separatists.goal.Capital.Position);
         }
         public void onRevolutionWon(bool setReform)
         {

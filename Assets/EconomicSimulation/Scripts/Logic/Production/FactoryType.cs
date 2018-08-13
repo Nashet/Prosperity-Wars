@@ -434,9 +434,12 @@ namespace Nashet.EconomicSimulation
             return basicProduction.Product == product;
         }
 
-        public float GetNameWeight()
+        public float NameWeight
         {
-            return nameWeight;
+            get
+            {
+                return nameWeight;
+            }
         }
 
         //public Procent GetWorkForceFulFilling()

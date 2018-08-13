@@ -6,7 +6,7 @@ using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Economy : NamedReform
+    public class Economy : AbstractReform
     {
         protected EconomyReformValue typedValue;
         public static readonly EconomyReformValue PlannedEconomy = new EconomyReformValue("Planned economy", "", 0,
@@ -151,6 +151,16 @@ namespace Nashet.EconomicSimulation
                         result = new Procent(0.5f);
                 }
                 return result;
+            }
+
+            public override bool IsAllowed(object firstObject, object secondObject, out string description)
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public override bool IsAllowed(object firstObject, object secondObject)
+            {
+                throw new System.NotImplementedException();
             }
         }
     }

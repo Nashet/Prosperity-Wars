@@ -12,9 +12,12 @@
                 nameWeight = name.GetWeight();
         }
 
-        public float GetNameWeight()
+        public float NameWeight
         {
-            return nameWeight;
+            get
+            {
+                return nameWeight;
+            }
         }
 
         //public string getShortName()
