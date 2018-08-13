@@ -106,7 +106,7 @@ namespace Nashet.EconomicSimulation
                 //ssSoldiersWage.GetComponent<CanvasGroup>().alpha = 0f;
                 //ssSoldiersWage.enabled = false;
                 ssSoldiersWage.gameObject.SetActive(false);
-            if (Game.Player.economy == Econ.PlannedEconomy)
+            if (Game.Player.economy == Economy.PlannedEconomy)
             {
                 ssSoldiersWage.enabled = false;
                 ssSoldiersWage.GetComponent<ToolTipHandler>().SetText("With Planned Economy soldiers take products from country stockpile");

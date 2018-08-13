@@ -10,16 +10,16 @@ namespace Nashet.EconomicSimulation
 {
     public class Country : MultiSeller, IClickable, IShareOwner, ISortableName, INameable, IProvinceOwner, ICanInvent, IDiplomat
     {
-        public readonly List<AbstrRefrm> reforms = new List<AbstrRefrm>();
+        public readonly List<AbstractReform> reforms = new List<AbstractReform>();
         public readonly List<Movement> movements = new List<Movement>();
 
-        public readonly Gov government;
-        public readonly Econ economy;
+        public readonly Government government;
+        public readonly Economy economy;
         public readonly Serfdom serfdom;
         public readonly MinimalWage minimalWage;
-        public readonly ProcentRerfr unemploymentSubsidies;
-        public readonly ProcentRerfr taxationForPoor;
-        public readonly ProcentRerfr taxationForRich;
+        public readonly UnemploymentSubsidies unemploymentSubsidies;
+        public readonly ProcentReform taxationForPoor;
+        public readonly ProcentReform taxationForRich;
 
         public readonly MinorityPolicy minorityPolicy;
 
@@ -135,17 +135,17 @@ namespace Nashet.EconomicSimulation
 
             
 
-            economy = new Econ(this);
+            economy = new Economy(this);
 
-            government = new Gov(this);
+            government = new Government(this);
 
             serfdom = new Serfdom(this);
 
             minimalWage = new MinimalWage(this);
-            unemploymentSubsidies = new ProcentRerfr("Unemployment subsidies", "", this, new List<IReformValue> { new ProcentRerfr.ProcentReformVal(0f), new ProcentRerfr.ProcentReformVal(0.5f), new ProcentRerfr.ProcentReformVal(1f) });
+            unemploymentSubsidies = new UnemploymentSubsidies(this);
 
-            taxationForPoor = new ProcentRerfr("Taxation for poor", "", this, new List<IReformValue> { new ProcentRerfr.ProcentReformVal(0f), new ProcentRerfr.ProcentReformVal(0.5f), new ProcentRerfr.ProcentReformVal(1f) });
-            taxationForRich = new ProcentRerfr("Taxation for rich", "", this, new List<IReformValue> { new ProcentRerfr.ProcentReformVal(0f), new ProcentRerfr.ProcentReformVal(0.5f), new ProcentRerfr.ProcentReformVal(1f) });
+            taxationForPoor = new ProcentReform("Taxation for poor", "", this, new List<IReformValue> { new ProcentReform.ProcentReformVal(0f), new ProcentReform.ProcentReformVal(0.5f), new ProcentReform.ProcentReformVal(1f) });
+            taxationForRich = new ProcentReform("Taxation for rich", "", this, new List<IReformValue> { new ProcentReform.ProcentReformVal(0f), new ProcentReform.ProcentReformVal(0.5f), new ProcentReform.ProcentReformVal(1f) });
             minorityPolicy = new MinorityPolicy(this);
 
 
@@ -165,9 +165,9 @@ namespace Nashet.EconomicSimulation
             serfdom.SetValue(Serfdom.Abolished);
             //government.setValue(Government.Tribal, false);
 
-            government.SetValue(Gov.Aristocracy);
+            government.SetValue(Government.Aristocracy);
             //economy.setValue(Econ.StateCapitalism);
-            taxationForRich.SetValue(Gov.Aristocracy.defaultRichTax);
+            taxationForRich.SetValue(Government.Aristocracy.defaultRichTax);
 
             Science.Invent(Invention.Farming);
 
@@ -190,7 +190,7 @@ namespace Nashet.EconomicSimulation
             new Modifier (delegate(object x) {World.GetBadboyCountry();  return World.GetBadboyCountry()!= null && World.GetBadboyCountry()!= x as Country  && World.GetBadboyCountry()!= this; },
                 delegate  { return "There is bigger threat to the world - " + World.GetBadboyCountry(); },  0.05f, false),
             new Modifier (x=>World.GetBadboyCountry() ==x,"You are very bad boy", -0.05f, false),
-            new Modifier(x=>(x as Country).government == this.government && government==Gov.ProletarianDictatorship,
+            new Modifier(x=>(x as Country).government == this.government && government==Government.ProletarianDictatorship,
             "Comintern aka Third International", 0.2f, false)
             });
         }
@@ -201,7 +201,7 @@ namespace Nashet.EconomicSimulation
             this.name = name;
         }
 
-        private void ressurect(Province capital, Gov newGovernment)
+        private void ressurect(Province capital, Government newGovernment)
         {
             IsAlive = true;
             MoveCapitalTo(capital);
@@ -457,7 +457,7 @@ namespace Nashet.EconomicSimulation
 
         public void invest(Province province)
         {
-            if (economy == Econ.PlannedEconomy && Science.IsInvented(Invention.Manufactures))
+            if (economy == Economy.PlannedEconomy && Science.IsInvented(Invention.Manufactures))
                 if (!province.isThereFactoriesInUpgradeMoreThan(1)//Options.maximumFactoriesInUpgradeToBuildNew)
                     && province.getUnemployedWorkers() > 0)
                 {
@@ -561,7 +561,7 @@ namespace Nashet.EconomicSimulation
             if (Rand.Get.Next(90) == 1)
                 aiInvent();
             // changing salary for soldiers
-            if (economy != Econ.PlannedEconomy)
+            if (economy != Economy.PlannedEconomy)
                 if (Science.IsInvented(Invention.ProfessionalArmy) && Rand.Get.Next(10) == 1)
                 {
                     Money newWage;
@@ -593,7 +593,7 @@ namespace Nashet.EconomicSimulation
                     setSoldierWage(newWage);
                 }
             // dealing with enterprises
-            if (economy == Econ.Interventionism)
+            if (economy == Economy.Interventionism)
                 Rand.Call(() => Provinces.AllFactories.Where(
                     x => x.ownership.HowMuchOwns(this).Copy().Subtract(x.ownership.HowMuchSelling(this))
                     .isBiggerOrEqual(Procent._50Procent)).PerformAction(
@@ -601,7 +601,7 @@ namespace Nashet.EconomicSimulation
                     30);
             else
             //State Capitalism invests in own country only, Interventionists don't invests in any country
-            if (economy == Econ.StateCapitalism)
+            if (economy == Economy.StateCapitalism)
                 Rand.Call(
                     () =>
                     {
@@ -687,7 +687,7 @@ namespace Nashet.EconomicSimulation
             Science.AddPoints(Options.defaultSciencePointMultiplier * Science.modSciencePoints.getModifier(this));
 
             // put extra money in bank
-            if (economy != Econ.PlannedEconomy)
+            if (economy != Economy.PlannedEconomy)
                 if (autoPutInBankLimit.isNotZero())
                 {
                     var extraMoney = Cash.Copy().Subtract(autoPutInBankLimit, false);
@@ -707,7 +707,7 @@ namespace Nashet.EconomicSimulation
             movements.RemoveAll(x => x.isEmpty());
             foreach (var item in movements.ToArray())
                 item.Simulate();
-            if (economy == Econ.LaissezFaire)
+            if (economy == Economy.LaissezFaire)
                 Rand.Call(() => Provinces.AllFactories.PerformAction(x => x.ownership.SetToSell(this, Procent.HundredProcent, false)), 30);
         }
 
@@ -846,7 +846,7 @@ namespace Nashet.EconomicSimulation
             }
             // Should go After all Armies consumption
 
-            if (economy == Econ.PlannedEconomy)
+            if (economy == Economy.PlannedEconomy)
                 tradeWithPE(!isAI());
             else
             {
@@ -1085,7 +1085,7 @@ namespace Nashet.EconomicSimulation
             if (pop != null
                 && pop.Type == PopType.Aristocrats
                 //&& Serfdom.IsNotAbolishedInAnyWay.checkIfTrue(Country))
-                && government == Gov.Aristocracy)
+                && government == Government.Aristocracy)
                 return MoneyView.Zero; // don't pay with monarchy
             Procent tax;
             Money statistics;

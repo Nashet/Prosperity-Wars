@@ -5,35 +5,35 @@ using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
-    public class MinimalWage : ProcentRerfr
+    public class MinimalWage : ProcentReform
     {
         protected MinWageRefValue typedValue;
 
-        public static readonly MinWageRefValue None = new MinWageRefValue("No Minimum Wage", "", 0, new DoubleConditionsList(new List<Condition> { AbstractReformValue.isNotLFOrMoreConservative }));
+        public static readonly MinWageRefValue None = new MinWageRefValue("No Minimum Wage", "", 0, new DoubleConditionsList(new List<Condition> { AbstrRefrmValue.isNotLFOrMoreConservative }));
 
         public static readonly MinWageRefValue Scanty = new MinWageRefValue("Scant Minimum Wage", "- Half-hungry", 1, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Econ.isNotPlanned
+            Invention.WelfareInvented, AbstrRefrmValue.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
         public static readonly MinWageRefValue Minimal = new MinWageRefValue("Subsistence Minimum Wage", "- Just enough to feed yourself", 2, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Econ.isNotPlanned
+            Invention.WelfareInvented, AbstrRefrmValue.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
         public static readonly MinWageRefValue Trinket = new MinWageRefValue("Mid-Level Minimum Wage", "- You can buy some small stuff", 3, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Econ.isNotPlanned
+            Invention.WelfareInvented, AbstrRefrmValue.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
         public static readonly MinWageRefValue Middle = new MinWageRefValue("Social Security", "- Minimum Wage & Retirement benefits", 4, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Econ.isNotPlanned
+            Invention.WelfareInvented, AbstrRefrmValue.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
         public static readonly MinWageRefValue Big = new MinWageRefValue("Generous Minimum Wage", "- Can live almost like a king. Almost..", 5, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented,AbstractReformValue.isNotLFOrMoreConservative, Econ.isNotPlanned
+            Invention.WelfareInvented,AbstrRefrmValue.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
         public MinimalWage(Country country) : base("Minimum wage", "", country, new List<IReformValue> {None, Scanty, Minimal, Trinket, Middle, Big })
@@ -137,7 +137,7 @@ namespace Nashet.EconomicSimulation
 
 
 
-        public class MinWageRefValue : NamdRfrmValue
+        public class MinWageRefValue : NamedReformValue
         {
             public MinWageRefValue(string inname, string indescription, int id, DoubleConditionsList condition)
                 : base(inname, indescription, id, condition)

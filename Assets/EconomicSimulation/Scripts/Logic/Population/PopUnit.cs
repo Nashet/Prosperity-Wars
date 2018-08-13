@@ -111,21 +111,21 @@ namespace Nashet.EconomicSimulation
             new Modifier(Invention.SteamPowerInvented, x=>(x as PopUnit).Country, 0.25f, false),
             new Modifier(Invention.CombustionEngineInvented, x=>(x as PopUnit).Country, 0.5f, false),
 
-            new Modifier(Econ.isStateCapitlism, x=>(x as PopUnit).Country,  0.10f, false),
-            new Modifier(Econ.isInterventionism, x=>(x as PopUnit).Country,  0.30f, false),
-            new Modifier(Econ.isLF, x=>(x as PopUnit).Country,  0.50f, false),
-            new Modifier(Econ.isPlanned, x=>(x as PopUnit).Country,  -0.10f, false),
+            new Modifier(Economy.isStateCapitlism, x=>(x as PopUnit).Country,  0.10f, false),
+            new Modifier(Economy.isInterventionism, x=>(x as PopUnit).Country,  0.30f, false),
+            new Modifier(Economy.isLF, x=>(x as PopUnit).Country,  0.50f, false),
+            new Modifier(Economy.isPlanned, x=>(x as PopUnit).Country,  -0.10f, false),
             new Modifier(x=>(x as PopUnit).Education.RawUIntValue, "Education",  2f / Procent.Precision, true),
 
             //new Modifier(Serfdom.Allowed,  -20f, false)
 
             // copied in Factory
-             new Modifier(x => Gov.isPolis.checkIfTrue((x as PopUnit).Country)
+             new Modifier(x => Government.isPolis.checkIfTrue((x as PopUnit).Country)
              && (x as PopUnit).Country.Capital == (x as PopUnit).Province, "Capital of Polis", 0.5f, false),
              new Modifier(x=>(x as PopUnit).Province.hasModifier(TemporaryModifier.recentlyConquered), TemporaryModifier.recentlyConquered.ToString(), -0.20f, false),
-             new Modifier(x=>(x as PopUnit).Country.government == Gov.Tribal
+             new Modifier(x=>(x as PopUnit).Country.government == Government.Tribal
              && (x as PopUnit).type!=PopType.Tribesmen, "Government is Tribal", -0.3f, false),
-             new Modifier(Gov.isDespotism, x=>(x as PopUnit).Country, -0.20f, false) // remove this?
+             new Modifier(Government.isDespotism, x=>(x as PopUnit).Country, -0.20f, false) // remove this?
         });
         }
 
@@ -333,7 +333,7 @@ namespace Nashet.EconomicSimulation
         //    return culture;
         //}
         // have to be this way!
-        public abstract int getVotingPower(Gov reformValue);
+        public abstract int getVotingPower(Government reformValue);
 
         public int getVotingPower()
         {
@@ -843,7 +843,7 @@ namespace Nashet.EconomicSimulation
             {
                 consumeNeedsWithMarket();
             }
-            else if (Country.economy == Econ.PlannedEconomy)//non - market consumption
+            else if (Country.economy == Economy.PlannedEconomy)//non - market consumption
             {
                 // todo - !! - check for substitutes
                 consumeWithPlannedEconomy(population.getRealLifeNeeds());
@@ -876,7 +876,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public virtual bool canTrade()
         {
-            if (Econ.isMarket.checkIfTrue(Country))
+            if (Economy.isMarket.checkIfTrue(Country))
                 return true;
             else
                 return false;
@@ -893,7 +893,7 @@ namespace Nashet.EconomicSimulation
             return canVote(Country.government);
         }
 
-        public abstract bool canVote(Gov reform);
+        public abstract bool canVote(Government reform);
 
         public Dictionary<IReformValue, float> getIssues()
         {
@@ -908,7 +908,7 @@ namespace Nashet.EconomicSimulation
                             result.Add(reformValue, Value.Convert(howGood));
                     }
             var target = getPotentialSeparatismTarget();
-            if (target != null)
+            if (!ReferenceEquals(target, null))
             {
                 var howGood = target.modVoting.getModifier(this);
                 if (howGood > 0f)
@@ -917,9 +917,9 @@ namespace Nashet.EconomicSimulation
             return result;
         }
 
-        public KeyValuePair<AbstractReform, AbstractReformValue> getMostImportantIssue()
+        public KeyValuePair<AbstractReform, IReformValue> getMostImportantIssue()
         {
-            var list = new Dictionary<KeyValuePair<AbstractReform, AbstractReformValue>, float>();
+            var list = new Dictionary<KeyValuePair<AbstractReform, IReformValue>, float>();
             foreach (var reform in Country.reforms)
                 foreach (IReformValue reformValue in reform.AllPossibleValues)
                     if (reformValue.IsAllowed(Country, reformValue))
@@ -927,14 +927,14 @@ namespace Nashet.EconomicSimulation
                         var howGood = reformValue.modVoting.getModifier(this);//.howIsItGoodForPop(this);
                                                                               //if (howGood.isExist())
                         if (howGood > 0f)
-                            list.Add(new KeyValuePair<AbstrRefrm, IReformValue>(reform, reformValue), howGood);
+                            list.Add(new KeyValuePair<AbstractReform, IReformValue>(reform, reformValue), howGood);
                     }
             var target = getPotentialSeparatismTarget();
-            if (target != null)
+            if (!(ReferenceEquals(target, null)))
             {
                 var howGood = target.modVoting.getModifier(this);
                 if (howGood > 0f)
-                    list.Add(new KeyValuePair<AbstractReform, AbstractReformValue>(null, target), howGood);
+                    list.Add(new KeyValuePair<AbstractReform, IReformValue>(null, target), howGood);
             }
             return list.MaxByRandom(x => x.Value).Key;
         }
@@ -1078,13 +1078,13 @@ namespace Nashet.EconomicSimulation
         {
             // no subsidies with PE
             // may replace by trigger
-            if (Country.economy != Econ.PlannedEconomy)
+            if (Country.economy != Economy.PlannedEconomy)
             {
-                var reform = Country.unemploymentSubsidies.getValue();
+                var reform = Country.unemploymentSubsidies;
                 var unemployment = getUnemployment();
                 if (unemployment.isNotZero() && reform != UnemploymentSubsidies.None)
                 {
-                    var rate = (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate(Country.market);
+                    var rate = reform.getSubsidiesRate(Country.market);
                     MoneyView subsidy = rate.Copy().Multiply(population.Get()).Divide(1000).Multiply(unemployment);
                     //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
                     if (Country.CanPay(subsidy))

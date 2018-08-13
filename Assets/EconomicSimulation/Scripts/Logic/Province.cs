@@ -431,7 +431,7 @@ namespace Nashet.EconomicSimulation
             {
                 // workforceList = workforceList.OrderByDescending(o => o.population).ToList();
                 Func<Factory, float> order;
-                if (Country.economy == Econ.PlannedEconomy)
+                if (Country.economy == Economy.PlannedEconomy)
                     order = (x => x.getPriority());
                 else
                     order = (x => (float)x.getSalary().Get());
@@ -449,7 +449,7 @@ namespace Nashet.EconomicSimulation
 
                     int hiredInThatGroup = 0;
                     foreach (var factory in factoryGroup)
-                        if (factory.getSalary().isNotZero() || Country.economy == Econ.PlannedEconomy)
+                        if (factory.getSalary().isNotZero() || Country.economy == Economy.PlannedEconomy)
                         {
                             int factoryWants = factory.howMuchWorkForceWants();
 
@@ -963,15 +963,15 @@ namespace Nashet.EconomicSimulation
                     // reforms preferences
                     if (pop.Type.isPoorStrata())
                     {
-                        lifeQuality.Add(Country.unemploymentSubsidies.getValue().ID * 2 / 100f);
-                        lifeQuality.Add(Country.minimalWage.getValue().ID * 1 / 100f);
+                        lifeQuality.Add(Country.unemploymentSubsidies.ID * 2 / 100f);
+                        lifeQuality.Add(Country.minimalWage.ID * 1 / 100f);
                         lifeQuality.Add(Country.taxationForRich.ID * 1 / 100f);
                     }
                     else if (pop.Type.isRichStrata())
                     {
-                        if (Country.economy == Econ.LaissezFaire)
+                        if (Country.economy == Economy.LaissezFaire)
                             lifeQuality.Add(0.05f);
-                        else if (Country.economy == Econ.Interventionism)
+                        else if (Country.economy == Economy.Interventionism)
                             lifeQuality.Add(0.02f);
                     }
 

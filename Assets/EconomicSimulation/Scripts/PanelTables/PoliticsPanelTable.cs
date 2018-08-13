@@ -3,14 +3,14 @@ using Nashet.UnityUIUtils;
 
 namespace Nashet.EconomicSimulation
 {
-    public class PoliticsPanelTable : UITableNew<AbstrRefrm>
+    public class PoliticsPanelTable : UITableNew<AbstractReform>
     {
-        protected override IEnumerable<AbstrRefrm> ContentSelector()
+        protected override IEnumerable<AbstractReform> ContentSelector()
         {
             return Game.Player.reforms;
         }
 
-        protected override void AddRow(AbstrRefrm reform, int number)
+        protected override void AddRow(AbstractReform reform, int number)
         {
             // Adding reform name
             AddCell(reform.ToString(), reform);

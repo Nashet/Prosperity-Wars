@@ -72,7 +72,7 @@ namespace Nashet.EconomicSimulation
             }
             return result;
         }
-        public class MinPOlValue : NamdRfrmValue
+        public class MinPOlValue : NamedReformValue
         {
             public MinPOlValue(string inname, string indescription, int idin, DoubleConditionsList condition) : base(inname, indescription, idin, condition)
             {

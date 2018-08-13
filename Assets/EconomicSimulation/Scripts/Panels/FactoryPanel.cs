@@ -103,7 +103,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append(", Cash: ").Append(factory.Cash);
 
                 sb.Append("\nProfit: ");
-                if (Game.Player.economy != Econ.PlannedEconomy)
+                if (Game.Player.economy != Economy.PlannedEconomy)
                     sb.Append(factory.getProfit().ToString("N3")).Append(" Gold");
                 else
                     sb.Append("unknown");

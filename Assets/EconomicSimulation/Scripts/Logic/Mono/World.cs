@@ -57,8 +57,8 @@ namespace Nashet.EconomicSimulation
             allCultures.Add(culture);
             UncolonizedLand = new Country("Uncolonized lands", culture, culture.getColor(), null, 0f);
             allCountries.Add(UncolonizedLand);
-            UncolonizedLand.government.SetValue(Gov.Tribal);
-            UncolonizedLand.economy.SetValue(Econ.NaturalEconomy);
+            UncolonizedLand.government.SetValue(Government.Tribal);
+            UncolonizedLand.economy.SetValue(Economy.NaturalEconomy);
         }
 
         public static IEnumerable<Army> AllArmies()
@@ -624,7 +624,7 @@ namespace Nashet.EconomicSimulation
             foreach (Country country in World.getAllExistingCountries())
             {
                 country.consumeNeeds();
-                if (country.economy == Econ.PlannedEconomy)
+                if (country.economy == Economy.PlannedEconomy)
                 {
                     //consume in PE order
                     foreach (Factory factory in country.Provinces.AllFactories)
@@ -654,7 +654,7 @@ namespace Nashet.EconomicSimulation
                         {
                             //That placed here to avoid issues with Aristocrats and Clerics
                             //Otherwise Aristocrats starts to consume BEFORE they get all what they should
-                            if (country.serfdom == Serfdom.Allowed || country.serfdom == Serfdom.Brutal)
+                            if (country.serfdom == Serfdom.SerfdomAllowed || country.serfdom == Serfdom.Brutal)
                                 if (pop.shouldPayAristocratTax())
                                     pop.payTaxToAllAristocrats();
                         }
@@ -690,7 +690,7 @@ namespace Nashet.EconomicSimulation
                 {
                     foreach (Factory factory in province.AllFactories)
                     {
-                        if (country.economy == Econ.PlannedEconomy)
+                        if (country.economy == Economy.PlannedEconomy)
                         {
                             if (country.isAI() && factory.IsClosed && !factory.isBuilding())
                                 Rand.Call(() => factory.open(country, false), Options.howOftenCheckForFactoryReopenning);
@@ -718,7 +718,7 @@ namespace Nashet.EconomicSimulation
                         if (pop.canSellProducts())
                             Market.GiveMoneyForSoldProduct(pop);
                         pop.takeUnemploymentSubsidies();
-                        if (country.Science.IsInvented(Invention.ProfessionalArmy) && country.economy != Econ.PlannedEconomy)
+                        if (country.Science.IsInvented(Invention.ProfessionalArmy) && country.economy != Economy.PlannedEconomy)
                         // don't need salary with PE
                         {
                             var soldier = pop as Soldiers;
@@ -757,7 +757,7 @@ namespace Nashet.EconomicSimulation
                 {
                     foreach (var pop in province.AllPops)
                     {
-                        if (country.economy != Econ.PlannedEconomy)
+                        if (country.economy != Economy.PlannedEconomy)
                             Rand.Call(() => pop.invest(), Options.PopInvestRate);
                     }
 

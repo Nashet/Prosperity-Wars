@@ -61,7 +61,7 @@ namespace Nashet.EconomicSimulation
             AddCell(factory.getWorkForce().ToString(), factory);
 
             ////Adding profit
-            if (factory.Country.economy == Econ.PlannedEconomy)
+            if (factory.Country.economy == Economy.PlannedEconomy)
                 AddCell("none", factory);
             else
                 AddCell(factory.getProfit().ToString("F3") + " Gold", factory);
@@ -79,7 +79,7 @@ namespace Nashet.EconomicSimulation
                         AddCell("Closed", factory, () => "Proposed margin (tax included) is " + factory.GetMargin());
                     else
                     {
-                        if (factory.Country.economy == Econ.PlannedEconomy)
+                        if (factory.Country.economy == Economy.PlannedEconomy)
                             AddCell("none", factory);
                         else
                             AddCell(factory.GetMargin().ToString(), factory, () => "Tax included");
@@ -89,11 +89,11 @@ namespace Nashet.EconomicSimulation
 
             ////Adding salary
             //if (Game.player.isInvented(InventionType.capitalism))
-            if (factory.Country.economy == Econ.PlannedEconomy)
+            if (factory.Country.economy == Economy.PlannedEconomy)
                 AddCell("centralized", factory);
             else
             {
-                if (factory.Country.economy == Econ.NaturalEconomy)
+                if (factory.Country.economy == Economy.NaturalEconomy)
                     AddCell(factory.getSalary() + " food", factory);
                 else
                     AddCell(factory.getSalary().ToString(), factory);

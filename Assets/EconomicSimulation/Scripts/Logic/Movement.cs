@@ -14,8 +14,8 @@ namespace Nashet.EconomicSimulation
     //}
     public class Movement : Staff, INameable
     {
-        private readonly AbstractReformValue targetReformValue;
-        private readonly AbstractReform targetReform;
+        private readonly IReformValue targetReformValue;
+        //private readonly AbstractReform targetReform;
 
         //private readonly Country separatism;
         private readonly List<PopUnit> members = new List<PopUnit>();
@@ -29,11 +29,11 @@ namespace Nashet.EconomicSimulation
         //    Country.movements.Add(this);
         //}
 
-        private Movement(AbstractReform reform, AbstractReformValue goal, PopUnit firstPop, Country place) : base(place)// : this(firstPop, place)
+        private Movement(AbstractReform reform, IReformValue goal, PopUnit firstPop, Country place) : base(place)// : this(firstPop, place)
         {
             members.Add(firstPop);
             Country.movements.Add(this);
-            targetReform = reform;
+           // targetReform = reform;
             targetReformValue = goal;
             Flag = Nashet.Flag.Rebels;
         }
@@ -43,7 +43,7 @@ namespace Nashet.EconomicSimulation
             if (pop.getMovement() == null)
             {
                 var goal = pop.getMostImportantIssue();
-                if (!goal.Equals(default(KeyValuePair<AbstractReform, AbstractReformValue>)))
+                if (!goal.Equals(default(KeyValuePair<AbstractReform, IReformValue>)))
                 {
                     //find reasonable goal and join
                     var found = pop.Country.movements.Find(x => x.getGoal() == goal.Value);
@@ -107,7 +107,7 @@ namespace Nashet.EconomicSimulation
             return targetReformValue.allowed.isAllTrue(Country, targetReformValue);
         }
 
-        public AbstractReformValue getGoal()
+        public IReformValue getGoal()
         {
             return targetReformValue;
         }

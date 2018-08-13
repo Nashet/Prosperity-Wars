@@ -612,7 +612,7 @@ namespace Nashet.Conditions
             return summ;
         }
 
-        public float find(AbstractReformValue reformValue)
+        public float find(AbstractReform reformValue)
         {
             var foundModifier = list.Find(x => reformValue.allowed.contains(x)) as Modifier;
             if (foundModifier == null)

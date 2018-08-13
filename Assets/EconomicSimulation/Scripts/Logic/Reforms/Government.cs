@@ -10,13 +10,13 @@ using System.Collections.Generic;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Gov : NamedReform
+    public class Government : NamedReform
     {
         public static readonly GvrnReformName Tribal = new GvrnReformName("Tribal Federation", "- Democracy-lite; Tribesmen and Aristocrats vote.", 0,
-            new DoubleConditionsList(), "Tribe", 10, 0f, new ProcentRerfr.ProcentReformVal(0.2f));
+            new DoubleConditionsList(), "Tribe", 10, 0f, new ProcentReform.ProcentReformVal(0.2f));
 
         public static readonly GvrnReformName Aristocracy = new GvrnReformName("Aristocracy", "- Aristocrats and Clerics make the rules.", 1,
-            new DoubleConditionsList(), "Kingdom", 20, 0.5f, new ProcentRerfr.ProcentReformVal(0f), new ProcentRerfr.ProcentReformVal(0.2f));
+            new DoubleConditionsList(), "Kingdom", 20, 0.5f, new ProcentReform.ProcentReformVal(0f), new ProcentReform.ProcentReformVal(0.2f));
 
         public static readonly GvrnReformName Polis = new GvrnReformName("Polis", "- Landed individuals allowed to vote. Farmers, Aristocrats, and Clerics share equal voting power.", 8,
             new DoubleConditionsList(), "Polis", 5, 1f);
@@ -34,13 +34,13 @@ namespace Nashet.EconomicSimulation
             new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "Republic", 100, 1f);
 
         public static readonly GvrnReformName BourgeoisDictatorship = new GvrnReformName("Bourgeois Dictatorship", "- Robber Barons or Captains of Industry? You decide!", 6,
-            new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "Oligarchy", 20, 1f, new ProcentRerfr.ProcentReformVal(0.1f), new ProcentRerfr.ProcentReformVal(0.1f));
+            new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "Oligarchy", 20, 1f, new ProcentReform.ProcentReformVal(0.1f), new ProcentReform.ProcentReformVal(0.1f));
 
         public static readonly GvrnReformName Junta = new GvrnReformName("Junta", "- The military knows what's best for the people...", 7,
             new DoubleConditionsList(new List<Condition> { Invention.ProfessionalArmyInvented }), "Junta", 20, 0.3f);
 
         public static readonly GvrnReformName ProletarianDictatorship = new GvrnReformName("Proletarian Dictatorship", "- Bureaucrats ruling with a terrifying hammer and a friendly sickle.", 4,
-            new DoubleConditionsList(new List<Condition> { Invention.CollectivismInvented, Invention.ManufacturesInvented }), "SSR", 20, 0.5f, new ProcentRerfr.ProcentReformVal(0.5f), new ProcentRerfr.ProcentReformVal(1f));
+            new DoubleConditionsList(new List<Condition> { Invention.CollectivismInvented, Invention.ManufacturesInvented }), "SSR", 20, 0.5f, new ProcentReform.ProcentReformVal(0.5f), new ProcentReform.ProcentReformVal(1f));
         public static readonly Condition isPolis = new Condition(x => (x as Country).government == Polis, "Government is " + Polis, true);
         public static readonly Condition isTribal = new Condition(x => (x as Country).government == Tribal, "Government is " + Tribal, true);
         public static readonly Condition isAristocracy = new Condition(x => (x as Country).government == Aristocracy, "Government is " + Aristocracy, true);
@@ -55,7 +55,7 @@ namespace Nashet.EconomicSimulation
 
         protected GvrnReformName typedValue;
 
-        public Gov(Country country) : base("Government", "Form of government", country,
+        public Government(Country country) : base("Government", "Form of government", country,
             new List<IReformValue> {
                 Tribal, Aristocracy
             })
@@ -136,7 +136,7 @@ namespace Nashet.EconomicSimulation
 
             if (typedValue == Tribal)
             {
-                owner.economy.SetValue(Econ.StateCapitalism);
+                owner.economy.SetValue(Economy.StateCapitalism);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalized);
                 owner.minimalWage.SetValue(MinimalWage.None);
                 owner.unemploymentSubsidies.SetValue(UnemploymentSubsidies.None);
@@ -147,7 +147,7 @@ namespace Nashet.EconomicSimulation
             else
             if (typedValue == Aristocracy)
             {
-                owner.economy.SetValue(Econ.StateCapitalism);
+                owner.economy.SetValue(Economy.StateCapitalism);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 owner.minimalWage.SetValue(MinimalWage.None);
                 owner.unemploymentSubsidies.SetValue(UnemploymentSubsidies.None);
@@ -158,8 +158,8 @@ namespace Nashet.EconomicSimulation
             else
             if (typedValue == Polis)
             {
-                if (owner.economy == Econ.PlannedEconomy)
-                    owner.economy.SetValue(Econ.StateCapitalism);
+                if (owner.economy == Economy.PlannedEconomy)
+                    owner.economy.SetValue(Economy.StateCapitalism);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 //owner.minimalWage.setValue(MinimalWage.None);
                 //owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -170,7 +170,7 @@ namespace Nashet.EconomicSimulation
             else
             if (typedValue == Despotism)
             {
-                owner.economy.SetValue(Econ.StateCapitalism);
+                owner.economy.SetValue(Economy.StateCapitalism);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 //owner.minimalWage.setValue(MinimalWage.None);
                 //owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -181,7 +181,7 @@ namespace Nashet.EconomicSimulation
             else
         if (typedValue == Theocracy)
             {
-                owner.economy.SetValue(Econ.StateCapitalism);
+                owner.economy.SetValue(Economy.StateCapitalism);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 //owner.minimalWage.setValue(MinimalWage.None);
                 //owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -192,7 +192,7 @@ namespace Nashet.EconomicSimulation
             else
             if (typedValue == WealthDemocracy)
             {
-                owner.economy.SetValue(Econ.Interventionism);
+                owner.economy.SetValue(Economy.Interventionism);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 //owner.minimalWage.setValue(MinimalWage.None);
                 //owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -203,8 +203,8 @@ namespace Nashet.EconomicSimulation
             else
             if (typedValue == Democracy)
             {
-                if (owner.economy == Econ.PlannedEconomy)
-                    owner.economy.SetValue(Econ.LaissezFaire);
+                if (owner.economy == Economy.PlannedEconomy)
+                    owner.economy.SetValue(Economy.LaissezFaire);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 //owner.minimalWage.setValue(MinimalWage.None);
                 //owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -215,7 +215,7 @@ namespace Nashet.EconomicSimulation
             else
         if (typedValue == BourgeoisDictatorship)
             {
-                owner.economy.SetValue(Econ.LaissezFaire);
+                owner.economy.SetValue(Economy.LaissezFaire);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 owner.minimalWage.SetValue(MinimalWage.None);
                 owner.unemploymentSubsidies.SetValue(UnemploymentSubsidies.None);
@@ -226,7 +226,7 @@ namespace Nashet.EconomicSimulation
             else
         if (typedValue == Junta)
             {
-                owner.economy.SetValue(Econ.StateCapitalism);
+                owner.economy.SetValue(Economy.StateCapitalism);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 //owner.minimalWage.setValue(MinimalWage.None);
                 //owner.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
@@ -237,7 +237,7 @@ namespace Nashet.EconomicSimulation
             else
         if (typedValue == ProletarianDictatorship)
             {
-                owner.economy.SetValue(Econ.PlannedEconomy);
+                owner.economy.SetValue(Economy.PlannedEconomy);
                 //owner.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
                 owner.minimalWage.SetValue(MinimalWage.None);
                 owner.unemploymentSubsidies.SetValue(UnemploymentSubsidies.None);
@@ -256,13 +256,13 @@ namespace Nashet.EconomicSimulation
             if (owner == Game.Player)
                 MainCamera.refreshAllActive();
         }
-        public class GvrnReformName : NamdRfrmValue
+        public class GvrnReformName : NamedReformValue
         {
             private readonly int MaxSizeLimitForDisloyaltyModifier;
             private readonly string prefix;
             private readonly float scienceModifier;
-            public ProcentRerfr.ProcentReformVal defaultPoorTax;
-            public ProcentRerfr.ProcentReformVal defaultRichTax;
+            public ProcentReform.ProcentReformVal defaultPoorTax;
+            public ProcentReform.ProcentReformVal defaultRichTax;
 
             public float getScienceModifier()
             {
@@ -281,7 +281,7 @@ namespace Nashet.EconomicSimulation
             }
 
             public GvrnReformName(string name, string description, int id, DoubleConditionsList condition,
-                string prefix, int MaxSizeLimitForDisloyaltyModifier, float scienceModifier, ProcentRerfr.ProcentReformVal defaultPoorTax = null, ProcentRerfr.ProcentReformVal defaultRichTax = null) : base(name, description, id, condition)
+                string prefix, int MaxSizeLimitForDisloyaltyModifier, float scienceModifier, ProcentReform.ProcentReformVal defaultPoorTax = null, ProcentReform.ProcentReformVal defaultRichTax = null) : base(name, description, id, condition)
             {
                 this.prefix = prefix;
                 this.MaxSizeLimitForDisloyaltyModifier = MaxSizeLimitForDisloyaltyModifier;

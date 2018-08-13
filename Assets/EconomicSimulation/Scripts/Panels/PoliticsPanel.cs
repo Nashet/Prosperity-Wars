@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
         private Scrollbar movementsHorizontalScrollBar;
 
         [SerializeField]
-        private AbstrRefrm selectedReform;
+        private AbstractReform selectedReform;
 
         [SerializeField]
         private IReformValue selectedReformValue;
@@ -117,7 +117,7 @@ namespace Nashet.EconomicSimulation
             refresh(true);
         }
 
-        public void selectReform(AbstrRefrm newSelection)
+        public void selectReform(AbstractReform newSelection)
         {
             selectedReform = newSelection;
             if (ReferenceEquals(newSelection, null))
@@ -164,7 +164,7 @@ namespace Nashet.EconomicSimulation
 
                 if (selectedReform != selectedReformValue)
                 {
-                    if (Game.Player.government != Gov.Despotism)
+                    if (Game.Player.government != Government.Despotism)
                     {
                         descriptionText.text += "\n" + procentVotersSayedYes + " of voters want this reform ( ";
                         foreach (PopType type in PopType.getAllPopTypes())
@@ -190,7 +190,7 @@ namespace Nashet.EconomicSimulation
 
                 if (selectedReformValue != null)// && selectedReformValue != selectedReform.getValue())
                 {
-                    if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.Player.government == Gov.Despotism)
+                    if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.Player.government == Government.Despotism)
                     { // has enough voters
                         voteButton.interactable = selectedReformValue.IsAllowed(Game.Player, selectedReformValue, out voteButton.GetComponent<ToolTipHandler>().text);
                         forceDecisionButton.GetComponent<ToolTipHandler>().SetText(voteButton.GetComponent<ToolTipHandler>().GetText());

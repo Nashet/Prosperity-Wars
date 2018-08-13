@@ -1,55 +1,118 @@
-﻿using System.Collections;
+﻿using Nashet.EconomicSimulation;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using Nashet.ValueSpace;
+using System;
+using System.Collections.Generic;
 
-namespace Nashet.EconomicSimulation
+public abstract class AbstractReform : Component<Country>, INameable, ISortableName, IClickable
 {
-    public abstract class AbstractReform : Name, IClickable
+    private readonly string description;
+    protected readonly string name;
+    protected readonly float nameWeight;
+
+    protected IReformValue value;
+    protected readonly List<IReformValue> possibleValues;
+
+    public AbstractReform(string name, string indescription, Country country, List<IReformValue> possibleValues) : base(country)
     {
-        private readonly string description;
+        this.name = name;
+        if (name != null)
+            nameWeight = name.GetWeight();
+        description = indescription;
+        country.reforms.Add(this);
+        this.possibleValues = possibleValues;
 
-        protected AbstractReform(string name, string indescription, Country country) : base(name)
-        {
-            description = indescription;
-            //country.reforms.Add(this);
-            this.country = country;
-        }
-        private readonly Country country;
-        public abstract bool isAvailable(Country country);
+    }
+    protected abstract Procent howIsItGoodForPop(PopUnit pop);
 
-        public abstract IEnumerator GetEnumerator();
+    public override bool Equals(Object another)
+    {
+        if (ReferenceEquals(another, null))
+            throw new ArgumentNullException();
+        return another is IReformValue && this == (IReformValue)another
+            || another is AbstractReform && this == (AbstractReform)another;
+    }
+    public override int GetHashCode()
+    {
+        return name.GetHashCode();
+    }
+    public static bool operator ==(AbstractReform x, IReformValue y)
+    {
+        if (ReferenceEquals(x, null) || ReferenceEquals(y, null))
+            throw new ArgumentNullException();
+        return x.value == y;
+    }
+    public static bool operator !=(AbstractReform x, IReformValue y)
+    {
+        return !(x == y);
+    }
+
+    public static bool operator ==(AbstractReform x, AbstractReform y)
+    {
+        if (ReferenceEquals(x, null) || ReferenceEquals(y, null))
+            throw new ArgumentNullException();
+        return x.value == y.value;
+    }
+    public static bool operator !=(AbstractReform x, AbstractReform y)
+    {
+
+        return !(x == y);
+    }
+
+    //public abstract bool isAvailable(Country country);
 
 
-        public virtual void setValue(IReformValue selectedReformValue)
-        {
-            foreach (PopUnit pop in country.Provinces.AllPops)
-                if (pop.getSayingYes(selectedReformValue))
-                {
-                    pop.loyalty.Add(Options.PopLoyaltyBoostOnDiseredReformEnacted);
-                    pop.loyalty.clamp100();
-                }
-            var isThereSuchMovement = country.movements.Find(x => x.getGoal() == selectedReformValue);
-            if (isThereSuchMovement != null)
+    //public abstract bool canHaveThatValue(AbstractNamdRfrmValue abstractNamdRfrmValue);
+    public abstract void OnReformEnactedInProvince(Province province);
+
+    public virtual void SetValue(AbstractReform reform)
+    {
+        SetValue(reform.value);
+    }
+    public virtual void SetValue(IReformValue reformValue)
+    {
+
+        foreach (PopUnit pop in owner.Provinces.AllPops)
+            if (pop.getSayingYes(reformValue))
             {
-                isThereSuchMovement.onRevolutionWon(false);
+                pop.loyalty.Add(Options.PopLoyaltyBoostOnDiseredReformEnacted);
+                pop.loyalty.clamp100();
             }
-        }
-
-        public override string FullName
+        var isThereSuchMovement = owner.movements.Find(x => x.getGoal() == reformValue);
+        if (isThereSuchMovement != null)
         {
-            get { return description; }
+            isThereSuchMovement.onRevolutionWon(false);
         }
+    }
 
-        public abstract AbstractReformValue getValue();
+    public string FullName
+    {
+        get { return description; }
+    }
+    public string ShortName
+    {
+        get { return name; }
+    }
 
-        public abstract bool canHaveValue(AbstractReformValue abstractReformValue);
+    public void OnClicked()
+    {
+        //MainCamera.politicsPanel.selectReform(this);
+        MainCamera.politicsPanel.Refresh();
+    }
 
-        //abstract public AbstractReformValue getValue(int value);
-        //abstract public void setValue(int value);
-        public void OnClicked()
+    public float GetNameWeight()
+    {
+        return nameWeight;
+    }
+    public IEnumerable<IReformValue> AllPossibleValues
+    {
+        get
         {
-            MainCamera.politicsPanel.selectReform(this);
-            MainCamera.politicsPanel.Refresh();
+            foreach (var item in possibleValues)
+            {
+                yield return item;
+            }
         }
     }
 }

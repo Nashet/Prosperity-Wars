@@ -36,7 +36,7 @@ namespace Nashet.EconomicSimulation
         public override void produce()
         {
             // artisan shouldn't work with PE
-            if (Country.economy == Econ.PlannedEconomy)
+            if (Country.economy == Economy.PlannedEconomy)
                 artisansProduction = null;
             else
             {
@@ -48,18 +48,18 @@ namespace Nashet.EconomicSimulation
                     //if (artisansProduction.isAllInputProductsCollected())
                     {
                         artisansProduction.produce();
-                        if (Econ.isMarket.checkIfTrue(Country))
+                        if (Economy.isMarket.checkIfTrue(Country))
                         {
                             if (getGainGoodsThisTurn().isNotZero())
                                 SendToMarket(getGainGoodsThisTurn());
                         }
-                        else if (Country.economy == Econ.NaturalEconomy)
+                        else if (Country.economy == Economy.NaturalEconomy)
                         {
                             // send to market?
                             if (getGainGoodsThisTurn().isNotZero())
                                 SendToMarket(getGainGoodsThisTurn());
                         }
-                        else if (Country.economy == Econ.PlannedEconomy)
+                        else if (Country.economy == Economy.PlannedEconomy)
                         {
                             storage.sendAll(Country.countryStorageSet);
                         }
@@ -120,7 +120,7 @@ namespace Nashet.EconomicSimulation
 
         public override bool canTrade()
         {
-            if (Country.economy == Econ.PlannedEconomy)
+            if (Country.economy == Economy.PlannedEconomy)
                 return false;
             else
                 return true;
@@ -136,20 +136,20 @@ namespace Nashet.EconomicSimulation
             return true;
         }
 
-        public override bool canVote(Gov reform)
+        public override bool canVote(Government reform)
         {
-            if ((reform == Gov.Democracy || reform == Gov.Polis || reform == Gov.WealthDemocracy
-                || reform == Gov.BourgeoisDictatorship)
+            if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
+                || reform == Government.BourgeoisDictatorship)
                 && (isStateCulture() || Country.minorityPolicy == MinorityPolicy.Equality))
                 return true;
             else
                 return false;
         }
 
-        public override int getVotingPower(Gov reformValue)
+        public override int getVotingPower(Government reformValue)
         {
             if (canVote(reformValue))
-                if (reformValue == Gov.WealthDemocracy)
+                if (reformValue == Government.WealthDemocracy)
                     return Options.PopMiddleStrataVotePower;
                 else
                     return 1;

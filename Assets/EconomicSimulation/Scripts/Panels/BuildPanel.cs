@@ -42,7 +42,7 @@ namespace Nashet.EconomicSimulation
         {
             bool buildSomething = false;
             Factory factory;
-            if (Econ.isMarket.checkIfTrue(Game.Player))
+            if (Economy.isMarket.checkIfTrue(Game.Player))
             {
                 MoneyView cost = selectedFactoryType.GetBuildCost(Game.Player.market);
                 if (Game.Player.CanPay(cost))
@@ -95,7 +95,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("Build ").Append(selectedFactoryType);
                 sb.Append("\n\nResources to build: ").Append(selectedFactoryType.GetBuildNeeds().getString(", "));
                 sb.Append(".");
-                if (Game.Player.economy != Econ.PlannedEconomy)
+                if (Game.Player.economy != Economy.PlannedEconomy)
                 {
                     var cost = selectedFactoryType.GetBuildCost(Game.Player.market);
                     sb.Append(" cost: ").Append(cost);

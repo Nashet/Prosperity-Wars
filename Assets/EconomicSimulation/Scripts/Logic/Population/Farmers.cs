@@ -31,7 +31,7 @@ namespace Nashet.EconomicSimulation
                 storage.add(getGainGoodsThisTurn());
                 calcStatistics();
             }
-            if (Econ.isMarket.checkIfTrue(Country))
+            if (Economy.isMarket.checkIfTrue(Country))
             {
                 //sentToMarket.set(gainGoodsThisTurn);
                 //Country.market.sentToMarket.add(gainGoodsThisTurn);
@@ -40,7 +40,7 @@ namespace Nashet.EconomicSimulation
             }
             else
             {
-                if (Country.economy == Econ.PlannedEconomy)
+                if (Country.economy == Economy.PlannedEconomy)
                 {
                     Country.countryStorageSet.Add(getGainGoodsThisTurn());
                 }
@@ -49,7 +49,7 @@ namespace Nashet.EconomicSimulation
 
         public override bool canSellProducts()
         {
-            if (Econ.isMarket.checkIfTrue(Country))
+            if (Economy.isMarket.checkIfTrue(Country))
                 return true;
             else
                 return false;
@@ -108,16 +108,16 @@ namespace Nashet.EconomicSimulation
         //    else
         //        return false;
         //}
-        public override bool canVote(Gov reform)
+        public override bool canVote(Government reform)
         {
-            if ((reform == Gov.Democracy || reform == Gov.Polis || reform == Gov.WealthDemocracy)
+            if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy)
                 && (isStateCulture() || Country.minorityPolicy == MinorityPolicy.Equality))
                 return true;
             else
                 return false;
         }
 
-        public override int getVotingPower(Gov reformValue)
+        public override int getVotingPower(Government reformValue)
         {
             if (canVote(reformValue))
                 return 1;

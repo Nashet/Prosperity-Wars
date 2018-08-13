@@ -114,7 +114,7 @@ namespace Nashet.EconomicSimulation
                     {
                         var agent = upgrader as Agent;
                         var typedfactory = factory as Factory;
-                        if (agent.Country.economy == Econ.PlannedEconomy)
+                        if (agent.Country.economy == Economy.PlannedEconomy)
                         {
                             return agent.Country.countryStorageSet.has(typedfactory.getUpgradeNeeds());
                         }
@@ -147,9 +147,9 @@ namespace Nashet.EconomicSimulation
                 || (factory as Factory).Country == (agent as Country)
                 || ((factory as Factory).Country.economy.AllowForeignInvestments
                     && agent is Country
-                    && (agent as Country).economy != Econ.PlannedEconomy),
+                    && (agent as Country).economy != Economy.PlannedEconomy),
                 factory => "Country allows foreign investments or it isn't foreign investment", true),//(factory as Factory).Country+
-            conNotLForNotCountry = new DoubleCondition((agent, factory) => agent == null || !(agent is Country) || (agent as Country).economy != Econ.LaissezFaire, factory => "Economy policy is not Laissez Faire", true)
+            conNotLForNotCountry = new DoubleCondition((agent, factory) => agent == null || !(agent is Country) || (agent as Country).economy != Economy.LaissezFaire, factory => "Economy policy is not Laissez Faire", true)
             ;
 
         public static readonly DoubleConditionsList
@@ -162,22 +162,22 @@ namespace Nashet.EconomicSimulation
             conditionsReopen = new DoubleConditionsList(new List<Condition> { conNotBuilding, conClosed, conPlayerHaveMoneyToReopen, conAllowsForeignInvestments, conNotLForNotCountry }),
             conditionsDestroy = new DoubleConditionsList(new List<Condition> {
             //new Condition(Econ.isNotLF, x=>(x as Producer).Country),
-             conPlacedInOurCountry,  Econ.isNotLF }),//}).addForSecondObject(new List<Condition> {
+             conPlacedInOurCountry,  Economy.isNotLF }),//}).addForSecondObject(new List<Condition> {
                                                         // (status == Econ.PlannedEconomy || status == Econ.NaturalEconomy || status == Econ.StateCapitalism)
             conditionsNatinalize = new DoubleConditionsList(new List<Condition> { conNotFullyBelongsToCountry, conPlacedInOurCountry,
-                Econ.isNotLF, Econ.isNotInterventionism }),//}) .addForSecondObject(new List<Condition> {
-            conditionsSubsidize = new DoubleConditionsList(new List<Condition> { conPlacedInOurCountry ,Econ.isNotLF, Econ.isNotNatural,
-                Econ.isNotPlanned }),//}).addForSecondObject(new List<Condition> {
-            conditionsDontHireOnSubsidies = new DoubleConditionsList(new List<Condition> { conPlacedInOurCountry, Econ.isNotLF,
-                Econ.isNotNatural, Condition.IsNotImplemented }),//})            .addForSecondObject(new List<Condition> {
-            conditionsChangePriority = new DoubleConditionsList(new List<Condition> { conPlacedInOurCountry, Econ.isPlanned });//})            .addForSecondObject(new List<Condition> {
+                Economy.isNotLF, Economy.isNotInterventionism }),//}) .addForSecondObject(new List<Condition> {
+            conditionsSubsidize = new DoubleConditionsList(new List<Condition> { conPlacedInOurCountry ,Economy.isNotLF, Economy.isNotNatural,
+                Economy.isNotPlanned }),//}).addForSecondObject(new List<Condition> {
+            conditionsDontHireOnSubsidies = new DoubleConditionsList(new List<Condition> { conPlacedInOurCountry, Economy.isNotLF,
+                Economy.isNotNatural, Condition.IsNotImplemented }),//})            .addForSecondObject(new List<Condition> {
+            conditionsChangePriority = new DoubleConditionsList(new List<Condition> { conPlacedInOurCountry, Economy.isPlanned });//})            .addForSecondObject(new List<Condition> {
 
         public static readonly DoubleConditionsList
-            conditionsSell = new DoubleConditionsList(new List<Condition> {Econ.isNotPlanned, //todo temporally removed , Economy.isNotState
+            conditionsSell = new DoubleConditionsList(new List<Condition> {Economy.isNotPlanned, //todo temporally removed , Economy.isNotState
             new DoubleCondition((agent, factory)=>(factory as Factory).ownership.HasOwner(agent as IShareOwner), x=>"Has something to sale", false)
             }),
 
-            conditionsBuy = new DoubleConditionsList(new List<Condition> {Econ.isNotLF, Econ.isNotPlanned,
+            conditionsBuy = new DoubleConditionsList(new List<Condition> {Economy.isNotLF, Economy.isNotPlanned,
                 new DoubleCondition ((agent, factory)=>(factory as Factory).ownership.IsOnSale(), x=>"Is on sale", true),
                 new DoubleCondition ((agent, factory)=> (agent as Agent).CanPay( (factory as Factory).ownership.GetShareMarketValue(Options.PopBuyAssetsAtTime) ),
                     x=> "Have money to buy share", false),
@@ -192,10 +192,10 @@ namespace Nashet.EconomicSimulation
             new Modifier(Invention.SteamPowerInvented, x => (x as Factory).Country, 0.25f, false),
             new Modifier(Invention.CombustionEngineInvented, x => (x as Factory).Country, 0.5f, false),
 
-            new Modifier(Econ.isStateCapitlism, x => (x as Factory).Country,  0.10f, false),
-            new Modifier(Econ.isInterventionism, x => (x as Factory).Country,  0.30f, false),
-            new Modifier(Econ.isLF, x => (x as Factory).Country, 0.50f, false),
-            new Modifier(Econ.isPlanned, x => (x as Factory).Country, -0.10f, false),
+            new Modifier(Economy.isStateCapitlism, x => (x as Factory).Country,  0.10f, false),
+            new Modifier(Economy.isInterventionism, x => (x as Factory).Country,  0.30f, false),
+            new Modifier(Economy.isLF, x => (x as Factory).Country, 0.50f, false),
+            new Modifier(Economy.isPlanned, x => (x as Factory).Country, -0.10f, false),
             new Modifier(x=>
             {
                 var factory = x as Factory;
@@ -211,11 +211,11 @@ namespace Nashet.EconomicSimulation
             modifierHasResourceInProvince,
             modifierConcentrationBonus, modifierBelongsToCountry, modifierIsSubsidised,
             // copied in popUnit
-             new Modifier(x => Gov.isPolis.checkIfTrue((x as Factory).Country)
+             new Modifier(x => Government.isPolis.checkIfTrue((x as Factory).Country)
              && (x as Factory).Country.Capital == (x as Factory).Province, "Capital of Polis", 0.50f, false),
              new Modifier(x=>(x as Factory).Province.hasModifier(TemporaryModifier.recentlyConquered), TemporaryModifier.recentlyConquered.ToString(), -0.20f, false),
-             new Modifier(Gov.isTribal, x=>(x as Factory).Country, -0.3f, false),
-             new Modifier(Gov.isDespotism, x=>(x as Factory).Country, -0.20f, false), // remove this?
+             new Modifier(Government.isTribal, x=>(x as Factory).Country, -0.3f, false),
+             new Modifier(Government.isDespotism, x=>(x as Factory).Country, -0.20f, false), // remove this?
              new Modifier(x=>!(x as Factory).Country.Science.IsInventedFactory((x as Factory).Type), "Uses uninvented technologies", -0.3f, false)
             });
 
@@ -244,7 +244,7 @@ namespace Nashet.EconomicSimulation
                 ownership.Add(investor, cost);
 
                 salary.Set(province.getLocalMinSalary());
-                if (Country.economy == Econ.PlannedEconomy)
+                if (Country.economy == Economy.PlannedEconomy)
                     setPriorityAutoWithPlannedEconomy();
                 if (Game.logInvestments)
                     Debug.Log(investor + " invested " + cost + " in building new " + this + " awaiting " + type.GetPossibleMargin(province) + " margin");
@@ -477,7 +477,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         private Procent GetMargin(bool basedOnProfit)
         {
-            if (Country.economy == Econ.PlannedEconomy)
+            if (Country.economy == Economy.PlannedEconomy)
                 return Procent.ZeroProcent.Copy();
             else
             {
@@ -541,10 +541,10 @@ namespace Nashet.EconomicSimulation
         //}
         public void paySalary()
         {
-            if (IsOpen && Country.economy != Econ.PlannedEconomy)
+            if (IsOpen && Country.economy != Economy.PlannedEconomy)
             {
                 // per 1000 men
-                if (Econ.isMarket.checkIfTrue(Country))
+                if (Economy.isMarket.checkIfTrue(Country))
                     foreach (var employee in hiredWorkForce)
                     {
                         MoneyView howMuchPay = salary.Copy().Multiply(employee.Value).Divide(workForcePerLevel);
@@ -564,7 +564,7 @@ namespace Nashet.EconomicSimulation
                         }
                     }
                 // don't pay nothing if where is planned economy
-                else if (Country.economy == Econ.NaturalEconomy)
+                else if (Country.economy == Economy.NaturalEconomy)
                 {
                     //todo natural e.
                     // non market!!
@@ -626,7 +626,7 @@ namespace Nashet.EconomicSimulation
         public void ChangeSalary()
         {
             //Should be rise salary if: small unemployment, has profit, need has other resources
-            if (IsOpen && Econ.isMarket.checkIfTrue(Country))
+            if (IsOpen && Economy.isMarket.checkIfTrue(Country))
             {
                 var unemployment = Province.AllPops.Where(x => x.Type == PopType.Workers).GetAverageProcent(x => x.getUnemployment());
                 var margin = GetMargin(true);
@@ -729,7 +729,7 @@ namespace Nashet.EconomicSimulation
                 if (inputFactor < 0.95f && !isSubsidized() && !isJustHiredPeople() && workForce > 0)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
                     difference = -1 * maxHiringSpeed;
 
-                if (Country.economy != Econ.PlannedEconomy)// commies don't care about profits
+                if (Country.economy != Economy.PlannedEconomy)// commies don't care about profits
                 {
                     //fire people if unprofitable.
                     if (getProfit() < 0m && !isSubsidized() && !isJustHiredPeople() && daysUnprofitable >= Options.minDaysBeforeSalaryCut)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
@@ -919,7 +919,7 @@ namespace Nashet.EconomicSimulation
 
         public void open(IShareOwner byWhom, bool payMoney)
         {            
-            if (Country.economy != Econ.PlannedEconomy)
+            if (Country.economy != Economy.PlannedEconomy)
                 salary.Set(Province.getLocalMinSalary());
             if (payMoney)
             {
@@ -970,7 +970,7 @@ namespace Nashet.EconomicSimulation
             currentInvestor = byWhom;
             upgrading = true;
             constructionNeeds.Add(getUpgradeNeeds());
-            if ((byWhom as Agent).Country.economy != Econ.PlannedEconomy)
+            if ((byWhom as Agent).Country.economy != Economy.PlannedEconomy)
             {
                 var cost = Country.market.getCost(getUpgradeNeeds());
                 (byWhom as Agent).PayWithoutRecord(this, cost);
@@ -1028,12 +1028,12 @@ namespace Nashet.EconomicSimulation
                 }
                 else
                 {
-                    if (Econ.isMarket.checkIfTrue(Country))
+                    if (Economy.isMarket.checkIfTrue(Country))
                     {
                         if (getGainGoodsThisTurn().isNotZero())
                             SendToMarket(getGainGoodsThisTurn());
                     }
-                    else if (Country.economy == Econ.NaturalEconomy)
+                    else if (Country.economy == Economy.NaturalEconomy)
                     {
                         // todo Send product proportionally to all owners? with NE?
                         //Country countryOwner = getOwner() as Country;
@@ -1045,7 +1045,7 @@ namespace Nashet.EconomicSimulation
                                 SendToMarket(getGainGoodsThisTurn());
                         }
                     }
-                    else if (Country.economy == Econ.PlannedEconomy)
+                    else if (Country.economy == Economy.PlannedEconomy)
                     {
                         storage.sendAll(Country.countryStorageSet);
                     }
@@ -1075,7 +1075,7 @@ namespace Nashet.EconomicSimulation
             {
                 List<Storage> shoppingList = getHowMuchInputProductsReservesWants();
                 if (shoppingList.Count > 0)
-                    if (Country.economy == Econ.PlannedEconomy)
+                    if (Country.economy == Economy.PlannedEconomy)
                     {
                         var realNeed = Country.countryStorageSet.hasAllOfConvertToBiggest(shoppingList);
                         if (realNeed != null)
@@ -1103,7 +1103,7 @@ namespace Nashet.EconomicSimulation
                 bool isBuyingComplete = false;
 
                 //if (buildByPlannedEconomy)
-                if (Country.economy == Econ.PlannedEconomy)
+                if (Country.economy == Economy.PlannedEconomy)
                 {
                     if (daysInConstruction >= Options.fabricConstructionTimeWithoutCapitalism)
                         if (Country.countryStorageSet.has(constructionNeeds))
@@ -1142,7 +1142,7 @@ namespace Nashet.EconomicSimulation
                     }
                 }
                 if (isBuyingComplete
-                   || (Country.economy == Econ.NaturalEconomy && daysInConstruction == Options.fabricConstructionTimeWithoutCapitalism))
+                   || (Country.economy == Economy.NaturalEconomy && daysInConstruction == Options.fabricConstructionTimeWithoutCapitalism))
 
                 {
                     //todo avoid extra subtraction and redo whole method

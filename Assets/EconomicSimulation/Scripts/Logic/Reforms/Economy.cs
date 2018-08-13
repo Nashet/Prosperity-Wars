@@ -6,12 +6,12 @@ using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Econ : NamedReform
+    public class Economy : NamedReform
     {
         protected EconReformValue typedValue;
         public static readonly EconReformValue PlannedEconomy = new EconReformValue("Planned economy", "", 0,
             new DoubleConditionsList(new List<Condition> {
-            Invention.CollectivismInvented, Gov.isProletarianDictatorship }), false);
+            Invention.CollectivismInvented, Government.isProletarianDictatorship }), false);
 
         private static readonly ConditionsList capitalism = new ConditionsList(new List<Condition>
         {
@@ -79,7 +79,7 @@ namespace Nashet.EconomicSimulation
             || (x as Country).economy == LaissezFaire
             , "Economy is market economy", true);
 
-        public Econ(Country country) : base("Economy", "Your economy policy", country, new List<IReformValue>{})
+        public Economy(Country country) : base("Economy", "Your economy policy", country, new List<IReformValue>{})
         {
         }
 
@@ -131,7 +131,7 @@ namespace Nashet.EconomicSimulation
         {
             get {return typedValue.AllowForeignInvestments; }
         }
-        public class EconReformValue : NamdRfrmValue
+        public class EconReformValue : NamedReformValue
         {            
             public Procent maxPoorTax;
             public Procent minPoorTax;
