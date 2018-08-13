@@ -29,12 +29,12 @@ namespace Nashet.EconomicSimulation
         private Scrollbar movementsHorizontalScrollBar;
 
         [SerializeField]
-        private AbstractReform selectedReform;
+        private AbstrRefrm selectedReform;
 
         [SerializeField]
-        private AbstractReformValue selectedReformValue;
+        private IReformValue selectedReformValue;
 
-        private readonly List<AbstractReformValue> assotiateTable = new List<AbstractReformValue>();
+        private readonly List<IReformValue> assotiateTable = new List<IReformValue>();
 
         // Use this for initialization
         private void Start()
@@ -49,9 +49,9 @@ namespace Nashet.EconomicSimulation
 
         private void changeReformValue()
         {
-            if (selectedReform != null && selectedReformValue != null && selectedReformValue != selectedReform.getValue())
+            if (!(ReferenceEquals(selectedReform, null)) && selectedReformValue != null && selectedReform != selectedReformValue)
             {
-                selectedReform.setValue(selectedReformValue);
+                selectedReform.SetValue(selectedReformValue);
                 MainCamera.refreshAllActive();
             }
         }
@@ -91,13 +91,13 @@ namespace Nashet.EconomicSimulation
             dropDown.ClearOptions();
             byte count = 0;
             assotiateTable.Clear();
-            foreach (AbstractReformValue next in selectedReform)
+            foreach (IReformValue next in selectedReform.AllPossibleValues)
             {
                 //if (next.isAvailable(Game.player))
                 {
                     dropDown.options.Add(new Dropdown.OptionData { text = next.ToString() });
                     assotiateTable.Add(next);
-                    if (next == selectedReform.getValue())
+                    if (next == selectedReform)
                     {
                         //selectedReformValue = next;
                         // selecting non empty option
@@ -117,13 +117,13 @@ namespace Nashet.EconomicSimulation
             refresh(true);
         }
 
-        public void selectReform(AbstractReform newSelection)
+        public void selectReform(AbstrRefrm newSelection)
         {
             selectedReform = newSelection;
-            if (newSelection == null)
+            if (ReferenceEquals(newSelection, null))
                 dropDown.interactable = false;
         }
-       
+
 
         private void refresh(bool callRebuildDropDown)
         {
@@ -133,7 +133,7 @@ namespace Nashet.EconomicSimulation
                 movementsText.text += "\n\n\n\n";
 
             movementsHorizontalScrollBar.value = 0;
-            if (selectedReform == null)
+            if (ReferenceEquals(selectedReform, null))
             {
                 voteButton.interactable = false;
                 voteButton.GetComponentInChildren<Text>().text = "Select reform";
@@ -146,12 +146,12 @@ namespace Nashet.EconomicSimulation
                 if (callRebuildDropDown) // meaning changed whole reform
                     rebuildDropDown();
                 descriptionText.text = selectedReform + " reforms " + selectedReform.FullName
-               + "\nCurrently: " + selectedReform.getValue() + " " + selectedReform.getValue().FullName
+               + "\nCurrently: " + selectedReform + " " + selectedReform.FullName
                + "\nSelected: ";
 
                 //if (selectedReformValue != null)
-                if (selectedReformValue != selectedReform.getValue())
-                    descriptionText.text += selectedReformValue + " " + selectedReformValue.FullName;
+                if (selectedReformValue != selectedReform)
+                    descriptionText.text += selectedReformValue + " " + selectedReformValue;//.FullName
                 else
                     descriptionText.text += "current";
 
@@ -162,9 +162,9 @@ namespace Nashet.EconomicSimulation
                 Dictionary<PopType, int> divisionPopulationResult = new Dictionary<PopType, int>();
                 Dictionary<PopType, int> divisionVotersResult = Game.Player.Provinces.getYesVotesByType(selectedReformValue, ref divisionPopulationResult);
 
-                if (selectedReformValue != selectedReform.getValue())
+                if (selectedReform != selectedReformValue)
                 {
-                    if (Game.Player.government!= Gov.Despotism)
+                    if (Game.Player.government != Gov.Despotism)
                     {
                         descriptionText.text += "\n" + procentVotersSayedYes + " of voters want this reform ( ";
                         foreach (PopType type in PopType.getAllPopTypes())
@@ -190,9 +190,9 @@ namespace Nashet.EconomicSimulation
 
                 if (selectedReformValue != null)// && selectedReformValue != selectedReform.getValue())
                 {
-                    if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.Player.government== Gov.Despotism)
+                    if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.Player.government == Gov.Despotism)
                     { // has enough voters
-                        voteButton.interactable = selectedReformValue.allowed.isAllTrue(Game.Player, selectedReformValue, out voteButton.GetComponent<ToolTipHandler>().text);
+                        voteButton.interactable = selectedReformValue.IsAllowed(Game.Player, selectedReformValue, out voteButton.GetComponent<ToolTipHandler>().text);
                         forceDecisionButton.GetComponent<ToolTipHandler>().SetText(voteButton.GetComponent<ToolTipHandler>().GetText());
                         forceDecisionButton.interactable = false;
                         voteButton.GetComponentInChildren<Text>().text = "Vote for " + selectedReformValue;
@@ -200,7 +200,7 @@ namespace Nashet.EconomicSimulation
                     else // not enough voters
                     {
                         voteButton.interactable = false;
-                        forceDecisionButton.interactable = selectedReformValue.allowed.isAllTrue(Game.Player, selectedReformValue, out forceDecisionButton.GetComponent<ToolTipHandler>().text);
+                        forceDecisionButton.interactable = selectedReformValue.IsAllowed(Game.Player, selectedReformValue, out forceDecisionButton.GetComponent<ToolTipHandler>().text);
                         voteButton.GetComponent<ToolTipHandler>().SetText(forceDecisionButton.GetComponent<ToolTipHandler>().GetText());
                         voteButton.GetComponentInChildren<Text>().text = "Not enough votes";
                         forceDecisionButton.GetComponent<ToolTipHandler>().text += "\n\nForcing decision against people's desires will drop loyalty!";

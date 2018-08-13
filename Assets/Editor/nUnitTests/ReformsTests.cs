@@ -16,7 +16,7 @@ public class ReformsTests
     {
         get
         {
-            var list = new List<AbstrRefrm> { null, new Gov(World.UncolonizedLand), new TaxRerfr("Taxation for poor", "", World.UncolonizedLand, new List<IReformValue> { new Procent(0f), new Procent(0.5f), new Procent(1f) }) };
+            var list = new List<AbstrRefrm> { null, new Gov(World.UncolonizedLand), new ProcentRerfr("Taxation for poor", "", World.UncolonizedLand, new List<IReformValue> { new ProcentRerfr.ProcentReformVal(0f), new ProcentRerfr.ProcentReformVal(0.5f), new ProcentRerfr.ProcentReformVal(1f) }) };
             foreach (var item in list)
             {
                 foreach (var item2 in list)
@@ -31,7 +31,7 @@ public class ReformsTests
     {
         get
         {
-            var list = new List<AbstrRefrm> { null, new Gov(World.UncolonizedLand), new TaxRerfr("Taxation for poor", "", World.UncolonizedLand, new List<IReformValue> { new Procent(0f), new Procent(0.5f), new Procent(1f) }) };
+            var list = new List<AbstrRefrm> { null, new Gov(World.UncolonizedLand), new ProcentRerfr("Taxation for poor", "", World.UncolonizedLand, new List<IReformValue> { new ProcentRerfr.ProcentReformVal(0f), new ProcentRerfr.ProcentReformVal(0.5f), new ProcentRerfr.ProcentReformVal(1f) }) };
             foreach (var arg1 in list)
             {
                 if (ReferenceEquals(arg1, null))

@@ -3,20 +3,20 @@ using Nashet.UnityUIUtils;
 
 namespace Nashet.EconomicSimulation
 {
-    public class PoliticsPanelTable : UITableNew<AbstractReform>
+    public class PoliticsPanelTable : UITableNew<AbstrRefrm>
     {
-        protected override IEnumerable<AbstractReform> ContentSelector()
+        protected override IEnumerable<AbstrRefrm> ContentSelector()
         {
             return Game.Player.reforms;
         }
 
-        protected override void AddRow(AbstractReform reform, int number)
+        protected override void AddRow(AbstrRefrm reform, int number)
         {
             // Adding reform name
             AddCell(reform.ToString(), reform);
 
             ////Adding Status
-            AddCell(reform.getValue().ToString(), reform);
+            AddCell(reform.ToString(), reform);
 
             ////Adding Can change possibility
             //if (next.canChange())

@@ -3,16 +3,16 @@ using Nashet.Conditions;
 
 namespace Nashet.EconomicSimulation
 {
-    public static class ReformExtensions
-    {
-        public static bool isEnacted(this List<AbstractReform> list, AbstractReformValue reformValue)
-        {
-            foreach (var item in list)
-                if (item.getValue() == reformValue)
-                    return true;
-            return false;
-        }
-    }
+    //public static class ReformExtensions
+    //{
+    //    public static bool isEnacted(this List<AbstractReform> list, AbstractReformValue reformValue)
+    //    {
+    //        foreach (var item in list)
+    //            if (item.getValue() == reformValue)
+    //                return true;
+    //        return false;
+    //    }
+    //}
 
     public abstract class AbstractReformStepValue : AbstractReformValue
     {

@@ -47,8 +47,8 @@ namespace Nashet.EconomicSimulation
             sb.Clear();
             sb.Append("Income:");
             sb.Append("\n Income tax for Poor (").Append(Game.Player.taxationForPoor.tax).Append("): ").Append(Game.Player.IncomeTaxStaticticPoor);
-            sb.Append("\n Income tax for Rich (").Append(Game.Player.taxationForRich.getTypedValue().tax).Append("): ").Append(Game.Player.IncomeTaxStatisticRich);
-            sb.Append("\n Income tax for Foreigners (").Append(Game.Player.taxationForRich.getTypedValue().tax).Append("): ").Append(Game.Player.IncomeTaxForeigner);
+            sb.Append("\n Income tax for Rich (").Append(Game.Player.taxationForRich.tax).Append("): ").Append(Game.Player.IncomeTaxStatisticRich);
+            sb.Append("\n Income tax for Foreigners (").Append(Game.Player.taxationForRich.tax).Append("): ").Append(Game.Player.IncomeTaxForeigner);
             sb.Append("\n Gold mines: ").Append(Game.Player.GoldMinesIncome);
             sb.Append("\n Dividends: ").Append(Game.Player.OwnedFactoriesIncome);
             sb.Append("\n Storage sells: [code is broken #494]");//.Append(Game.Player.getCostOfAllSellsByGovernment());

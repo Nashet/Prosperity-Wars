@@ -21,7 +21,7 @@ namespace Nashet.EconomicSimulation
             if (name != null)
                 nameWeight = name.GetWeight();
             description = indescription;
-            //country.reforms.Add(this);
+            country.reforms.Add(this);
             this.possibleValues = possibleValues;
 
         }
@@ -40,18 +40,19 @@ namespace Nashet.EconomicSimulation
         }
         public static bool operator ==(AbstrRefrm x, IReformValue y)
         {
+            if (ReferenceEquals(x, null) || ReferenceEquals(y, null))
+                throw new ArgumentNullException();
             return x.value == y;
         }
         public static bool operator !=(AbstrRefrm x, IReformValue y)
         {
-            return !(x.value == y);
+            return !(x == y);
         }
 
         public static bool operator ==(AbstrRefrm x, AbstrRefrm y)
         {
             if (ReferenceEquals(x, null) || ReferenceEquals(y, null))
-                throw new ArgumentNullException();
-            //return true;
+                throw new ArgumentNullException();            
             return x.value == y.value;
         }
         public static bool operator !=(AbstrRefrm x, AbstrRefrm y)

@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Nashet.ValueSpace
 {
-    public class Procent : Value, ICopyable<Procent>, EconomicSimulation.IReformValue
+    public class Procent : Value, ICopyable<Procent>
     {
         public static readonly Procent HundredProcent = new Procent(1f);
         public static readonly Procent _50Procent = new Procent(0.5f);

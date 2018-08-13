@@ -465,7 +465,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public bool getSayingYes(AbstractReformValue reform)
+        public bool getSayingYes(IReformValue reform)
         {
             return reform.modVoting.getModifier(this) > Options.votingPassBillLimit;
         }
@@ -895,12 +895,12 @@ namespace Nashet.EconomicSimulation
 
         public abstract bool canVote(Gov reform);
 
-        public Dictionary<AbstractReformValue, float> getIssues()
+        public Dictionary<IReformValue, float> getIssues()
         {
-            var result = new Dictionary<AbstractReformValue, float>();
+            var result = new Dictionary<IReformValue, float>();
             foreach (var reform in Country.reforms)
-                foreach (AbstractReformValue reformValue in reform)
-                    if (reformValue.allowed.isAllTrue(Country, reformValue))
+                foreach (IReformValue reformValue in reform.AllPossibleValues)
+                    if (reformValue.IsAllowed(Country, reformValue))
                     {
                         var howGood = reformValue.modVoting.getModifier(this);//.howIsItGoodForPop(this);
                                                                               //if (howGood.isExist())
@@ -921,13 +921,13 @@ namespace Nashet.EconomicSimulation
         {
             var list = new Dictionary<KeyValuePair<AbstractReform, AbstractReformValue>, float>();
             foreach (var reform in Country.reforms)
-                foreach (AbstractReformValue reformValue in reform)
-                    if (reformValue.allowed.isAllTrue(Country, reformValue))
+                foreach (IReformValue reformValue in reform.AllPossibleValues)
+                    if (reformValue.IsAllowed(Country, reformValue))
                     {
                         var howGood = reformValue.modVoting.getModifier(this);//.howIsItGoodForPop(this);
                                                                               //if (howGood.isExist())
                         if (howGood > 0f)
-                            list.Add(new KeyValuePair<AbstractReform, AbstractReformValue>(reform, reformValue), howGood);
+                            list.Add(new KeyValuePair<AbstrRefrm, IReformValue>(reform, reformValue), howGood);
                     }
             var target = getPotentialSeparatismTarget();
             if (target != null)

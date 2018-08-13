@@ -179,7 +179,7 @@ namespace Nashet.EconomicSimulation
         {
             return ownedProvinces.Any(x => x.isCoreFor(country));
         }
-        public Procent getYesVotes(AbstractReformValue reform, ref Procent procentPopulationSayedYes)
+        public Procent getYesVotes(IReformValue reform, ref Procent procentPopulationSayedYes)
         {
             // calculate how much of population wants selected reform
             int totalPopulation = AllPops.Sum(x => x.population.Get());
@@ -219,7 +219,7 @@ namespace Nashet.EconomicSimulation
         }
         
         
-        public Dictionary<PopType, int> getYesVotesByType(AbstractReformValue reform, ref Dictionary<PopType, int> divisionPopulationResult)
+        public Dictionary<PopType, int> getYesVotesByType(IReformValue reform, ref Dictionary<PopType, int> divisionPopulationResult)
         {  // division by pop types
             Dictionary<PopType, int> divisionVotersResult = new Dictionary<PopType, int>();
             foreach (PopType popType in PopType.getAllPopTypes())
@@ -244,7 +244,7 @@ namespace Nashet.EconomicSimulation
         /// Not finished, don't use it
         /// </summary>
         /// <param name="reform"></param>
-        public Procent getYesVotes2(AbstractReformValue reform, ref Procent procentPopulationSayedYes)
+        public Procent getYesVotes2(IReformValue reform, ref Procent procentPopulationSayedYes)
         {
             int totalPopulation = AllPops.Sum(x => x.population.Get());
             int votingPopulation = 0;

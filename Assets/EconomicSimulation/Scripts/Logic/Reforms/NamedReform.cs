@@ -12,17 +12,55 @@ namespace Nashet.EconomicSimulation
         {
         }
     }
-    
-    public class NamdRfrmValue : Name, IReformValue
+
+    public abstract class AbstrRefrmValue : IReformValue
     {
-        protected readonly string description;
         public int ID { get; protected set; }
         protected readonly DoubleConditionsList allowed;
+
+        public AbstrRefrmValue(string name, string description, int id, DoubleConditionsList condition)
+        {
+            ID = id;
+            allowed = condition;
+        }
+
+        public abstract bool IsAllowed(object firstObject, object secondObject, out string description);
+        public abstract bool IsAllowed(object firstObject, object secondObject);
+    }
+    public class NamdRfrmValue : AbstrRefrmValue, INameable
+    {
+        protected readonly string description;
+
         public NamdRfrmValue(string name, string description, int id, DoubleConditionsList condition) : base(name)
         {
             this.description = description;
-            ID = id;
-            allowed = condition;
+
+        }
+
+        public string FullName
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string ShortName
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override bool IsAllowed(object firstObject, object secondObject, out string description)
+        {
+            return allowed.isAllTrue(firstObject, secondObject, out description);
+        }
+
+        public override bool IsAllowed(object firstObject, object secondObject)
+        {
+            throw new NotImplementedException();
         }
     }
     //
@@ -66,12 +104,12 @@ namespace Nashet.EconomicSimulation
         }
     }
 
-    public class TaxRerfr : AbstrRefrm
+    public class ProcentRerfr : AbstrRefrm
     {
-        public Procent tax;
-        public TaxRerfr(string name, string description, Country country, List<IReformValue> possibleValues) : base(name, description, country, possibleValues)
+        public ProcentReformVal tax;
+        public ProcentRerfr(string name, string description, Country country, List<IReformValue> possibleValues) : base(name, description, country, possibleValues)
         {
-            tax = new Procent(0.1f);
+            tax = new ProcentReformVal(0.1f);
         }
 
         public override void OnReformEnactedInProvince(Province province)
@@ -79,7 +117,7 @@ namespace Nashet.EconomicSimulation
             throw new NotImplementedException();
         }
 
-        public void SetValue(Procent tax)
+        public void SetValue(ProcentReformVal tax)
         {
             base.SetValue(tax);
             this.tax.Set(tax);
@@ -89,10 +127,36 @@ namespace Nashet.EconomicSimulation
         {
             throw new NotImplementedException();
         }
+        public class ProcentReformVal : Procent, IReformValue//  AbstrRefrmValue
+        {
+            public ProcentReformVal(float number, bool showMessageAboutNegativeValue = true) : base(number, showMessageAboutNegativeValue)
+            {
+            }
+
+            public int ID
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            public bool IsAllowed(object firstObject, object secondObject, out string description)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool IsAllowed(object firstObject, object secondObject)
+            {
+                throw new NotImplementedException();
+            }
+        }
     }
     public interface IReformValue
     {
         int ID { get; }
+        bool IsAllowed(object firstObject, object secondObject, out string description);
+        bool IsAllowed(object firstObject, object secondObject);
     }
 
 }

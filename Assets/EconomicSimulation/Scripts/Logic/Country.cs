@@ -10,16 +10,16 @@ namespace Nashet.EconomicSimulation
 {
     public class Country : MultiSeller, IClickable, IShareOwner, ISortableName, INameable, IProvinceOwner, ICanInvent, IDiplomat
     {
-        public readonly List<AbstractReform> reforms = new List<AbstractReform>();
+        public readonly List<AbstrRefrm> reforms = new List<AbstrRefrm>();
         public readonly List<Movement> movements = new List<Movement>();
 
         public readonly Gov government;
         public readonly Econ economy;
         public readonly Serfdom serfdom;
         public readonly MinimalWage minimalWage;
-        public readonly UnemploymentSubsidies unemploymentSubsidies;
-        public readonly TaxRerfr taxationForPoor;
-        public readonly TaxationForRich taxationForRich;
+        public readonly ProcentRerfr unemploymentSubsidies;
+        public readonly ProcentRerfr taxationForPoor;
+        public readonly ProcentRerfr taxationForRich;
 
         public readonly MinorityPolicy minorityPolicy;
 
@@ -141,10 +141,11 @@ namespace Nashet.EconomicSimulation
 
             serfdom = new Serfdom(this);
 
-            //minimalWage = new MinimalWage(this);
-            //unemploymentSubsidies = new UnemploymentSubsidies(this);
-            taxationForPoor = new TaxRerfr("Taxation for poor", "", this, new List<IReformValue> { new Procent(0f), new Procent(0.5f), new Procent(1f) });
-            //taxationForRich = new TaxationForRich(this);
+            minimalWage = new MinimalWage(this);
+            unemploymentSubsidies = new ProcentRerfr("Unemployment subsidies", "", this, new List<IReformValue> { new ProcentRerfr.ProcentReformVal(0f), new ProcentRerfr.ProcentReformVal(0.5f), new ProcentRerfr.ProcentReformVal(1f) });
+
+            taxationForPoor = new ProcentRerfr("Taxation for poor", "", this, new List<IReformValue> { new ProcentRerfr.ProcentReformVal(0f), new ProcentRerfr.ProcentReformVal(0.5f), new ProcentRerfr.ProcentReformVal(1f) });
+            taxationForRich = new ProcentRerfr("Taxation for rich", "", this, new List<IReformValue> { new ProcentRerfr.ProcentReformVal(0f), new ProcentRerfr.ProcentReformVal(0.5f), new ProcentRerfr.ProcentReformVal(1f) });
             minorityPolicy = new MinorityPolicy(this);
 
 
@@ -166,7 +167,7 @@ namespace Nashet.EconomicSimulation
 
             government.SetValue(Gov.Aristocracy);
             //economy.setValue(Econ.StateCapitalism);
-            taxationForRich.setValue(TaxationForRich.PossibleStatuses[2]);
+            taxationForRich.SetValue(Gov.Aristocracy.defaultRichTax);
 
             Science.Invent(Invention.Farming);
 
@@ -380,7 +381,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public MoneyView getMinSalary()
         {
-            var res = (minimalWage.getValue() as MinimalWage.ReformValue).getMinimalWage(this.market);
+            var res = minimalWage.getMinimalWage(this.market);
             if (res.isZero())
                 return Options.FactoryMinPossibleSallary;
             else
@@ -1095,7 +1096,7 @@ namespace Nashet.EconomicSimulation
             }
             else //if (type is TaxationForRich)
             {
-                tax = taxationForRich.getTypedValue().tax;
+                tax = taxationForRich.tax;
                 statistics = incomeTaxStatisticRich;
             }
             if (!(taxPayer is Market) && taxPayer.Country != this) //foreigner
@@ -1160,7 +1161,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Gets reform which can take given value
         /// </summary>
-        public AbstractReform getReform(AbstractReformValue abstractReformValue)
+        public AbstractReform getReform(IReformValue abstractReformValue)
         {
             foreach (var item in reforms)
             {

@@ -965,7 +965,7 @@ namespace Nashet.EconomicSimulation
                     {
                         lifeQuality.Add(Country.unemploymentSubsidies.getValue().ID * 2 / 100f);
                         lifeQuality.Add(Country.minimalWage.getValue().ID * 1 / 100f);
-                        lifeQuality.Add(Country.taxationForRich.getValue().ID * 1 / 100f);
+                        lifeQuality.Add(Country.taxationForRich.ID * 1 / 100f);
                     }
                     else if (pop.Type.isRichStrata())
                     {

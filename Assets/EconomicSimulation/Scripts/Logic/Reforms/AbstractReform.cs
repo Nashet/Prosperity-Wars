@@ -11,16 +11,16 @@ namespace Nashet.EconomicSimulation
         protected AbstractReform(string name, string indescription, Country country) : base(name)
         {
             description = indescription;
-            country.reforms.Add(this);
+            //country.reforms.Add(this);
             this.country = country;
         }
         private readonly Country country;
         public abstract bool isAvailable(Country country);
 
         public abstract IEnumerator GetEnumerator();
-        
 
-        public virtual void setValue(AbstractReformValue selectedReformValue)
+
+        public virtual void setValue(IReformValue selectedReformValue)
         {
             foreach (PopUnit pop in country.Provinces.AllPops)
                 if (pop.getSayingYes(selectedReformValue))
