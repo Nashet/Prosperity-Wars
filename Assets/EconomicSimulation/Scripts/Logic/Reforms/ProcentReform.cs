@@ -4,24 +4,15 @@ using System.Collections.Generic;
 
 namespace Nashet.EconomicSimulation
 {
-    //   
-
-
-
-
-
-    public class ProcentReform : AbstractReform
+    public abstract class ProcentReform : AbstractReform
     {
         public ProcentReformVal tax;
         public ProcentReform(string name, string description, Country country, List<IReformValue> possibleValues) : base(name, description, country, possibleValues)
         {
-            tax = new ProcentReformVal(0.1f);
+            //tax = new ProcentReformVal(0.1f);
         }
 
-        public override void OnReformEnactedInProvince(Province province)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public void SetValue(ProcentReformVal tax)
         {
@@ -30,35 +21,26 @@ namespace Nashet.EconomicSimulation
         }
 
        
-        public class ProcentReformVal : Procent, IReformValue//  AbstrRefrmValue
+        public  class ProcentReformVal : Procent, IReformValue//  AbstrRefrmValue
         {
             public ProcentReformVal(float number, bool showMessageAboutNegativeValue = true) : base(number, showMessageAboutNegativeValue)
             {
             }
-            
+            public bool IsMoreConservative(IReformValue anotherReform)
+            {
+                return ID < anotherReform.ID;
+            }
 
             public Procent LifeQualityImpact
             {
                 get
                 {
-                    throw new NotImplementedException();
+                    return this;
                 }
             }
-
-            public int ID
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
+          
 
             public float getVotingPower(PopUnit forWhom)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Procent howIsItGoodForPop(PopUnit pop)
             {
                 throw new NotImplementedException();
             }
@@ -73,7 +55,7 @@ namespace Nashet.EconomicSimulation
                 throw new NotImplementedException();
             }
 
-            public bool isMoreConservative(AbstractReform another)
+            public virtual Procent howIsItGoodForPop(PopUnit pop)
             {
                 throw new NotImplementedException();
             }

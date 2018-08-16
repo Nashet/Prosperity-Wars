@@ -21,12 +21,12 @@ namespace Nashet.EconomicSimulation
         });
 
         public static readonly EconomyReformValue NaturalEconomy = new EconomyReformValue("Natural economy", " ", 1, new DoubleConditionsList(Condition.IsNotImplemented), false);//new ConditionsList(Condition.AlwaysYes));
-        public static readonly EconomyReformValue StateCapitalism = new EconomyReformValue("State capitalism", "", 2, new DoubleConditionsList(capitalism), false, null, new Procent(0.2f));
+        public static readonly EconomyReformValue StateCapitalism = new EconomyReformValue("State capitalism", "", 2, new DoubleConditionsList(capitalism), false, null, new ProcentReform.ProcentReformVal(0.2f));
         public static readonly EconomyReformValue Interventionism = new EconomyReformValue("Limited interventionism", "", 3, new DoubleConditionsList(capitalism), true);
-        public static readonly EconomyReformValue LaissezFaire = new EconomyReformValue("Laissez faire", "", 4, new DoubleConditionsList(capitalism), true, new Procent(0.5f));
+        public static readonly EconomyReformValue LaissezFaire = new EconomyReformValue("Laissez faire", "", 4, new DoubleConditionsList(capitalism), true, new ProcentReform.ProcentReformVal(0.5f));
 
         public static readonly DoubleCondition isNotLFOrMoreConservative = new DoubleCondition((country, newReform) => (country as Country).economy != Economy.LaissezFaire
-        || (newReform as IReformValue).isMoreConservative((country as Country).economy), 
+        || (newReform as IReformValue).IsMoreConservative((country as Country).economy.value),
             x => "Economy policy is not Laissez Faire or that is reform rollback", true);
 
         public static readonly Condition isNotLF = new Condition(delegate (object forWhom) { return (forWhom as Country).economy != LaissezFaire; }, "Economy policy is not Laissez Faire", true);
@@ -54,7 +54,7 @@ namespace Nashet.EconomicSimulation
             //    return (x as Country).economy != LaissezFaire || taxesForPoor.tax.get() <= 0.5f;
             //else
             {
-                var taxesForRich = y as ProcentReform .ProcentReformVal;
+                var taxesForRich = y as ProcentReform.ProcentReformVal;
                 return (x as Country).economy != LaissezFaire || taxesForRich.get() <= 0.5f;
             }
         },
@@ -89,15 +89,33 @@ namespace Nashet.EconomicSimulation
 
         public override void OnReformEnactedInProvince(Province province)
         {
-            throw new System.NotImplementedException();
+            foreach (var factory in province.AllFactories)
+            {
+                factory.setSubsidized(false);
+                factory.ownership.SetToSell(owner, Procent.HundredProcent, false);
+            }
         }
-
-       
 
         public void SetValue(EconomyReformValue reformValue)
         {
             base.SetValue(reformValue);
+
             typedValue = reformValue;
+            if (typedValue == LaissezFaire)
+            {
+                if (owner.taxationForRich.tax.get() > 0.5f)
+                    owner.taxationForRich.SetValue(LaissezFaire.maxTax);
+                if (owner.taxationForPoor.tax.get() > 0.5f)
+                    owner.taxationForPoor.SetValue(LaissezFaire.maxTax);
+                owner.Provinces.AllProvinces.PerformAction(x => OnReformEnactedInProvince(x));
+            }
+            else if (typedValue == StateCapitalism)
+            {
+                if (owner.taxationForRich.tax.get() < 0.2f)
+                    owner.taxationForRich.SetValue(StateCapitalism.minTax);
+                if (owner.taxationForPoor.tax.get() < 0.2f)
+                    owner.taxationForPoor.SetValue(StateCapitalism.minTax);
+            }
         }
 
         public bool AllowForeignInvestments
@@ -106,19 +124,19 @@ namespace Nashet.EconomicSimulation
         }
         public class EconomyReformValue : NamedReformValue
         {
-            public Procent maxPoorTax;
-            public Procent minPoorTax;
+            public ProcentReform.ProcentReformVal maxTax;
+            public ProcentReform.ProcentReformVal minTax;
             public bool AllowForeignInvestments
             {
                 get; protected set;
             }
 
             public EconomyReformValue(string name, string description, int id, DoubleConditionsList condition,
-                bool allowForeighnIvestments, Procent maxPoorTax = null, Procent minPoorTax = null) : base(name, description, id, condition)
+                bool allowForeighnIvestments, ProcentReform.ProcentReformVal maxPoorTax = null, ProcentReform.ProcentReformVal minPoorTax = null) : base(name, description, id, condition)
             {
                 AllowForeignInvestments = allowForeighnIvestments;
-                this.minPoorTax = minPoorTax;
-                this.maxPoorTax = maxPoorTax;
+                this.minTax = minPoorTax;
+                this.maxTax = maxPoorTax;
             }
             public override Procent howIsItGoodForPop(PopUnit pop)
             {
@@ -127,10 +145,10 @@ namespace Nashet.EconomicSimulation
                 if (pop.Type.isRichStrata())
                 {
                     //positive - more liberal
-                    int change = ID - pop.Country.economy.value.ID;
+                    int relation = RelativeConservatism(pop.Country.economy.value); // ID - pop.Country.economy.value.ID;
                     //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
-                    if (change > 0)
-                        result = new Procent(1f + change / 10f);
+                    if (relation > 0)
+                        result = new Procent(1f + relation / 10f);
                     else
                         //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
                         result = new Procent(0f);
@@ -151,17 +169,7 @@ namespace Nashet.EconomicSimulation
                         result = new Procent(0.5f);
                 }
                 return result;
-            }
-
-            public override bool IsAllowed(object firstObject, object secondObject, out string description)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override bool IsAllowed(object firstObject, object secondObject)
-            {
-                throw new System.NotImplementedException();
-            }
+            }           
         }
     }
     //public class Ecccconomy : AbstractReform, IHasCountry

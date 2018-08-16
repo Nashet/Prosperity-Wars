@@ -8,14 +8,14 @@ namespace Nashet.EconomicSimulation
     public class MinorityPolicy : AbstractReform
     {
         protected MinorityPolicyValue typedValue;
-        
+
         public static MinorityPolicyValue Equality; // all can vote
         public static MinorityPolicyValue Residency; // state culture only can vote
         public static readonly MinorityPolicyValue NoRights = new MinorityPolicyValue("No Rights for Minorities", "-Slavery?", 0, new DoubleConditionsList(Condition.IsNotImplemented));
-     
+
         //public readonly static Condition isEquality = new Condition(x => (x as Country).minorityPolicy.getValue() == MinorityPolicy.Equality, "Minority policy is " + MinorityPolicy.Equality.getName(), true);
         //public static Condition IsResidencyPop;
-        public MinorityPolicy(Country country) : base("Minority Policy", "- Minority Policy", country, new List<IReformValue> { Equality, Residency, NoRights})
+        public MinorityPolicy(Country country) : base("Minority Policy", "- Minority Policy", country, new List<IReformValue> { Equality, Residency, NoRights })
         {
             if (Equality == null)
                 Equality = new MinorityPolicyValue("Equality for Minorities", "- All cultures have same rights, assimilation is slower.", 2,
@@ -26,12 +26,12 @@ namespace Nashet.EconomicSimulation
             typedValue = Residency;
             //IsResidencyPop = new Condition(x => (x as PopUnit).province.getOwner().minorityPolicy.status == MinorityPolicy.Residency,
             //Residency.FullName, true);
-        }    
+        }
 
-        public  void SetValue(MinorityPolicyValue selectedReform)
+        public void SetValue(MinorityPolicyValue selectedReform)
         {
             base.SetValue(selectedReform);
-            typedValue =selectedReform;
+            typedValue = selectedReform;
         }
 
         //public override bool isAvailable(Country country)
@@ -43,16 +43,11 @@ namespace Nashet.EconomicSimulation
         //    Residency.FullName, true);
 
         //public static Condition IsEquality = new Condition(x => (x as Country).minorityPolicy.status == MinorityPolicy.Equality,
-        //    Equality.FullName, true);
-       
+        //    Equality.FullName, true);      
 
-        
 
-        public override void OnReformEnactedInProvince(Province province)
-        {
-            throw new System.NotImplementedException();
-        }
-        
+
+
         public class MinorityPolicyValue : NamedReformValue
         {
             public MinorityPolicyValue(string inname, string indescription, int idin, DoubleConditionsList condition) : base(inname, indescription, idin, condition)
@@ -91,7 +86,7 @@ namespace Nashet.EconomicSimulation
                 else
                 {
                     //positive - more rights for minorities
-                    int change = ID - pop.Country.minorityPolicy.value.ID;
+                    int change = RelativeConservatism(pop.Country.minorityPolicy.value);
                     //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
                     if (change > 0)
                         result = new Procent(0.3f);// 1f);

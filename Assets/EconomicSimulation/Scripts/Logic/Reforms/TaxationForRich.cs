@@ -3,8 +3,48 @@
 //using Nashet.Conditions;
 //using Nashet.ValueSpace;
 
-//namespace Nashet.EconomicSimulation
-//{
+using Nashet.ValueSpace;
+using System.Collections.Generic;
+
+namespace Nashet.EconomicSimulation
+{
+    public class TaxationForRich : ProcentReform//, ICopyable<TaxationForRich>
+    {
+        public TaxationForRich(Country country) : base("Taxation for rich", "", country, new List<IReformValue> { new RichTaxValue(0f), new RichTaxValue(0.5f), new RichTaxValue(1f) })
+        {
+            tax = new RichTaxValue(0.1f);
+        }
+        public class RichTaxValue : ProcentReformVal
+        {
+            public RichTaxValue(float number, bool showMessageAboutNegativeValue = true) : base(number, showMessageAboutNegativeValue)
+            {
+            }
+            public override Procent howIsItGoodForPop(PopUnit pop)
+            {
+                Procent result;
+                int change = RelativeConservatism(pop.Country.taxationForRich.value);//positive mean higher tax
+                if (pop.Type.isRichStrata())
+                {
+                    if (change > 0)
+                        result = new Procent(0f);
+                    else
+                        result = new Procent(1f);
+                }
+                else
+                {
+                    if (change > 0)
+                        if (get() > 0.6f)
+                            result = new Procent(0.4f);
+                        else
+                            result = new Procent(0.5f);
+                    else
+                        result = new Procent(0.0f);
+                }
+                return result;
+            }
+        }
+    }
+}
 //    public class TaxationForRich : AbstractReform//, ICopyable<TaxationForRich>
 //    {
 //        public class ReformValue : AbstractReformStepValue
@@ -99,7 +139,7 @@
 //        //{
 //        //    return PossibleStatuses[value];
 //        //}
-        
+
 
 //        public override IEnumerator GetEnumerator()
 //        {
@@ -128,4 +168,3 @@
 //        //    return new TaxationForRich(this);
 //        //}
 //    }
-//}

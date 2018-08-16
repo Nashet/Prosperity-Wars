@@ -1,6 +1,5 @@
 ﻿using Nashet.Conditions;
 using Nashet.Utils;
-using Nashet.ValueSpace;
 using System;
 using System.Collections.Generic;
 
@@ -13,7 +12,7 @@ namespace Nashet.EconomicSimulation
     //    }
     //}
 
-    public abstract class NamedReformValue : AbstrRefrmValue, INameable
+    public abstract class NamedReformValue : AbstractReformValue, INameable
     {
         protected readonly string description;
         protected readonly string name;
@@ -22,24 +21,11 @@ namespace Nashet.EconomicSimulation
         {
             this.description = description;
             this.name = name;
-
         }
 
-        public string FullName
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public string FullName { get { return description; } }
 
-        public string ShortName
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }       
+        public string ShortName { get { return name; } }
 
         public override bool IsAllowed(object firstObject, object secondObject, out string description)
         {
@@ -48,18 +34,8 @@ namespace Nashet.EconomicSimulation
 
         public override bool IsAllowed(object firstObject, object secondObject)
         {
-            throw new NotImplementedException();
+            return allowed.isAllTrue(firstObject, secondObject);
         }
-    }
-    public interface IReformValue
-    {
-        int ID { get; }
-        bool IsAllowed(object firstObject, object secondObject, out string description);
-        bool IsAllowed(object firstObject, object secondObject);
-        float getVotingPower(PopUnit forWhom);
-        bool isMoreConservative(AbstractReform another);
-        Procent howIsItGoodForPop(PopUnit pop);
-        Procent LifeQualityImpact { get; }
     }
 
 }

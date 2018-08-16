@@ -140,7 +140,7 @@ namespace Nashet.EconomicSimulation
                 if (pop.Type == PopType.Workers)
                 {
                     //positive - reform will be better for worker, [-5..+5]
-                    int change = ID - pop.Country.minimalWage.value.ID;
+                    int change = RelativeConservatism(pop.Country.minimalWage.value); // ID - pop.Country.minimalWage.value.ID;
                     //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
                     if (change > 0)
                         result = new Procent(1f);
@@ -152,10 +152,10 @@ namespace Nashet.EconomicSimulation
                     result = new Procent(0.5f);
                 else // rich strata
                 {
-                    //positive - reform will be better for rich strata, [-5..+5]
-                    int change = pop.Country.minimalWage.value.ID - ID;
+                    //negative - reform will be better for rich strata, [-5..+5]
+                    int change = RelativeConservatism( pop.Country.minimalWage.value);
                     //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
-                    if (change > 0)
+                    if (change < 0)
                         result = new Procent(1f);
                     else
                         //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);

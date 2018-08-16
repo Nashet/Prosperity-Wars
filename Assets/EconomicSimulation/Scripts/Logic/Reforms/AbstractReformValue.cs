@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace Nashet.EconomicSimulation
 {
 
-    public abstract class AbstrRefrmValue : IReformValue
+    public abstract class AbstractReformValue : IReformValue
     {
         public int ID { get; protected set; }
         protected readonly DoubleConditionsList allowed;
@@ -20,7 +20,7 @@ namespace Nashet.EconomicSimulation
 
         public Procent LifeQualityImpact { get; }
 
-        public AbstrRefrmValue(int id, DoubleConditionsList condition)
+        public AbstractReformValue(int id, DoubleConditionsList condition)
         {
             ID = id;
             allowed = condition;
@@ -29,9 +29,7 @@ namespace Nashet.EconomicSimulation
             loyalty = new Modifier(x => loyaltyBoostFor(x as PopUnit),
                         "Loyalty", 1f, false);
             modVoting = new ModifiersList(new List<Condition>
-            {
-                        wantsReform, loyalty, education
-                        });
+            {wantsReform, loyalty, education});
         }
 
         public abstract bool IsAllowed(object firstObject, object secondObject, out string description);
@@ -42,13 +40,22 @@ namespace Nashet.EconomicSimulation
             return modVoting.getModifier(forWhom);
         }
 
-        public bool isMoreConservative(AbstractReform another)
+        /// <summary>
+        /// Could be wrong for some reforms!
+        /// </summary>        
+        public bool IsMoreConservative(IReformValue anotherReform)
         {
-            throw new NotImplementedException();
+            return ID < anotherReform.ID;
         }
 
+        public int RelativeConservatism( IReformValue two)
+        {
+            return this.ID - two.ID;
+        }
+
+
         public abstract Procent howIsItGoodForPop(PopUnit pop);
-       
+
         private float loyaltyBoostFor(PopUnit popUnit)
         {
             float result;

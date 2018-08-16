@@ -39,11 +39,6 @@ namespace Nashet.EconomicSimulation
         //{
         //    return !separatismTarget.IsAlive;
         //}
-
-        public override void OnReformEnactedInProvince(Province province)
-        {
-            throw new System.NotImplementedException();
-        }
         protected static List<Goal> allSeparatists = new List<Goal>();
         public static Goal Get(Country country)
         {
@@ -66,8 +61,15 @@ namespace Nashet.EconomicSimulation
             {
                 this.separatismTarget = separatismTarget;
             }
+            /// <summary>
+            /// Doesn't have sense for that reform
+            /// </summary>            
+            public bool IsMoreConservative(IReformValue anotherReform)
+            {
+                return false;
+            }           
 
-            public int ID
+            Procent IReformValue.LifeQualityImpact
             {
                 get
                 {
@@ -75,34 +77,30 @@ namespace Nashet.EconomicSimulation
                 }
             }
 
-            public Procent LifeQualityImpact
+            public Procent LifeQualityImpact()
             {
-                get { throw new System.NotImplementedException(); }
+                return Procent.ZeroProcent.Copy();
             }
 
             public float getVotingPower(PopUnit forWhom)
             {
-                throw new System.NotImplementedException();
+                return 0f;
             }
 
             public Procent howIsItGoodForPop(PopUnit pop)
             {
-                throw new System.NotImplementedException();
+                return Procent.ZeroProcent.Copy();
             }
 
             public bool IsAllowed(object firstObject, object secondObject, out string description)
             {
-                throw new System.NotImplementedException();
+                description = null;
+                return true;
             }
 
             public bool IsAllowed(object firstObject, object secondObject)
             {
-                throw new System.NotImplementedException();
-            }
-
-            public bool isMoreConservative(AbstractReform another)
-            {
-                throw new System.NotImplementedException();
+                return true;
             }
         }
     }

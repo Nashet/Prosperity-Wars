@@ -18,8 +18,8 @@ namespace Nashet.EconomicSimulation
         public readonly Serfdom serfdom;
         public readonly MinimalWage minimalWage;
         public readonly UnemploymentSubsidies unemploymentSubsidies;
-        public readonly ProcentReform taxationForPoor;
-        public readonly ProcentReform taxationForRich;
+        public readonly TaxationForPoor taxationForPoor;
+        public readonly TaxationForRich taxationForRich;
 
         public readonly MinorityPolicy minorityPolicy;
 
@@ -144,8 +144,8 @@ namespace Nashet.EconomicSimulation
             minimalWage = new MinimalWage(this);
             unemploymentSubsidies = new UnemploymentSubsidies(this);
 
-            taxationForPoor = new ProcentReform("Taxation for poor", "", this, new List<IReformValue> { new ProcentReform.ProcentReformVal(0f), new ProcentReform.ProcentReformVal(0.5f), new ProcentReform.ProcentReformVal(1f) });
-            taxationForRich = new ProcentReform("Taxation for rich", "", this, new List<IReformValue> { new ProcentReform.ProcentReformVal(0f), new ProcentReform.ProcentReformVal(0.5f), new ProcentReform.ProcentReformVal(1f) });
+            taxationForPoor = new TaxationForPoor(this);
+            taxationForRich = new TaxationForRich(this);
             minorityPolicy = new MinorityPolicy(this);
 
 

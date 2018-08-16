@@ -63,12 +63,6 @@ namespace Nashet.EconomicSimulation
         || (x as Country).serfdom.typedValue == Brutal,
             "Serfdom is in power", true);
 
-
-
-        public override void OnReformEnactedInProvince(Province province)
-        {
-            throw new System.NotImplementedException();
-        }
        
         public class SerfValue : NamedReformValue
         {
@@ -120,7 +114,7 @@ namespace Nashet.EconomicSimulation
             public override Procent howIsItGoodForPop(PopUnit pop)
             {
                 Procent result;
-                int change = ID - pop.Country.serfdom.value.ID; //positive - more liberal
+                int change = RelativeConservatism(pop.Country.serfdom.value); //positive - more liberal
                 if (pop.Type == PopType.Aristocrats)
                 {
                     if (change > 0)

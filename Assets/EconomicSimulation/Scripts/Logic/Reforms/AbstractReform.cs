@@ -34,7 +34,8 @@ public abstract class AbstractReform : Component<Country>, INameable, ISortableN
 
 
     //public abstract bool canHaveThatValue(AbstractNamdRfrmValue abstractNamdRfrmValue);
-    public abstract void OnReformEnactedInProvince(Province province);
+    public virtual void OnReformEnactedInProvince(Province province)
+    { }
     public override bool Equals(Object another)
     {
         if (ReferenceEquals(another, null))
@@ -68,8 +69,6 @@ public abstract class AbstractReform : Component<Country>, INameable, ISortableN
 
         return !(x == y);
     }
-
-
 
     public virtual void SetValue(AbstractReform reform)
     {
