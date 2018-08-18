@@ -36,6 +36,10 @@ namespace Nashet.EconomicSimulation
         {
             return allowed.isAllTrue(firstObject, secondObject);
         }
+        public override string ToString()
+        {
+            return ShortName;
+        }
     }
 
 }

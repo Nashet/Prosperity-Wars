@@ -153,7 +153,7 @@ namespace Nashet.EconomicSimulation
             {
                 Procent result;
                 //positive - higher subsidies
-                int change = RelativeConservatism (pop.Country.unemploymentSubsidies.value);
+                int change = RelativeConservatism (pop.Country.unemploymentSubsidies.tax);
                 if (pop.Type.isPoorStrata())
                 {
                     if (change > 0)

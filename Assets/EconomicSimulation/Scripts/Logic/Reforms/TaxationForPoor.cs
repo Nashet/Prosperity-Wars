@@ -10,22 +10,22 @@ namespace Nashet.EconomicSimulation
 {
     public class TaxationForPoor : ProcentReform
     {
-        public TaxationForPoor(Country country) : base("Taxation for poor", "", country, new List<IReformValue> { new RefValue(0f), new RefValue(0.5f), new RefValue(1f) })
+        public TaxationForPoor(Country country) : base("Taxation for poor", "", country, new List<IReformValue> { new RefValue(0, 0f), new RefValue(5, 0.5f), new RefValue(10, 1f) })
         {
-            tax = new RefValue(0.1f);
+            tax = new RefValue(1, 0.1f);
         }
 
 
         public class RefValue : ProcentReformVal
         {
-            public RefValue(float number, bool showMessageAboutNegativeValue = true) : base(number, showMessageAboutNegativeValue)
+            public RefValue(int ID, float number) : base(ID, new Procent(number))
             {
             }
             public override Procent howIsItGoodForPop(PopUnit pop)
             {
                 Procent result; // poor
                                 //positive mean higher tax
-                int change = RelativeConservatism(pop.Country.taxationForPoor.value);
+                int change = RelativeConservatism(pop.Country.taxationForPoor.tax);
                 if (pop.Type.isPoorStrata())
                 {
                     if (change > 0)

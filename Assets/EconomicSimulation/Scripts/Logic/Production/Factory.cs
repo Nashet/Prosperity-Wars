@@ -490,7 +490,7 @@ namespace Nashet.EconomicSimulation
                         income = new Money(getProfit(), false);
                     else
                         income = payedDividends.Copy();
-                    var taxes = income.Copy().Multiply(Country.taxationForRich.tax);
+                    var taxes = income.Copy().Multiply(Country.taxationForRich.tax.Procent);
                     income.Subtract(taxes);
                     return new Procent(income, ownership.GetMarketValue(), false);
                 }

@@ -86,7 +86,7 @@ namespace Nashet.EconomicSimulation
                 else
                 {
                     //positive - more rights for minorities
-                    int change = RelativeConservatism(pop.Country.minorityPolicy.value);
+                    int change = RelativeConservatism(pop.Country.minorityPolicy.typedValue);
                     //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
                     if (change > 0)
                         result = new Procent(0.3f);// 1f);

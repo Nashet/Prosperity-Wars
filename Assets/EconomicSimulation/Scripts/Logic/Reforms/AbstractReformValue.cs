@@ -43,12 +43,12 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Could be wrong for some reforms!
         /// </summary>        
-        public bool IsMoreConservative(IReformValue anotherReform)
+        public bool IsMoreConservative(AbstractReformValue anotherReform)
         {
             return ID < anotherReform.ID;
         }
 
-        public int RelativeConservatism( IReformValue two)
+        public int RelativeConservatism(AbstractReformValue two)
         {
             return this.ID - two.ID;
         }

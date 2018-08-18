@@ -10,19 +10,19 @@ namespace Nashet.EconomicSimulation
 {
     public class TaxationForRich : ProcentReform//, ICopyable<TaxationForRich>
     {
-        public TaxationForRich(Country country) : base("Taxation for rich", "", country, new List<IReformValue> { new RichTaxValue(0f), new RichTaxValue(0.5f), new RichTaxValue(1f) })
+        public TaxationForRich(Country country) : base("Taxation for rich", "", country, new List<IReformValue> { new RichTaxValue(0, 0f), new RichTaxValue(5, 0.5f), new RichTaxValue(10,1f) })
         {
-            tax = new RichTaxValue(0.1f);
+            tax = new RichTaxValue(1, 0.1f);
         }
         public class RichTaxValue : ProcentReformVal
         {
-            public RichTaxValue(float number, bool showMessageAboutNegativeValue = true) : base(number, showMessageAboutNegativeValue)
+            public RichTaxValue(int ID, float number) : base(ID, new Procent(number))
             {
             }
             public override Procent howIsItGoodForPop(PopUnit pop)
             {
                 Procent result;
-                int change = RelativeConservatism(pop.Country.taxationForRich.value);//positive mean higher tax
+                int change = RelativeConservatism(pop.Country.taxationForRich.tax);//positive mean higher tax
                 if (pop.Type.isRichStrata())
                 {
                     if (change > 0)

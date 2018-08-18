@@ -7,7 +7,7 @@ namespace Nashet.EconomicSimulation
         bool IsAllowed(object firstObject, object secondObject, out string description);
         bool IsAllowed(object firstObject, object secondObject);
         float getVotingPower(PopUnit forWhom);
-        bool IsMoreConservative(IReformValue another);
+        bool IsMoreConservative(AbstractReformValue another);
         Procent howIsItGoodForPop(PopUnit pop);
         Procent LifeQualityImpact { get; }
     }

@@ -133,20 +133,23 @@ namespace Nashet.EconomicSimulation
 
             bank = new Bank(this);
 
-            
+
+            taxationForPoor = new TaxationForPoor(this);
+            taxationForRich = new TaxationForRich(this);
+
+            minimalWage = new MinimalWage(this);
+            unemploymentSubsidies = new UnemploymentSubsidies(this);
+
+            serfdom = new Serfdom(this);
+            minorityPolicy = new MinorityPolicy(this);
 
             economy = new Economy(this);
 
             government = new Government(this);
 
-            serfdom = new Serfdom(this);
+            
 
-            minimalWage = new MinimalWage(this);
-            unemploymentSubsidies = new UnemploymentSubsidies(this);
-
-            taxationForPoor = new TaxationForPoor(this);
-            taxationForRich = new TaxationForRich(this);
-            minorityPolicy = new MinorityPolicy(this);
+            
 
 
             Culture = culture;
@@ -1091,12 +1094,12 @@ namespace Nashet.EconomicSimulation
             Money statistics;
             if (isPoorStrata)
             {
-                tax = taxationForPoor.tax;
+                tax = taxationForPoor.tax.Procent;
                 statistics = incomeTaxStaticticPoor;
             }
             else //if (type is TaxationForRich)
             {
-                tax = taxationForRich.tax;
+                tax = taxationForRich.tax.Procent;
                 statistics = incomeTaxStatisticRich;
             }
             if (!(taxPayer is Market) && taxPayer.Country != this) //foreigner
@@ -1122,9 +1125,9 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public bool TakeNaturalTax(PopUnit pop, Procent tax)
+        public bool TakeNaturalTax(PopUnit pop, ProcentReform.ProcentReformVal tax)
         {
-            var howMuchSend = pop.getGainGoodsThisTurn().Multiply(tax);
+            var howMuchSend = pop.getGainGoodsThisTurn().Multiply(tax.Procent);
 
             if (pop.storage.isBiggerOrEqual(howMuchSend))
             {

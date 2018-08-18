@@ -1,6 +1,7 @@
 ﻿using Nashet.ValueSpace;
 using System;
 using System.Collections.Generic;
+using Nashet.Conditions;
 
 namespace Nashet.EconomicSimulation
 {
@@ -12,53 +13,81 @@ namespace Nashet.EconomicSimulation
             //tax = new ProcentReformVal(0.1f);
         }
 
-        
+
 
         public void SetValue(ProcentReformVal tax)
         {
             base.SetValue(tax);
-            this.tax.Set(tax);
+            this.tax = tax;
         }
 
-       
-        public  class ProcentReformVal : Procent, IReformValue//  AbstrRefrmValue
+
+        public class ProcentReformVal : AbstractReformValue, IReformValue//  AbstrRefrmValue
         {
-            public ProcentReformVal(float number, bool showMessageAboutNegativeValue = true) : base(number, showMessageAboutNegativeValue)
+            public Procent Procent { get; }
+            public ProcentReformVal(int ID, Procent procent) : base(ID, new DoubleConditionsList(new List<Condition> { Condition.AlwaysYes }))
             {
-            }
-            public bool IsMoreConservative(IReformValue anotherReform)
+                Procent = procent;
+            }            
+
+            public override Procent howIsItGoodForPop(PopUnit pop)
             {
-                return ID < anotherReform.ID;
+                return new Procent(0f);
             }
 
-            public Procent LifeQualityImpact
+            public override bool IsAllowed(object firstObject, object secondObject, out string description)
             {
-                get
-                {
-                    return this;
-                }
-            }
-          
-
-            public float getVotingPower(PopUnit forWhom)
-            {
-                throw new NotImplementedException();
+                description = "";
+                return true;
             }
 
-            public bool IsAllowed(object firstObject, object secondObject, out string description)
+            public override bool IsAllowed(object firstObject, object secondObject)
             {
-                throw new NotImplementedException();
+                return true;
+                
             }
 
-            public bool IsAllowed(object firstObject, object secondObject)
+            internal float get()
             {
-                throw new NotImplementedException();
+                return Procent.get();
             }
+            public override string ToString()
+            {
+                return Procent.ToString();
+            }
+            //public bool IsMoreConservative(IReformValue anotherReform)
+            //{
+            //    return ID < anotherReform.ID;
+            //}
 
-            public virtual Procent howIsItGoodForPop(PopUnit pop)
-            {
-                throw new NotImplementedException();
-            }
+            //public Procent LifeQualityImpact
+            //{
+            //    get
+            //    {
+            //        return this;
+            //    }
+            //}
+
+
+            //public float getVotingPower(PopUnit forWhom)
+            //{
+            //    throw new NotImplementedException();
+            //}
+
+            //public bool IsAllowed(object firstObject, object secondObject, out string description)
+            //{
+            //    throw new NotImplementedException();
+            //}
+
+            //public bool IsAllowed(object firstObject, object secondObject)
+            //{
+            //    throw new NotImplementedException();
+            //}
+
+            //public virtual Procent howIsItGoodForPop(PopUnit pop)
+            //{
+            //    throw new NotImplementedException();
+            //}
         }
     }
 

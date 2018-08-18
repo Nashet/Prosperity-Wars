@@ -64,7 +64,7 @@ namespace Nashet.EconomicSimulation
             /// <summary>
             /// Doesn't have sense for that reform
             /// </summary>            
-            public bool IsMoreConservative(IReformValue anotherReform)
+            public bool IsMoreConservative(AbstractReformValue anotherReform)
             {
                 return false;
             }           

@@ -21,12 +21,12 @@ namespace Nashet.EconomicSimulation
         });
 
         public static readonly EconomyReformValue NaturalEconomy = new EconomyReformValue("Natural economy", " ", 1, new DoubleConditionsList(Condition.IsNotImplemented), false);//new ConditionsList(Condition.AlwaysYes));
-        public static readonly EconomyReformValue StateCapitalism = new EconomyReformValue("State capitalism", "", 2, new DoubleConditionsList(capitalism), false, null, new ProcentReform.ProcentReformVal(0.2f));
+        public static readonly EconomyReformValue StateCapitalism = new EconomyReformValue("State capitalism", "", 2, new DoubleConditionsList(capitalism), false, null, new ProcentReform.ProcentReformVal(0, new Procent(0.2f)));
         public static readonly EconomyReformValue Interventionism = new EconomyReformValue("Limited interventionism", "", 3, new DoubleConditionsList(capitalism), true);
-        public static readonly EconomyReformValue LaissezFaire = new EconomyReformValue("Laissez faire", "", 4, new DoubleConditionsList(capitalism), true, new ProcentReform.ProcentReformVal(0.5f));
+        public static readonly EconomyReformValue LaissezFaire = new EconomyReformValue("Laissez faire", "", 4, new DoubleConditionsList(capitalism), true, new ProcentReform.ProcentReformVal(0, new Procent(0.5f)));
 
         public static readonly DoubleCondition isNotLFOrMoreConservative = new DoubleCondition((country, newReform) => (country as Country).economy != Economy.LaissezFaire
-        || (newReform as IReformValue).IsMoreConservative((country as Country).economy.value),
+        || (newReform as IReformValue).IsMoreConservative((country as Country).economy.typedValue),
             x => "Economy policy is not Laissez Faire or that is reform rollback", true);
 
         public static readonly Condition isNotLF = new Condition(delegate (object forWhom) { return (forWhom as Country).economy != LaissezFaire; }, "Economy policy is not Laissez Faire", true);
@@ -54,7 +54,7 @@ namespace Nashet.EconomicSimulation
             //    return (x as Country).economy != LaissezFaire || taxesForPoor.tax.get() <= 0.5f;
             //else
             {
-                var taxesForRich = y as ProcentReform.ProcentReformVal;
+                var taxesForRich = y as TaxationForRich.ProcentReformVal;
                 return (x as Country).economy != LaissezFaire || taxesForRich.get() <= 0.5f;
             }
         },
@@ -145,7 +145,7 @@ namespace Nashet.EconomicSimulation
                 if (pop.Type.isRichStrata())
                 {
                     //positive - more liberal
-                    int relation = RelativeConservatism(pop.Country.economy.value); // ID - pop.Country.economy.value.ID;
+                    int relation = RelativeConservatism(pop.Country.economy.typedValue); // ID - pop.Country.economy.value.ID;
                     //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
                     if (relation > 0)
                         result = new Procent(1f + relation / 10f);
@@ -169,7 +169,7 @@ namespace Nashet.EconomicSimulation
                         result = new Procent(0.5f);
                 }
                 return result;
-            }           
+            }
         }
     }
     //public class Ecccconomy : AbstractReform, IHasCountry
