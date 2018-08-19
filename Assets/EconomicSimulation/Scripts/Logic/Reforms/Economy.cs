@@ -4,7 +4,7 @@ using Nashet.Conditions;
 using Nashet.Utils;
 using Nashet.ValueSpace;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.EconomicSimulation.Reforms
 {
     public class Economy : AbstractReform
     {
@@ -21,9 +21,9 @@ namespace Nashet.EconomicSimulation
         });
 
         public static readonly EconomyReformValue NaturalEconomy = new EconomyReformValue("Natural economy", " ", 1, new DoubleConditionsList(Condition.IsNotImplemented), false);//new ConditionsList(Condition.AlwaysYes));
-        public static readonly EconomyReformValue StateCapitalism = new EconomyReformValue("State capitalism", "", 2, new DoubleConditionsList(capitalism), false, null, new ProcentReform.ProcentReformVal(0, new Procent(0.2f)));
+        public static readonly EconomyReformValue StateCapitalism = new EconomyReformValue("State capitalism", "", 2, new DoubleConditionsList(capitalism), false, null, TaxationForPoor.PoorTaxValue.TaxRate20);
         public static readonly EconomyReformValue Interventionism = new EconomyReformValue("Limited interventionism", "", 3, new DoubleConditionsList(capitalism), true);
-        public static readonly EconomyReformValue LaissezFaire = new EconomyReformValue("Laissez faire", "", 4, new DoubleConditionsList(capitalism), true, new ProcentReform.ProcentReformVal(0, new Procent(0.5f)));
+        public static readonly EconomyReformValue LaissezFaire = new EconomyReformValue("Laissez faire", "", 4, new DoubleConditionsList(capitalism), true, TaxationForPoor.PoorTaxValue.TaxRate50);
 
         public static readonly DoubleCondition isNotLFOrMoreConservative = new DoubleCondition((country, newReform) => (country as Country).economy != Economy.LaissezFaire
         || (newReform as IReformValue).IsMoreConservative((country as Country).economy.typedValue),
@@ -85,6 +85,7 @@ namespace Nashet.EconomicSimulation
 
         public Economy(Country country) : base("Economy", "Your economy policy", country, new List<IReformValue> { })
         {
+            SetValue(StateCapitalism);
         }
 
         public override void OnReformEnactedInProvince(Province province)
@@ -131,12 +132,12 @@ namespace Nashet.EconomicSimulation
                 get; protected set;
             }
 
-            public EconomyReformValue(string name, string description, int id, DoubleConditionsList condition,
-                bool allowForeighnIvestments, ProcentReform.ProcentReformVal maxPoorTax = null, ProcentReform.ProcentReformVal minPoorTax = null) : base(name, description, id, condition)
+            internal EconomyReformValue(string name, string description, int id, DoubleConditionsList condition,
+                bool allowForeighnIvestments, TaxationForPoor.PoorTaxValue maxTax = null, TaxationForPoor.PoorTaxValue minTax = null) : base(name, description, id, condition)
             {
                 AllowForeignInvestments = allowForeighnIvestments;
-                this.minTax = minPoorTax;
-                this.maxTax = maxPoorTax;
+                this.minTax = minTax;
+                this.maxTax = maxTax;
             }
             public override Procent howIsItGoodForPop(PopUnit pop)
             {

@@ -2,7 +2,7 @@
 using Nashet.Conditions;
 using Nashet.ValueSpace;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.EconomicSimulation.Reforms
 {
     public class Separatism : AbstractReform
     {
@@ -57,7 +57,7 @@ namespace Nashet.EconomicSimulation
         {
             public Country separatismTarget { get; protected set; }
 
-            public Goal(Country separatismTarget)
+            internal Goal(Country separatismTarget)
             {
                 this.separatismTarget = separatismTarget;
             }

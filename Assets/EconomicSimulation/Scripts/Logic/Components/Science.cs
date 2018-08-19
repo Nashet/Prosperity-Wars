@@ -1,4 +1,5 @@
 ﻿using Nashet.Conditions;
+using Nashet.EconomicSimulation.Reforms;
 using Nashet.Utils;
 using Nashet.ValueSpace;
 using System;

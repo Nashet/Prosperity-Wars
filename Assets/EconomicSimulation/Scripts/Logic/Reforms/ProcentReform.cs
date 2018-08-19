@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Nashet.Conditions;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.EconomicSimulation.Reforms
 {
     public abstract class ProcentReform : AbstractReform
     {
@@ -13,19 +13,21 @@ namespace Nashet.EconomicSimulation
             //tax = new ProcentReformVal(0.1f);
         }
 
-
-
+        //public override void SetValue(IReformValue reformValue)
+        //{
+        //    base.SetValue(reformValue);
+        //    this.tax = reformValue as ProcentReformVal;
+        //}
         public void SetValue(ProcentReformVal tax)
         {
             base.SetValue(tax);
             this.tax = tax;
         }
 
-
-        public class ProcentReformVal : AbstractReformValue, IReformValue//  AbstrRefrmValue
+        public class ProcentReformVal : AbstractReformValue
         {
             public Procent Procent { get; }
-            public ProcentReformVal(int ID, Procent procent) : base(ID, new DoubleConditionsList(new List<Condition> { Condition.AlwaysYes }))
+            internal ProcentReformVal(int ID, Procent procent) : base(ID, new DoubleConditionsList(new List<Condition> { Condition.AlwaysYes }))
             {
                 Procent = procent;
             }            

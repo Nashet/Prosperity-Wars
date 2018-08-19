@@ -4,7 +4,7 @@ using Nashet.Utils;
 using Nashet.ValueSpace;
 using System;
 using System.Collections.Generic;
-namespace Nashet.EconomicSimulation
+namespace Nashet.EconomicSimulation.Reforms
 {
     public abstract class AbstractReform : Component<Country>, INameable, ISortableName, IClickable
     {
@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
         protected readonly string name;
         protected readonly float nameWeight;
 
-        protected IReformValue value;
+        public IReformValue value;
         protected readonly List<IReformValue> possibleValues;
 
         public AbstractReform(string name, string indescription, Country country, List<IReformValue> possibleValues) : base(country)
@@ -77,7 +77,6 @@ namespace Nashet.EconomicSimulation
         }
         public virtual void SetValue(IReformValue reformValue)
         {
-
             foreach (PopUnit pop in owner.Provinces.AllPops)
                 if (pop.getSayingYes(reformValue))
                 {
@@ -89,6 +88,7 @@ namespace Nashet.EconomicSimulation
             {
                 isThereSuchMovement.onRevolutionWon(false);
             }
+            value = reformValue;
         }
 
         public string FullName
@@ -102,8 +102,9 @@ namespace Nashet.EconomicSimulation
 
         public void OnClicked()
         {
-            //MainCamera.politicsPanel.selectReform(this);
+            MainCamera.politicsPanel.selectReform(this);
             MainCamera.politicsPanel.Refresh();
+            
         }
 
         public float NameWeight

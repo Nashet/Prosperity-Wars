@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using Nashet.Conditions;
 using Nashet.ValueSpace;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.EconomicSimulation.Reforms
 {
     public class Government : AbstractReform
     {
         public static readonly GovernmentReformName Tribal = new GovernmentReformName("Tribal Federation", "- Democracy-lite; Tribesmen and Aristocrats vote.", 0,
-            new DoubleConditionsList(), "Tribe", 10, 0f, new ProcentReform.ProcentReformVal(0, new Procent(0.2f)));
+            new DoubleConditionsList(), "Tribe", 10, 0f, TaxationForPoor.PoorTaxValue.TaxRate20);
 
         public static readonly GovernmentReformName Aristocracy = new GovernmentReformName("Aristocracy", "- Aristocrats and Clerics make the rules.", 1,
-            new DoubleConditionsList(), "Kingdom", 20, 0.5f, new ProcentReform.ProcentReformVal(0, new Procent(0f)), new ProcentReform.ProcentReformVal(0, new Procent(0.2f)));
+            new DoubleConditionsList(), "Kingdom", 20, 0.5f, TaxationForPoor.PoorTaxValue.TaxRate0, TaxationForRich.RichTaxValue.TaxRate20);
 
         public static readonly GovernmentReformName Polis = new GovernmentReformName("Polis", "- Landed individuals allowed to vote. Farmers, Aristocrats, and Clerics share equal voting power.", 8,
             new DoubleConditionsList(), "Polis", 5, 1f);
@@ -29,13 +29,13 @@ namespace Nashet.EconomicSimulation
             new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "Republic", 100, 1f);
 
         public static readonly GovernmentReformName BourgeoisDictatorship = new GovernmentReformName("Bourgeois Dictatorship", "- Robber Barons or Captains of Industry? You decide!", 6,
-            new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "Oligarchy", 20, 1f, new ProcentReform.ProcentReformVal(0, new Procent(0.1f)), new ProcentReform.ProcentReformVal(0, new Procent(0.1f)));
+            new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "Oligarchy", 20, 1f, TaxationForPoor.PoorTaxValue.TaxRate10, TaxationForRich.RichTaxValue.TaxRate10);
 
         public static readonly GovernmentReformName Junta = new GovernmentReformName("Junta", "- The military knows what's best for the people...", 7,
             new DoubleConditionsList(new List<Condition> { Invention.ProfessionalArmyInvented }), "Junta", 20, 0.3f);
 
         public static readonly GovernmentReformName ProletarianDictatorship = new GovernmentReformName("Proletarian Dictatorship", "- Bureaucrats ruling with a terrifying hammer and a friendly sickle.", 4,
-            new DoubleConditionsList(new List<Condition> { Invention.CollectivismInvented, Invention.ManufacturesInvented }), "SSR", 20, 0.5f, new ProcentReform.ProcentReformVal(0, new Procent(0.5f)), new ProcentReform.ProcentReformVal(0, new Procent(1f)));
+            new DoubleConditionsList(new List<Condition> { Invention.CollectivismInvented, Invention.ManufacturesInvented }), "SSR", 20, 0.5f, TaxationForPoor.PoorTaxValue.TaxRate50, TaxationForRich.RichTaxValue.TaxRate100);
         public static readonly Condition isPolis = new Condition(x => (x as Country).government == Polis, "Government is " + Polis, true);
         public static readonly Condition isTribal = new Condition(x => (x as Country).government == Tribal, "Government is " + Tribal, true);
         public static readonly Condition isAristocracy = new Condition(x => (x as Country).government == Aristocracy, "Government is " + Aristocracy, true);
@@ -238,8 +238,18 @@ namespace Nashet.EconomicSimulation
             private readonly int MaxSizeLimitForDisloyaltyModifier;
             private readonly string prefix;
             private readonly float scienceModifier;
-            public ProcentReform.ProcentReformVal defaultPoorTax;
-            public ProcentReform.ProcentReformVal defaultRichTax;
+            public TaxationForPoor.PoorTaxValue defaultPoorTax;
+            public TaxationForRich.RichTaxValue  defaultRichTax;
+
+            internal GovernmentReformName(string name, string description, int id, DoubleConditionsList condition,
+                string prefix, int MaxSizeLimitForDisloyaltyModifier, float scienceModifier, TaxationForPoor.PoorTaxValue defaultPoorTax = null, TaxationForRich.RichTaxValue defaultRichTax = null) : base(name, description, id, condition)
+            {
+                this.prefix = prefix;
+                this.MaxSizeLimitForDisloyaltyModifier = MaxSizeLimitForDisloyaltyModifier;
+                this.scienceModifier = scienceModifier;
+                this.defaultPoorTax = defaultPoorTax;
+                this.defaultRichTax = defaultRichTax;
+            }
             public override Procent howIsItGoodForPop(PopUnit pop)
             {
                 Procent result;
@@ -276,15 +286,7 @@ namespace Nashet.EconomicSimulation
                 return prefix;
             }
 
-            public GovernmentReformName(string name, string description, int id, DoubleConditionsList condition,
-                string prefix, int MaxSizeLimitForDisloyaltyModifier, float scienceModifier, ProcentReform.ProcentReformVal defaultPoorTax = null, ProcentReform.ProcentReformVal defaultRichTax = null) : base(name, description, id, condition)
-            {
-                this.prefix = prefix;
-                this.MaxSizeLimitForDisloyaltyModifier = MaxSizeLimitForDisloyaltyModifier;
-                this.scienceModifier = scienceModifier;
-                this.defaultPoorTax = defaultPoorTax;
-                this.defaultRichTax = defaultRichTax;
-            }
+            
         }
     }
 

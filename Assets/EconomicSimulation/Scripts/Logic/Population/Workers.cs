@@ -1,4 +1,6 @@
-﻿namespace Nashet.EconomicSimulation
+﻿using Nashet.EconomicSimulation.Reforms;
+
+namespace Nashet.EconomicSimulation
 {
     public class Workers : GrainGetter
     {

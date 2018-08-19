@@ -6,19 +6,19 @@
 using Nashet.ValueSpace;
 using System.Collections.Generic;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.EconomicSimulation.Reforms
 {
     public class TaxationForPoor : ProcentReform
     {
-        public TaxationForPoor(Country country) : base("Taxation for poor", "", country, new List<IReformValue> { new RefValue(0, 0f), new RefValue(5, 0.5f), new RefValue(10, 1f) })
+        public TaxationForPoor(Country country) : base("Taxation for poor", "", country, new List<IReformValue> { PoorTaxValue.TaxRate0, PoorTaxValue.TaxRate10, PoorTaxValue.TaxRate20, PoorTaxValue.TaxRate50, PoorTaxValue.TaxRate100 })
         {
-            tax = new RefValue(1, 0.1f);
+            SetValue(PoorTaxValue.TaxRate20);
         }
-
-
-        public class RefValue : ProcentReformVal
+        public class PoorTaxValue : ProcentReformVal
         {
-            public RefValue(int ID, float number) : base(ID, new Procent(number))
+            public static readonly PoorTaxValue TaxRate0 = new PoorTaxValue(0, 0f), TaxRate10 = new PoorTaxValue(1, 0.1f),
+                TaxRate20 = new PoorTaxValue(2, 0.2f), TaxRate50 = new PoorTaxValue(5, 0.5f), TaxRate100 = new PoorTaxValue(10, 1f);
+            internal PoorTaxValue(int ID, float number) : base(ID, new Procent(number))
             {
             }
             public override Procent howIsItGoodForPop(PopUnit pop)

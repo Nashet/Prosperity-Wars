@@ -37,6 +37,8 @@ namespace Nashet.EconomicSimulation
             //GetComponent<RectTransform>().anchoredPosition = new Vector2(800f, 200f);
             GUIChanger.Apply(gameObject);
             industrialStart.isOn = Game.IndustrialStart;
+            if (Game.devMode)
+                Hide();
         }
         //public override void Refresh()
         //{

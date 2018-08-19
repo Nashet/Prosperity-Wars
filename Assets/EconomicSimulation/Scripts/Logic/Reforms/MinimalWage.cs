@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using Nashet.Conditions;
 using Nashet.ValueSpace;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.EconomicSimulation.Reforms
 {
-    public class MinimalWage : ProcentReform
+    public class MinimalWage : AbstractReform
     {
         protected MinWageReformValue typedValue;
 
@@ -38,7 +38,8 @@ namespace Nashet.EconomicSimulation
 
         public MinimalWage(Country country) : base("Minimum wage", "", country, new List<IReformValue> { None, Scanty, Minimal, Trinket, Middle, Big })
         {
-            typedValue = None;
+
+            SetValue(None);
         }
 
         public void SetValue(MinWageReformValue selectedReform)
@@ -97,7 +98,7 @@ namespace Nashet.EconomicSimulation
             else
                 return new Money(0m);
         }
-        
+
         //public override bool isAvailable(Country country)
         //{
         //    if (country.Science.IsInvented(Invention.Welfare))
@@ -111,7 +112,7 @@ namespace Nashet.EconomicSimulation
 
         public class MinWageReformValue : NamedReformValue
         {
-            public MinWageReformValue(string inname, string indescription, int id, DoubleConditionsList condition)
+            internal MinWageReformValue(string inname, string indescription, int id, DoubleConditionsList condition)
                 : base(inname, indescription, id, condition)
             {
                 //// if (!PossibleStatuses.Contains(this))
@@ -153,7 +154,7 @@ namespace Nashet.EconomicSimulation
                 else // rich strata
                 {
                     //negative - reform will be better for rich strata, [-5..+5]
-                    int change = RelativeConservatism( pop.Country.minimalWage.typedValue);
+                    int change = RelativeConservatism(pop.Country.minimalWage.typedValue);
                     //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
                     if (change < 0)
                         result = new Procent(1f);

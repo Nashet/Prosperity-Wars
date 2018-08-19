@@ -1,4 +1,5 @@
-﻿using Nashet.ValueSpace;
+﻿using Nashet.EconomicSimulation.Reforms;
+using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {

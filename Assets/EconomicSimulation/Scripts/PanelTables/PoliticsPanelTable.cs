@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 
 namespace Nashet.EconomicSimulation
@@ -16,7 +17,7 @@ namespace Nashet.EconomicSimulation
             AddCell(reform.ToString(), reform);
 
             ////Adding Status
-            AddCell(reform.ToString(), reform);
+            AddCell(reform.value.ToString(), reform);
 
             ////Adding Can change possibility
             //if (next.canChange())

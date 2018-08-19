@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 
 namespace Nashet.EconomicSimulation

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Nashet.Conditions;
+using Nashet.EconomicSimulation.Reforms;
 using Nashet.MarchingSquares;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;

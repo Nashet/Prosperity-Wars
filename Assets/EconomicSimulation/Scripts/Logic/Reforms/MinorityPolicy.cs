@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Nashet.Conditions;
 using Nashet.ValueSpace;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.EconomicSimulation.Reforms
 {
     public class MinorityPolicy : AbstractReform
     {
@@ -23,7 +23,7 @@ namespace Nashet.EconomicSimulation
             if (Residency == null)
                 Residency = new MinorityPolicyValue("Restricted Rights for Minorities", "- Only state culture can vote, assimilation occurs except foreign core provinces", 1, new DoubleConditionsList());
 
-            typedValue = Residency;
+            SetValue(Residency);
             //IsResidencyPop = new Condition(x => (x as PopUnit).province.getOwner().minorityPolicy.status == MinorityPolicy.Residency,
             //Residency.FullName, true);
         }
@@ -50,7 +50,7 @@ namespace Nashet.EconomicSimulation
 
         public class MinorityPolicyValue : NamedReformValue
         {
-            public MinorityPolicyValue(string inname, string indescription, int idin, DoubleConditionsList condition) : base(inname, indescription, idin, condition)
+            internal MinorityPolicyValue(string inname, string indescription, int idin, DoubleConditionsList condition) : base(inname, indescription, idin, condition)
             {
 
             }

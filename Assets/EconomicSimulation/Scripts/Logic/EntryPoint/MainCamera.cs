@@ -119,7 +119,7 @@ namespace Nashet.EconomicSimulation
         // Update is called once per frame
         private void Update()
         {
-            if (!MapOptions.MadeChoise)
+            if (!MapOptions.MadeChoise && !Game.devMode)
                 return;
             //starts loading thread
             if (game == null)// && Input.GetKeyUp(KeyCode.Backspace))

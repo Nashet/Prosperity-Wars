@@ -6,7 +6,7 @@ using Nashet.ValueSpace;
 using System;
 using System.Collections.Generic;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.EconomicSimulation.Reforms
 {
 
     public abstract class AbstractReformValue : IReformValue

@@ -4,13 +4,13 @@ using Nashet.Conditions;
 using Nashet.ValueSpace;
 using UnityEngine;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.EconomicSimulation.Reforms
 {
-    public class UnemploymentSubsidies : ProcentReform
-    {       
+    public class UnemploymentSubsidies : AbstractReform
+    {
 
         protected UnemploymentReformValue typedvalue;
-        
+
         public static readonly UnemploymentReformValue None = new UnemploymentReformValue("No Unemployment Benefits", "", 0, new DoubleConditionsList(new List<Condition>()));
 
         public static readonly UnemploymentReformValue Scanty = new UnemploymentReformValue("Bread Lines", "-The people are starving. Let them eat bread.", 1, new DoubleConditionsList(new List<Condition>
@@ -40,7 +40,7 @@ namespace Nashet.EconomicSimulation
 
         public UnemploymentSubsidies(Country country) : base("Unemployment Subsidies", "", country, new List<IReformValue> { None, Scanty, Minimal, Trinket, Middle, Big })
         {
-            typedvalue = None;
+            SetValue(None);
         }
 
         //public bool isThatReformEnacted(int value)
@@ -48,8 +48,8 @@ namespace Nashet.EconomicSimulation
         //    return typedvalue == PossibleStatuses[value];
         //}
 
-       
-        public  void SetValue(UnemploymentReformValue selectedReform)
+
+        public void SetValue(UnemploymentReformValue selectedReform)
         {
             base.SetValue(selectedReform);
             typedvalue = selectedReform;
@@ -63,7 +63,7 @@ namespace Nashet.EconomicSimulation
         //    else
         //        return false;
         //}
-        
+
         /// <summary>
         /// Calculates Unemployment Subsidies basing on consumption cost for 1000 workers
         /// </summary>
@@ -119,11 +119,12 @@ namespace Nashet.EconomicSimulation
         }
         public class UnemploymentReformValue : NamedReformValue
         {
-            public UnemploymentReformValue(string name, string description, int id, DoubleConditionsList condition)
+            internal UnemploymentReformValue(string name, string description, int id, DoubleConditionsList condition)//, Procent procent
                 : base(name, description, id, condition)
+               // :base(id, procent)
             {
                 //if (!PossibleStatuses.Contains(this))
-         
+
                 //var totalSteps = 6;
                 //var previousID = ID - 1;
                 //var nextID = ID + 1;
@@ -143,7 +144,7 @@ namespace Nashet.EconomicSimulation
             //    return true;
             //}
 
-            
+
 
             public override string ToString()
             {
@@ -153,7 +154,7 @@ namespace Nashet.EconomicSimulation
             {
                 Procent result;
                 //positive - higher subsidies
-                int change = RelativeConservatism (pop.Country.unemploymentSubsidies.tax);
+                int change = RelativeConservatism(pop.Country.unemploymentSubsidies.typedvalue);
                 if (pop.Type.isPoorStrata())
                 {
                     if (change > 0)

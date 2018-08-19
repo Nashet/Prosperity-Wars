@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
@@ -97,7 +98,7 @@ namespace Nashet.EconomicSimulation
                 {
                     dropDown.options.Add(new Dropdown.OptionData { text = next.ToString() });
                     assotiateTable.Add(next);
-                    if (next == selectedReform)
+                    if (selectedReform == next)
                     {
                         //selectedReformValue = next;
                         // selecting non empty option
@@ -146,16 +147,16 @@ namespace Nashet.EconomicSimulation
                 if (callRebuildDropDown) // meaning changed whole reform
                     rebuildDropDown();
                 descriptionText.text = selectedReform + " reforms " + selectedReform.FullName
-               + "\nCurrently: " + selectedReform + " " + selectedReform.FullName
+               + "\nCurrently: " + selectedReform.value
                + "\nSelected: ";
 
                 //if (selectedReformValue != null)
-                if (selectedReformValue != selectedReform)
-                    descriptionText.text += selectedReformValue + " " + selectedReformValue;//.FullName
-                else
+                if (selectedReform == selectedReformValue)
                     descriptionText.text += "current";
+                else
+                    descriptionText.text += selectedReformValue;// + " " + selectedReformValue;//.FullName
 
-                ////
+
                 Procent procentPopulationSayedYes = new Procent(0f);
                 Procent procentVotersSayedYes = Game.Player.Provinces.getYesVotes(selectedReformValue, ref procentPopulationSayedYes);
 

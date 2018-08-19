@@ -1,4 +1,5 @@
 ﻿using Nashet.EconomicSimulation;
+using Nashet.EconomicSimulation.Reforms;
 using Nashet.ValueSpace;
 using NUnit.Framework;
 using System.Collections;

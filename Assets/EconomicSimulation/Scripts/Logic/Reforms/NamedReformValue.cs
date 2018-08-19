@@ -3,7 +3,7 @@ using Nashet.Utils;
 using System;
 using System.Collections.Generic;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.EconomicSimulation.Reforms
 {
     //public abstract class NamedReform : AbstractReform
     //{
@@ -17,7 +17,7 @@ namespace Nashet.EconomicSimulation
         protected readonly string description;
         protected readonly string name;
 
-        public NamedReformValue(string name, string description, int id, DoubleConditionsList condition) : base(id, condition)
+        internal NamedReformValue(string name, string description, int id, DoubleConditionsList condition) : base(id, condition)
         {
             this.description = description;
             this.name = name;

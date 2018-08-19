@@ -1,22 +1,19 @@
-﻿//using System.Collections;
-//using System.Collections.Generic;
-//using Nashet.Conditions;
-//using Nashet.ValueSpace;
-
-using Nashet.ValueSpace;
+﻿using Nashet.ValueSpace;
 using System.Collections.Generic;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.EconomicSimulation.Reforms
 {
     public class TaxationForRich : ProcentReform//, ICopyable<TaxationForRich>
     {
-        public TaxationForRich(Country country) : base("Taxation for rich", "", country, new List<IReformValue> { new RichTaxValue(0, 0f), new RichTaxValue(5, 0.5f), new RichTaxValue(10,1f) })
+        public TaxationForRich(Country country) : base("Taxation for rich", "", country, new List<IReformValue> { RichTaxValue.TaxRate0, RichTaxValue.TaxRate10, RichTaxValue.TaxRate20, RichTaxValue.TaxRate50, RichTaxValue.TaxRate100 })
         {
-            tax = new RichTaxValue(1, 0.1f);
+            SetValue(RichTaxValue.TaxRate20);
         }
         public class RichTaxValue : ProcentReformVal
         {
-            public RichTaxValue(int ID, float number) : base(ID, new Procent(number))
+            public static readonly RichTaxValue TaxRate0 = new RichTaxValue(0, 0f), TaxRate10 = new RichTaxValue(1, 0.1f),
+                TaxRate20 = new RichTaxValue(2, 0.2f), TaxRate50 = new RichTaxValue(5, 0.5f), TaxRate100 = new RichTaxValue(10, 1f);
+            internal RichTaxValue(int ID, float number) : base(ID, new Procent(number))
             {
             }
             public override Procent howIsItGoodForPop(PopUnit pop)

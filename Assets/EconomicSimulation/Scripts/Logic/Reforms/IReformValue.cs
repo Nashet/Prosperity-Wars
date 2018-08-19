@@ -1,6 +1,6 @@
 ﻿using Nashet.ValueSpace;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.EconomicSimulation.Reforms
 {
     public interface IReformValue
     {        

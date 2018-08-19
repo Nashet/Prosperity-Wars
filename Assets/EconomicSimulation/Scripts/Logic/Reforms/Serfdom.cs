@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Nashet.Conditions;
 using Nashet.ValueSpace;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.EconomicSimulation.Reforms
 {
     public class Serfdom : AbstractReform
     {
@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
         public static SerfValue SerfdomAllowed;
         public static SerfValue Brutal;
 
-        public Procent AristocratTax { get {return typedValue.AristocratTax;  } }
+        public Procent AristocratTax { get { return typedValue.AristocratTax; } }
 
         public static SerfValue Abolished = new SerfValue("Abolished", "- Abolished with no obligations", 2,
             new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented, Condition.IsNotImplemented }));
@@ -44,7 +44,7 @@ namespace Nashet.EconomicSimulation
             Economy.isNotMarket, Condition.IsNotImplemented
                 }));
 
-            typedValue = SerfdomAllowed;
+            SetValue(SerfdomAllowed);
         }
 
 
@@ -63,7 +63,7 @@ namespace Nashet.EconomicSimulation
         || (x as Country).serfdom.typedValue == Brutal,
             "Serfdom is in power", true);
 
-       
+
         public class SerfValue : NamedReformValue
         {
             //private static Procent brutalTax = new Procent(0.2f);
@@ -72,8 +72,8 @@ namespace Nashet.EconomicSimulation
 
             public Procent AristocratTax { get; protected set; }
 
-            public SerfValue(string name, string description, int id, DoubleConditionsList condition) : base(name, description, id, condition)
-            {                
+            internal SerfValue(string name, string description, int id, DoubleConditionsList condition) : base(name, description, id, condition)
+            {
                 // this.allowed = condition;
             }
 
