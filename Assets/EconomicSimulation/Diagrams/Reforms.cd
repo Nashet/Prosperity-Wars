@@ -143,12 +143,12 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Nashet.EconomicSimulation.Reforms.TaxationForPoor">
-    <Position X="8" Y="12.25" Width="1.5" />
+    <Position X="8" Y="11.75" Width="1.5" />
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
     <NestedTypes>
-      <Class Name="Nashet.EconomicSimulation.Reforms.TaxationForPoor.PoorTaxValue" Collapsed="true">
+      <Class Name="Nashet.EconomicSimulation.Reforms.TaxationForPoor.PoorTaxValue">
         <TypeIdentifier>
           <NewMemberFileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\TaxationForPoor.cs</NewMemberFileName>
         </TypeIdentifier>
@@ -160,7 +160,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Nashet.EconomicSimulation.Reforms.TaxationForRich">
-    <Position X="10.25" Y="12.25" Width="1.5" />
+    <Position X="10.25" Y="11.75" Width="1.5" />
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
@@ -187,7 +187,7 @@
   <Class Name="Nashet.EconomicSimulation.Reforms.NamedReformValue" BaseTypeListCollapsed="true">
     <Position X="1.5" Y="17.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAIAEIAAAAAAAAAAEAIAAAAAAAAAABAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAIAEIAAAAAAAAAAEAIAAAAAAAAAAAAA=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\NamedReformValue.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />

@@ -51,9 +51,8 @@ namespace Nashet.EconomicSimulation.Reforms
         public GovernmentReformName typedValue { get; protected set; }
 
         public Government(Country country) : base("Government", "Form of government", country,
-            new List<IReformValue> {
-                Tribal, Aristocracy
-            })
+            new List<IReformValue> {Tribal, Aristocracy, Polis, Despotism, Theocracy, WealthDemocracy,
+                Democracy, BourgeoisDictatorship, Junta, ProletarianDictatorship})
         {
             SetValue(Aristocracy);
             //typedValue = Aristocracy;
@@ -239,7 +238,7 @@ namespace Nashet.EconomicSimulation.Reforms
             private readonly string prefix;
             private readonly float scienceModifier;
             public TaxationForPoor.PoorTaxValue defaultPoorTax;
-            public TaxationForRich.RichTaxValue  defaultRichTax;
+            public TaxationForRich.RichTaxValue defaultRichTax;
 
             internal GovernmentReformName(string name, string description, int id, DoubleConditionsList condition,
                 string prefix, int MaxSizeLimitForDisloyaltyModifier, float scienceModifier, TaxationForPoor.PoorTaxValue defaultPoorTax = null, TaxationForRich.RichTaxValue defaultRichTax = null) : base(name, description, id, condition)
@@ -286,7 +285,7 @@ namespace Nashet.EconomicSimulation.Reforms
                 return prefix;
             }
 
-            
+
         }
     }
 

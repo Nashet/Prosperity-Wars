@@ -121,22 +121,8 @@ namespace Nashet.EconomicSimulation.Reforms
         {
             internal UnemploymentReformValue(string name, string description, int id, DoubleConditionsList condition)//, Procent procent
                 : base(name, description, id, condition)
-               // :base(id, procent)
             {
-                //if (!PossibleStatuses.Contains(this))
-
-                //var totalSteps = 6;
-                //var previousID = ID - 1;
-                //var nextID = ID + 1;
-                //if (previousID >= 0 && nextID < totalSteps)
-                //    condition.add(new Condition(x => (x as Country).unemploymentSubsidies.isThatReformEnacted(previousID)
-                //    || (x as Country).unemploymentSubsidies.isThatReformEnacted(nextID), "Previous reform enacted", true));
-                //else
-                //if (nextID < totalSteps)
-                //    condition.add(new Condition(x => (x as Country).unemploymentSubsidies.isThatReformEnacted(nextID), "Previous reform enacted", true));
-                //else
-                //if (previousID >= 0)
-                //    condition.add(new Condition(x => (x as Country).unemploymentSubsidies.isThatReformEnacted(previousID), "Previous reform enacted", true));
+                LifeQualityImpact = new Procent(ID * 2f, 10f); // doubles impact
             }
 
             //public override bool isAvailable(Country country)

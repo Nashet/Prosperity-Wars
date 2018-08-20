@@ -1,4 +1,5 @@
-﻿using Nashet.EconomicSimulation;
+﻿using Nashet.Conditions;
+using Nashet.EconomicSimulation;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
@@ -24,6 +25,20 @@ namespace Nashet.EconomicSimulation.Reforms
             country.reforms.Add(this);
             this.possibleValues = possibleValues;
 
+            //foreach (var item in possibleValues)
+            //{
+            //    new Condition(x => (x as Country).taxationForPoor.isThatReformEnacted(nextID), "Previous reform enacted", true);
+            //    var totalSteps = 11;
+            //    var previousID = ID - 1;
+            //    var nextID = ID + 1;
+            //    if (previousID >= 0 && nextID < totalSteps)
+            //        condition.add(new Condition(x => (x as Country).taxationForPoor.isThatReformEnacted(previousID)
+            //        || (x as Country).taxationForPoor.isThatReformEnacted(nextID), "Previous reform enacted", true));
+            //    else if (nextID < totalSteps)
+            //        condition.add(new Condition(x => (x as Country).taxationForPoor.isThatReformEnacted(nextID), "Previous reform enacted", true));
+            //    else if (previousID >= 0)
+            //        condition.add(new Condition(x => (x as Country).taxationForPoor.isThatReformEnacted(previousID), "Previous reform enacted", true));
+            //}
         }
         public float getVotingPower(PopUnit forWhom)
         {
@@ -103,8 +118,6 @@ namespace Nashet.EconomicSimulation.Reforms
         public void OnClicked()
         {
             MainCamera.politicsPanel.selectReform(this);
-            MainCamera.politicsPanel.Refresh();
-            
         }
 
         public float NameWeight

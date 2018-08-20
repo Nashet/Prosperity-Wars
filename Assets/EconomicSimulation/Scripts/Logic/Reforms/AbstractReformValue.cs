@@ -18,22 +18,30 @@ namespace Nashet.EconomicSimulation.Reforms
         protected readonly Modifier wantsReform;
         protected readonly ModifiersList modVoting;
 
-        public Procent LifeQualityImpact { get; }
+        public Procent LifeQualityImpact { get; protected set; }
 
         public AbstractReformValue(int id, DoubleConditionsList condition)
         {
+            LifeQualityImpact = Procent.ZeroProcent.Copy();
             ID = id;
             allowed = condition;
-            wantsReform = new Modifier(x => howIsItGoodForPop(x as PopUnit).get(),
-                                    "Benefit to population", 1f, true);
-            loyalty = new Modifier(x => loyaltyBoostFor(x as PopUnit),
-                        "Loyalty", 1f, false);
-            modVoting = new ModifiersList(new List<Condition>
-            {wantsReform, loyalty, education});
+            wantsReform = new Modifier(x => howIsItGoodForPop(x as PopUnit).get(), "Benefit to population", 1f, true);
+            loyalty = new Modifier(x => loyaltyBoostFor(x as PopUnit), "Loyalty", 1f, false);
+            modVoting = new ModifiersList(new List<Condition> { wantsReform, loyalty, education });
         }
 
-        public abstract bool IsAllowed(object firstObject, object secondObject, out string description);
-        public abstract bool IsAllowed(object firstObject, object secondObject);
+        //public abstract bool IsAllowed(object firstObject, object secondObject, out string description);
+        //public abstract bool IsAllowed(object firstObject, object secondObject);
+
+        public bool IsAllowed(object firstObject, object secondObject, out string description)
+        {
+            return allowed.isAllTrue(firstObject, secondObject, out description);
+        }
+
+        public bool IsAllowed(object firstObject, object secondObject)
+        {
+            return allowed.isAllTrue(firstObject, secondObject);
+        }
 
         public float getVotingPower(PopUnit forWhom)
         {

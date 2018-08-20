@@ -27,15 +27,7 @@ namespace Nashet.EconomicSimulation.Reforms
 
         public string ShortName { get { return name; } }
 
-        public override bool IsAllowed(object firstObject, object secondObject, out string description)
-        {
-            return allowed.isAllTrue(firstObject, secondObject, out description);
-        }
-
-        public override bool IsAllowed(object firstObject, object secondObject)
-        {
-            return allowed.isAllTrue(firstObject, secondObject);
-        }
+      
         public override string ToString()
         {
             return ShortName;

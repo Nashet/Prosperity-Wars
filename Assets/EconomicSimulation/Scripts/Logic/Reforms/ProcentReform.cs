@@ -24,30 +24,31 @@ namespace Nashet.EconomicSimulation.Reforms
             this.tax = tax;
         }
 
-        public class ProcentReformVal : AbstractReformValue
+        public abstract class ProcentReformVal : AbstractReformValue
         {
             public Procent Procent { get; }
-            internal ProcentReformVal(int ID, Procent procent) : base(ID, new DoubleConditionsList(new List<Condition> { Condition.AlwaysYes }))
+            internal ProcentReformVal(int ID, Procent procent, DoubleConditionsList condition) : base(ID, condition)
             {
                 Procent = procent;
-            }            
-
-            public override Procent howIsItGoodForPop(PopUnit pop)
-            {
-                return new Procent(0f);
             }
+            //internal ProcentReformVal(int ID, Procent procent) : this(ID, procent, new DoubleConditionsList(new List<Condition> { Condition.AlwaysYes }))
+            //{ }
 
-            public override bool IsAllowed(object firstObject, object secondObject, out string description)
-            {
-                description = "";
-                return true;
-            }
+            //public override Procent howIsItGoodForPop(PopUnit pop)
+            //{
+            //    return new Procent(0f);
+            //}
 
-            public override bool IsAllowed(object firstObject, object secondObject)
-            {
-                return true;
-                
-            }
+            //public override bool IsAllowed(object firstObject, object secondObject, out string description)
+            //{
+            //    description = "";
+            //    return true;
+            //}
+
+            //public override bool IsAllowed(object firstObject, object secondObject)
+            //{
+            //    return true;
+            //}
 
             internal float get()
             {

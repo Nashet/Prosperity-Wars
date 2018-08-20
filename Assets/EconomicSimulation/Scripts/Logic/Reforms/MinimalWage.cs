@@ -115,24 +115,7 @@ namespace Nashet.EconomicSimulation.Reforms
             internal MinWageReformValue(string inname, string indescription, int id, DoubleConditionsList condition)
                 : base(inname, indescription, id, condition)
             {
-                //// if (!PossibleStatuses.Contains(this))
-
-                //var totalSteps = 6;
-                //var previousID = ID - 1;
-                //var nextID = ID + 1;
-                //if (previousID >= 0 && nextID < totalSteps)
-                //    condition.add(new Condition(x => (x as Country).minimalWage.isThatReformEnacted(previousID)
-                //    || (x as Country).minimalWage.isThatReformEnacted(nextID), "Previous reform enacted", true));
-                //else
-                //{
-                //    if (nextID < totalSteps)
-                //        condition.add(new Condition(x => (x as Country).minimalWage.isThatReformEnacted(nextID), "Previous reform enacted", true));
-                //    else
-                //    {
-                //        if (previousID >= 0)
-                //            condition.add(new Condition(x => (x as Country).minimalWage.isThatReformEnacted(previousID), "Previous reform enacted", true));
-                //    }
-                //}
+                LifeQualityImpact = new Procent(ID, 10f);
             }
 
             public override Procent howIsItGoodForPop(PopUnit pop)
