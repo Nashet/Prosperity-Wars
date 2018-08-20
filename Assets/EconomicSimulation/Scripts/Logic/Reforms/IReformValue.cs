@@ -11,5 +11,4 @@ namespace Nashet.EconomicSimulation.Reforms
         Procent howIsItGoodForPop(PopUnit pop);
         Procent LifeQualityImpact { get; }
     }
-
 }

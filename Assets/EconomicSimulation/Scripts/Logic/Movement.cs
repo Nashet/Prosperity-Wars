@@ -16,7 +16,7 @@ namespace Nashet.EconomicSimulation
     public class Movement : Staff, INameable
     {
         private readonly IReformValue targetReformValue;
-        private readonly AbstractReform targetReform;
+        private readonly AbstractReform targetReformType;
 
         //private readonly Country separatism;
         private readonly List<PopUnit> members = new List<PopUnit>();
@@ -34,7 +34,7 @@ namespace Nashet.EconomicSimulation
         {
             members.Add(firstPop);
             Country.movements.Add(this);
-            // targetReform = reform;
+            targetReformType = reform;
             targetReformValue = goal;
             Flag = Nashet.Flag.Rebels;
         }
@@ -44,7 +44,9 @@ namespace Nashet.EconomicSimulation
             if (pop.getMovement() == null)
             {
                 var goal = pop.getMostImportantIssue();// getIssues().MaxByRandom(x => x.Value);
-                if (!goal.Equals(default(KeyValuePair<AbstractReform, IReformValue>)))
+
+                //if (!goal.Equals(default(KeyValuePair<AbstractReform, IReformValue>)))
+                //if (!ReferenceEquals(goal, null))
                 {
                     //find reasonable goal and join
                     var found = pop.Country.movements.Find(x => x.getGoal() == goal.Value);
@@ -114,7 +116,7 @@ namespace Nashet.EconomicSimulation
         }
         public AbstractReform getReformType()
         {
-            return targetReform;
+            return targetReformType;
         }
 
         public override string ToString()
@@ -126,8 +128,9 @@ namespace Nashet.EconomicSimulation
         {
             get
             {
-                var sb = new StringBuilder(ShortName);
-                sb.Append(", members: ").Append(getMembership()).Append(", avg. loyalty: ").Append(getAverageLoyalty()).Append(", rel. strength: ").Append(getRelativeStrength(Country));
+                var sb = new StringBuilder();
+                //.Append(targetReformType).Append(" ") adds reform type 
+                sb.Append(ShortName).Append(", members: ").Append(getMembership()).Append(", avg. loyalty: ").Append(getAverageLoyalty()).Append(", rel. strength: ").Append(getRelativeStrength(Country));
                 //sb.Append(", str: ").Append(getStregth(this));
                 return sb.ToString();
             }
@@ -203,7 +206,7 @@ namespace Nashet.EconomicSimulation
         {
             siegeCapitalTurns = 0;
             _isInRevolt = false;
-            if (ReferenceEquals(targetReform, null)) // meaning separatism
+            if (ReferenceEquals(targetReformType, null)) // meaning separatism
             {
                 OnSeparatistsWon();
             }
@@ -211,7 +214,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (setReform)
                 {
-                    targetReform.SetValue(getGoal());//to avoid recursion            
+                    targetReformType.SetValue(getGoal());//to avoid recursion            
                     if (!Country.isAI())
                         Message.NewMessage("Rebels won", "Now you have " + targetReformValue, "Ok", false, Game.Player.Capital.Position);
                 }
