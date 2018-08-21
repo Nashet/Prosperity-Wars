@@ -110,9 +110,15 @@ namespace Nashet.EconomicSimulation.Reforms
         {
             get { return description; }
         }
+
         public string ShortName
         {
             get { return name; }
+        }
+
+        public override string ToString()
+        {
+            return value.ToString();
         }
 
         public void OnClicked()
@@ -136,10 +142,6 @@ namespace Nashet.EconomicSimulation.Reforms
                     yield return item;
                 }
             }
-        }
-        public override string ToString()
-        {
-            return ShortName;
-        }
+        }       
     }
 }

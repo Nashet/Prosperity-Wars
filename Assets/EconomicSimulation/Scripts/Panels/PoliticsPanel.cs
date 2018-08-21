@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Nashet.EconomicSimulation.Reforms;
+﻿using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -65,13 +65,14 @@ namespace Nashet.EconomicSimulation
 
         public void onForceDecisionClick()
         {
-            foreach (PopUnit pop in Game.Player.Provinces.AllPops)
-            {
-                if (pop.CanVoteInOwnCountry() && !pop.getSayingYes(selectedReformValue))// can vote and voted no
+            if (Game.Player.government != Government.Despotism)
+                foreach (PopUnit pop in Game.Player.Provinces.AllPops)
                 {
-                    pop.addDaysUpsetByForcedReform(Options.PopDaysUpsetByForcedReform);
+                    if (pop.CanVoteInOwnCountry() && !pop.getSayingYes(selectedReformValue))// can vote and voted no
+                    {
+                        pop.addDaysUpsetByForcedReform(Options.PopDaysUpsetByForcedReform);
+                    }
                 }
-            }
             changeReformValue();
         }
 
@@ -148,10 +149,14 @@ namespace Nashet.EconomicSimulation
             {
                 if (callRebuildDropDown) // meaning changed whole reform
                     rebuildDropDown();
-                descriptionText.text = selectedReformType + " reforms " + selectedReformType.FullName
-               + "\nCurrently: " + selectedReformType.value
-               + "\nSelected: ";
+                descriptionText.text = selectedReformType.ShortName + " reforms " + selectedReformType.FullName
+               + "\nCurrently: " + selectedReformType.value;
 
+                var isNamedReform = selectedReformType.value as INameable;
+                if (isNamedReform != null)
+                    descriptionText.text += isNamedReform.FullName;
+
+                descriptionText.text += "\nSelected: ";
 
                 if (selectedReformType == selectedReformValue)
                 {
@@ -161,7 +166,11 @@ namespace Nashet.EconomicSimulation
                 }
                 else
                 {
-                    descriptionText.text += selectedReformValue;// + " " + selectedReformValue;//.FullName
+                    descriptionText.text += selectedReformValue;
+
+                    var isNamedReform2 = selectedReformValue as INameable;
+                    if (isNamedReform2 != null)
+                        descriptionText.text += isNamedReform2.FullName;
 
                     Procent procentPopulationSayedYes = new Procent(0f);
                     Procent procentVotersSayedYes = Game.Player.Provinces.getYesVotes(selectedReformValue, ref procentPopulationSayedYes);
@@ -174,20 +183,23 @@ namespace Nashet.EconomicSimulation
                     // Control buttons interactability && tooltips
                     if (selectedReformValue != null)
                     {
-                        if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.Player.government == Government.Despotism)
-                        { // has enough voters
+                        if (procentVotersSayedYes.get() >= Options.votingPassBillLimit && Game.Player.government != Government.Despotism)
+                        { // can vote for reform
                             voteButton.interactable = selectedReformValue.IsAllowed(Game.Player, selectedReformValue, out voteButton.GetComponent<ToolTipHandler>().text);
                             forceDecisionButton.GetComponent<ToolTipHandler>().SetText(voteButton.GetComponent<ToolTipHandler>().GetText());
                             forceDecisionButton.interactable = false;
                             voteButton.GetComponentInChildren<Text>().text = "Vote for " + selectedReformValue;
                         }
-                        else // not enough voters
+                        else // can't vote for reform or is despotism
                         {
                             voteButton.interactable = false;
                             forceDecisionButton.interactable = selectedReformValue.IsAllowed(Game.Player, selectedReformValue, out forceDecisionButton.GetComponent<ToolTipHandler>().text);
                             voteButton.GetComponent<ToolTipHandler>().SetText(forceDecisionButton.GetComponent<ToolTipHandler>().GetText());
                             voteButton.GetComponentInChildren<Text>().text = "Not enough votes";
-                            forceDecisionButton.GetComponent<ToolTipHandler>().text += "\n\nForcing decision against people's desires will drop loyalty!";
+                            if (Game.Player.government == Government.Despotism)
+                                forceDecisionButton.GetComponent<ToolTipHandler>().text += "\n\nPeople wouldn't be that angry if you force decisions as Despot";
+                            else
+                                forceDecisionButton.GetComponent<ToolTipHandler>().text += "\n\nForcing decision against people's desires will drop loyalty!";
                         }
                     }
                 }
@@ -197,7 +209,7 @@ namespace Nashet.EconomicSimulation
         private void RefreshInfoAboutVotes(Procent procentVotersSayedYes, Procent procentPopulationSayedYes, Dictionary<PopType, int> divisionVotersResult, Dictionary<PopType, int> divisionPopulationResult)
         {
             if (Game.Player.government == Government.Despotism)
-                descriptionText.text += "\nNobody to vote - Despot rule everything";
+                descriptionText.text += "\nNobody to vote - Despot rules everything";
             else
             {
                 descriptionText.text += "\n" + procentVotersSayedYes + " of voters want this reform ( ";

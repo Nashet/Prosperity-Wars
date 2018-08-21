@@ -7,35 +7,36 @@ namespace Nashet.EconomicSimulation.Reforms
 {
     public class Government : AbstractReform
     {
-        public static readonly GovernmentReformName Tribal = new GovernmentReformName("Tribal Federation", "- Democracy-lite; Tribesmen and Aristocrats vote.", 0,
+        public static readonly GovernmentReformValue Tribal = new GovernmentReformValue("Tribal Federation", " - Democracy-lite; Tribesmen and Aristocrats vote.", 0,
             new DoubleConditionsList(), "Tribe", 10, 0f, TaxationForPoor.PoorTaxValue.TaxRate20);
 
-        public static readonly GovernmentReformName Aristocracy = new GovernmentReformName("Aristocracy", "- Aristocrats and Clerics make the rules.", 1,
+        public static readonly GovernmentReformValue Aristocracy = new GovernmentReformValue("Aristocracy", " - Aristocrats and Clerics make the rules.", 1,
             new DoubleConditionsList(), "Kingdom", 20, 0.5f, TaxationForPoor.PoorTaxValue.TaxRate0, TaxationForRich.RichTaxValue.TaxRate20);
 
-        public static readonly GovernmentReformName Polis = new GovernmentReformName("Polis", "- Landed individuals allowed to vote. Farmers, Aristocrats, and Clerics share equal voting power.", 8,
+        public static readonly GovernmentReformValue Polis = new GovernmentReformValue("Polis", " - Landed individuals allowed to vote. Farmers, Aristocrats, and Clerics share equal voting power.", 8,
             new DoubleConditionsList(), "Polis", 5, 1f);
 
-        public static readonly GovernmentReformName Despotism = new GovernmentReformName("Despotism", "- Who needs elections? All the power belongs to you!", 2,
+        public static readonly GovernmentReformValue Despotism = new GovernmentReformValue("Despotism", " - Who needs elections? All the power belongs to you!", 2,
             new DoubleConditionsList(), "Empire", 40, 0.25f);
 
-        public static readonly GovernmentReformName Theocracy = new GovernmentReformName("Theocracy", "- God decreed only Clerics should have power because of their heavenly connections.", 5,
+        public static readonly GovernmentReformValue Theocracy = new GovernmentReformValue("Theocracy", " - God decreed only Clerics should have power because of their heavenly connections.", 5,
             new DoubleConditionsList(Condition.IsNotImplemented), "", 40, 0f);
 
-        public static readonly GovernmentReformName WealthDemocracy = new GovernmentReformName("Wealth Democracy", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, etc. Wealthy individuals have more votes (5 to 1)", 9,
+        public static readonly GovernmentReformValue WealthDemocracy = new GovernmentReformValue("Wealth Democracy", " - Landed individuals allowed to vote, such as Farmers, Aristocrats, etc. Wealthy individuals have more votes (5 to 1)", 9,
             new DoubleConditionsList(Condition.IsNotImplemented), "States", 40, 1f);
 
-        public static readonly GovernmentReformName Democracy = new GovernmentReformName("Universal Democracy", "- The ideal democracy. Everyone's vote is equal.", 3,
+        public static readonly GovernmentReformValue Democracy = new GovernmentReformValue("Universal Democracy", " - The ideal democracy. Everyone's vote is equal.", 3,
             new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "Republic", 100, 1f);
 
-        public static readonly GovernmentReformName BourgeoisDictatorship = new GovernmentReformName("Bourgeois Dictatorship", "- Robber Barons or Captains of Industry? You decide!", 6,
+        public static readonly GovernmentReformValue BourgeoisDictatorship = new GovernmentReformValue("Bourgeois Dictatorship", " - Robber Barons or Captains of Industry? You decide!", 6,
             new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "Oligarchy", 20, 1f, TaxationForPoor.PoorTaxValue.TaxRate10, TaxationForRich.RichTaxValue.TaxRate10);
 
-        public static readonly GovernmentReformName Junta = new GovernmentReformName("Junta", "- The military knows what's best for the people...", 7,
+        public static readonly GovernmentReformValue Junta = new GovernmentReformValue("Junta", " - The military knows what's best for the people...", 7,
             new DoubleConditionsList(new List<Condition> { Invention.ProfessionalArmyInvented }), "Junta", 20, 0.3f);
 
-        public static readonly GovernmentReformName ProletarianDictatorship = new GovernmentReformName("Proletarian Dictatorship", "- Bureaucrats ruling with a terrifying hammer and a friendly sickle.", 4,
+        public static readonly GovernmentReformValue ProletarianDictatorship = new GovernmentReformValue("Proletarian Dictatorship", " - Bureaucrats ruling with a terrifying hammer and a friendly sickle.", 4,
             new DoubleConditionsList(new List<Condition> { Invention.CollectivismInvented, Invention.ManufacturesInvented }), "SSR", 20, 0.5f, TaxationForPoor.PoorTaxValue.TaxRate50, TaxationForRich.RichTaxValue.TaxRate100);
+
         public static readonly Condition isPolis = new Condition(x => (x as Country).government == Polis, "Government is " + Polis, true);
         public static readonly Condition isTribal = new Condition(x => (x as Country).government == Tribal, "Government is " + Tribal, true);
         public static readonly Condition isAristocracy = new Condition(x => (x as Country).government == Aristocracy, "Government is " + Aristocracy, true);
@@ -48,9 +49,9 @@ namespace Nashet.EconomicSimulation.Reforms
         public static readonly Condition isJunta = new Condition(x => (x as Country).government == Junta, "Government is " + Junta, true);
         public static readonly Condition isProletarianDictatorship = new Condition(x => (x as Country).government == ProletarianDictatorship, "Government is " + ProletarianDictatorship, true);
 
-        public GovernmentReformName typedValue { get; protected set; }
+        public GovernmentReformValue typedValue { get; protected set; }
 
-        public Government(Country country) : base("Government", "Form of government", country,
+        public Government(Country country) : base("Government", " (forms of government)", country,
             new List<IReformValue> {Tribal, Aristocracy, Polis, Despotism, Theocracy, WealthDemocracy,
                 Democracy, BourgeoisDictatorship, Junta, ProletarianDictatorship})
         {
@@ -102,10 +103,10 @@ namespace Nashet.EconomicSimulation.Reforms
                 }
             }
         }
-        public void SetValue(GovernmentReformName selectedReform)
+        public override void SetValue(IReformValue selectedReform)
         {
             base.SetValue(selectedReform);
-            typedValue = selectedReform;
+            typedValue = selectedReform as GovernmentReformValue;
             owner.setPrefix();
 
             if (typedValue == Tribal)
@@ -230,7 +231,7 @@ namespace Nashet.EconomicSimulation.Reforms
             if (owner == Game.Player)
                 MainCamera.refreshAllActive();
         }
-        public class GovernmentReformName : NamedReformValue
+        public class GovernmentReformValue : NamedReformValue
         {
             private readonly int MaxSizeLimitForDisloyaltyModifier;
             private readonly string prefix;
@@ -238,7 +239,7 @@ namespace Nashet.EconomicSimulation.Reforms
             public TaxationForPoor.PoorTaxValue defaultPoorTax;
             public TaxationForRich.RichTaxValue defaultRichTax;
 
-            internal GovernmentReformName(string name, string description, int id, DoubleConditionsList condition,
+            internal GovernmentReformValue(string name, string description, int id, DoubleConditionsList condition,
                 string prefix, int MaxSizeLimitForDisloyaltyModifier, float scienceModifier, TaxationForPoor.PoorTaxValue defaultPoorTax = null, TaxationForRich.RichTaxValue defaultRichTax = null) : base(name, description, id, condition)
             {
                 this.prefix = prefix;

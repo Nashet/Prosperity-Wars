@@ -28,7 +28,7 @@ namespace Nashet.EconomicSimulation
             return true;
         }
 
-        public override bool CanVoteWithThatGovernment(Government.GovernmentReformName reform)
+        public override bool CanVoteWithThatGovernment(Government.GovernmentReformValue reform)
         {
             if ((reform == Government.Democracy || reform == Government.ProletarianDictatorship) // temporally
                 && (isStateCulture() || Country.minorityPolicy == MinorityPolicy.Equality)
@@ -38,7 +38,7 @@ namespace Nashet.EconomicSimulation
                 return false;
         }
 
-        public override int getVotingPower(Government.GovernmentReformName reformValue)
+        public override int getVotingPower(Government.GovernmentReformValue reformValue)
         {
             if (CanVoteWithThatGovernment(reformValue))
                 return 1;

@@ -334,7 +334,7 @@ namespace Nashet.EconomicSimulation
         //    return culture;
         //}
         // have to be this way!
-        public abstract int getVotingPower(Government.GovernmentReformName reformValue);
+        public abstract int getVotingPower(Government.GovernmentReformValue reformValue);
 
         //public abstract int getVotingPower();
         //{
@@ -896,7 +896,7 @@ namespace Nashet.EconomicSimulation
         //{
         //    return canVote(reform);
         //}
-        public abstract bool CanVoteWithThatGovernment(Government.GovernmentReformName reform);
+        public abstract bool CanVoteWithThatGovernment(Government.GovernmentReformValue reform);
 
         public IEnumerable<KeyValuePair<IReformValue, float>> getIssues()
         {

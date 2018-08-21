@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Nashet.Conditions;
+﻿using Nashet.Conditions;
 using Nashet.ValueSpace;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Nashet.EconomicSimulation.Reforms
@@ -11,7 +11,7 @@ namespace Nashet.EconomicSimulation.Reforms
 
         protected UnemploymentReformValue typedvalue;
 
-        public static readonly UnemploymentReformValue None = new UnemploymentReformValue("No Unemployment Benefits", "", 0, new DoubleConditionsList(new List<Condition> { Economy.isNotLFOrMoreConservative, new Condition(x =>(x as Country).unemploymentSubsidies == Scanty, "Previous reform enacted", true) }));
+        public static readonly UnemploymentReformValue None = new UnemploymentReformValue("No Unemployment Benefits", "", 0, new DoubleConditionsList(new List<Condition> { Economy.isNotLFOrMoreConservative, new Condition(x => (x as Country).unemploymentSubsidies == Scanty, "Previous reform enacted", true) }));
 
         public static readonly UnemploymentReformValue Scanty = new UnemploymentReformValue("Bread Lines", "-The people are starving. Let them eat bread.", 1, new DoubleConditionsList(new List<Condition>
         {
@@ -49,10 +49,10 @@ namespace Nashet.EconomicSimulation.Reforms
         //}
 
 
-        public void SetValue(UnemploymentReformValue selectedReform)
+        public override void SetValue(IReformValue selectedReform)
         {
             base.SetValue(selectedReform);
-            typedvalue = selectedReform;
+            typedvalue = selectedReform as UnemploymentReformValue;
         }
 
 

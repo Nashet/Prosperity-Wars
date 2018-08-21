@@ -41,7 +41,7 @@
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
     <NestedTypes>
-      <Class Name="Nashet.EconomicSimulation.Reforms.Government.GovernmentReformName">
+      <Class Name="Nashet.EconomicSimulation.Reforms.Government.GovernmentReformValue" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\Government.cs</NewMemberFileName>
         </TypeIdentifier>
@@ -89,7 +89,7 @@
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
     <NestedTypes>
-      <Class Name="Nashet.EconomicSimulation.Reforms.Serfdom.SerfValue">
+      <Class Name="Nashet.EconomicSimulation.Reforms.Serfdom.SerfdomReformValue" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\Serfdom.cs</NewMemberFileName>
         </TypeIdentifier>
@@ -123,9 +123,9 @@
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
     <NestedTypes>
-      <Class Name="Nashet.EconomicSimulation.Reforms.ProcentReform.ProcentReformVal">
+      <Class Name="Nashet.EconomicSimulation.Reforms.ProcentReform.ProcentReformValue">
         <TypeIdentifier>
-          <NewMemberFileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\NamedReform.cs</NewMemberFileName>
+          <NewMemberFileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\ProcentReform.cs</NewMemberFileName>
         </TypeIdentifier>
       </Class>
     </NestedTypes>

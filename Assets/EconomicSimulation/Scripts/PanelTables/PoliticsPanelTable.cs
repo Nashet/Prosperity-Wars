@@ -14,7 +14,7 @@ namespace Nashet.EconomicSimulation
         protected override void AddRow(AbstractReform reform, int number)
         {
             // Adding reform name
-            AddCell(reform.ToString(), reform);
+            AddCell(reform.ShortName, reform);
 
             ////Adding Status
             AddCell(reform.value.ToString(), reform);

@@ -13,7 +13,7 @@ namespace Nashet.EconomicSimulation.Reforms
         {
             SetValue(RichTaxValue.TaxRate20);
         }
-        public class RichTaxValue : ProcentReformVal
+        public class RichTaxValue : ProcentReformValue
         {
             public static readonly RichTaxValue
                 TaxRate0 = new RichTaxValue(0, 0f, new DoubleConditionsList(new Condition(x => (x as Country).taxationForRich == TaxRate10, "Previous reform enacted", true))),

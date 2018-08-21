@@ -11,27 +11,27 @@ namespace Nashet.EconomicSimulation.Reforms
 
         public static MinorityPolicyValue Equality; // all can vote
         public static MinorityPolicyValue Residency; // state culture only can vote
-        public static readonly MinorityPolicyValue NoRights = new MinorityPolicyValue("No Rights for Minorities", "-Slavery?", 0, new DoubleConditionsList(Condition.IsNotImplemented));
+        public static readonly MinorityPolicyValue NoRights = new MinorityPolicyValue("No Rights for Minorities", " ", 0, new DoubleConditionsList(Condition.IsNotImplemented));
 
         //public readonly static Condition isEquality = new Condition(x => (x as Country).minorityPolicy.getValue() == MinorityPolicy.Equality, "Minority policy is " + MinorityPolicy.Equality.getName(), true);
         //public static Condition IsResidencyPop;
-        public MinorityPolicy(Country country) : base("Minority Policy", "- Minority Policy", country, new List<IReformValue> { Equality, Residency, NoRights })
+        public MinorityPolicy(Country country) : base("Minority Policy", "", country, new List<IReformValue> { Equality, Residency, NoRights })
         {
             if (Equality == null)
-                Equality = new MinorityPolicyValue("Equality for Minorities", "- All cultures have same rights, assimilation is slower.", 2,
+                Equality = new MinorityPolicyValue("Equality for Minorities", " - All cultures have same rights, assimilation is slower", 2,
                     new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }));
             if (Residency == null)
-                Residency = new MinorityPolicyValue("Restricted Rights for Minorities", "- Only state culture can vote, assimilation occurs except foreign core provinces", 1, new DoubleConditionsList());
+                Residency = new MinorityPolicyValue("Restricted Rights for Minorities", " - Only state culture can vote, assimilation occurs except foreign core provinces", 1, new DoubleConditionsList());
 
             SetValue(Residency);
             //IsResidencyPop = new Condition(x => (x as PopUnit).province.getOwner().minorityPolicy.status == MinorityPolicy.Residency,
             //Residency.FullName, true);
         }
 
-        public void SetValue(MinorityPolicyValue selectedReform)
+        public override void SetValue(IReformValue selectedReform)
         {
             base.SetValue(selectedReform);
-            typedValue = selectedReform;
+            typedValue = selectedReform as MinorityPolicyValue;
         }
 
         //public override bool isAvailable(Country country)

@@ -7,38 +7,38 @@ namespace Nashet.EconomicSimulation.Reforms
 {
     public class Serfdom : AbstractReform
     {
-        protected SerfValue typedValue;
+        protected SerfdomReformValue typedValue;
 
-        public static SerfValue SerfdomAllowed;
-        public static SerfValue Brutal;
+        public static SerfdomReformValue SerfdomAllowed;
+        public static SerfdomReformValue Brutal;
 
         public Procent AristocratTax { get { return typedValue.AristocratTax; } }
 
-        public static SerfValue Abolished = new SerfValue("Abolished", "- Abolished with no obligations", 2,
+        public static SerfdomReformValue Abolished = new SerfdomReformValue("Abolished", " - Abolished with no obligations", 2,
             new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented, Condition.IsNotImplemented }));
 
-        public static SerfValue AbolishedWithLandPayment = new SerfValue("Abolished with land payment", "- Peasants are personally free now but they have to pay debt for land", 3,
+        public static SerfdomReformValue AbolishedWithLandPayment = new SerfdomReformValue("Abolished with land payment", " - Peasants are personally free now but they have to pay debt for land", 3,
             new DoubleConditionsList(new List<Condition>
             {
             Invention.IndividualRightsInvented,Invention.BankingInvented, Condition.IsNotImplemented
             }));
 
-        public static SerfValue AbolishedAndNationalized = new SerfValue("Abolished and Nationalized land", "- Aristocrats loose property", 4,
+        public static SerfdomReformValue AbolishedAndNationalized = new SerfdomReformValue("Abolished and Nationalized land", " - Aristocrats loose property", 4,
             new DoubleConditionsList(new List<Condition>
             {
             Government.isProletarianDictatorship, Condition.IsNotImplemented
             }));
 
-        public Serfdom(Country country) : base("Serfdom", "- Aristocratic Privileges", country, new List<IReformValue> { SerfdomAllowed, Brutal, Abolished, AbolishedWithLandPayment, AbolishedAndNationalized })
+        public Serfdom(Country country) : base("Serfdom", " (aristocratic privileges)", country, new List<IReformValue> { SerfdomAllowed, Brutal, Abolished, AbolishedWithLandPayment, AbolishedAndNationalized })
         {
             if (SerfdomAllowed == null)
-                SerfdomAllowed = new SerfValue("Allowed", "- Peasants and other plebes pay 10% of income to Aristocrats", 1,
+                SerfdomAllowed = new SerfdomReformValue("Allowed", " - Peasants and other plebes pay 10% of income to Aristocrats", 1,
                     new DoubleConditionsList(new List<Condition>
                     {
             Economy.isNotMarket,  Condition.IsNotImplemented
                     }));
             if (Brutal == null)
-                Brutal = new SerfValue("Brutal", "- Peasants and other plebes pay 20% of income to Aristocrats", 0,
+                Brutal = new SerfdomReformValue("Brutal", " - Peasants and other plebes pay 20% of income to Aristocrats", 0,
                 new DoubleConditionsList(new List<Condition>
                 {
             Economy.isNotMarket, Condition.IsNotImplemented
@@ -48,12 +48,11 @@ namespace Nashet.EconomicSimulation.Reforms
         }
 
 
-        public void SetValue(SerfValue selectedReform)
+        public override void SetValue(IReformValue selectedReform)
         {
             base.SetValue(selectedReform);
-            typedValue = selectedReform;
+            typedValue = selectedReform as SerfdomReformValue;
         }
-
 
         public static Condition IsAbolishedInAnyWay = new Condition(x => (x as Country).serfdom.typedValue == Abolished
         || (x as Country).serfdom.typedValue == AbolishedAndNationalized || (x as Country).serfdom.typedValue == AbolishedWithLandPayment,
@@ -64,7 +63,7 @@ namespace Nashet.EconomicSimulation.Reforms
             "Serfdom is in power", true);
 
 
-        public class SerfValue : NamedReformValue
+        public class SerfdomReformValue : NamedReformValue
         {
             //private static Procent brutalTax = new Procent(0.2f);
             //private static Procent allowedTax = new Procent(0.1f);
@@ -72,7 +71,7 @@ namespace Nashet.EconomicSimulation.Reforms
 
             public Procent AristocratTax { get; protected set; }
 
-            internal SerfValue(string name, string description, int id, DoubleConditionsList condition) : base(name, description, id, condition)
+            internal SerfdomReformValue(string name, string description, int id, DoubleConditionsList condition) : base(name, description, id, condition)
             {
                 // this.allowed = condition;
             }

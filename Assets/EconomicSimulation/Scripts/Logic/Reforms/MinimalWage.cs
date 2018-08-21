@@ -42,10 +42,10 @@ namespace Nashet.EconomicSimulation.Reforms
             SetValue(None);
         }
 
-        public void SetValue(MinWageReformValue selectedReform)
+        public override void SetValue(IReformValue selectedReform)
         {
             base.SetValue(selectedReform);
-            typedValue = selectedReform;
+            typedValue = selectedReform as MinWageReformValue;
         }
         /// <summary>
         /// Calculates wage basing on consumption cost for 1000 workers
@@ -138,7 +138,7 @@ namespace Nashet.EconomicSimulation.Reforms
             }
             public override string ToString()//Market market
             {
-                return base.ToString();// +" (" + "getwage back" + ")";//getMinimalWage(market)
+                return base.ToString() +" (" + "getWage back" + ")";//getMinimalWage(market)
             }
         }
     }

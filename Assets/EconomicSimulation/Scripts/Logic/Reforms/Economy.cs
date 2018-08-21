@@ -54,7 +54,7 @@ namespace Nashet.EconomicSimulation.Reforms
             //    return (x as Country).economy != LaissezFaire || taxesForPoor.tax.get() <= 0.5f;
             //else
             {
-                var taxesForRich = y as TaxationForRich.ProcentReformVal;
+                var taxesForRich = y as TaxationForRich.ProcentReformValue;
                 return (x as Country).economy != LaissezFaire || taxesForRich.get() <= 0.5f;
             }
         },
@@ -70,7 +70,7 @@ namespace Nashet.EconomicSimulation.Reforms
             //    return (x as Country).economy != StateCapitalism || taxesForPoor.tax.get() >= 0.2f;
             //else
             {
-                var taxesForRich = y as ProcentReform.ProcentReformVal;
+                var taxesForRich = y as ProcentReform.ProcentReformValue;
                 return (x as Country).economy != StateCapitalism || taxesForRich.get() >= 0.2f;
             }
         },
@@ -97,11 +97,11 @@ namespace Nashet.EconomicSimulation.Reforms
             }
         }
 
-        public void SetValue(EconomyReformValue reformValue)
+        public override void SetValue(IReformValue reformValue)
         {
             base.SetValue(reformValue);
 
-            typedValue = reformValue;
+            typedValue = reformValue as EconomyReformValue;
             if (typedValue == LaissezFaire)
             {
                 if (owner.taxationForRich.tax.get() > 0.5f)
@@ -125,8 +125,8 @@ namespace Nashet.EconomicSimulation.Reforms
         }
         public class EconomyReformValue : NamedReformValue
         {
-            public ProcentReform.ProcentReformVal maxTax;
-            public ProcentReform.ProcentReformVal minTax;
+            public ProcentReform.ProcentReformValue maxTax;
+            public ProcentReform.ProcentReformValue minTax;
             public bool AllowForeignInvestments
             {
                 get; protected set;

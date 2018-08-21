@@ -7,27 +7,22 @@ namespace Nashet.EconomicSimulation.Reforms
 {
     public abstract class ProcentReform : AbstractReform
     {
-        public ProcentReformVal tax;
+        public ProcentReformValue tax;
         public ProcentReform(string name, string description, Country country, List<IReformValue> possibleValues) : base(name, description, country, possibleValues)
         {
             //tax = new ProcentReformVal(0.1f);
         }
 
-        //public override void SetValue(IReformValue reformValue)
-        //{
-        //    base.SetValue(reformValue);
-        //    this.tax = reformValue as ProcentReformVal;
-        //}
-        public void SetValue(ProcentReformVal tax)
+        public override void SetValue(IReformValue reformValue)
         {
-            base.SetValue(tax);
-            this.tax = tax;
+            base.SetValue(reformValue);
+            this.tax = reformValue as ProcentReformValue;
         }
 
-        public abstract class ProcentReformVal : AbstractReformValue
+        public abstract class ProcentReformValue : AbstractReformValue
         {
             public Procent Procent { get; }
-            internal ProcentReformVal(int ID, Procent procent, DoubleConditionsList condition) : base(ID, condition)
+            internal ProcentReformValue(int ID, Procent procent, DoubleConditionsList condition) : base(ID, condition)
             {
                 Procent = procent;
             }

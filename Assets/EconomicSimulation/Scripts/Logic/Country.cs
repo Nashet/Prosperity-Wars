@@ -1129,7 +1129,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public bool TakeNaturalTax(PopUnit pop, ProcentReform.ProcentReformVal tax)
+        public bool TakeNaturalTax(PopUnit pop, ProcentReform.ProcentReformValue tax)
         {
             var howMuchSend = pop.getGainGoodsThisTurn().Multiply(tax.Procent);
 
