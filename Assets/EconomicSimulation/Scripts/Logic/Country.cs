@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Nashet.Conditions;
+﻿using Nashet.Conditions;
 using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Nashet.EconomicSimulation
@@ -148,9 +148,9 @@ namespace Nashet.EconomicSimulation
 
             government = new Government(this);
 
-            
 
-            
+
+
 
 
             Culture = culture;
@@ -688,7 +688,10 @@ namespace Nashet.EconomicSimulation
             ownershipSecurity.clamp100();
 
             // get science points
-            Science.AddPoints(Options.defaultSciencePointMultiplier * Science.modSciencePoints.getModifier(this));
+            if (Game.devMode)
+                Science.AddPoints(Options.defaultSciencePointMultiplier * Science.modSciencePoints.getModifier(this) * 1000);
+            else
+                Science.AddPoints(Options.defaultSciencePointMultiplier * Science.modSciencePoints.getModifier(this));
 
             // put extra money in bank
             if (economy != Economy.PlannedEconomy)

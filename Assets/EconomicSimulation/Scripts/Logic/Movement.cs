@@ -44,7 +44,7 @@ namespace Nashet.EconomicSimulation
             if (pop.getMovement() == null)
             {
                 var goal = pop.getMostImportantIssue();// getIssues().MaxByRandom(x => x.Value);
-
+                //todo if it's null it should throw exception early
                 //if (!goal.Equals(default(KeyValuePair<AbstractReform, IReformValue>)))
                 //if (!ReferenceEquals(goal, null))
                 {
