@@ -67,7 +67,7 @@ namespace Nashet.EconomicSimulation.Reforms
         /// <summary>
         /// Calculates Unemployment Subsidies basing on consumption cost for 1000 workers
         /// </summary>
-        public MoneyView getSubsidiesRate(Market market)
+        public virtual MoneyView getSubsidiesRate(Market market)
         {
             if (this == None)
                 return MoneyView.Zero;
@@ -131,16 +131,16 @@ namespace Nashet.EconomicSimulation.Reforms
             //}
 
 
-
             public override string ToString()
             {
                 return base.ToString() + " (" + "get back getSubsidiesRate()" + ")";//getSubsidiesRate()
             }
+
             public override Procent howIsItGoodForPop(PopUnit pop)
             {
                 Procent result;
                 //positive - higher subsidies
-                int change = RelativeConservatism(pop.Country.unemploymentSubsidies.typedvalue);
+                int change = GetRelativeConservatism(pop.Country.unemploymentSubsidies.typedvalue);
                 if (pop.Type.isPoorStrata())
                 {
                     if (change > 0)

@@ -33,7 +33,7 @@ namespace Nashet.EconomicSimulation
         private Movement(AbstractReform reform, IReformValue goal, PopUnit firstPop, Country place) : base(place)// : this(firstPop, place)
         {
             members.Add(firstPop);
-            Country.movements.Add(this);
+            Country.Politics.RegisterMovement(this);
             targetReformType = reform;
             targetReformValue = goal;
             Flag = Nashet.Flag.Rebels;
@@ -49,7 +49,7 @@ namespace Nashet.EconomicSimulation
                 //if (!ReferenceEquals(goal, null))
                 {
                     //find reasonable goal and join
-                    var found = pop.Country.movements.Find(x => x.getGoal() == goal.Value);
+                    var found = pop.Country.Politics.AllMovements.FirstOrDefault(x => x.getGoal() == goal.Value);
                     if (found == null)
                         pop.setMovement(new Movement(goal.Key, goal.Value, pop, pop.Country));
                     else
@@ -77,7 +77,7 @@ namespace Nashet.EconomicSimulation
                 if (pop.getMovement().members.Count == 0)
                 {
                     pop.getMovement().demobilize();
-                    pop.Country.movements.Remove(pop.getMovement());
+                    pop.Country.Politics.RemoveMovement(pop.getMovement());
                 }
                 pop.setMovement(null);
             }
@@ -192,7 +192,7 @@ namespace Nashet.EconomicSimulation
                 leave(pop);
                 //pop.setMovement(null);
             }
-            Country.movements.Remove(this);
+            Country.Politics.RemoveMovement(this);
             //members.Clear();
         }
         public void OnSeparatistsWon()

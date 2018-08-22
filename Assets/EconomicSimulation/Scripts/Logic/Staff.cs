@@ -234,16 +234,7 @@ namespace Nashet.EconomicSimulation
             //    return a;
         }
 
-        public static IEnumerable<Staff> getAllStaffs()
-        {
-            foreach (var country in World.getAllExistingCountries())
-                if (country.IsAlive && country != World.UncolonizedLand)
-                {
-                    yield return country;
-                    foreach (var staff in country.movements)
-                        yield return staff;
-                }
-        }
+       
 
         /// <summary>
         /// Just a place holder, never intended to call. Just need it to record battle deaths

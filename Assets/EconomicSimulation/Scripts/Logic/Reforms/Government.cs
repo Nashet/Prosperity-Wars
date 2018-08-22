@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Nashet.Conditions;
+﻿using Nashet.Conditions;
 using Nashet.ValueSpace;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Nashet.EconomicSimulation.Reforms
 {
@@ -59,19 +59,9 @@ namespace Nashet.EconomicSimulation.Reforms
             //typedValue = Aristocracy;
             //value = Aristocracy;
         }
-        public float getScienceModifier()
-        {
-            return typedValue.getScienceModifier();
-        }
-
-        public int getLoyaltySizeLimit()
-        {
-            return typedValue.getLoyaltySizeLimit();
-        }
-        public string getPrefix()
-        {
-            return typedValue.getPrefix();
-        }
+        public float ScienceModifier { get { return typedValue.ScienceModifier; } }
+        public int LoyaltySizeLimit { get { return typedValue.MaxSizeLimitForDisloyaltyModifier; } }
+        internal string Prefix { get { return typedValue.Prefix; } }
 
         public override void OnReformEnactedInProvince(Province province)
         {
@@ -233,18 +223,18 @@ namespace Nashet.EconomicSimulation.Reforms
         }
         public class GovernmentReformValue : NamedReformValue
         {
-            private readonly int MaxSizeLimitForDisloyaltyModifier;
-            private readonly string prefix;
-            private readonly float scienceModifier;
+            public int MaxSizeLimitForDisloyaltyModifier { get; protected set; }
+            public string Prefix { get; protected set; }
+            public float ScienceModifier { get; protected set; }
             public TaxationForPoor.PoorTaxValue defaultPoorTax;
             public TaxationForRich.RichTaxValue defaultRichTax;
 
             internal GovernmentReformValue(string name, string description, int id, DoubleConditionsList condition,
                 string prefix, int MaxSizeLimitForDisloyaltyModifier, float scienceModifier, TaxationForPoor.PoorTaxValue defaultPoorTax = null, TaxationForRich.RichTaxValue defaultRichTax = null) : base(name, description, id, condition)
             {
-                this.prefix = prefix;
+                Prefix = prefix;
                 this.MaxSizeLimitForDisloyaltyModifier = MaxSizeLimitForDisloyaltyModifier;
-                this.scienceModifier = scienceModifier;
+                ScienceModifier = scienceModifier;
                 this.defaultPoorTax = defaultPoorTax;
                 this.defaultRichTax = defaultRichTax;
             }
@@ -268,21 +258,10 @@ namespace Nashet.EconomicSimulation.Reforms
                     result = new Procent(0f);
                 return result;
             }
-            public float getScienceModifier()
-            {
-                return scienceModifier;
 
-            }
 
-            internal int getLoyaltySizeLimit()
-            {
-                return MaxSizeLimitForDisloyaltyModifier;
-            }
 
-            internal string getPrefix()
-            {
-                return prefix;
-            }
+
 
 
         }

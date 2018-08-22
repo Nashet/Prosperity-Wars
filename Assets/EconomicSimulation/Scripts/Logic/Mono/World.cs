@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Nashet.EconomicSimulation.Reforms;
+﻿using Nashet.EconomicSimulation.Reforms;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Nashet.EconomicSimulation
@@ -70,7 +70,7 @@ namespace Nashet.EconomicSimulation
                 {
                     yield return army;
                 }
-                foreach (var movement in country.movements)
+                foreach (var movement in country.Politics.AllMovements)
                     foreach (var army in movement.AllArmies())
                     {
                         yield return army;
@@ -416,7 +416,7 @@ namespace Nashet.EconomicSimulation
                 item.Science.Invent(Invention.Gunpowder);
 
 
-                
+
                 var resurceEnterprise = ProductionType.whoCanProduce(item.Capital.getResource());
                 var aristocrats = item.Capital.AllPops.Where(x => x.Type == PopType.Aristocrats).First() as Aristocrats;
 
@@ -497,7 +497,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public static IEnumerable<Consumer> AllConsumers         
+        public static IEnumerable<Consumer> AllConsumers
         {
             get
             {
@@ -508,7 +508,7 @@ namespace Nashet.EconomicSimulation
                 }
             }
         }
-        public static IEnumerable<ISeller> AllSellers 
+        public static IEnumerable<ISeller> AllSellers
         {
             get
             {
@@ -602,7 +602,7 @@ namespace Nashet.EconomicSimulation
             AllMarkets().PerformAction(x => x.simulatePriceChangeBasingOnLastTurnData());
 
             // rise event on day passed
-           // DayPassed?.Invoke(World.Get, EventArgs.Empty);
+            // DayPassed?.Invoke(World.Get, EventArgs.Empty);
 
             var @event = DayPassed;
             if (@event != null)// check for subscribers
@@ -784,7 +784,7 @@ namespace Nashet.EconomicSimulation
                     country.AIThink();
             }
         }
-        
+
 
         /// <summary>
         /// /
@@ -818,6 +818,16 @@ namespace Nashet.EconomicSimulation
                 Badboy = World.getAllExistingCountries().Where(x => x != World.UncolonizedLand && x.getStrengthExluding(null) >= streghtLimit).MaxBy(x => x.getStrengthExluding(null));
             }
             return Badboy;
+        }
+        public static IEnumerable<Staff> AllStaffs()
+        {
+            foreach (var country in getAllExistingCountries())
+                if (country.IsAlive && country != World.UncolonizedLand)
+                {
+                    yield return country;
+                    foreach (var staff in country.Politics.AllMovements)
+                        yield return staff;
+                }
         }
     }
 }

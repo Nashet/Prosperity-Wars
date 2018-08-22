@@ -179,7 +179,7 @@
   <Class Name="Nashet.EconomicSimulation.Reforms.AbstractReform">
     <Position X="13" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAiAAAAAAAAAAoAEoAAAAAAAAQMEAKAAACAAAAAQgiA=</HashCode>
+      <HashCode>AAiAAAAAAAAAAoAEoAAAAAAAAQMEAIAAACAgAAAQgiA=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\AbstractReform.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />

@@ -1,8 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Nashet.Conditions;
+﻿using Nashet.Conditions;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Nashet.EconomicSimulation.Reforms
 {
@@ -127,10 +127,7 @@ namespace Nashet.EconomicSimulation.Reforms
         {
             public ProcentReform.ProcentReformValue maxTax;
             public ProcentReform.ProcentReformValue minTax;
-            public bool AllowForeignInvestments
-            {
-                get; protected set;
-            }
+            public bool AllowForeignInvestments { get; protected set; }
 
             internal EconomyReformValue(string name, string description, int id, DoubleConditionsList condition,
                 bool allowForeighnIvestments, TaxationForPoor.PoorTaxValue maxTax = null, TaxationForPoor.PoorTaxValue minTax = null) : base(name, description, id, condition)
@@ -146,7 +143,7 @@ namespace Nashet.EconomicSimulation.Reforms
                 if (pop.Type.isRichStrata())
                 {
                     //positive - more liberal
-                    int relation = RelativeConservatism(pop.Country.economy.typedValue); // ID - pop.Country.economy.value.ID;
+                    int relation = GetRelativeConservatism(pop.Country.economy.typedValue); // ID - pop.Country.economy.value.ID;
                     //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
                     if (relation > 0)
                         result = new Procent(1f + relation / 10f);

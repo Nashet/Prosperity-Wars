@@ -19,7 +19,7 @@ namespace Nashet.EconomicSimulation.Reforms
 
         public Procent LifeQualityImpact { get; protected set; }
 
-        public AbstractReformValue(int id, DoubleConditionsList condition)
+        protected AbstractReformValue(int id, DoubleConditionsList condition)
         {
             LifeQualityImpact = Procent.ZeroProcent.Copy();
             ID = id;
@@ -29,17 +29,19 @@ namespace Nashet.EconomicSimulation.Reforms
             modVoting = new ModifiersList(new List<Condition> { wantsReform, loyalty, education });
         }
 
-        public bool IsAllowed(object firstObject, object secondObject, out string description)
+        public abstract Procent howIsItGoodForPop(PopUnit pop);
+
+        public virtual bool IsAllowed(object firstObject, object secondObject, out string description)
         {
             return allowed.isAllTrue(firstObject, secondObject, out description);
         }
 
-        public bool IsAllowed(object firstObject, object secondObject)
+        public virtual bool IsAllowed(object firstObject, object secondObject)
         {
             return allowed.isAllTrue(firstObject, secondObject);
         }
 
-        public float getVotingPower(PopUnit forWhom)
+        public virtual float getVotingPower(PopUnit forWhom)
         {
             return modVoting.getModifier(forWhom);
         }
@@ -47,20 +49,17 @@ namespace Nashet.EconomicSimulation.Reforms
         /// <summary>
         /// Could be wrong for some reforms!
         /// </summary>        
-        public bool IsMoreConservative(AbstractReformValue anotherReform)
+        public virtual bool IsMoreConservative(AbstractReformValue anotherReform)
         {
             return ID <= anotherReform.ID;
         }
 
-        public int RelativeConservatism(AbstractReformValue two)
+        public virtual int GetRelativeConservatism(AbstractReformValue two)
         {
             return this.ID - two.ID;
         }
 
-
-        public abstract Procent howIsItGoodForPop(PopUnit pop);
-
-        private float loyaltyBoostFor(PopUnit popUnit)
+        protected float loyaltyBoostFor(PopUnit popUnit)
         {
             float result;
             if (howIsItGoodForPop(popUnit).get() > 0.5f)

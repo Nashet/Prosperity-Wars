@@ -113,7 +113,7 @@ namespace Nashet.EconomicSimulation.Reforms
             public override Procent howIsItGoodForPop(PopUnit pop)
             {
                 Procent result;
-                int change = RelativeConservatism(pop.Country.serfdom.typedValue); //positive - more liberal
+                int change = GetRelativeConservatism(pop.Country.serfdom.typedValue); //positive - more liberal
                 if (pop.Type == PopType.Aristocrats)
                 {
                     if (change > 0)

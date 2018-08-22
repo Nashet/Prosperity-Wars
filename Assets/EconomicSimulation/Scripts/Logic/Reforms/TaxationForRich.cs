@@ -36,7 +36,7 @@ namespace Nashet.EconomicSimulation.Reforms
             {
                 
                 Procent result;
-                int change = RelativeConservatism(pop.Country.taxationForRich.tax);//positive mean higher tax
+                int change = GetRelativeConservatism(pop.Country.taxationForRich.tax);//positive mean higher tax
                 if (pop.Type.isRichStrata())
                 {
                     if (change > 0)

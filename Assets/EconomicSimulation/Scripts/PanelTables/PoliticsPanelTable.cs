@@ -8,7 +8,7 @@ namespace Nashet.EconomicSimulation
     {
         protected override IEnumerable<AbstractReform> ContentSelector()
         {
-            return Game.Player.reforms;
+            return Game.Player.Politics.AllReforms;
         }
 
         protected override void AddRow(AbstractReform reform, int number)
@@ -17,7 +17,7 @@ namespace Nashet.EconomicSimulation
             AddCell(reform.ShortName, reform);
 
             ////Adding Status
-            AddCell(reform.value.ToString(), reform);
+            AddCell(reform.Value.ToString(), reform);
 
             ////Adding Can change possibility
             //if (next.canChange())

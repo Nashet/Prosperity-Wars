@@ -54,7 +54,7 @@ namespace Nashet.EconomicSimulation
             modifierMinorityPolicy, modifierSomeEverydayNeedsFulfilled;
 
 
-        private static readonly Modifier modCountryIsToBig = new Modifier(x => (x as PopUnit).Country.Provinces.Count > (x as PopUnit).Country.government.getLoyaltySizeLimit(), "That country is too big for good management", -0.5f, false);
+        private static readonly Modifier modCountryIsToBig = new Modifier(x => (x as PopUnit).Country.Provinces.Count > (x as PopUnit).Country.government.LoyaltySizeLimit, "That country is too big for good management", -0.5f, false);
 
         private readonly Date born;
         private Movement movement;
@@ -900,7 +900,7 @@ namespace Nashet.EconomicSimulation
 
         public IEnumerable<KeyValuePair<IReformValue, float>> getIssues()
         {
-            foreach (var reform in Country.reforms)
+            foreach (var reform in Country.Politics.AllReforms)
                 foreach (IReformValue reformValue in reform.AllPossibleValues)
                     if (reformValue.IsAllowed(Country, reformValue))
                     {
@@ -921,7 +921,7 @@ namespace Nashet.EconomicSimulation
         public KeyValuePair<AbstractReform, IReformValue> getMostImportantIssue()
         {
             var list = new Dictionary<KeyValuePair<AbstractReform, IReformValue>, float>();
-            foreach (var reform in Country.reforms)
+            foreach (var reform in Country.Politics.AllReforms)
                 foreach (IReformValue reformValue in reform.AllPossibleValues)
                     if (reformValue.IsAllowed(Country, reformValue))
                     {

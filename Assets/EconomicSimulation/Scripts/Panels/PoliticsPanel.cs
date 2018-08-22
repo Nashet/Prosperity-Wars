@@ -132,7 +132,7 @@ namespace Nashet.EconomicSimulation
         private void refresh(bool callRebuildDropDown)
         {
             table.Refresh();
-            movementsText.text = Game.Player.movements.OrderByDescending(x => x.getRelativeStrength(Game.Player).get()).getString();
+            movementsText.text = Game.Player.Politics.AllMovements.OrderByDescending(x => x.getRelativeStrength(Game.Player).get()).getString();
             if (movementsText.preferredHeight > 90 && movementsText.preferredHeight < 130)
                 movementsText.text += "\n\n\n\n";
 
@@ -150,9 +150,9 @@ namespace Nashet.EconomicSimulation
                 if (callRebuildDropDown) // meaning changed whole reform
                     rebuildDropDown();
                 descriptionText.text = selectedReformType.ShortName + " reforms " + selectedReformType.FullName
-               + "\nCurrently: " + selectedReformType.value;
+               + "\nCurrently: " + selectedReformType.Value;
 
-                var isNamedReform = selectedReformType.value as INameable;
+                var isNamedReform = selectedReformType.Value as INameable;
                 if (isNamedReform != null)
                     descriptionText.text += isNamedReform.FullName;
 

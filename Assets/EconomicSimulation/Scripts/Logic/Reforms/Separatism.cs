@@ -66,8 +66,16 @@ namespace Nashet.EconomicSimulation.Reforms
             /// </summary>            
             public bool IsMoreConservative(AbstractReformValue anotherReform)
             {
-                return false;
-            }           
+                throw new System.NotImplementedException();
+            }
+
+            /// <summary>
+            /// Doesn't have sense for that reform
+            /// </summary>            
+            public int GetRelativeConservatism(AbstractReformValue two)
+            {
+                throw new System.NotImplementedException();
+            }
 
             Procent IReformValue.LifeQualityImpact
             {
@@ -101,7 +109,7 @@ namespace Nashet.EconomicSimulation.Reforms
             public bool IsAllowed(object firstObject, object secondObject)
             {
                 return true;
-            }
+            }            
         }
     }
 }

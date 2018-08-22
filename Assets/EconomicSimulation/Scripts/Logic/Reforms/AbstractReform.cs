@@ -1,28 +1,30 @@
 ﻿using Nashet.Conditions;
-using Nashet.EconomicSimulation;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 namespace Nashet.EconomicSimulation.Reforms
 {
     public abstract class AbstractReform : Component<Country>, INameable, ISortableName, IClickable
     {
-        private readonly string description;
+        protected readonly string description;
         protected readonly string name;
         protected readonly float nameWeight;
 
-        public IReformValue value;
         protected readonly List<IReformValue> possibleValues;
 
-        public AbstractReform(string name, string indescription, Country country, List<IReformValue> possibleValues) : base(country)
+        public IReformValue Value { get; protected set; }
+
+        protected AbstractReform(string name, string description, Country country, List<IReformValue> possibleValues) : base(country)
         {
             this.name = name;
             if (name != null)
                 nameWeight = name.GetWeight();
-            description = indescription;
-            country.reforms.Add(this);
+            this.description = description;
+            country.Politics.RegisterReform(this);
             this.possibleValues = possibleValues;
 
             //foreach (var item in possibleValues)
@@ -40,12 +42,12 @@ namespace Nashet.EconomicSimulation.Reforms
             //        condition.add(new Condition(x => (x as Country).taxationForPoor.isThatReformEnacted(previousID), "Previous reform enacted", true));
             //}
         }
-        public float getVotingPower(PopUnit forWhom)
+        public virtual float getVotingPower(PopUnit forWhom)
         {
-            return value.getVotingPower(forWhom);
+            return Value.getVotingPower(forWhom);
         }
 
-        public Procent LifeQualityImpact { get { return value.LifeQualityImpact; } }
+        public virtual Procent LifeQualityImpact { get { return Value.LifeQualityImpact; } }
         //public abstract bool isAvailable(Country country);
 
 
@@ -67,7 +69,7 @@ namespace Nashet.EconomicSimulation.Reforms
         {
             if (ReferenceEquals(x, null) || ReferenceEquals(y, null))
                 throw new ArgumentNullException();
-            return x.value == y;
+            return x.Value == y;
         }
         public static bool operator !=(AbstractReform x, IReformValue y)
         {
@@ -78,8 +80,9 @@ namespace Nashet.EconomicSimulation.Reforms
         {
             if (ReferenceEquals(x, null) || ReferenceEquals(y, null))
                 throw new ArgumentNullException();
-            return x.value == y.value;
+            return x.Value == y.Value;
         }
+
         public static bool operator !=(AbstractReform x, AbstractReform y)
         {
 
@@ -88,7 +91,7 @@ namespace Nashet.EconomicSimulation.Reforms
 
         public virtual void SetValue(AbstractReform reform)
         {
-            SetValue(reform.value);
+            SetValue(reform.Value);
         }
         public virtual void SetValue(IReformValue reformValue)
         {
@@ -98,42 +101,45 @@ namespace Nashet.EconomicSimulation.Reforms
                     pop.loyalty.Add(Options.PopLoyaltyBoostOnDiseredReformEnacted);
                     pop.loyalty.clamp100();
                 }
-            var isThereSuchMovement = owner.movements.Find(x => x.getGoal() == reformValue);
+            var isThereSuchMovement = owner.Politics.AllMovements.FirstOrDefault(x => x.getGoal() == reformValue);
             if (isThereSuchMovement != null)
             {
                 isThereSuchMovement.onRevolutionWon(false);
             }
-            value = reformValue;
+            Value = reformValue;
         }
 
-        public string FullName
+        public virtual string FullName
         {
             get { return description; }
         }
 
-        public string ShortName
+        public virtual string ShortName
         {
             get { return name; }
         }
 
+        /// <summary>
+        /// Gives value of reform. not type
+        /// </summary>        
         public override string ToString()
         {
-            return value.ToString();
+            return Value.ToString();
         }
 
-        public void OnClicked()
+        public virtual void OnClicked()
         {
             MainCamera.politicsPanel.selectReform(this);
         }
 
-        public float NameWeight
+        public virtual float NameWeight
         {
             get
             {
                 return nameWeight;
             }
         }
-        public IEnumerable<IReformValue> AllPossibleValues
+        public virtual IEnumerable<IReformValue> AllPossibleValues
         {
             get
             {

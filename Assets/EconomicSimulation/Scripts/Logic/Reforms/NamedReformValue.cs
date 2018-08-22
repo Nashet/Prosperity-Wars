@@ -16,10 +16,10 @@ namespace Nashet.EconomicSimulation.Reforms
             this.name = name;
         }
 
-        public string FullName { get { return description; } }
+        public string FullName => description;
 
-        public string ShortName { get { return name; } }
-      
+        public string ShortName => name;
+
         public override string ToString()
         {
             return ShortName;

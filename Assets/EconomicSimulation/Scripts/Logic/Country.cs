@@ -11,9 +11,6 @@ namespace Nashet.EconomicSimulation
 {
     public class Country : MultiSeller, IClickable, IShareOwner, ISortableName, INameable, IProvinceOwner, ICanInvent, IDiplomat
     {
-        public readonly List<AbstractReform> reforms = new List<AbstractReform>();
-        public readonly List<Movement> movements = new List<Movement>();
-
         public readonly Government government;
         public readonly Economy economy;
         public readonly Serfdom serfdom;
@@ -22,7 +19,9 @@ namespace Nashet.EconomicSimulation
         public readonly TaxationForPoor taxationForPoor;
         public readonly TaxationForRich taxationForRich;
 
-        public readonly MinorityPolicy minorityPolicy;
+        public readonly UBI UBI;
+
+        public readonly MinorityPolicy minorityPolicy;        
 
         /// <summary> could be null</summary>
         private readonly Bank bank;
@@ -38,6 +37,8 @@ namespace Nashet.EconomicSimulation
         public Science Science { get; protected set; }
 
         public Diplomacy Diplomacy { get; protected set; }
+
+        public Politics Politics { get; protected set; }
 
         /// <summary>
         /// Gives list of allowed IInvestable with pre-calculated Margin in Value. Doesn't check if it's invented
@@ -125,6 +126,7 @@ namespace Nashet.EconomicSimulation
             Provinces = new ProvinceOwner(this);
             Science = new Science(this);
             Diplomacy = new Diplomacy(this);
+            Politics = new Politics(this);
 
             allInvestmentProjects = new CashedData<Dictionary<IInvestable, Procent>>(Provinces.GetAllInvestmentProjects2);
             SetName(name);
@@ -148,7 +150,7 @@ namespace Nashet.EconomicSimulation
 
             government = new Government(this);
 
-
+            UBI = new UBI(this);
 
 
 
@@ -403,9 +405,9 @@ namespace Nashet.EconomicSimulation
             get
             {
                 if (Game.devMode && this == Game.Player)
-                    return name + " " + government.getPrefix() + " (you are)";
+                    return name + " " + government.Prefix + " (you are)";
                 else
-                    return name + " " + government.getPrefix();
+                    return name + " " + government.Prefix;
             }
         }
 
@@ -710,10 +712,9 @@ namespace Nashet.EconomicSimulation
                 {
                     Diplomacy.ChangeRelation(item, modMyOpinionOfXCountry.getModifier(item));
                 }
-            //movements
-            movements.RemoveAll(x => x.isEmpty());
-            foreach (var item in movements.ToArray())
-                item.Simulate();
+
+            Politics.Simulate();
+            
             if (economy == Economy.LaissezFaire)
                 Rand.Call(() => Provinces.AllFactories.PerformAction(x => x.ownership.SetToSell(this, Procent.HundredProcent, false)), 30);
         }
@@ -1225,7 +1226,7 @@ namespace Nashet.EconomicSimulation
                             countryOwner.Diplomacy.ChangeRelation(this, Options.PopLoyaltyDropOnNationalization.get());
                     }
                 }
-        }
+        }        
 
         public IEnumerable<Province> AllProvinces
         {
