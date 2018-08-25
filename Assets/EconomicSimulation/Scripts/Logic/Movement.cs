@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Nashet.EconomicSimulation.Reforms;
+﻿using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace Nashet.EconomicSimulation
 {
@@ -138,7 +138,15 @@ namespace Nashet.EconomicSimulation
 
         public string ShortName
         {
-            get { return targetReformValue.ToString(); }
+            get
+            {
+                var isUnempValue = targetReformValue as UnemploymentSubsidies.UnemploymentReformValue;
+                if (isUnempValue == null)
+                    return targetReformValue.ToString();
+                else
+                    return isUnempValue.ToString(Country.market);
+
+            }
         }
 
         /// <summary>

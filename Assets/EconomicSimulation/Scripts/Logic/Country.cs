@@ -150,7 +150,7 @@ namespace Nashet.EconomicSimulation
 
             government = new Government(this);
 
-            UBI = new UBI(this);
+            //UBI = new UBI(this);
 
 
 

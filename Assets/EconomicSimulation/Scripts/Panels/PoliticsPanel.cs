@@ -150,11 +150,21 @@ namespace Nashet.EconomicSimulation
                 if (callRebuildDropDown) // meaning changed whole reform
                     rebuildDropDown();
                 descriptionText.text = selectedReformType.ShortName + " reforms " + selectedReformType.FullName
-               + "\nCurrently: " + selectedReformType.Value;
+               + "\nCurrently: ";
 
-                var isNamedReform = selectedReformType.Value as INameable;
-                if (isNamedReform != null)
-                    descriptionText.text += isNamedReform.FullName;
+
+
+                var isUnempType = selectedReformType.Value as UnemploymentSubsidies.UnemploymentReformValue;
+                if (isUnempType == null)
+                {
+                    descriptionText.text += selectedReformType.Value;
+                    var isNamedReformType = selectedReformType.Value as INameable;
+                    if (isNamedReformType != null)
+                        descriptionText.text += isNamedReformType.FullName;
+                }
+                else
+                    descriptionText.text += isUnempType.ToString(Game.Player.market);
+
 
                 descriptionText.text += "\nSelected: ";
 
@@ -168,9 +178,13 @@ namespace Nashet.EconomicSimulation
                 {
                     descriptionText.text += selectedReformValue;
 
-                    var isNamedReform2 = selectedReformValue as INameable;
-                    if (isNamedReform2 != null)
-                        descriptionText.text += isNamedReform2.FullName;
+                    var isNamedReformValue = selectedReformValue as INameable;
+                    if (isNamedReformValue != null)
+                        descriptionText.text += isNamedReformValue.FullName;
+
+                    var isUnempValue = selectedReformValue as UnemploymentSubsidies.UnemploymentReformValue;
+                    if (isUnempValue != null)
+                        descriptionText.text += isUnempValue.ToString(Game.Player.market);
 
                     Procent procentPopulationSayedYes = new Procent(0f);
                     Procent procentVotersSayedYes = Game.Player.Provinces.getYesVotes(selectedReformValue, ref procentPopulationSayedYes);
