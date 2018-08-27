@@ -370,7 +370,7 @@ namespace Nashet.Utils
 
         public PricePool()
         {
-            foreach (var product in Product.getAll().Where(x => !x.isAbstract()))
+            foreach (var product in Product.AllNonAbstract())
                 if (product != Product.Gold)
                     for (int i = 0; i < lenght; i++)
                         addData(product, new Value(0f));
@@ -916,43 +916,6 @@ namespace Nashet.Utils
 
                 }
             return res;
-        }
-    }
-
-    public abstract class Name : INameable, ISortableName
-    {
-        private readonly string name;
-        private readonly float nameWeight;
-
-        protected Name(string name)
-        {
-            this.name = name;
-            if (name != null)
-                nameWeight = name.GetWeight();
-        }
-
-        public float GetNameWeight()
-        {
-            return nameWeight;
-        }
-
-        //public string getShortName()
-        //{
-        //    return name;
-        //}
-        public virtual string ShortName
-        {
-            get { return name; }
-        }
-
-        public virtual string FullName
-        {
-            get { return name + " longed"; }
-        }
-
-        public override string ToString()
-        {
-            return name;
         }
     }
 }

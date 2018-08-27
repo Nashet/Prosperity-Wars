@@ -10,7 +10,7 @@ namespace Nashet.EconomicSimulation
     {
         protected override IEnumerable<Product> ContentSelector()
         {
-            return Product.getAll().Where(x => x.IsInventedByAnyOne());
+            return Product.All().Where(x => x.IsInventedByAnyOne());
         }
 
         protected override void AddHeader()
@@ -57,7 +57,7 @@ namespace Nashet.EconomicSimulation
                 AddCell(Game.Player.countryStorageSet.used.getTotal(product).get().ToString());
 
                 ////Adding bought
-                AddCell(Game.Player.getConsumedInMarket(Game.Player.market).getTotal(product).get().ToString());
+                AddCell(Game.Player.AllConsumedInMarket(Game.Player.market).getTotal(product).get().ToString());
 
                 ////Adding Sold
                 //AddButton(Game.Player.getSentToMarketIncludingSubstituts(product).get().ToString());
@@ -83,7 +83,7 @@ namespace Nashet.EconomicSimulation
                 AddCell(Game.Player.countryStorageSet.used.GetFirstSubstituteStorage(product).get().ToString(), storage);
 
                 ////Adding bought
-                AddCell(Game.Player.getConsumedInMarket(Game.Player.market).GetFirstSubstituteStorage(product).get().ToString(), storage);
+                AddCell(Game.Player.AllConsumedInMarket(Game.Player.market).GetFirstSubstituteStorage(product).get().ToString(), storage);
 
                 ////Adding Sold
                 //// finding actually sold from sentToMarket

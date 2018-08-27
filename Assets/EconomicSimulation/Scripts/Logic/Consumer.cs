@@ -54,12 +54,12 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Use for only reads!
         /// </summary>
-        public IEnumerable<Storage> getConsumedInMarket(Market market)
+        public IEnumerable<Storage> AllConsumedInMarket(Market market)
         {
             foreach (var item in consumedInMarket.Where(x => x.Key == market))
                 yield return item.Value;
         }
-        public IEnumerable<KeyValuePair<Market, Storage>> getAllConsumedInMarket()
+        public IEnumerable<KeyValuePair<Market, Storage>> AllConsumedInMarket()
         {
             foreach (var item in consumedInMarket)
                 yield return item;

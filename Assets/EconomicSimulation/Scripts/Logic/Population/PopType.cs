@@ -197,7 +197,7 @@ namespace Nashet.EconomicSimulation
             //return militaryNeeds;
             var result = new List<Storage>();
             foreach (var item in militaryNeeds)
-                if (item.Product != Product.Cattle || country.Invented(Invention.Domestication))
+                if (item.Product != Product.Cattle || country.Science.IsInvented(Invention.Domestication))
                     //if (item.Product.IsInventedByAnyOne())
                     result.Add(new Storage(item));
             return result;
@@ -348,30 +348,30 @@ namespace Nashet.EconomicSimulation
         public bool CanDemoteTo(PopType targetType, Country Country)
         {
             if (this == Aristocrats)
-                if (targetType == Farmers && Country.Invented(Invention.Farming)
-                    || targetType == Soldiers && Country.Invented(Invention.ProfessionalArmy)
+                if (targetType == Farmers && Country.Science.IsInvented(Invention.Farming)
+                    || targetType == Soldiers && Country.Science.IsInvented(Invention.ProfessionalArmy)
                     || targetType == Tribesmen)
                     return true;
                 else
                     return false;
             else if (this == Artisans)
                 if (//|| targetType == PopType.Farmers && !Country.isInvented(Invention.Farming)
-                targetType == Soldiers && Country.Invented(Invention.ProfessionalArmy)
+                targetType == Soldiers && Country.Science.IsInvented(Invention.ProfessionalArmy)
                 || targetType == Workers
                 )
                     return true;
                 else
                     return false;
             else if (this == Capitalists)
-                if (targetType == Farmers && Country.Invented(Invention.Farming)
-                || targetType == Soldiers && Country.Invented(Invention.ProfessionalArmy)
+                if (targetType == Farmers && Country.Science.IsInvented(Invention.Farming)
+                || targetType == Soldiers && Country.Science.IsInvented(Invention.ProfessionalArmy)
                 || targetType == Artisans
                 )
                     return true;
                 else
                     return false;
             else if (this == Farmers)
-                if (targetType == Soldiers && Country.Invented(Invention.ProfessionalArmy)
+                if (targetType == Soldiers && Country.Science.IsInvented(Invention.ProfessionalArmy)
              || targetType == Tribesmen
              || targetType == Workers
                 )
@@ -389,14 +389,14 @@ namespace Nashet.EconomicSimulation
                     return false;
             else if (this == Tribesmen)
                 if (targetType == Workers
-                    || targetType == Farmers && Country.Invented(Invention.Farming)
-                    || targetType == Soldiers && Country.Invented(Invention.ProfessionalArmy))
+                    || targetType == Farmers && Country.Science.IsInvented(Invention.Farming)
+                    || targetType == Soldiers && Country.Science.IsInvented(Invention.ProfessionalArmy))
                     return true;
                 else
                     return false;
             else if (this == Workers)
                 if (targetType == Tribesmen
-                    || targetType == Soldiers && Country.Invented(Invention.ProfessionalArmy))
+                    || targetType == Soldiers && Country.Science.IsInvented(Invention.ProfessionalArmy))
                     return true;
                 else
                     return false;

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Text;
+using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
@@ -52,7 +53,7 @@ namespace Nashet.EconomicSimulation
                     buildSomething = true;
                     MainCamera.factoryPanel.show(factory);
                     if (Game.Player != factory.Country)
-                        factory.Country.changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
+                        factory.Country.Diplomacy.ChangeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
                 }
             }
             else // non market
@@ -67,7 +68,7 @@ namespace Nashet.EconomicSimulation
                     buildSomething = true;
                     MainCamera.factoryPanel.show(factory);
                     if (Game.Player != factory.Country)
-                        factory.Country.changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
+                        factory.Country.Diplomacy.ChangeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
                 }
             }
 
@@ -95,7 +96,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("Build ").Append(selectedFactoryType);
                 sb.Append("\n\nResources to build: ").Append(selectedFactoryType.GetBuildNeeds().getString(", "));
                 sb.Append(".");
-                if (Game.Player.economy.getValue() != Economy.PlannedEconomy)
+                if (Game.Player.economy != Economy.PlannedEconomy)
                 {
                     var cost = selectedFactoryType.GetBuildCost(Game.Player.market);
                     sb.Append(" cost: ").Append(cost);

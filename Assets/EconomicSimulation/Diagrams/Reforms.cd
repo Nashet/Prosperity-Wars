@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Nashet.EconomicSimulation.Reforms.Separatism">
+    <Position X="12.5" Y="6.75" Width="2" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="Nashet.EconomicSimulation.Reforms.Separatism.Goal">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\Separatism.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AABAABEAAAAAAABAABAAAAAAAAAAAIAAAAAAAAAABAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\Separatism.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.Reforms.Economy">
+    <Position X="15.25" Y="6.75" Width="2" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="Nashet.EconomicSimulation.Reforms.Economy.EconomyReformValue">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\Economy.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAACIABBAYEKAoAAARAgCAABAgIQAAAAQAAAgAAQABE=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\Economy.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.Reforms.Government">
+    <Position X="18" Y="6.75" Width="2" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="Nashet.EconomicSimulation.Reforms.Government.GovernmentReformValue" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\Government.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAIAAQwACBAgAAAxAAgAAABRIAAIQABAAiESIAAQI=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\Government.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.Reforms.MinimalWage">
+    <Position X="5.25" Y="6.75" Width="2" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="Nashet.EconomicSimulation.Reforms.MinimalWage.MinWageReformValue">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\MinimalWage.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAAAgAAKBAAAAAAAAAAQAAAAAAQAAEAgAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\MinimalWage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.Reforms.MinorityPolicy">
+    <Position X="23.5" Y="6.75" Width="1.5" />
+    <NestedTypes>
+      <Class Name="Nashet.EconomicSimulation.Reforms.MinorityPolicy.MinorityPolicyValue" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\MinorityPolicy.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAABAAAEAAAAAAAAAAABAAAAAgAAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\MinorityPolicy.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.Reforms.Serfdom">
+    <Position X="20.75" Y="6.75" Width="2" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="Nashet.EconomicSimulation.Reforms.Serfdom.SerfdomReformValue" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\Serfdom.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AACAAAIAAIAAggAEABAAAEAAAAAAAAAAAAAAAAAAABI=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\Serfdom.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.Reforms.UnemploymentSubsidies">
+    <Position X="2.5" Y="6.75" Width="2" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="Nashet.EconomicSimulation.Reforms.UnemploymentSubsidies.UnemploymentReformValue">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\UnemploymentSubsidies.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAAAgAACBAAAAAAAAAAQAAAAAAQAAEAgAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\UnemploymentSubsidies.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.Reforms.ProcentReform">
+    <Position X="8.75" Y="6.75" Width="2" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="Nashet.EconomicSimulation.Reforms.ProcentReform.ProcentReformValue">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\ProcentReform.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\ProcentReform.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.Reforms.AbstractReformValue">
+    <Position X="1.5" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAACAACAgggAAAAAAAAAABAAAAKAAACAAAAAQBQA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\AbstractReformValue.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.Reforms.TaxationForPoor">
+    <Position X="8" Y="11.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="Nashet.EconomicSimulation.Reforms.TaxationForPoor.PoorTaxValue">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\TaxationForPoor.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\TaxationForPoor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.Reforms.TaxationForRich">
+    <Position X="10.25" Y="11.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="Nashet.EconomicSimulation.Reforms.TaxationForRich.RichTaxValue">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\TaxationForRich.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\TaxationForRich.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.Reforms.AbstractReform">
+    <Position X="13" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAiAAAAAAAAAAoAEoAAAAAAAAQMEAIAAACAgAAAQgiA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\AbstractReform.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.Reforms.NamedReformValue" BaseTypeListCollapsed="true">
+    <Position X="1.5" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAEIAAAAAAAAAAEAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\NamedReformValue.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Interface Name="Nashet.EconomicSimulation.Reforms.IReformValue" Collapsed="true">
+    <Position X="26" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAAAAAAAAAAIAAACAAAAAQBAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Reforms\IReformValue.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

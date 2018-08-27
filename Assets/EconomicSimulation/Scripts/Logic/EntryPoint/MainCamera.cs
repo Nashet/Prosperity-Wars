@@ -119,7 +119,7 @@ namespace Nashet.EconomicSimulation
         // Update is called once per frame
         private void Update()
         {
-            if (!MapOptions.MadeChoise)
+            if (!MapOptions.MadeChoise && !Game.devMode)
                 return;
             //starts loading thread
             if (game == null)// && Input.GetKeyUp(KeyCode.Backspace))
@@ -145,7 +145,7 @@ namespace Nashet.EconomicSimulation
 
                 if (World.Get.IsRunning && !MessagePanel.IsOpenAny())
                 {
-                    if (Game.isPlayerSurrended() || !Game.Player.isAlive() || Time.time - previousFrameTime >= simulationSpeedLimit)
+                    if (Game.isPlayerSurrended() || !Game.Player.IsAlive || Time.time - previousFrameTime >= simulationSpeedLimit)
                     {
                         World.simulate();
                         //Unit.RedrawAll();
@@ -172,13 +172,13 @@ namespace Nashet.EconomicSimulation
             if (Game.devMode == false)
             {
                 Game.playerVisibleProvinces.Clear();
-                Game.playerVisibleProvinces.AddRange(Game.Player.AllProvinces());
-                Game.Player.AllNeighborProvinces().Distinct().PerformAction(
+                Game.playerVisibleProvinces.AddRange(Game.Player.AllProvinces);
+                Game.Player.Provinces.AllNeighborProvinces().Distinct().PerformAction(
                     x => Game.playerVisibleProvinces.Add(x));
 
                 if (Game.DrawFogOfWar && Game.MapMode == Game.MapModes.Political)
                 {
-                    World.GetAllLandProvinces().PerformAction(
+                    World.AllProvinces.PerformAction(
                         x => x.SetColor(x.ProvinceColor * fogOfWarDensity)
                         //x => fogOfWar.Select(x.GameObject)
                         );
@@ -214,7 +214,7 @@ namespace Nashet.EconomicSimulation
             }
             if (!Game.DrawFogOfWar)
             {
-                World.GetAllLandProvinces().PerformAction(x =>
+                World.AllProvinces.PerformAction(x =>
                 //fogOfWar.Deselect(x.GameObject)
                 x.SetColor(x.ProvinceColor)
                 );
@@ -241,14 +241,14 @@ namespace Nashet.EconomicSimulation
                     {
                         if (Game.selectedProvince == null)
                             tooltip.SetTextDynamic(() =>
-                           "Country: " + hoveredProvince.Country + ", population (men): " + hoveredProvince.Country.GetAllPopulation().Sum(x => x.population.Get())
-                           + "\n" + hoveredProvince.Country.getAllPopulationChanges()
+                           "Country: " + hoveredProvince.Country + ", population (men): " + hoveredProvince.Country.Provinces.AllPops.Sum(x => x.population.Get())
+                           + "\n" + hoveredProvince.Country.Provinces.AllPopsChanges
                            .Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != hoveredProvince.Country))
                            .getString("\n", "Total change: "));
                         else
                             tooltip.SetTextDynamic(() =>
-                           "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.population.Get())
-                           + "\n" + hoveredProvince.getAllPopulationChanges()
+                           "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.AllPops.Sum(x => x.population.Get())
+                           + "\n" + hoveredProvince.AllPopsChanges
                            .Where(y => y.Key == null || y.Key is Province || y.Key is Staff)
                            .getString("\n", "Total change: ")
                             );
@@ -264,8 +264,8 @@ namespace Nashet.EconomicSimulation
                     else
                     {
                         tooltip.SetTextDynamic(() =>
-                        "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.population.Get())
-                        + "\nChange: " + hoveredProvince.getAllPopulationChanges()
+                        "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.AllPops.Sum(x => x.population.Get())
+                        + "\nChange: " + hoveredProvince.AllPopsChanges
                         .Where(y => y.Key == null || y.Key is Province || y.Key is Staff).Sum(x => x.Value)
                         + "\nOverpopulation: " + hoveredProvince.GetOverpopulation()
                          );
@@ -281,8 +281,8 @@ namespace Nashet.EconomicSimulation
                     else
                     {
                         tooltip.SetTextDynamic(() =>
-                       "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.population.Get())
-                       + "\nAv. needs fulfilling: " + hoveredProvince.GetAllPopulation().GetAverageProcent(x => x.needsFulfilled));
+                       "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.AllPops.Sum(x => x.population.Get())
+                       + "\nAv. needs fulfilling: " + hoveredProvince.AllPops.GetAverageProcent(x => x.needsFulfilled));
                         tooltip.Show();
                     }
                 }

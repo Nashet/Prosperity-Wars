@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Text;
+using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
@@ -103,7 +104,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append(", Cash: ").Append(factory.Cash);
 
                 sb.Append("\nProfit: ");
-                if (Game.Player.economy.getValue() != Economy.PlannedEconomy)
+                if (Game.Player.economy != Economy.PlannedEconomy)
                     sb.Append(factory.getProfit().ToString("N3")).Append(" Gold");
                 else
                     sb.Append("unknown");
@@ -243,7 +244,7 @@ namespace Nashet.EconomicSimulation
                 factory.upgrade(Game.Player);
                 MainCamera.refreshAllActive();
                 if (Game.Player != factory.Country)
-                    factory.Country.changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
+                    factory.Country.Diplomacy.ChangeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
             }
         }
 

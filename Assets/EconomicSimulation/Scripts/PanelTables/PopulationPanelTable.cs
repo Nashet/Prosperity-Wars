@@ -14,7 +14,7 @@ namespace Nashet.EconomicSimulation
 
         private void Start()
         {
-            popTypeOrder = new SortOrder(this, x => x.Type.GetNameWeight());
+            popTypeOrder = new SortOrder(this, x => x.Type.NameWeight);
             needsFulfillmentOrder = new SortOrder(this, x => x.needsFulfilled.get());
             unemploymentOrder = new SortOrder(this, x => x.getUnemployment().get());
             loyaltyOrder = new SortOrder(this, x => x.loyalty.get());
@@ -23,8 +23,8 @@ namespace Nashet.EconomicSimulation
 
             educationOrder = new SortOrder(this, x => x.Education.get());
 
-            provinceOrder = new SortOrder(this, x => x.Province.GetNameWeight());
-            cultureOrder = new SortOrder(this, x => x.culture.GetNameWeight());
+            provinceOrder = new SortOrder(this, x => x.Province.NameWeight);
+            cultureOrder = new SortOrder(this, x => x.culture.NameWeight);
             movementOrder = new SortOrder(this, x =>
             {
                 if (x.getMovement() == null)
@@ -38,9 +38,9 @@ namespace Nashet.EconomicSimulation
         {
             var selectedProvince = MainCamera.populationPanel.SelectedProvince;
             if (selectedProvince == null)
-                return Game.Player.GetAllPopulation();
+                return Game.Player.Provinces.AllPops;
             else
-                return selectedProvince.GetAllPopulation();
+                return selectedProvince.AllPops;
         }
         private readonly StringBuilder sb = new StringBuilder();
         protected override void AddRow(PopUnit pop, int number)

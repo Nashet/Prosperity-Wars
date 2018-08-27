@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace Nashet.EconomicSimulation
 {
@@ -14,8 +15,8 @@ namespace Nashet.EconomicSimulation
     //}
     public class Movement : Staff, INameable
     {
-        private readonly AbstractReformValue targetReformValue;
-        private readonly AbstractReform targetReform;
+        private readonly IReformValue targetReformValue;
+        private readonly AbstractReform targetReformType;
 
         //private readonly Country separatism;
         private readonly List<PopUnit> members = new List<PopUnit>();
@@ -29,11 +30,11 @@ namespace Nashet.EconomicSimulation
         //    Country.movements.Add(this);
         //}
 
-        private Movement(AbstractReform reform, AbstractReformValue goal, PopUnit firstPop, Country place) : base(place)// : this(firstPop, place)
+        private Movement(AbstractReform reform, IReformValue goal, PopUnit firstPop, Country place) : base(place)// : this(firstPop, place)
         {
             members.Add(firstPop);
-            Country.movements.Add(this);
-            targetReform = reform;
+            Country.Politics.RegisterMovement(this);
+            targetReformType = reform;
             targetReformValue = goal;
             Flag = Nashet.Flag.Rebels;
         }
@@ -42,11 +43,13 @@ namespace Nashet.EconomicSimulation
         {
             if (pop.getMovement() == null)
             {
-                var goal = pop.getMostImportantIssue();
-                if (!goal.Equals(default(KeyValuePair<AbstractReform, AbstractReformValue>)))
+                var goal = pop.getMostImportantIssue();// getIssues().MaxByRandom(x => x.Value);
+                //todo if it's null it should throw exception early
+                //if (!goal.Equals(default(KeyValuePair<AbstractReform, IReformValue>)))
+                //if (!ReferenceEquals(goal, null))
                 {
                     //find reasonable goal and join
-                    var found = pop.Country.movements.Find(x => x.getGoal() == goal.Value);
+                    var found = pop.Country.Politics.AllMovements.FirstOrDefault(x => x.getGoal() == goal.Value);
                     if (found == null)
                         pop.setMovement(new Movement(goal.Key, goal.Value, pop, pop.Country));
                     else
@@ -74,23 +77,23 @@ namespace Nashet.EconomicSimulation
                 if (pop.getMovement().members.Count == 0)
                 {
                     pop.getMovement().demobilize();
-                    pop.Country.movements.Remove(pop.getMovement());
+                    pop.Country.Politics.RemoveMovement(pop.getMovement());
                 }
                 pop.setMovement(null);
             }
         }
 
         /// <summary>Need it for sorting</summary>
-        public int getID()
-        {
-            if (getGoal() == null)//separatists
-            {
-                var separatists = targetReformValue as Separatism;
-                return separatists.ID;
-            }
-            else
-                return getGoal().ID;
-        }
+        //public int getID()
+        //{
+        //    if (getGoal() == null)//separatists
+        //    {
+        //        var separatists = targetReformValue as Separatism;
+        //        return separatists.ID;
+        //    }
+        //    else
+        //        return getGoal().ID;
+        //}
 
         private void add(PopUnit pop)
         {
@@ -104,16 +107,16 @@ namespace Nashet.EconomicSimulation
 
         public bool isValidGoal()
         {
-            return targetReformValue.allowed.isAllTrue(Country, targetReformValue);
+            return targetReformValue.IsAllowed(Country, targetReformValue);
         }
 
-        public AbstractReformValue getGoal()
+        public IReformValue getGoal()
         {
             return targetReformValue;
         }
         public AbstractReform getReformType()
         {
-            return targetReform;
+            return targetReformType;
         }
 
         public override string ToString()
@@ -125,8 +128,9 @@ namespace Nashet.EconomicSimulation
         {
             get
             {
-                var sb = new StringBuilder(ShortName);
-                sb.Append(", members: ").Append(getMembership()).Append(", avg. loyalty: ").Append(getAverageLoyalty()).Append(", rel. strength: ").Append(getRelativeStrength(Country));
+                var sb = new StringBuilder();
+                //.Append(targetReformType).Append(" ") adds reform type 
+                sb.Append(ShortName).Append(", members: ").Append(getMembership()).Append(", avg. loyalty: ").Append(getAverageLoyalty()).Append(", rel. strength: ").Append(getRelativeStrength(Country));
                 //sb.Append(", str: ").Append(getStregth(this));
                 return sb.ToString();
             }
@@ -134,7 +138,15 @@ namespace Nashet.EconomicSimulation
 
         public string ShortName
         {
-            get { return targetReformValue.ToString(); }
+            get
+            {
+                var isUnempValue = targetReformValue as UnemploymentSubsidies.UnemploymentReformValue;
+                if (isUnempValue == null)
+                    return targetReformValue.ToString();
+                else
+                    return isUnempValue.ToString(Country.market);
+
+            }
         }
 
         /// <summary>
@@ -188,21 +200,21 @@ namespace Nashet.EconomicSimulation
                 leave(pop);
                 //pop.setMovement(null);
             }
-            Country.movements.Remove(this);
+            Country.Politics.RemoveMovement(this);
             //members.Clear();
         }
         public void OnSeparatistsWon()
         {
             var separatists = getGoal() as Separatism;
-            separatists.Country.onSeparatismWon(Country);
+            separatists.goal.onSeparatismWon(Country);
             if (!Country.isAI())//separatists.C
-                Message.NewMessage("", "Separatists won revolution - " + separatists.Country.FullName, "hmm", false, separatists.Country.Capital.Position);
+                Message.NewMessage("", "Separatists won revolution - " + separatists.goal.FullName, "hmm", false, separatists.goal.Capital.Position);
         }
         public void onRevolutionWon(bool setReform)
         {
             siegeCapitalTurns = 0;
             _isInRevolt = false;
-            if (targetReform == null) // meaning separatism
+            if (ReferenceEquals(targetReformType, null)) // meaning separatism
             {
                 OnSeparatistsWon();
             }
@@ -210,11 +222,11 @@ namespace Nashet.EconomicSimulation
             {
                 if (setReform)
                 {
-                    targetReform.setValue(getGoal());//to avoid recursion            
+                    targetReformType.SetValue(getGoal());//to avoid recursion            
                     if (!Country.isAI())
                         Message.NewMessage("Rebels won", "Now you have " + targetReformValue, "Ok", false, Game.Player.Capital.Position);
                 }
-                
+
             }
             foreach (var pop in members)
             {
@@ -268,9 +280,9 @@ namespace Nashet.EconomicSimulation
                     siegeCapitalTurns = 0;
                 if (siegeCapitalTurns > Options.ArmyTimeToOccupy)
                 {
-                    
+
                     //if (targetReform == null) // meaning separatism
-                        onRevolutionWon(true);
+                    onRevolutionWon(true);
                     //else
                     //    getReformType().setValue(getGoal()); // just to avoid recursion
                 }
@@ -292,7 +304,7 @@ namespace Nashet.EconomicSimulation
         //public void clearDeadPops()
         //{
         //    foreach (var item in members)
-        //        if (!item.isAlive())
+        //        if (!item.IsAlive)
         //    {
         //    }
         //}
@@ -304,7 +316,7 @@ namespace Nashet.EconomicSimulation
 
             Country.rebelTo(x => x.getPopUnit().getMovement() == this, this);
 
-            mobilize(Country.AllProvinces());
+            mobilize(Country.AllProvinces);
 
             //if (targetReformValue is Separatism)
             //    ;

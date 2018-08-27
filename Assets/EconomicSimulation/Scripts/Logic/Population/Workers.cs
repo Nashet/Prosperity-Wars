@@ -1,4 +1,6 @@
-﻿namespace Nashet.EconomicSimulation
+﻿using Nashet.EconomicSimulation.Reforms;
+
+namespace Nashet.EconomicSimulation
 {
     public class Workers : GrainGetter
     {
@@ -10,7 +12,7 @@
 
         public override bool canThisPromoteInto(PopType targetType)
         {
-            if (targetType == PopType.Farmers && Country.Invented(Invention.Farming)
+            if (targetType == PopType.Farmers && Country.Science.IsInvented(Invention.Farming)
              || targetType == PopType.Artisans
              )
                 return true;
@@ -26,19 +28,19 @@
             return true;
         }
 
-        public override bool canVote(Government.ReformValue reform)
+        public override bool CanVoteWithThatGovernment(Government.GovernmentReformValue reform)
         {
             if ((reform == Government.Democracy || reform == Government.ProletarianDictatorship) // temporally
-                && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality)
+                && (isStateCulture() || Country.minorityPolicy == MinorityPolicy.Equality)
                 )
                 return true;
             else
                 return false;
         }
 
-        public override int getVotingPower(Government.ReformValue reformValue)
+        public override int getVotingPower(Government.GovernmentReformValue reformValue)
         {
-            if (canVote(reformValue))
+            if (CanVoteWithThatGovernment(reformValue))
                 return 1;
             else
                 return 0;

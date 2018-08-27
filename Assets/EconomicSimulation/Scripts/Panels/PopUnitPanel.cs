@@ -71,8 +71,8 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\nNeeds fulfilled (total): ").Append(pop.needsFulfilled);
                 //sb.Append("\nAssimilation: ");
 
-                //if (pop.culture != pop.Country.getCulture() && pop.getAssimilationSize() > 0)
-                //    sb.Append(pop.Country.getCulture()).Append(" ").Append(pop.getAssimilationSize());
+                //if (pop.culture != pop.Country.Culture && pop.getAssimilationSize() > 0)
+                //    sb.Append(pop.Country.Culture).Append(" ").Append(pop.getAssimilationSize());
                 //else
                 //    sb.Append("none");
 

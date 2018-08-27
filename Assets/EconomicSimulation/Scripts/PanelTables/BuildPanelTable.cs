@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 
@@ -34,7 +35,7 @@ namespace Nashet.EconomicSimulation
             AddCell(factoryType.basicProduction.ToString(), factoryType);
 
             ////Adding potential profit
-            if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
+            if (Game.Player.economy == Economy.PlannedEconomy)
                 AddCell("unknown", factoryType);
             else
                 AddCell(factoryType.GetPossibleMargin(Game.selectedProvince).ToString(), factoryType);

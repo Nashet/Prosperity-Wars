@@ -9,9 +9,9 @@ namespace Nashet.EconomicSimulation
     public class Invention : Name, IClickable
     {
         private static readonly List<Invention> allInventions = new List<Invention>();
-        private string description;
-        private Value cost;
-        private string inventedPhrase;
+        private readonly string description;
+        private readonly Value cost;
+        private readonly string inventedPhrase;
 
         public static readonly Invention Farming = new Invention("Farming", "Allows farming and farmers", new Value(100f)),
             Banking = new Invention("Banking", "Allows national bank, credits and deposits. Also allows serfdom abolishment with compensation for aristocrats", new Value(100f)),
@@ -39,15 +39,15 @@ namespace Nashet.EconomicSimulation
             Universities = new Invention("Universities", "Allows building of Universities", new Value(150f))
             ;
 
-        public static readonly Condition ProfessionalArmyInvented = new Condition(x => (x as Country).Invented(ProfessionalArmy), "Professional Army is invented", true);
-        public static readonly Condition SteamPowerInvented = new Condition(x => (x as Country).Invented(SteamPower), "Steam Power is invented", true);
-        public static readonly Condition CombustionEngineInvented = new Condition(x => (x as Country).Invented(CombustionEngine), "Combustion Engine is invented", true);
-        public static readonly Condition IndividualRightsInvented = new Condition(x => (x as Country).Invented(IndividualRights), "Individual Rights are invented", true);
-        public static readonly Condition BankingInvented = new Condition(x => (x as Country).Invented(Banking), "Banking is invented", true);
-        public static readonly Condition WelfareInvented = new Condition(x => (x as Country).Invented(Welfare), "Welfare is invented", true);
-        public static readonly Condition CollectivismInvented = new Condition(x => (x as Country).Invented(Collectivism), "Collectivism is invented", true);
-        public static readonly Condition ManufacturesInvented = new Condition(x => (x as Country).Invented(Manufactures), "Manufactures are invented", true);
-        public static readonly Condition ManufacturesUnInvented = new Condition(x => !(x as Country).Invented(Manufactures), "Manufactures aren't invented", true);
+        public static readonly Condition ProfessionalArmyInvented = new Condition(x => (x as ICanInvent).Science.IsInvented(ProfessionalArmy), "Professional Army is invented", true);
+        public static readonly Condition SteamPowerInvented = new Condition(x => (x as ICanInvent).Science.IsInvented(SteamPower), "Steam Power is invented", true);
+        public static readonly Condition CombustionEngineInvented = new Condition(x => (x as ICanInvent).Science.IsInvented(CombustionEngine), "Combustion Engine is invented", true);
+        public static readonly Condition IndividualRightsInvented = new Condition(x => (x as ICanInvent).Science.IsInvented(IndividualRights), "Individual Rights are invented", true);
+        public static readonly Condition BankingInvented = new Condition(x => (x as ICanInvent).Science.IsInvented(Banking), "Banking is invented", true);
+        public static readonly Condition WelfareInvented = new Condition(x => (x as ICanInvent).Science.IsInvented(Welfare), "Welfare is invented", true);
+        public static readonly Condition CollectivismInvented = new Condition(x => (x as ICanInvent).Science.IsInvented(Collectivism), "Collectivism is invented", true);
+        public static readonly Condition ManufacturesInvented = new Condition(x => (x as ICanInvent).Science.IsInvented(Manufactures), "Manufactures are invented", true);
+        public static readonly Condition ManufacturesUnInvented = new Condition(x => !(x as ICanInvent).Science.IsInvented(Manufactures), "Manufactures aren't invented", true);
 
         public Invention(string name, string description, Value cost) : base(name)
         {
@@ -58,11 +58,14 @@ namespace Nashet.EconomicSimulation
             allInventions.Add(this);
         }
 
-        public static IEnumerable<Invention> getAll()
+        public static IEnumerable<Invention> All
         {
-            foreach (var item in allInventions)
+            get
             {
-                yield return item;
+                foreach (var item in allInventions)
+                {
+                    yield return item;
+                }
             }
         }
 
@@ -71,18 +74,18 @@ namespace Nashet.EconomicSimulation
             return inventedPhrase;
         }
 
-        public bool isAvailable(Country country)
+        public bool IsInvented(ICanInvent inventor)
         {
             if (//this == Collectivism
                 //||
-                (this == Gunpowder && !country.Invented(Metal))
-                || (this == Coal && !country.Invented(Metal))
-                || (this == SteamPower && (!country.Invented(Metal) || !country.Invented(Manufactures)))
-                || (this == Firearms && !country.Invented(Gunpowder))
-                || (this == CombustionEngine && !country.Invented(SteamPower))
-                || (this == Tanks && !country.Invented(CombustionEngine))
-                || (this == Airplanes && !country.Invented(CombustionEngine))
-                || (this == Electronics && !country.Invented(Airplanes))
+                (this == Gunpowder && !inventor.Science.IsInvented(Metal))
+                || (this == Coal && !inventor.Science.IsInvented(Metal))
+                || (this == SteamPower && (!inventor.Science.IsInvented(Metal) || !inventor.Science.IsInvented(Manufactures)))
+                || (this == Firearms && !inventor.Science.IsInvented(Gunpowder))
+                || (this == CombustionEngine && !inventor.Science.IsInvented(SteamPower))
+                || (this == Tanks && !inventor.Science.IsInvented(CombustionEngine))
+                || (this == Airplanes && !inventor.Science.IsInvented(CombustionEngine))
+                || (this == Electronics && !inventor.Science.IsInvented(Airplanes))
                 )
                 return false;
             else

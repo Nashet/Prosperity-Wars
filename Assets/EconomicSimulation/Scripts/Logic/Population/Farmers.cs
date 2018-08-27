@@ -1,4 +1,5 @@
-﻿using Nashet.ValueSpace;
+﻿using Nashet.EconomicSimulation.Reforms;
+using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
@@ -14,7 +15,7 @@ namespace Nashet.EconomicSimulation
         public override bool canThisPromoteInto(PopType targetType)
         {
             if (targetType == PopType.Aristocrats
-              || targetType == PopType.Capitalists && Country.Invented(Invention.Manufactures)
+              || targetType == PopType.Capitalists && Country.Science.IsInvented(Invention.Manufactures)
                 )
                 return true;
             else
@@ -40,7 +41,7 @@ namespace Nashet.EconomicSimulation
             }
             else
             {
-                if (Country.economy.getValue() == Economy.PlannedEconomy)
+                if (Country.economy == Economy.PlannedEconomy)
                 {
                     Country.countryStorageSet.Add(getGainGoodsThisTurn());
                 }
@@ -108,18 +109,18 @@ namespace Nashet.EconomicSimulation
         //    else
         //        return false;
         //}
-        public override bool canVote(Government.ReformValue reform)
+        public override bool CanVoteWithThatGovernment(Government.GovernmentReformValue reform)
         {
             if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy)
-                && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality))
+                && (isStateCulture() || Country.minorityPolicy == MinorityPolicy.Equality))
                 return true;
             else
                 return false;
         }
 
-        public override int getVotingPower(Government.ReformValue reformValue)
+        public override int getVotingPower(Government.GovernmentReformValue reformValue)
         {
-            if (canVote(reformValue))
+            if (CanVoteWithThatGovernment(reformValue))
                 return 1;
             else
                 return 0;

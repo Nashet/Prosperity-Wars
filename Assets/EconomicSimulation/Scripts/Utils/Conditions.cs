@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
-using Nashet.EconomicSimulation;
 using Nashet.Utils;
 
 namespace Nashet.Conditions
@@ -175,7 +174,7 @@ namespace Nashet.Conditions
         //public Condition(Economy.ReformValue economy, bool showAchievedConditionDescribtion):base("Economical policy is " + economy.ToString())
         //{
         //    //check2 = economy.isEconomyEqualsThat;
-        //    check3 = x => (x as Country).economy.status == economy;
+        //    check3 = x => (x as Country).economy == economy;
         //    //this.text = "Economical policy is " + economy.ToString(); // invention.getInventedPhrase();
         //    this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
         //}
@@ -612,14 +611,14 @@ namespace Nashet.Conditions
             return summ;
         }
 
-        public float find(AbstractReformValue reformValue)
-        {
-            var foundModifier = list.Find(x => reformValue.allowed.contains(x)) as Modifier;
-            if (foundModifier == null)
-                return 0f;
-            else
-                return foundModifier.getValue();
-        }
+        //public float find(AbstractReform reformValue)
+        //{
+        //    var foundModifier = list.Find(x => reformValue.allowed.contains(x)) as Modifier;
+        //    if (foundModifier == null)
+        //        return 0f;
+        //    else
+        //        return foundModifier.getValue();
+        //}
 
         public string GetDescription(object forWhom)
         {
