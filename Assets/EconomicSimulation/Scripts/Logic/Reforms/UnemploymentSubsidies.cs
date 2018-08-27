@@ -9,7 +9,7 @@ namespace Nashet.EconomicSimulation.Reforms
 {
     public class UnemploymentSubsidies : AbstractReform
     {
-        public UnemploymentReformValue TypedValue { get; protected set; }
+        protected UnemploymentReformValue typedValue;
 
         public CashedData<MoneyView> SubsizionSize { get; protected set; }
 
@@ -55,7 +55,7 @@ namespace Nashet.EconomicSimulation.Reforms
         public override void SetValue(IReformValue selectedReform)
         {
             base.SetValue(selectedReform);
-            TypedValue = selectedReform as UnemploymentReformValue;
+            typedValue = selectedReform as UnemploymentReformValue;
             SubsizionSize.Recalculate();
         }
 
@@ -79,7 +79,7 @@ namespace Nashet.EconomicSimulation.Reforms
         internal virtual MoneyView GetSubsidiesRate()
         {
             var market = owner.market;
-            return TypedValue.GetSubsidiesRate(market);
+            return typedValue.GetSubsidiesRate(market);
         }
         public class UnemploymentReformValue : NamedReformValue
         {
@@ -156,7 +156,7 @@ namespace Nashet.EconomicSimulation.Reforms
             {
                 Procent result;
                 //positive - higher subsidies
-                int change = GetRelativeConservatism(pop.Country.unemploymentSubsidies.TypedValue);
+                int change = GetRelativeConservatism(pop.Country.unemploymentSubsidies.typedValue);
                 if (pop.Type.isPoorStrata())
                 {
                     if (change > 0)

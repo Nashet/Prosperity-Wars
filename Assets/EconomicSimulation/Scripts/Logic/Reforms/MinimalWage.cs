@@ -1,4 +1,5 @@
 ﻿using Nashet.Conditions;
+using Nashet.Utils;
 using Nashet.ValueSpace;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ namespace Nashet.EconomicSimulation.Reforms
     public class MinimalWage : AbstractReform
     {
         protected MinWageReformValue typedValue;
+        public CashedData<MoneyView> WageSize;
 
         public static readonly MinWageReformValue None = new MinWageReformValue("No Minimum Wage", "", 0, new DoubleConditionsList(new List<Condition> { Economy.isNotLFOrMoreConservative, new Condition(x => (x as Country).unemploymentSubsidies == Scanty, "Previous reform enacted", true) }));
 
@@ -38,65 +40,29 @@ namespace Nashet.EconomicSimulation.Reforms
 
         public MinimalWage(Country country) : base("Minimum wage", "", country, new List<IReformValue> { None, Scanty, Minimal, Trinket, Middle, Big })
         {
-
-            SetValue(None);
+            WageSize = new CashedData<MoneyView>(getMinimalWage);
+            SetValue(None);            
         }
 
         public override void SetValue(IReformValue selectedReform)
         {
             base.SetValue(selectedReform);
             typedValue = selectedReform as MinWageReformValue;
+            WageSize.Recalculate();
         }
         /// <summary>
         /// Calculates wage basing on consumption cost for 1000 workers
         /// Returns new value
         /// </summary>
-        public MoneyView getMinimalWage(Market market)
+        internal MoneyView getMinimalWage()
         {
-            if (this == None)
-                return Money.Zero;
-            else if (this == Scanty)
-            {
-                MoneyView result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
-                //result.multipleInside(0.5f);
-                return result;
-            }
-            else if (this == Minimal)
-            {
-                Money result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                Money everyDayCost = market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
-                everyDayCost.Multiply(0.02m);
-                result.Add(everyDayCost);
-                return result;
-            }
-            else if (this == Trinket)
-            {
-                Money result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                Money everyDayCost = market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
-                everyDayCost.Multiply(0.04m);
-                result.Add(everyDayCost);
-                return result;
-            }
-            else if (this == Middle)
-            {
-                Money result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                Money everyDayCost = market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
-                everyDayCost.Multiply(0.06m);
-                result.Add(everyDayCost);
-                return result;
-            }
-            else if (this == Big)
-            {
-                Money result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                Money everyDayCost = market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
-                everyDayCost.Multiply(0.08m);
-                //Value luxuryCost = Country.market.getCost(PopType.workers.luxuryNeedsPer1000);
-                result.Add(everyDayCost);
-                //result.add(luxuryCost);
-                return result;
-            }
-            else
-                return new Money(0m);
+            var market = owner.market;
+            return typedValue.getMinimalWage(market);
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + " (" + WageSize + ")";
         }
 
         public class MinWageReformValue : NamedReformValue
@@ -106,7 +72,57 @@ namespace Nashet.EconomicSimulation.Reforms
             {
                 LifeQualityImpact = new Procent(ID, 10f);
             }
-
+            /// <summary>
+            /// Calculates wage basing on consumption cost for 1000 workers
+            /// Returns new value
+            /// </summary>
+            internal MoneyView getMinimalWage(Market market)
+            {
+                if (this == None)
+                    return Money.Zero;
+                else if (this == Scanty)
+                {
+                    MoneyView result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    //result.multipleInside(0.5f);
+                    return result;
+                }
+                else if (this == Minimal)
+                {
+                    Money result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    everyDayCost.Multiply(0.02m);
+                    result.Add(everyDayCost);
+                    return result;
+                }
+                else if (this == Trinket)
+                {
+                    Money result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    everyDayCost.Multiply(0.04m);
+                    result.Add(everyDayCost);
+                    return result;
+                }
+                else if (this == Middle)
+                {
+                    Money result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    everyDayCost.Multiply(0.06m);
+                    result.Add(everyDayCost);
+                    return result;
+                }
+                else if (this == Big)
+                {
+                    Money result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    everyDayCost.Multiply(0.08m);
+                    //Value luxuryCost = Country.market.getCost(PopType.workers.luxuryNeedsPer1000);
+                    result.Add(everyDayCost);
+                    //result.add(luxuryCost);
+                    return result;
+                }
+                else
+                    return new Money(0m);
+            }
             public override Procent howIsItGoodForPop(PopUnit pop)
             {
                 Procent result;
@@ -136,9 +152,10 @@ namespace Nashet.EconomicSimulation.Reforms
                 }
                 return result;
             }
-            public override string ToString()//Market market
+
+            public string ToString(Market market)
             {
-                return base.ToString() +" (" + "getWage back" + ")";//getMinimalWage(market)
+                return base.ToString() + " (" + getMinimalWage(market) + ")";//getMinimalWage(market)
             }
         }
     }
