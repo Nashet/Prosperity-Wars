@@ -20,6 +20,7 @@ namespace Nashet.EconomicSimulation
         public readonly TaxationForRich taxationForRich;
 
         public readonly UBI UBI;
+        public readonly FamilyPlanning FamilyPlanning;
 
         public readonly MinorityPolicy minorityPolicy;        
 
@@ -149,6 +150,8 @@ namespace Nashet.EconomicSimulation
             economy = new Economy(this);
 
             government = new Government(this);
+
+            FamilyPlanning = new FamilyPlanning(this);
 
             //UBI = new UBI(this);
 

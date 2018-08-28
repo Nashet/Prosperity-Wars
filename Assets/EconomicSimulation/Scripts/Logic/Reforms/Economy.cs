@@ -83,7 +83,7 @@ namespace Nashet.EconomicSimulation.Reforms
             || (x as Country).economy == LaissezFaire
             , "Economy is market economy", true);
 
-        public Economy(Country country) : base("Economy", "Your economy policy", country, new List<IReformValue> { NaturalEconomy, StateCapitalism, Interventionism, LaissezFaire })
+        public Economy(Country country) : base("Economy", "- your economy policy", country, new List<IReformValue> { NaturalEconomy, StateCapitalism, Interventionism, LaissezFaire, PlannedEconomy })
         {
             SetValue(StateCapitalism);
         }

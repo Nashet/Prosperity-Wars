@@ -71,7 +71,7 @@ namespace Nashet.EconomicSimulation.Reforms
 
         public override string ToString()
         {
-            return base.ToString() + " (" + SubsizionSize + ")";
+            return base.ToString() + " (" + SubsizionSize + " per person)";
         }
         /// <summary>
         /// Calculates Unemployment Subsidies basing on consumption cost for 1000 workers
@@ -148,7 +148,7 @@ namespace Nashet.EconomicSimulation.Reforms
 
             public string ToString(Market market)
             {
-                return ToString() + " (" + GetSubsidiesRate(market) + ")";
+                return ToString() + " (" + GetSubsidiesRate(market) + " per person)";
             }
 
 

@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Nashet.Conditions;
+﻿using Nashet.Conditions;
 using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace Nashet.EconomicSimulation
@@ -887,7 +887,7 @@ namespace Nashet.EconomicSimulation
         {
             return false;
         }
-                
+
         public bool CanVoteInOwnCountry()
         {
             return CanVoteWithThatGovernment(Country.government.typedValue);
@@ -915,7 +915,7 @@ namespace Nashet.EconomicSimulation
                 var howGood = separatismTarget.getVotingPower(this);
                 if (howGood > 0f)
                     yield return new KeyValuePair<IReformValue, float>(separatismTarget, Value.Convert(howGood));
-            }            
+            }
         }
 
         public KeyValuePair<AbstractReform, IReformValue> getMostImportantIssue()
@@ -1116,9 +1116,10 @@ namespace Nashet.EconomicSimulation
         {
             int result = 0;
             if (needsFulfilled.get() >= 0.33f) // positive growth
-                result = Mathf.RoundToInt(Options.PopGrowthSpeed.get() * population.Get());
-            else
-                if (needsFulfilled.get() >= 0.20f) // zero growth
+            {
+                result = Mathf.RoundToInt(Country.FamilyPlanning.GrowthRate.get() * population.Get());//* Options.PopGrowthSpeed.get()
+            }
+            else if (needsFulfilled.get() >= 0.20f) // zero growth
                 result = 0;
             else if (type != PopType.Farmers) //starvation
             {
