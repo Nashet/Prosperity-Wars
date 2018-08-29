@@ -22,7 +22,7 @@ namespace Nashet.EconomicSimulation
         public readonly UBI UBI;
         public readonly FamilyPlanning FamilyPlanning;
 
-        public readonly MinorityPolicy minorityPolicy;        
+        public readonly MinorityPolicy minorityPolicy;
 
         /// <summary> could be null</summary>
         private readonly Bank bank;
@@ -67,49 +67,49 @@ namespace Nashet.EconomicSimulation
             get { return ownershipSecurity.Copy(); }
         }
 
-        private readonly Money incomeTaxStaticticPoor = new Money(0m);
+        protected readonly Money incomeTaxStaticticPoor = new Money(0m);
+        public MoneyView IncomeTaxStaticticPoor { get { return incomeTaxStaticticPoor; } }
 
-        public Money IncomeTaxStaticticPoor
+        protected readonly Money incomeTaxStatisticRich = new Money(0m);
+        public MoneyView IncomeTaxStatisticRich { get { return incomeTaxStatisticRich; } }
+
+        protected readonly Money incomeTaxForeigner = new Money(0m);
+        public MoneyView IncomeTaxForeigner { get { return incomeTaxForeigner; } }
+
+        protected readonly Money goldMinesIncome = new Money(0m);
+        public MoneyView GoldMinesIncome { get { return goldMinesIncome; } }
+
+        protected readonly Money ownedFactoriesIncome = new Money(0m);
+        public MoneyView OwnedFactoriesIncome { get { return ownedFactoriesIncome; } }
+
+        protected readonly Money unemploymentSubsidiesExpense = new Money(0m);
+        public MoneyView UnemploymentSubsidiesExpense
         {
-            get { return incomeTaxStaticticPoor.Copy(); }
+            get { return unemploymentSubsidiesExpense; }
+            set { unemploymentSubsidiesExpense.Add(value); }
         }
 
-        private readonly Money incomeTaxStatisticRich = new Money(0m);
-
-        public Money IncomeTaxStatisticRich
+        protected readonly Money ubiSubsidiesExpense = new Money(0m);
+        public MoneyView UBISubsidiesExpense
         {
-            get { return incomeTaxStatisticRich.Copy(); }
+            get { return ubiSubsidiesExpense; }
+            set { ubiSubsidiesExpense.Add(value); }
         }
 
-        private readonly Money incomeTaxForeigner = new Money(0m);
+        protected readonly Money soldiersWageExpense = new Money(0m);
+        public MoneyView SoldiersWageExpense { get { return soldiersWageExpense; } }
 
-        public Money IncomeTaxForeigner
-        {
-            get { return incomeTaxForeigner.Copy(); }
-        }
+        protected readonly Money factorySubsidiesExpense = new Money(0m);
+        public MoneyView FactorySubsidiesExpense { get { return factorySubsidiesExpense; } }
 
-        private readonly Money goldMinesIncome = new Money(0m);
-        public Money GoldMinesIncome { get { return goldMinesIncome.Copy(); } }
+        protected readonly Money storageBuyingExpense = new Money(0m);
+        public MoneyView StorageBuyingExpense { get { return storageBuyingExpense; } }
 
-        private readonly Money ownedFactoriesIncome = new Money(0m);
-        public Money OwnedFactoriesIncome { get { return ownedFactoriesIncome.Copy(); } }
 
-        public Money RestIncome
+        public MoneyView RestIncome
         {
             get { return moneyIncomeThisTurn.Copy().Subtract(getIncome()); }
         }
-
-        private readonly Money unemploymentSubsidiesExpense = new Money(0m);
-        public Money UnemploymentSubsidiesExpense { get { return unemploymentSubsidiesExpense.Copy(); } }
-
-        private readonly Money soldiersWageExpense = new Money(0m);
-        public Money SoldiersWageExpense { get { return soldiersWageExpense.Copy(); } }
-
-        private readonly Money factorySubsidiesExpense = new Money(0m);
-        public Money FactorySubsidiesExpense { get { return factorySubsidiesExpense.Copy(); } }
-
-        private readonly Money storageBuyingExpense = new Money(0m);
-        public Money StorageBuyingExpense { get { return storageBuyingExpense.Copy(); } }
 
         private float nameWeight;
 
@@ -153,7 +153,7 @@ namespace Nashet.EconomicSimulation
 
             FamilyPlanning = new FamilyPlanning(this);
 
-            //UBI = new UBI(this);
+            UBI = new UBI(this);
 
 
 
@@ -717,7 +717,7 @@ namespace Nashet.EconomicSimulation
                 }
 
             Politics.Simulate();
-            
+
             if (economy == Economy.LaissezFaire)
                 Rand.Call(() => Provinces.AllFactories.PerformAction(x => x.ownership.SetToSell(this, Procent.HundredProcent, false)), 30);
         }
@@ -1028,6 +1028,7 @@ namespace Nashet.EconomicSimulation
             incomeTaxStatisticRich.SetZero();
             goldMinesIncome.SetZero();
             unemploymentSubsidiesExpense.SetZero();
+            ubiSubsidiesExpense.SetZero();
             ownedFactoriesIncome.SetZero();
             factorySubsidiesExpense.SetZero();
             storageBuyingExpense.SetZero();
@@ -1043,6 +1044,7 @@ namespace Nashet.EconomicSimulation
         {
             Money result = MoneyView.Zero.Copy();
             result.Add(unemploymentSubsidiesExpense);
+            result.Add(ubiSubsidiesExpense);
             result.Add(factorySubsidiesExpense);
             result.Add(storageBuyingExpense);
             result.Add(soldiersWageExpense);
@@ -1229,7 +1231,7 @@ namespace Nashet.EconomicSimulation
                             countryOwner.Diplomacy.ChangeRelation(this, Options.PopLoyaltyDropOnNationalization.get());
                     }
                 }
-        }        
+        }
 
         public IEnumerable<Province> AllProvinces
         {

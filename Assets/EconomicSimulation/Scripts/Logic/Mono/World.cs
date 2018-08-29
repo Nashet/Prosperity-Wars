@@ -718,7 +718,10 @@ namespace Nashet.EconomicSimulation
                             pop.LearnByWork();
                         if (pop.canSellProducts())
                             Market.GiveMoneyForSoldProduct(pop);
+
                         pop.takeUnemploymentSubsidies();
+                        pop.TakeUBISubsidies();
+
                         if (country.Science.IsInvented(Invention.ProfessionalArmy) && country.economy != Economy.PlannedEconomy)
                         // don't need salary with PE
                         {

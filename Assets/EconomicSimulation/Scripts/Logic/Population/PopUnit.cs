@@ -44,7 +44,7 @@ namespace Nashet.EconomicSimulation
         public readonly Procent needsFulfilled;
 
         private int daysUpsetByForcedReform;
-        private bool didntGetPromisedUnemloymentSubsidy;
+        private bool didntGetPromisedSocialBenefits;
         protected bool didntGetPromisedSalary;
 
         public static readonly ModifiersList modifiersLoyaltyChange, modEfficiency;
@@ -87,7 +87,7 @@ namespace Nashet.EconomicSimulation
             //Game.threadDangerSB.Clear();
             //Game.threadDangerSB.Append("Upset by forced reform - ").Append(daysUpsetByForcedReform).Append(" days");
             modifierUpsetByForcedReform = new Modifier(x => (x as PopUnit).daysUpsetByForcedReform > 0, "Upset by forced reform", -3.0f, false);
-            modifierNotGivenUnemploymentSubsidies = new Modifier(x => (x as PopUnit).didntGetPromisedUnemloymentSubsidy, "Didn't got promised Unemployment Subsidies", -1.0f, false);
+            modifierNotGivenUnemploymentSubsidies = new Modifier(x => (x as PopUnit).didntGetPromisedSocialBenefits, "Didn't got promised social benefits", -1.0f, false);
             modifierMinorityPolicy = //new Modifier(MinorityPolicy.IsResidencyPop, 0.02f);
             new Modifier(x => !(x as PopUnit).isStateCulture()
             && ((x as PopUnit).Country.minorityPolicy == MinorityPolicy.Residency
@@ -188,7 +188,7 @@ namespace Nashet.EconomicSimulation
             education = new Education(source.education.get());
             needsFulfilled = new Procent(source.needsFulfilled.get());
             daysUpsetByForcedReform = 0;
-            didntGetPromisedUnemloymentSubsidy = false;
+            didntGetPromisedSocialBenefits = false;
             //incomeTaxPayed = newPopShare.sendProcentToNew(source.incomeTaxPayed);
 
             //Agent's fields:
@@ -345,7 +345,7 @@ namespace Nashet.EconomicSimulation
         {
             base.SetStatisticToZero();
             needsFulfilled.SetZero();
-            didntGetPromisedUnemloymentSubsidy = false;
+            didntGetPromisedSocialBenefits = false;
 
             // sets in ConsumeNeeds now
             //if (type != PopType.Aristocrats)
@@ -1078,24 +1078,43 @@ namespace Nashet.EconomicSimulation
         public void takeUnemploymentSubsidies()
         {
             // no subsidies with PE
-            // may replace by trigger
-            if (Country.economy != Economy.PlannedEconomy)
+            // maybe replace by Condition?
+            var reform = Country.unemploymentSubsidies;
+            if (Type == PopType.Workers &&  Country.economy != Economy.PlannedEconomy && reform != UnemploymentSubsidies.None)
             {
-                var reform = Country.unemploymentSubsidies;
                 var unemployment = getUnemployment();
-                if (unemployment.isNotZero() && reform != UnemploymentSubsidies.None)
+                if (unemployment.isNotZero())
                 {
                     var rate = reform.SubsizionSize.Get();
-                    MoneyView subsidy = rate.Copy().Multiply(population.Get()).Divide(1000).Multiply(unemployment);
-                    //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
+                    MoneyView subsidy = rate.Copy().Multiply(population.Get()).Divide(1000);
                     if (Country.CanPay(subsidy))
                     {
                         Country.Pay(this, subsidy);
-                        Country.unemploymentSubsidiesExpenseAdd(subsidy);
+                        //Country.unemploymentSubsidiesExpenseAdd(subsidy);
+                        Country.UnemploymentSubsidiesExpense = subsidy;
                     }
                     else
-                        didntGetPromisedUnemloymentSubsidy = true;
+                        didntGetPromisedSocialBenefits = true;
                 }
+            }
+        }
+
+        public void TakeUBISubsidies()
+        {
+            // no subsidies with PE
+            // maybe replace by Condition?
+            var reform = Country.UBI;
+            if (canTrade() && Country.economy != Economy.PlannedEconomy && reform != UBI.None)
+            {
+                var rate = reform.UBISize.Get();
+                MoneyView subsidy = rate.Copy().Multiply(population.Get()).Divide(1000);
+                if (Country.CanPay(subsidy))
+                {
+                    Country.Pay(this, subsidy);                    
+                    Country.UBISubsidiesExpense = subsidy;
+                }
+                else
+                    didntGetPromisedSocialBenefits = true;
             }
         }
 
