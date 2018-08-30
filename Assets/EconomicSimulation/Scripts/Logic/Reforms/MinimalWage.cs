@@ -62,7 +62,7 @@ namespace Nashet.EconomicSimulation.Reforms
 
         public override string ToString()
         {
-            return base.ToString() + " (" + WageSize + " per person)";
+            return base.ToString() + " (" + WageSize + " per 1000 men)";
         }
 
         public class MinWageReformValue : NamedReformValue
@@ -155,7 +155,7 @@ namespace Nashet.EconomicSimulation.Reforms
 
             public string ToString(Market market)
             {
-                return base.ToString() + " (" + getMinimalWage(market) + " per person)";//getMinimalWage(market)
+                return base.ToString() + " (" + getMinimalWage(market) + " per 1000 men)";//getMinimalWage(market)
             }
         }
     }

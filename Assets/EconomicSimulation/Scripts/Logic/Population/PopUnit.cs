@@ -1080,7 +1080,7 @@ namespace Nashet.EconomicSimulation
             // no subsidies with PE
             // maybe replace by Condition?
             var reform = Country.unemploymentSubsidies;
-            if (Type == PopType.Workers &&  Country.economy != Economy.PlannedEconomy && reform != UnemploymentSubsidies.None)
+            if (Type == PopType.Workers && Country.economy != Economy.PlannedEconomy && reform != UnemploymentSubsidies.None)
             {
                 var unemployment = getUnemployment();
                 if (unemployment.isNotZero())
@@ -1110,11 +1110,35 @@ namespace Nashet.EconomicSimulation
                 MoneyView subsidy = rate.Copy().Multiply(population.Get()).Divide(1000);
                 if (Country.CanPay(subsidy))
                 {
-                    Country.Pay(this, subsidy);                    
+                    Country.Pay(this, subsidy);
                     Country.UBISubsidiesExpense = subsidy;
                 }
                 else
                     didntGetPromisedSocialBenefits = true;
+            }
+        }
+        public void TakePovertyAid()
+        {
+            // no subsidies with PE
+            if (canTrade() && Country.economy != Economy.PlannedEconomy)
+            {
+                var reform = Country.PovertyAid;
+                if (reform != PovertyAid.None)
+                {
+                    var rate = reform.PovertyAidSize.Get();
+                    MoneyView subsidy = rate.Copy().Multiply(population.Get()).Divide(1000);
+                    var haveToPay = (subsidy as Money).Subtract(moneyIncomeThisTurn, false); // subsidy - income
+                    if (haveToPay.isNotZero())
+                    {
+                        if (Country.CanPay(subsidy))
+                        {
+                            Country.Pay(this, subsidy);
+                            Country.PovertyAidExpense = subsidy;
+                        }
+                        else
+                            didntGetPromisedSocialBenefits = true;
+                    }
+                }
             }
         }
 

@@ -40,7 +40,7 @@ namespace Nashet.EconomicSimulation.Reforms
         }));
 
         
-        public UBI(Country country) : base("Unconditional basic income", " give money unconditionally to every citizen",
+        public UBI(Country country) : base("Unconditional basic income", " - give money unconditionally to every citizen",
             country, new List<IReformValue> { None, Scanty, Minimal, Trinket, Middle, Big })
         {
             UBISize = new CashedData<MoneyView>(GetUBISize);
@@ -65,7 +65,7 @@ namespace Nashet.EconomicSimulation.Reforms
 
         public override string ToString()
         {
-            return base.ToString() + " (" + UBISize + " per person)";
+            return base.ToString() + " (" + UBISize + " per 1000 men)";
         }
 
         public class UBIReformValue : NamedReformValue
@@ -148,7 +148,7 @@ namespace Nashet.EconomicSimulation.Reforms
             }
             public string ToString(Market market)
             {
-                return ToString() + " (" + GetUBISize(market) + " per person)";
+                return ToString() + " (" + GetUBISize(market) + " per 1000 men)";
             }
         }
     }

@@ -72,6 +72,9 @@ namespace Nashet.EconomicSimulation
             if (Game.Player.UBI != UBI.None)
                 sb.Append("\n Unconditional basic income: ").Append(Game.Player.UBISubsidiesExpense);
 
+            if (Game.Player.PovertyAid != PovertyAid.None)
+                sb.Append("\n Poverty Aid: ").Append(Game.Player.PovertyAidExpense);
+
             sb.Append("\n Enterprises subsidies: ").Append(Game.Player.FactorySubsidiesExpense);
 
             if (Game.Player.Science.IsInvented(Invention.ProfessionalArmy))

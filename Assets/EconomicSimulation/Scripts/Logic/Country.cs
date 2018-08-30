@@ -20,6 +20,7 @@ namespace Nashet.EconomicSimulation
         public readonly TaxationForRich taxationForRich;
 
         public readonly UBI UBI;
+        public readonly PovertyAid PovertyAid;
         public readonly FamilyPlanning FamilyPlanning;
 
         public readonly MinorityPolicy minorityPolicy;
@@ -96,6 +97,14 @@ namespace Nashet.EconomicSimulation
             set { ubiSubsidiesExpense.Add(value); }
         }
 
+        protected readonly Money povertyAidExpense = new Money(0m);
+        public MoneyView PovertyAidExpense
+        {
+            get { return povertyAidExpense; }
+            set { povertyAidExpense.Add(value); }
+        }
+        
+
         protected readonly Money soldiersWageExpense = new Money(0m);
         public MoneyView SoldiersWageExpense { get { return soldiersWageExpense; } }
 
@@ -146,17 +155,12 @@ namespace Nashet.EconomicSimulation
 
             serfdom = new Serfdom(this);
             minorityPolicy = new MinorityPolicy(this);
-
             economy = new Economy(this);
-
             government = new Government(this);
 
             FamilyPlanning = new FamilyPlanning(this);
-
             UBI = new UBI(this);
-
-
-
+            PovertyAid = new PovertyAid(this);
 
             Culture = culture;
             NationalColor = color;
@@ -1028,11 +1032,14 @@ namespace Nashet.EconomicSimulation
             incomeTaxStatisticRich.SetZero();
             goldMinesIncome.SetZero();
             unemploymentSubsidiesExpense.SetZero();
-            ubiSubsidiesExpense.SetZero();
+            
             ownedFactoriesIncome.SetZero();
             factorySubsidiesExpense.SetZero();
             storageBuyingExpense.SetZero();
             soldiersWageExpense.SetZero();
+
+            ubiSubsidiesExpense.SetZero();
+            povertyAidExpense.SetZero();
         }
 
         public float getBalance()
@@ -1043,11 +1050,13 @@ namespace Nashet.EconomicSimulation
         public MoneyView getExpenses()
         {
             Money result = MoneyView.Zero.Copy();
-            result.Add(unemploymentSubsidiesExpense);
-            result.Add(ubiSubsidiesExpense);
+            result.Add(unemploymentSubsidiesExpense);            
             result.Add(factorySubsidiesExpense);
             result.Add(storageBuyingExpense);
             result.Add(soldiersWageExpense);
+
+            result.Add(ubiSubsidiesExpense);
+            result.Add(povertyAidExpense);
             return result;
         }
 
