@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Nashet.Utils;
+﻿using Nashet.Utils;
 using Nashet.ValueSpace;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Nashet.EconomicSimulation
@@ -61,7 +61,7 @@ namespace Nashet.EconomicSimulation
 
             //send 50% to government
             Pay(country, sentToGovernment);
-            country.goldMinesIncomeAdd(sentToGovernment);
+            country.GoldMinesIncome = sentToGovernment;
         }
 
         public virtual void SetStatisticToZero()

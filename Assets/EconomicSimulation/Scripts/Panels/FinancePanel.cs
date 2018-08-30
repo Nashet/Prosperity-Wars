@@ -56,7 +56,7 @@ namespace Nashet.EconomicSimulation
             sb.Append("\n Rest: ").Append(Game.Player.RestIncome);
             sb.Append("\nTotal: ").Append(Game.Player.moneyIncomeThisTurn);
 
-            sb.Append("\n\nBalance: ").Append(Game.Player.getBalance());
+            sb.Append("\n\nBalance: ").Append(Game.Player.IncomeBalance);
             sb.Append("\nHave money: ").Append(Game.Player.Cash).Append(" + ").Append(Game.Player.deposits).Append(" in bank");
             sb.Append("\nLoans taken: ").Append(Game.Player.loans);
             //sb.Append("\nGDP (current prices): ").Append(Game.Player.getGDP()).Append("; GDP per thousand men: ").Append(Game.Player.getGDPPer1000());
@@ -82,7 +82,7 @@ namespace Nashet.EconomicSimulation
 
             sb.Append("\n Storage buying: ").Append(Game.Player.StorageBuyingExpense);
 
-            sb.Append("\nTotal: ").Append(Game.Player.getExpenses());
+            sb.Append("\nTotal: ").Append(Game.Player.GetRegisteredExpenses());
             expensesText.text = sb.ToString();
 
             sb.Clear();

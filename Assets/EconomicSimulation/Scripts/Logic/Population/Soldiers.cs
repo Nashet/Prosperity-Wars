@@ -55,7 +55,7 @@ namespace Nashet.EconomicSimulation
             if (Country.CanPay(payCheck))
             {
                 Country.Pay(this, payCheck);
-                Country.soldiersWageExpenseAdd(payCheck);
+                Country.SoldiersWageExpense = payCheck;
                 didntGetPromisedSalary = false;
             }
             else

@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Nashet.Conditions;
+﻿using Nashet.Conditions;
 using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace Nashet.EconomicSimulation
@@ -904,7 +904,7 @@ namespace Nashet.EconomicSimulation
                         //Country.TakeIncomeTax(owner, sentToOwner, false);
                         var isCountry = item.Key as Country;
                         if (isCountry != null)
-                            isCountry.ownedFactoriesIncomeAdd(sentToOwner);
+                            isCountry.OwnedFactoriesIncome = sentToOwner;
                     }
                 }
             }
@@ -919,7 +919,7 @@ namespace Nashet.EconomicSimulation
         }
 
         public void open(IShareOwner byWhom, bool payMoney)
-        {            
+        {
             if (Country.economy != Economy.PlannedEconomy)
                 salary.Set(Province.getLocalMinSalary());
             if (payMoney)

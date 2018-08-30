@@ -77,47 +77,61 @@ namespace Nashet.EconomicSimulation
         protected readonly Money incomeTaxForeigner = new Money(0m);
         public MoneyView IncomeTaxForeigner { get { return incomeTaxForeigner; } }
 
-        protected readonly Money goldMinesIncome = new Money(0m);
-        public MoneyView GoldMinesIncome { get { return goldMinesIncome; } }
+        protected readonly Money goldMinesIncome = new Money(0m);/// <summary> Assignment mean that value ADDED to this property </summary>
+        public MoneyView GoldMinesIncome
+        {
+            get { return goldMinesIncome; }
+            set { goldMinesIncome.Add(value); }
+        }
 
-        protected readonly Money ownedFactoriesIncome = new Money(0m);
-        public MoneyView OwnedFactoriesIncome { get { return ownedFactoriesIncome; } }
+        protected readonly Money ownedFactoriesIncome = new Money(0m);/// <summary> Assignment mean that value ADDED to this property </summary>
+        public MoneyView OwnedFactoriesIncome
+        {
+            get { return ownedFactoriesIncome; }
+            set { ownedFactoriesIncome.Add(value); }
+        }
 
-        protected readonly Money unemploymentSubsidiesExpense = new Money(0m);
+        protected readonly Money unemploymentSubsidiesExpense = new Money(0m);/// <summary> Assignment mean that value ADDED to this property </summary>
         public MoneyView UnemploymentSubsidiesExpense
         {
             get { return unemploymentSubsidiesExpense; }
             set { unemploymentSubsidiesExpense.Add(value); }
         }
 
-        protected readonly Money ubiSubsidiesExpense = new Money(0m);
+        protected readonly Money ubiSubsidiesExpense = new Money(0m);/// <summary> Assignment mean that value ADDED to this property </summary>
         public MoneyView UBISubsidiesExpense
         {
             get { return ubiSubsidiesExpense; }
             set { ubiSubsidiesExpense.Add(value); }
         }
 
-        protected readonly Money povertyAidExpense = new Money(0m);
+        protected readonly Money povertyAidExpense = new Money(0m);/// <summary> Assignment mean that value ADDED to this property </summary>
         public MoneyView PovertyAidExpense
         {
             get { return povertyAidExpense; }
             set { povertyAidExpense.Add(value); }
         }
-        
 
-        protected readonly Money soldiersWageExpense = new Money(0m);
-        public MoneyView SoldiersWageExpense { get { return soldiersWageExpense; } }
+        protected readonly Money soldiersWageExpense = new Money(0m);/// <summary> Assignment mean that value ADDED to this property </summary>
+        public MoneyView SoldiersWageExpense
+        {
+            get { return soldiersWageExpense; }
+            set { soldiersWageExpense.Add(value); }
+        }
 
         protected readonly Money factorySubsidiesExpense = new Money(0m);
         public MoneyView FactorySubsidiesExpense { get { return factorySubsidiesExpense; } }
 
-        protected readonly Money storageBuyingExpense = new Money(0m);
-        public MoneyView StorageBuyingExpense { get { return storageBuyingExpense; } }
-
+        protected readonly Money storageBuyingExpense = new Money(0m);/// <summary> Assignment mean that value ADDED to this property </summary>
+        public MoneyView StorageBuyingExpense
+        {
+            get { return storageBuyingExpense; }
+            set { storageBuyingExpense.Add(value); }
+        }
 
         public MoneyView RestIncome
         {
-            get { return moneyIncomeThisTurn.Copy().Subtract(getIncome()); }
+            get { return moneyIncomeThisTurn.Copy().Subtract(GetRegisteredIncome()); }
         }
 
         private float nameWeight;
@@ -586,15 +600,15 @@ namespace Nashet.EconomicSimulation
                     }
                     else
                     {
-                        var balance = getBalance();
+                        var balance = IncomeBalance;
 
-                        if (balance > 200f)
+                        if (balance > 200m)
                             newWage = getSoldierWage().Copy().Add(soldierAllNeedsCost.Copy().Multiply(0.002m).Add(1m));
-                        else if (balance > 50f)
+                        else if (balance > 50m)
                             newWage = getSoldierWage().Copy().Add(soldierAllNeedsCost.Copy().Multiply(0.0005m).Add(0.1m));
-                        else if (balance < -800f)
+                        else if (balance < -800m)
                             newWage = new Money(0m);
-                        else if (balance < 0f)
+                        else if (balance < 0m)
                             newWage = getSoldierWage().Copy().Multiply(0.5m);
                         else
                             newWage = getSoldierWage().Copy(); // don't change wage
@@ -901,7 +915,7 @@ namespace Nashet.EconomicSimulation
             if (realyBougth.isNotZero())
             {
                 countryStorageSet.Add(realyBougth);
-                storageBuyingExpenseAdd(Country.market.getCost(realyBougth));
+                StorageBuyingExpense = Country.market.getCost(realyBougth);
             }
         }
 
@@ -1032,7 +1046,7 @@ namespace Nashet.EconomicSimulation
             incomeTaxStatisticRich.SetZero();
             goldMinesIncome.SetZero();
             unemploymentSubsidiesExpense.SetZero();
-            
+
             ownedFactoriesIncome.SetZero();
             factorySubsidiesExpense.SetZero();
             storageBuyingExpense.SetZero();
@@ -1042,15 +1056,12 @@ namespace Nashet.EconomicSimulation
             povertyAidExpense.SetZero();
         }
 
-        public float getBalance()
-        {
-            return (float)(moneyIncomeThisTurn.Get() - getExpenses().Get());
-        }
+        public decimal IncomeBalance { get { return moneyIncomeThisTurn.Get() - GetRegisteredExpenses().Get(); } }
 
-        public MoneyView getExpenses()
+        public MoneyView GetRegisteredExpenses()
         {
             Money result = MoneyView.Zero.Copy();
-            result.Add(unemploymentSubsidiesExpense);            
+            result.Add(unemploymentSubsidiesExpense);
             result.Add(factorySubsidiesExpense);
             result.Add(storageBuyingExpense);
             result.Add(soldiersWageExpense);
@@ -1060,7 +1071,7 @@ namespace Nashet.EconomicSimulation
             return result;
         }
 
-        public Money getIncome()
+        public Money GetRegisteredIncome()
         {
             Money result = new Money(0m);
             result.Add(incomeTaxStaticticPoor);
@@ -1090,11 +1101,6 @@ namespace Nashet.EconomicSimulation
             //    payWithoutRecord(byWhom, byWhom.Cash);
             //    factorySubsidiesExpense.Add(byWhom.Cash);
             //}
-        }
-
-        public void soldiersWageExpenseAdd(MoneyView payCheck)
-        {
-            soldiersWageExpense.Add(payCheck);
         }
 
         /// <summary>
@@ -1160,25 +1166,8 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public void goldMinesIncomeAdd(MoneyView toAdd)
-        {
-            goldMinesIncome.Add(toAdd);
-        }
 
-        public void unemploymentSubsidiesExpenseAdd(MoneyView toAdd)
-        {
-            unemploymentSubsidiesExpense.Add(toAdd);
-        }
 
-        public void storageBuyingExpenseAdd(MoneyView toAdd)
-        {
-            storageBuyingExpense.Add(toAdd);
-        }
-
-        public void ownedFactoriesIncomeAdd(MoneyView toAdd)
-        {
-            ownedFactoriesIncome.Add(toAdd);
-        }
 
         /// <summary>
         /// Gets reform which can take given value
