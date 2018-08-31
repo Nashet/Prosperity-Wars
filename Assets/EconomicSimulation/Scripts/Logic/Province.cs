@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Nashet.Conditions;
+﻿using Nashet.Conditions;
 using Nashet.EconomicSimulation.Reforms;
 using Nashet.MarchingSquares;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace Nashet.EconomicSimulation
@@ -115,7 +115,7 @@ namespace Nashet.EconomicSimulation
         {
             get { return country; }
         }
-        
+
         public void AddCore(Country ini)
         {
             if (ini != World.UncolonizedLand)
@@ -173,7 +173,7 @@ namespace Nashet.EconomicSimulation
             foreach (var core in cores)
                 yield return core;
         }
-       
+
 
         /// <summary>
         /// Secedes province to Taker. Also kills old province owner if it was last province
@@ -310,8 +310,15 @@ namespace Nashet.EconomicSimulation
                     yield return allFactories[i];
                 }
             }
-        }       
-
+        }
+        public IEnumerable<Workers> AllWorkers
+        {
+            get
+            {
+                foreach (Workers pop in allPopUnits.Where(x => x.Type == PopType.Workers))
+                    yield return pop;
+            }
+        }
         public IEnumerable<PopUnit> AllPops
         {
             get
@@ -333,7 +340,7 @@ namespace Nashet.EconomicSimulation
                 cultures.AddMy(pop.culture, pop.population.Get());
             ///allPopUnits.ForEach(x=>cultures.Add(x.culture, x.population.Get()));
             return cultures.MaxBy(y => y.Value).Key as Culture;
-        }        
+        }
 
         public bool isBelongsTo(Country country)
         {
@@ -356,7 +363,7 @@ namespace Nashet.EconomicSimulation
         public void mobilize()
         {
             Country.mobilize(new List<Province> { this });
-        }        
+        }
 
         //not called with capitalism
         public void shareWithAllAristocrats(Storage fromWho, Value taxTotalToPay)
@@ -391,7 +398,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Returns result divided on groups of factories (List) each with own level of salary or priority given in orderMethod(Factory)
         /// </summary>
-        private IEnumerable<List<Factory>> getAllFactoriesDescendingOrder(Func<Factory, float> orderMethod)
+        private IEnumerable<List<Factory>> AllFactoriesDescendingOrder(Func<Factory, float> orderMethod)
         {
             var sortedfactories = allFactories.OrderByDescending(o => orderMethod(o));
             var iterator = sortedfactories.GetEnumerator();
@@ -417,14 +424,21 @@ namespace Nashet.EconomicSimulation
             }
         }
 
+        protected void FireAllWorkers()
+        {
+            foreach (var worker in AllWorkers)
+            {
+                //var worker = item as Workers;
+                //if (worker != null)
+                worker.Fire();
+            }
+            AllFactories.PerformAction(x=>x.ClearWorkforce());
+        }
+
         public void BalanceEmployableWorkForce()
         {
-            foreach (var item in AllPops)
-            {
-                var worker = item as Workers;
-                if (worker != null)
-                    worker.Fire();
-            }
+            FireAllWorkers();
+
             // List<PopUnit> workforceList = this.GetAllPopulation(PopType.Workers).ToList();
             int unemplyedWorkForce = AllPops.Where(x => x.Type == PopType.Workers).Sum(x => x.population.Get());
 
@@ -433,12 +447,17 @@ namespace Nashet.EconomicSimulation
                 // workforceList = workforceList.OrderByDescending(o => o.population).ToList();
                 Func<Factory, float> order;
                 if (Country.economy == Economy.PlannedEconomy)
-                    order = (x => x.getPriority());
+                    order = x => x.getPriority();
                 else
-                    order = (x => (float)x.getSalary().Get());
+                    order = x => (float)x.getSalary().Get();
 
-                foreach (List<Factory> factoryGroup in getAllFactoriesDescendingOrder(order))
+                foreach (List<Factory> factoryGroup in AllFactoriesDescendingOrder(order))
                 {
+                    if (Country.unemploymentSubsidies.SubsizionSize.Get().isBiggerOrEqual(factoryGroup[0].getSalary())
+                    && Country.economy != Economy.PlannedEconomy)
+                        // difference = (int)(difference * 0.5f);
+                        break;
+
                     // if there is no enough workforce to fill all factories in group then
                     // workforce should be distributed proportionally
                     int factoriesInGroupWantsTotal = 0;
@@ -459,18 +478,30 @@ namespace Nashet.EconomicSimulation
                                 toHire = 0;
                             else
                                 toHire = unemplyedWorkForce * factoryWants / factoriesInGroupWantsTotal;
+
                             if (toHire > factoryWants)
                                 toHire = factoryWants;
+
                             hiredInThatGroup += factory.hireWorkers(toHire, AllPops.Where(x => x.Type == PopType.Workers));
 
                             //if (popsLeft <= 0) break;
                             // don't do breaks to clear old workforce records
                         }
-                        else
-                        {
-                            factory.hireWorkers(0, null);
-                        }
+                    //now it fires above
+                        //else 
+                        //{
+                        //    factory.hireWorkers(0, null);
+                        //}
                     unemplyedWorkForce -= hiredInThatGroup;
+                }
+
+                // now if there are benefits, put all unemployed workers on social benefits
+                if (Country.unemploymentSubsidies != UnemploymentSubsidies.None
+                   && Country.economy != Economy.PlannedEconomy)
+                    foreach (var worker in AllWorkers)
+                {
+                    // sit on benefits:                    
+                    worker.SitOnSocialBenefits(worker.GetSeekingJobInt());
                 }
             }
         }
@@ -503,7 +534,7 @@ namespace Nashet.EconomicSimulation
                 if (factory.Type.basicProduction.Product == resource)
                     return factory;
             return null;
-        }       
+        }
 
         /// <summary>
         /// check type for null outside
@@ -514,7 +545,7 @@ namespace Nashet.EconomicSimulation
                 if (f.Type == type)
                     return true;
             return false;
-        }        
+        }
 
         public void DestroyFactory(Factory factory)
         {
@@ -823,7 +854,7 @@ namespace Nashet.EconomicSimulation
                     result.Add(Country.market.getCost(producer.getGainGoodsThisTurn())); //- Country.market.getCost(producer.getConsumedTotal()).get());
             return result;
         }
-        
+
         /// <summary>
         /// If type is null than return average value for ALL Pops. New value
         /// </summary>
@@ -836,7 +867,7 @@ namespace Nashet.EconomicSimulation
                 else
                     return Procent.ZeroProcent.Copy();
             else
-                return list.GetAverageProcent(x => x.needsFulfilled);       
+                return list.GetAverageProcent(x => x.needsFulfilled);
         }
 
         public void OnClicked()
@@ -883,7 +914,10 @@ namespace Nashet.EconomicSimulation
             foreach (var item in reopenEnterprises)
                 yield return item;
         }
-       
+
+        /// <summary>
+        /// Returns true if seeking for less than Options.PopMigrationUnemploymentLimit
+        /// </summary>        
         public bool HasJobsFor(PopType popType)
         {
             if (popType == PopType.Workers)
@@ -891,7 +925,7 @@ namespace Nashet.EconomicSimulation
                 if (!allFactories.Any(x => x.IsOpen))
                     return false;
                 return AllPops.Where(x => x.Type == PopType.Workers)
-                        .GetAverageProcent(x => x.getUnemployment()).isSmallerThan(Options.PopMigrationUnemploymentLimit);
+                        .GetAverageProcent(x => x.GetSeekingJob()).isSmallerThan(Options.PopMigrationUnemploymentLimit);
             }
             else if (popType == PopType.Farmers || popType == PopType.Tribesmen)
                 return GetOverpopulation().isSmallerThan(Procent.HundredProcent);
@@ -926,7 +960,7 @@ namespace Nashet.EconomicSimulation
         public void RemoveDeadPops()
         {
             allPopUnits.RemoveAll(x => !x.IsAlive);
-        }        
+        }
 
         public override string FullName
         {

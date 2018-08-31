@@ -78,7 +78,7 @@ namespace Nashet.EconomicSimulation
 
                 //sb.Append("\nGrowth: ").Append(pop.getGrowthSize());
                 sb.Append("\n\nLoyalty: ").Append(pop.loyalty);
-                sb.Append("\nUnemployment: ").Append(pop.getUnemployment());                
+                sb.Append("\nSeeks job: ").Append(pop.GetSeekingJob());                
                 sb.Append("\nEducation: ").Append(pop.Education);
                 sb.Append("\nCulture: ").Append(pop.culture);
                 if (!pop.isStateCulture())

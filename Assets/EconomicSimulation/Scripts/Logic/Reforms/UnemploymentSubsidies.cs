@@ -77,7 +77,7 @@ namespace Nashet.EconomicSimulation.Reforms
         /// <summary>
         /// Calculates Unemployment Subsidies basing on consumption cost for 1000 workers
         /// </summary>
-        internal virtual MoneyView GetSubsidiesRate()
+        protected virtual MoneyView GetSubsidiesRate()
         {
             var market = owner.market;
             return typedValue.GetSubsidiesRate(market);

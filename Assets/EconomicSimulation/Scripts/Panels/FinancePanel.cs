@@ -67,7 +67,7 @@ namespace Nashet.EconomicSimulation
             sb.Append("Expenses: ");
 
             sb.Append("\n Unemployment subsidies: ").Append(Game.Player.UnemploymentSubsidiesExpense)
-                .Append(" unemployment: ").Append(Game.Player.Provinces.AllPops.GetAverageProcent(x => x.getUnemployment()));
+                .Append(" seeking a job: ").Append(Game.Player.Provinces.AllPops.GetAverageProcent(x => x.GetSeekingJob()));
 
             if (Game.Player.UBI != UBI.None)
                 sb.Append("\n Unconditional basic income: ").Append(Game.Player.UBISubsidiesExpense);

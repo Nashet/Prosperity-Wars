@@ -45,7 +45,11 @@ namespace Nashet.EconomicSimulation
         /// <summary>used only on initial factory building</summary>
         //private bool buildByPlannedEconomy;
         private IShareOwner currentInvestor;
-
+                
+        /// <summary>
+        /// Had that much workforce at previous turn
+        /// </summary>
+        protected int wasWorkforce;
         private readonly Procent averageWorkersEducation = new Procent(0f);
 
         /// <summary>
@@ -357,6 +361,7 @@ namespace Nashet.EconomicSimulation
 
         public void ClearWorkforce()
         {
+            wasWorkforce = getWorkForce();
             averageWorkersEducation.SetZero();
             hiredWorkForce.Clear();
         }
@@ -366,25 +371,21 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public int hireWorkers(int amount, IEnumerable<PopUnit> popList)
         {
-            //check on no too much workers?
-            //if (amount > HowMuchWorkForceWants())
-            //    amount = HowMuchWorkForceWants();
-            int wasWorkforce = getWorkForce();
-            if (amount > 0 && wasWorkforce == 0)
-                justHiredPeople = true;
-            else
-                justHiredPeople = false;
-
-            ClearWorkforce();
+            //ClearWorkforce();
             if (amount > 0)
-            {
+            {                 
+                if (wasWorkforce == 0)
+                    justHiredPeople = true;
+                else
+                    justHiredPeople = false;
+
                 int leftToHire = amount;
                 hiredLastTurn = 0;
                 popList = popList.OrderByDescending(x => x.Education.get()).ThenBy(x => x.population.Get()).ToList();
 
                 foreach (Workers pop in popList)
                 {
-                    if (pop.GetUnemployedPopulation() >= leftToHire) // satisfied demand
+                    if (pop.GetSeekingJobInt() >= leftToHire) // satisfied demand
                     {
                         hiredWorkForce.Add(pop, leftToHire);
                         pop.Hire(this, leftToHire);
@@ -397,7 +398,7 @@ namespace Nashet.EconomicSimulation
                     }
                     else
                     {
-                        var toHire = pop.GetUnemployedPopulation();
+                        var toHire = pop.GetSeekingJobInt();
                         hiredWorkForce.Add(pop, toHire); // hire everyone left
                         pop.Hire(this, toHire);
                         averageWorkersEducation.AddPoportionally(hiredLastTurn, toHire, pop.Education);
@@ -629,7 +630,7 @@ namespace Nashet.EconomicSimulation
             //Should be rise salary if: small unemployment, has profit, need has other resources
             if (IsOpen && Economy.isMarket.checkIfTrue(Country))
             {
-                var unemployment = Province.AllPops.Where(x => x.Type == PopType.Workers).GetAverageProcent(x => x.getUnemployment());
+                var unemployment = Province.AllWorkers.GetAverageProcent(x => x.GetSeekingJob());
                 var margin = GetMargin(true);
 
                 // rise salary to attract  workforce, including workforce from other factories
@@ -670,7 +671,7 @@ namespace Nashet.EconomicSimulation
                     //salary.Subtract(Options.FactoryReduceSalaryOnNonProfit, false);
                     salary.Multiply(Options.FactoryReduceSalaryOnNonProfit, false);
 
-                // if supply > demand
+                // if labor supply > labor demand
                 if (unemployment.isBiggerThan(Options.ProvinceExcessWorkforce))
                     //salary.Subtract(Options.FactoryReduceSalaryOnMarket, false);
                     salary.Multiply(Options.FactoryReduceSalaryOnMarket, false);
@@ -713,8 +714,8 @@ namespace Nashet.EconomicSimulation
                 return 0;
             int wants = getMaxWorkforceCapacity();// * getInputFactor());
 
-            int workForce = getWorkForce();
-            int difference = wants - workForce;
+            //int workForce = getWorkForce();
+            int difference = wants - wasWorkforce;
 
             int maxHiringSpeed = getMaxHiringSpeed();
             // clamp difference in Options.maxFactoryFireHireSpeed []
@@ -727,7 +728,7 @@ namespace Nashet.EconomicSimulation
             {
                 float inputFactor = getInputFactor().get();
                 //fire people if no enough input.
-                if (inputFactor < 0.95f && !isSubsidized() && !isJustHiredPeople() && workForce > 0)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
+                if (inputFactor < 0.95f && !isSubsidized() && !isJustHiredPeople() && wasWorkforce > 0)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
                     difference = -1 * maxHiringSpeed;
 
                 if (Country.economy != Economy.PlannedEconomy)// commies don't care about profits
@@ -738,12 +739,14 @@ namespace Nashet.EconomicSimulation
 
                     // just don't hire more..
                     //if ((getProfit() < 0f || inputFactor < 0.95f) && !isSubsidized() && !isJustHiredPeople() && workForce > 0)
-                    if (getProfit() < 0m && !isSubsidized() && !isJustHiredPeople() && workForce > 0)
+                    if (getProfit() < 0m && !isSubsidized() && !isJustHiredPeople() && wasWorkforce > 0)
                         difference = 0;
                 }
+
+
             }
             //todo optimize getWorkforce() calls
-            int result = workForce + difference;
+            int result = wasWorkforce + difference;
             //if (result > wants)
             //    result = wants;
             if (result < 0)

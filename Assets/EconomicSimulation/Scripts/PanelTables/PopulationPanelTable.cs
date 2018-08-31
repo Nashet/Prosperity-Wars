@@ -9,14 +9,14 @@ namespace Nashet.EconomicSimulation
 {
     public class PopulationPanelTable : UITableNew<PopUnit>
     {
-        private SortOrder needsFulfillmentOrder, unemploymentOrder, loyaltyOrder, populationOrder, cashOrder,
+        private SortOrder needsFulfillmentOrder, seekingJobOrder, loyaltyOrder, populationOrder, cashOrder,
         movementOrder, provinceOrder, cultureOrder, popTypeOrder, educationOrder;
 
         private void Start()
         {
             popTypeOrder = new SortOrder(this, x => x.Type.NameWeight);
             needsFulfillmentOrder = new SortOrder(this, x => x.needsFulfilled.get());
-            unemploymentOrder = new SortOrder(this, x => x.getUnemployment().get());
+            seekingJobOrder = new SortOrder(this, x => x.GetSeekingJob().get());
             loyaltyOrder = new SortOrder(this, x => x.loyalty.get());
             populationOrder = new SortOrder(this, x => x.population.Get());
             cashOrder = new SortOrder(this, x => (float)x.Cash.Get());
@@ -85,8 +85,8 @@ namespace Nashet.EconomicSimulation
             PopUnit.modifiersLoyaltyChange.getModifier(pop, out accu);
             AddCell(pop.loyalty.ToString(), pop, () => accu);
 
-            //Adding Unemployment
-            AddCell(pop.getUnemployment().ToString(), pop);
+            //Adding SeekingJob
+            AddCell(pop.GetSeekingJob().ToString(), pop);
 
             //Adding Movement
             if (pop.getMovement() == null)
@@ -127,7 +127,7 @@ namespace Nashet.EconomicSimulation
             AddCell("Loyalty" + loyaltyOrder.getSymbol(), loyaltyOrder);
 
             ////Adding Unemployment
-            AddCell("Unemployment" + unemploymentOrder.getSymbol(), unemploymentOrder);
+            AddCell("Seeks job" + seekingJobOrder.getSymbol(), seekingJobOrder);
 
             //Adding Movement
             AddCell("Movement" + movementOrder.getSymbol(), movementOrder);

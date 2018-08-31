@@ -66,7 +66,7 @@ namespace Nashet.EconomicSimulation
 
         //if add new fields make sure it's implemented in second constructor and in merge()
 
-        protected int employed;
+
 
         static PopUnit()
         {
@@ -500,34 +500,6 @@ namespace Nashet.EconomicSimulation
         //}
 
 
-
-        public int GetUnemployedPopulation()
-        {
-            return population.Get() - employed;
-        }
-
-        public Procent getUnemployment()
-        {
-            if (type == PopType.Workers)
-            {
-                return new Procent(GetUnemployedPopulation(), population.Get(), false); // due to population changes that could be negative
-                //int employed = 0;
-                //foreach (Factory factory in Province.getAllFactories())
-                //    employed += factory.HowManyEmployed(this);
-                //if (population.Get() - employed <= 0) //happening due population change by growth/demotion
-                //    return new Procent(0);
-                //return new Procent((population.Get() - employed) / (float)population.Get());
-            }
-            else if (type == PopType.Farmers || type == PopType.Tribesmen)
-            {
-                var overPopulation = Province.GetOverpopulation();
-                if (overPopulation.isSmallerOrEqual(Procent.HundredProcent))
-                    return new Procent(0f);
-                else
-                    return new Procent(1f - (1f / overPopulation.get()));
-            }
-            else return new Procent(0f);
-        }
 
         //public void payTaxes() // should be abstract
         //{
@@ -1074,6 +1046,15 @@ namespace Nashet.EconomicSimulation
         //    else
         //        deleteData();
         //}
+        public virtual Procent GetSeekingJob()
+        {
+            return Procent.ZeroProcent.Copy();
+        }
+
+        public virtual Procent GetUnemployment()
+        {
+            return Procent.ZeroProcent.Copy();
+        }
 
         public void takeUnemploymentSubsidies()
         {
@@ -1082,7 +1063,7 @@ namespace Nashet.EconomicSimulation
             var reform = Country.unemploymentSubsidies;
             if (Type == PopType.Workers && Country.economy != Economy.PlannedEconomy && reform != UnemploymentSubsidies.None)
             {
-                var unemployment = getUnemployment();
+                var unemployment = GetSeekingJob();
                 if (unemployment.isNotZero())
                 {
                     var rate = reform.SubsizionSize.Get();

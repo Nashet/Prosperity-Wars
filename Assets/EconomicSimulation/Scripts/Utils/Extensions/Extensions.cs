@@ -423,7 +423,7 @@ namespace Nashet.Utils
         /// <summary>
         /// New value
         /// </summary>
-        public static Procent GetAverageProcent(this IEnumerable<PopUnit> source, Func<PopUnit, Procent> selector)
+        public static Procent GetAverageProcent<T>(this IEnumerable<T> source, Func<T, Procent> selector) where T:PopUnit
         {
             Procent result = new Procent(0f);
             int calculatedPopulation = 0;
