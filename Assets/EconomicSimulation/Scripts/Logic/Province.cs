@@ -432,7 +432,7 @@ namespace Nashet.EconomicSimulation
                 //if (worker != null)
                 worker.Fire();
             }
-            AllFactories.PerformAction(x=>x.ClearWorkforce());
+            AllFactories.PerformAction(x => x.ClearWorkforce());
         }
 
         public void BalanceEmployableWorkForce()
@@ -454,9 +454,9 @@ namespace Nashet.EconomicSimulation
                 foreach (List<Factory> factoryGroup in AllFactoriesDescendingOrder(order))
                 {
                     if (Country.unemploymentSubsidies.SubsizionSize.Get().isBiggerOrEqual(factoryGroup[0].getSalary())
-                    && Country.economy != Economy.PlannedEconomy)
-                        // difference = (int)(difference * 0.5f);
-                        break;
+                    && Country.economy != Economy.PlannedEconomy
+                    && Country.Politics.LastTurnDefaultedSocialObligations.isZero())                        
+                        break; // don't go to work, get social benefits instead. See below
 
                     // if there is no enough workforce to fill all factories in group then
                     // workforce should be distributed proportionally
@@ -488,21 +488,23 @@ namespace Nashet.EconomicSimulation
                             // don't do breaks to clear old workforce records
                         }
                     //now it fires above
-                        //else 
-                        //{
-                        //    factory.hireWorkers(0, null);
-                        //}
+                    //else 
+                    //{
+                    //    factory.hireWorkers(0, null);
+                    //}
                     unemplyedWorkForce -= hiredInThatGroup;
                 }
 
                 // now if there are benefits, put all unemployed workers on social benefits
-                if (Country.unemploymentSubsidies != UnemploymentSubsidies.None
-                   && Country.economy != Economy.PlannedEconomy)
+                if (Country.unemploymentSubsidies != UnemploymentSubsidies.None || Country.PovertyAid != PovertyAid.None
+                   && Country.economy != Economy.PlannedEconomy
+                   && Country.Politics.LastTurnDefaultedSocialObligations.isZero())
                     foreach (var worker in AllWorkers)
-                {
-                    // sit on benefits:                    
-                    worker.SitOnSocialBenefits(worker.GetSeekingJobInt());
-                }
+                    {
+                        // sit on benefits:                    
+                        if (!worker.didntGetPromisedSocialBenefits)
+                            worker.SitOnSocialBenefits(worker.GetSeekingJobInt());
+                    }
             }
         }
 

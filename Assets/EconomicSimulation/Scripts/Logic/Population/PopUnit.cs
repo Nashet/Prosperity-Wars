@@ -44,7 +44,7 @@ namespace Nashet.EconomicSimulation
         public readonly Procent needsFulfilled;
 
         private int daysUpsetByForcedReform;
-        private bool didntGetPromisedSocialBenefits;
+        public bool didntGetPromisedSocialBenefits;
         protected bool didntGetPromisedSalary;
 
         public static readonly ModifiersList modifiersLoyaltyChange, modEfficiency;
@@ -1063,7 +1063,7 @@ namespace Nashet.EconomicSimulation
             var reform = Country.unemploymentSubsidies;
             if (Type == PopType.Workers && Country.economy != Economy.PlannedEconomy && reform != UnemploymentSubsidies.None)
             {
-                var unemployment = GetSeekingJob();
+                var unemployment = GetUnemployment();
                 if (unemployment.isNotZero())
                 {
                     var rate = reform.SubsizionSize.Get();
@@ -1075,7 +1075,10 @@ namespace Nashet.EconomicSimulation
                         Country.UnemploymentSubsidiesExpense = subsidy;
                     }
                     else
+                    {
                         didntGetPromisedSocialBenefits = true;
+                        Country.Politics.RegisterDefaultedSocialObligations(subsidy);
+                    }
                 }
             }
         }
@@ -1095,7 +1098,10 @@ namespace Nashet.EconomicSimulation
                     Country.UBISubsidiesExpense = subsidy;
                 }
                 else
+                {
                     didntGetPromisedSocialBenefits = true;
+                    Country.Politics.RegisterDefaultedSocialObligations(subsidy);
+                }
             }
         }
         public void TakePovertyAid()
@@ -1117,7 +1123,10 @@ namespace Nashet.EconomicSimulation
                             Country.PovertyAidExpense = subsidy;
                         }
                         else
+                        {
                             didntGetPromisedSocialBenefits = true;
+                            Country.Politics.RegisterDefaultedSocialObligations(subsidy);
+                        }
                     }
                 }
             }

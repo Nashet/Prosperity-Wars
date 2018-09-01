@@ -1054,6 +1054,8 @@ namespace Nashet.EconomicSimulation
 
             ubiSubsidiesExpense.SetZero();
             povertyAidExpense.SetZero();
+
+            Politics.SetStatisticToZero();
         }
 
         public decimal IncomeBalance { get { return moneyIncomeThisTurn.Get() - GetRegisteredExpenses().Get(); } }
