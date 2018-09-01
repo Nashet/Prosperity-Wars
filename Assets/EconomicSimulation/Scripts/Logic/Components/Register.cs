@@ -51,7 +51,7 @@ namespace Nashet.EconomicSimulation
 
             public static readonly Account BuyingProperty = new Account("BuyingProperty");
             public static readonly Account Dividends = new Account("Dividends ");
-            public static readonly Account MinedGold = new Account("MinedGold");
+            public static readonly Account MinedGoldTax = new Account("MinedGoldTax");
 
             /// <summary>nationalization / closing business </summary>
             public static readonly Account Rest = new Account("Rest");
