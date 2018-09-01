@@ -725,7 +725,7 @@ namespace Nashet.EconomicSimulation
 
             if (difference > 0)
             {
-                float inputFactor = getInputFactor().get();
+                float inputFactor = getInputFactor2().get();
                 //fire people if no enough input.
                 if (inputFactor < 0.95f && !isSubsidized() && !isJustHiredPeople() && wasWorkforce > 0)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
                     difference = -1 * maxHiringSpeed;
@@ -1012,6 +1012,11 @@ namespace Nashet.EconomicSimulation
         public override Procent getInputFactor()
         {
             return getInputFactor(GetWorkForceFulFilling());  //todo here is problem for now
+        }
+
+        public Procent getInputFactor2()
+        {
+            return getInputFactor(new Procent(wasWorkforce, workForcePerLevel * level, false));  //todo here is problem for now
         }
 
         protected void GiveMoneyFromGoldPit(Storage gold)
