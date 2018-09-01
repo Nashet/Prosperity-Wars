@@ -54,7 +54,7 @@ namespace Nashet.EconomicSimulation
             payCheck.Multiply(population.Get() / 1000m);
             if (Country.CanPay(payCheck))
             {
-                Country.Pay(this, payCheck);
+                Country.Pay(this, payCheck, Register.Account.Wage);
                 Country.SoldiersWageExpense = payCheck;
                 didntGetPromisedSalary = false;
             }

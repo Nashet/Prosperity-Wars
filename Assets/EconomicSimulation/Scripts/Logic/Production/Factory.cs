@@ -45,7 +45,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>used only on initial factory building</summary>
         //private bool buildByPlannedEconomy;
         private IShareOwner currentInvestor;
-                
+
         /// <summary>
         /// Had that much workforce at previous turn
         /// </summary>
@@ -373,7 +373,7 @@ namespace Nashet.EconomicSimulation
         {
             //ClearWorkforce();
             if (amount > 0)
-            {                 
+            {
                 if (wasWorkforce == 0)
                     justHiredPeople = true;
                 else
@@ -551,10 +551,9 @@ namespace Nashet.EconomicSimulation
                     {
                         MoneyView howMuchPay = salary.Copy().Multiply(employee.Value).Divide(workForcePerLevel);
                         if (CanPay(howMuchPay))
-                            Pay(employee.Key, howMuchPay);
-                        else if (isSubsidized()
-                        && Country.GiveFactorySubsidies(this, HowMuchLacksMoneyIncludingDeposits(howMuchPay))) //take money and try again
-                            Pay(employee.Key, howMuchPay);
+                            Pay(employee.Key, howMuchPay, Register.Account.Wage);
+                        else if (isSubsidized() && Country.GiveFactorySubsidies(this, HowMuchLacksMoneyIncludingDeposits(howMuchPay))) //take money and try again
+                            Pay(employee.Key, howMuchPay, Register.Account.Wage);
                         else
                         {
                             salary.Multiply(Options.FactoryReduceSalaryOnNonProfit);
@@ -828,7 +827,7 @@ namespace Nashet.EconomicSimulation
             // send remaining money to owners
             foreach (var item in ownership.GetAllShares())
             {
-                Pay(item.Key as Agent, Cash.Copy().Multiply(item.Value), false); // enterprises don't put money in bank
+                Pay(item.Key as Agent, Cash.Copy().Multiply(item.Value), Register.Account.Rest, false); // enterprises don't put money in bank
                 //pay(item.Key as Agent, item.Value.SendProcentOf(Cash), false);
             }
 
@@ -903,7 +902,7 @@ namespace Nashet.EconomicSimulation
                         var owner = item.Key as Agent;
                         MoneyView sentToOwner = dividends.Copy().Multiply(item.Value);
                         //Value sentToOwner = item.Value.SendProcentOf(dividends);
-                        Pay(owner, sentToOwner);
+                        Pay(owner, sentToOwner, Register.Account.Dividends);
                         //Country.TakeIncomeTax(owner, sentToOwner, false);
                         var isCountry = item.Key as Country;
                         if (isCountry != null)
@@ -1012,7 +1011,20 @@ namespace Nashet.EconomicSimulation
 
         public override Procent getInputFactor()
         {
-            return getInputFactor(GetWorkForceFulFilling());
+            return getInputFactor(GetWorkForceFulFilling());  //todo here is problem for now
+        }
+
+        protected void GiveMoneyFromGoldPit(Storage gold)
+        {
+            var newMoney = new MoneyView(gold);
+            cash.Add(newMoney);
+            gold.SetZero();
+            moneyIncomeThisTurn.Add(newMoney);
+            MoneyView sentToGovernment = MoneyView.CovertFromGold(gold.Copy().Multiply(Options.GovernmentTakesShareOfGoldOutput));
+
+            //send 50% to government
+            Pay(Country, sentToGovernment, Register.Account.MinedGold);
+            Country.GoldMinesIncome = sentToGovernment;
         }
 
         /// <summary>

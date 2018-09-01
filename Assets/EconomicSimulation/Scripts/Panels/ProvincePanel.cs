@@ -156,7 +156,7 @@ namespace Nashet.EconomicSimulation
                 .OrderByDescending(x => x.Value.get()).ToString(", ", 0));
 
             if (Game.selectedProvince.getModifiers().Count > 0)
-                sb.Append("\nModifiers: ").Append(GetStringExtensions.getString(Game.selectedProvince.getModifiers()));
+                sb.Append("\nModifiers: ").Append(ToStringExtensions.getString(Game.selectedProvince.getModifiers()));
 
             Text text = btnOwner.GetComponentInChildren<Text>();
             text.text = "Owner: " + Game.selectedProvince.Country;

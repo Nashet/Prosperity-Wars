@@ -329,7 +329,7 @@ namespace Nashet.EconomicSimulation
 
                 //byWhom.storageSet.
 
-                PayAllAvailableMoney(byWhom);
+                PayAllAvailableMoney(byWhom, Register.Account.Rest);
 
                 Bank.OnLoanerRefusesToPay(this);
             }
@@ -1117,19 +1117,26 @@ namespace Nashet.EconomicSimulation
                 return MoneyView.Zero; // don't pay with monarchy
             Procent tax;
             Money statistics;
+            Register.Account account;
             if (isPoorStrata)
             {
                 tax = taxationForPoor.tax.Procent;
                 statistics = incomeTaxStaticticPoor;
+                account = Register.Account.PoorIncomeTax;
             }
             else //if (type is TaxationForRich)
             {
                 tax = taxationForRich.tax.Procent;
                 statistics = incomeTaxStatisticRich;
+                account = Register.Account.RichIncomeTax;
             }
             if (!(taxPayer is Market) && taxPayer.Country != this) //foreigner
+            {
                 statistics = incomeTaxForeigner;
+                account = Register.Account.ForeignIncomeTax;
+            }
 
+            // paying tax
             var taxSize = taxable.Copy().Multiply(tax);
             if (taxPayer.CanPay(taxSize))
             {
@@ -1137,14 +1144,17 @@ namespace Nashet.EconomicSimulation
                 statistics.Add(taxSize);
                 moneyIncomeThisTurn.Add(taxSize);
                 taxPayer.PayWithoutRecord(this, taxSize);
+                taxPayer.Register.RecordPayment(this, account, taxSize.Get());
                 return taxSize;
             }
             else
             {
                 var hadMoney = taxPayer.getMoneyAvailable().Copy();
-                taxPayer.incomeTaxPayed.Add(taxPayer.getMoneyAvailable());
-                statistics.Add(taxPayer.getMoneyAvailable());
-                moneyIncomeThisTurn.Add(taxPayer.getMoneyAvailable());
+                var availableMoney = taxPayer.getMoneyAvailable();
+                taxPayer.incomeTaxPayed.Add(availableMoney);
+                statistics.Add(availableMoney);
+                moneyIncomeThisTurn.Add(availableMoney);
+                taxPayer.Register.RecordPayment(this, account, availableMoney.Get());
                 taxPayer.PayAllAvailableMoneyWithoutRecord(this);
                 return hadMoney;
             }

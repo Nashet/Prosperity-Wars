@@ -337,7 +337,7 @@ namespace Nashet.EconomicSimulation
                 //    cultures[pop.culture] += pop.population.Get();
                 //else
                 //    cultures.Add(pop.culture, pop.population.Get());
-                cultures.AddMy(pop.culture, pop.population.Get());
+                cultures.AddAndSum(pop.culture, pop.population.Get());
             ///allPopUnits.ForEach(x=>cultures.Add(x.culture, x.population.Get()));
             return cultures.MaxBy(y => y.Value).Key as Culture;
         }

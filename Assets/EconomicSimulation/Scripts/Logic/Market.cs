@@ -733,14 +733,14 @@ namespace Nashet.EconomicSimulation
 
                         if (market.CanPay(cost)) //&& Country.market.tmpMarketStorage.has(realSold))
                         {
-                            market.Pay(seller as Agent, cost);
+                            market.Pay(seller as Agent, cost, Register.Account.MarketOperations);
                         }
                         else
                         {
                             if (Game.devMode)// && Country.market.HowMuchLacksMoneyIncludingDeposits(cost).Get() > 10m)
                                 Debug.Log("Failed market - lacks " + market.HowMuchLacksMoneyIncludingDeposits(cost)
                                         + " for " + realSold + " " + sentToMarket.Product + " " + seller + " trade: " + cost); // money in market ended... Only first lucky get money
-                            market.PayAllAvailableMoney(seller as Agent);
+                            market.PayAllAvailableMoney(seller as Agent, Register.Account.MarketOperations);
 
                         }
                     }

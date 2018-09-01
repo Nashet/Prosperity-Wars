@@ -76,7 +76,7 @@ namespace Nashet.EconomicSimulation.Reforms
                     owner.Nationilize(factory);
 
                     // next is for PE only
-                    factory.PayAllAvailableMoney(owner);
+                    factory.PayAllAvailableMoney(owner, Register.Account.Rest);
                     factory.loans.SetZero();
                     factory.deposits.SetZero();
                     factory.setSubsidized(false);
@@ -87,7 +87,7 @@ namespace Nashet.EconomicSimulation.Reforms
                 //nationalize banks
                 foreach (var item in province.AllPops)
                 {
-                    item.PayAllAvailableMoney(owner);
+                    item.PayAllAvailableMoney(owner, Register.Account.Rest);
                     item.loans.SetZero();
                     item.deposits.SetZero();
                 }

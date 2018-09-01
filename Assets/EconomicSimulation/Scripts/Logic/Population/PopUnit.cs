@@ -324,7 +324,7 @@ namespace Nashet.EconomicSimulation
                 MainCamera.popUnitPanel.Hide();
 
 
-            PayAllAvailableMoney(Bank); // just in case if there is something
+            PayAllAvailableMoney(Bank, Register.Account.Rest); // just in case if there is something
             Bank.OnLoanerRefusesToPay(this);
             Movement.leave(this);
         }
@@ -1070,7 +1070,7 @@ namespace Nashet.EconomicSimulation
                     MoneyView subsidy = rate.Copy().Multiply(population.Get()).Divide(1000);
                     if (Country.CanPay(subsidy))
                     {
-                        Country.Pay(this, subsidy);
+                        Country.Pay(this, subsidy, Register.Account.UnemploymentSubsidies);
                         //Country.unemploymentSubsidiesExpenseAdd(subsidy);
                         Country.UnemploymentSubsidiesExpense = subsidy;
                     }
@@ -1091,7 +1091,7 @@ namespace Nashet.EconomicSimulation
                 MoneyView subsidy = rate.Copy().Multiply(population.Get()).Divide(1000);
                 if (Country.CanPay(subsidy))
                 {
-                    Country.Pay(this, subsidy);
+                    Country.Pay(this, subsidy, Register.Account.UBISubsidies);
                     Country.UBISubsidiesExpense = subsidy;
                 }
                 else
@@ -1113,7 +1113,7 @@ namespace Nashet.EconomicSimulation
                     {
                         if (Country.CanPay(subsidy))
                         {
-                            Country.Pay(this, subsidy);
+                            Country.Pay(this, subsidy, Register.Account.PovertyAid);
                             Country.PovertyAidExpense = subsidy;
                         }
                         else
