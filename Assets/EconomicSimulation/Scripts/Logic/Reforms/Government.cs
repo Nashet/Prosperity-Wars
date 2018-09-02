@@ -51,7 +51,7 @@ namespace Nashet.EconomicSimulation.Reforms
 
         public GovernmentReformValue typedValue { get; protected set; }
 
-        public Government(Country country) : base("Government", " (forms of government)", country,
+        public Government(Country country, int showOrder) : base("Government", " (forms of government)", country, showOrder,
             new List<IReformValue> {Tribal, Aristocracy, Polis, Despotism, Theocracy, WealthDemocracy,
                 Democracy, BourgeoisDictatorship, Junta, ProletarianDictatorship})
         {

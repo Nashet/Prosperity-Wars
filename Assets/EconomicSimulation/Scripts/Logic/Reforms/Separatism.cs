@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Nashet.Conditions;
+﻿using Nashet.Conditions;
 using Nashet.ValueSpace;
+using System.Collections.Generic;
 
 namespace Nashet.EconomicSimulation.Reforms
 {
@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation.Reforms
         public Country goal { get { return typedValue.separatismTarget; } }
 
         protected Separatism(Country country) : base(country.ShortName + " independence", "", country,
-            null)//new ConditionsList(Condition.AlwaysYes))
+          0, null)//new ConditionsList(Condition.AlwaysYes))
         {
             //separatismAllowed = new Condition(x => isAvailable(x as Country), "Separatism target is valid", true);
             //allowed.add(separatismAllowed);
@@ -64,7 +64,7 @@ namespace Nashet.EconomicSimulation.Reforms
             /// <summary>
             /// Doesn't have sense for that reform
             /// </summary>            
-            public bool IsMoreConservative(AbstractReformValue anotherReform)
+            public bool IsMoreConservativeThan(AbstractReformValue anotherReform)
             {
                 throw new System.NotImplementedException();
             }
@@ -109,7 +109,7 @@ namespace Nashet.EconomicSimulation.Reforms
             public bool IsAllowed(object firstObject, object secondObject)
             {
                 return true;
-            }            
+            }
         }
     }
 }

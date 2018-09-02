@@ -40,7 +40,8 @@ namespace Nashet.EconomicSimulation.Reforms
             Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Middle, "Previous reform enacted", true)
         }));
 
-        public UnemploymentSubsidies(Country country) : base("Unemployment Subsidies", "", country, new List<IReformValue> { None, Scanty, Minimal, Trinket, Middle, Big })
+        public UnemploymentSubsidies(Country country, int showOrder) : base("Unemployment Subsidies", "", country, showOrder, 
+            new List<IReformValue> { None, Scanty, Minimal, Trinket, Middle, Big })
         {
             SubsizionSize = new CashedData<MoneyView>(GetSubsidiesRate);
             SetValue(None);

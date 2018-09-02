@@ -17,7 +17,7 @@ public class ReformsTests
     {
         get
         {
-            var list = new List<AbstractReform> { null, new Government(World.UncolonizedLand)};
+            var list = new List<AbstractReform> { null, new Government(World.UncolonizedLand, 0) };
             foreach (var item in list)
             {
                 foreach (var item2 in list)
@@ -32,7 +32,7 @@ public class ReformsTests
     {
         get
         {
-            var list = new List<AbstractReform> { null, new Government(World.UncolonizedLand), new TaxationForPoor( World.UncolonizedLand) };
+            var list = new List<AbstractReform> { null, new Government(World.UncolonizedLand, 0), new TaxationForPoor(World.UncolonizedLand, 0) };
             foreach (var arg1 in list)
             {
                 if (ReferenceEquals(arg1, null))
@@ -43,7 +43,7 @@ public class ReformsTests
                     {
                         yield return new KeyValuePair<AbstractReform, IReformValue>(arg1, arg2);
 
-                    }                    
+                    }
                 }
             }
         }

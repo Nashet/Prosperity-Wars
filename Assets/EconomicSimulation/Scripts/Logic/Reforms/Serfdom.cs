@@ -29,7 +29,8 @@ namespace Nashet.EconomicSimulation.Reforms
             Government.isProletarianDictatorship, Condition.IsNotImplemented
             }));
 
-        public Serfdom(Country country) : base("Serfdom", " (aristocratic privileges)", country, new List<IReformValue> { SerfdomAllowed, Brutal, Abolished, AbolishedWithLandPayment, AbolishedAndNationalized })
+        public Serfdom(Country country, int showOrder) : base("Serfdom", " (aristocratic privileges)", country, showOrder,
+            new List<IReformValue> { SerfdomAllowed, Brutal, Abolished, AbolishedWithLandPayment, AbolishedAndNationalized })
         {
             if (SerfdomAllowed == null)
                 SerfdomAllowed = new SerfdomReformValue("Allowed", " - Peasants and other plebes pay 10% of income to Aristocrats", 1,

@@ -101,7 +101,7 @@ namespace Nashet.EconomicSimulation
                 //sb.Append("\nBasic production: ").Append(factory.Type.basicProduction);
                 //sb.Append("\nSent to market: ").Append(factory.getSentToMarket());
                 sb.Append("\n\nMoney income: ").Append(factory.moneyIncomeThisTurn);
-                sb.Append("\n\nRegister: ").Append(factory.Register.ToString());
+                //sb.Append("\n\nRegister: ").Append(factory.Register.ToString());
                 sb.Append(", Cash: ").Append(factory.Cash);
 
                 sb.Append("\nProfit: ");

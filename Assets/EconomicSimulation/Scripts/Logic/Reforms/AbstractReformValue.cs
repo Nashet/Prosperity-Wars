@@ -49,7 +49,7 @@ namespace Nashet.EconomicSimulation.Reforms
         /// <summary>
         /// Could be wrong for some reforms!
         /// </summary>        
-        public virtual bool IsMoreConservative(AbstractReformValue anotherReform)
+        public virtual bool IsMoreConservativeThan(AbstractReformValue anotherReform)
         {
             return ID <= anotherReform.ID;
         }

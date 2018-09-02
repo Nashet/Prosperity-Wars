@@ -35,7 +35,8 @@ namespace Nashet.EconomicSimulation.Reforms
         }), new Procent(0.0f));
 
 
-        public FamilyPlanning(Country country) : base("Family planning", " - you can limit amount of kids in family reducing pop growth rate", country, new List<IReformValue> { None, FourKids, ThreeKids, TwoKids, OneKid })
+        public FamilyPlanning(Country country, int showOrder) : base("Family planning", " - you can limit amount of kids in family reducing pop growth rate", country, showOrder,
+            new List<IReformValue> { None, FourKids, ThreeKids, TwoKids, OneKid })
         {
             SetValue(None);
         }

@@ -40,8 +40,8 @@ namespace Nashet.EconomicSimulation.Reforms
         }));
 
         
-        public UBI(Country country) : base("Unconditional basic income", " - give money unconditionally to every citizen",
-            country, new List<IReformValue> { None, Scanty, Minimal, Trinket, Middle, Big })
+        public UBI(Country country, int showOrder) : base("Unconditional basic income", " - give money unconditionally to every citizen",
+            country, showOrder, new List<IReformValue> { None, Scanty, Minimal, Trinket, Middle, Big })
         {
             UBISize = new CashedData<MoneyView>(GetUBISize);
             SetValue(None);

@@ -8,8 +8,11 @@ namespace Nashet.EconomicSimulation.Reforms
     public abstract class ProcentReform : AbstractReform
     {
         public ProcentReformValue tax;
-        public ProcentReform(string name, string description, Country country, List<IReformValue> possibleValues) : base(name, description, country, possibleValues)
+        
+        public ProcentReform(string name, string description, Country country, int showOrder, List<IReformValue> possibleValues)
+            : base(name, description, country, showOrder, possibleValues)
         {
+
             //tax = new ProcentReformVal(0.1f);
         }
 

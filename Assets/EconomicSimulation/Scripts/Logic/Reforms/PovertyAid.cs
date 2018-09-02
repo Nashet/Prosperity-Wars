@@ -39,7 +39,8 @@ namespace Nashet.EconomicSimulation.Reforms
             Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).PovertyAid == Middle, "Previous reform enacted", true)
         }));
 
-        public PovertyAid(Country country) : base("Poverty Aid", " - goes to everyone who is poorer than current reform level", country, new List<IReformValue> { None, Scanty, Minimal, Trinket, Middle, Big })
+        public PovertyAid(Country country, int showOrder) : base("Poverty Aid", " - goes to everyone who is poorer than current reform level", country, showOrder,
+            new List<IReformValue> { None, Scanty, Minimal, Trinket, Middle, Big })
         {
             PovertyAidSize = new CashedData<MoneyView>(GetPovertyAidSize);
             SetValue(None);
