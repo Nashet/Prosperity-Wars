@@ -144,26 +144,38 @@ namespace Nashet.EconomicSimulation
                 descriptionText.text = "Select reform from left";
                 forceDecisionButton.GetComponent<ToolTipHandler>().SetText("");
                 voteButton.GetComponent<ToolTipHandler>().SetText("");
-            } //did selected reform
-            else
+            }
+            else //did selected reform
             {
                 if (callRebuildDropDown) // meaning changed whole reform
                     rebuildDropDown();
                 descriptionText.text = selectedReformType.ShortName + " reforms " + selectedReformType.FullName
                + "\nCurrently: ";
 
-
-
-                var isUnempType = selectedReformType.Value as UnemploymentSubsidies.UnemploymentReformValue;
-                if (isUnempType == null)
+                // todo fix that mess in 3 places
+                var isUnemploymentReformType = selectedReformType.Value as UnemploymentSubsidies.UnemploymentReformValue;
+                if (isUnemploymentReformType == null)
                 {
-                    descriptionText.text += selectedReformType.Value;
-                    var isNamedReformType = selectedReformType.Value as INameable;
-                    if (isNamedReformType != null)
-                        descriptionText.text += isNamedReformType.FullName;
+                    var isUBIReform = selectedReformType.Value as UBI.UBIReformValue;
+                    if (isUBIReform == null)
+                    {
+                        var isPovertyAid = selectedReformType.Value as PovertyAid.PovertyAidReformValue;
+                        if (isPovertyAid == null)
+                        {
+                            // default text
+                            descriptionText.text += selectedReformType.Value;
+                            var isNamedReformType = selectedReformType.Value as INameable;
+                            if (isNamedReformType != null)
+                                descriptionText.text += isNamedReformType.FullName;
+                        }
+                        else
+                            descriptionText.text += isPovertyAid.ToString(Game.Player.market);
+                    }
+                    else
+                        descriptionText.text += isUBIReform.ToString(Game.Player.market);
                 }
                 else
-                    descriptionText.text += isUnempType.ToString(Game.Player.market);
+                    descriptionText.text += isUnemploymentReformType.ToString(Game.Player.market);
 
 
                 descriptionText.text += "\nSelected: ";
@@ -175,17 +187,33 @@ namespace Nashet.EconomicSimulation
                     voteButton.interactable = false;
                 }
                 else
-                {
-                    descriptionText.text += selectedReformValue;
-
-                    var isNamedReformValue = selectedReformValue as INameable;
-                    if (isNamedReformValue != null)
-                        descriptionText.text += isNamedReformValue.FullName;
-
-                    var isUnempValue = selectedReformValue as UnemploymentSubsidies.UnemploymentReformValue;
-                    if (isUnempValue != null)
-                        descriptionText.text += isUnempValue.ToString(Game.Player.market);
-
+                {                   
+                    //else
+                    {
+                        var isUnempValue = selectedReformValue as UnemploymentSubsidies.UnemploymentReformValue;
+                        if (isUnempValue != null)
+                            descriptionText.text += isUnempValue.ToString(Game.Player.market);
+                        else
+                        {
+                            var isPvrtREf = selectedReformValue as PovertyAid.PovertyAidReformValue;
+                            if (isPvrtREf != null)
+                                descriptionText.text += isPvrtREf.ToString(Game.Player.market);
+                            else
+                            {
+                                var isUBIRfr = selectedReformValue as UBI.UBIReformValue;
+                                if (isUBIRfr != null)
+                                    descriptionText.text += isUBIRfr.ToString(Game.Player.market);
+                                else
+                                {
+                                    var isNamedReformValue = selectedReformValue as INameable;
+                                    if (isNamedReformValue != null)
+                                        descriptionText.text += isNamedReformValue.FullName;
+                                    else
+                                        descriptionText.text += selectedReformValue;
+                                }
+                            }
+                        }
+                    }
                     Procent procentPopulationSayedYes = new Procent(0f);
                     Procent procentVotersSayedYes = Game.Player.Provinces.getYesVotes(selectedReformValue, ref procentPopulationSayedYes);
 

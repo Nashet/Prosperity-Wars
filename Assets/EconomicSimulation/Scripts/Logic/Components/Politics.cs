@@ -66,7 +66,8 @@ namespace Nashet.EconomicSimulation
 
         internal void RegisterReform(AbstractReform abstractReform)
         {
-            reforms.Add(abstractReform);
+            reforms.Add(abstractReform);            
+            reforms.Sort((x, y) => x.ShowOrder - y.ShowOrder);
         }
 
         public void SetStatisticToZero()

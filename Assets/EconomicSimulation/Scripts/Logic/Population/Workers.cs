@@ -99,6 +99,9 @@ namespace Nashet.EconomicSimulation
         }
 
         // todo add it somewhere
+        /// <summary>
+        /// States that pops doesn't want a job due to social benefits getting, excluding that worker from labor market
+        /// </summary>        
         public void SitOnSocialBenefits(int howMuch)
         {
             unemployedButNotSeekingJob += howMuch;

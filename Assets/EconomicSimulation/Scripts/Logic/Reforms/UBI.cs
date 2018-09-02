@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation.Reforms
             Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).UBI == Minimal || (x as Country).UBI == Middle, "Previous reform enacted", true)
         }));
 
-        public static readonly UBIReformValue Middle = new UBIReformValue("Mediocre UBI", " - Minimum Wage & Retirement benefits", 4, new DoubleConditionsList(new List<Condition>
+        public static readonly UBIReformValue Middle = new UBIReformValue("Mediocre UBI", " - Pops will start to leave job with that benefits", 4, new DoubleConditionsList(new List<Condition>
         {
             Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).UBI == Trinket || (x as Country).UBI == Big, "Previous reform enacted", true)
         }));

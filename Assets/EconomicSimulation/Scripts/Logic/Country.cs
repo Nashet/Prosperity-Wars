@@ -161,20 +161,23 @@ namespace Nashet.EconomicSimulation
             bank = new Bank(this);
 
 
-            taxationForPoor = new TaxationForPoor(this);
-            taxationForRich = new TaxationForRich(this);
+            taxationForPoor = new TaxationForPoor(this, 0);
+            taxationForRich = new TaxationForRich(this, 1);
 
-            minimalWage = new MinimalWage(this);
-            unemploymentSubsidies = new UnemploymentSubsidies(this);
+            minimalWage = new MinimalWage(this, 4);
+            unemploymentSubsidies = new UnemploymentSubsidies(this, 8);
 
-            serfdom = new Serfdom(this);
-            minorityPolicy = new MinorityPolicy(this);
-            economy = new Economy(this);
-            government = new Government(this);
+            serfdom = new Serfdom(this, 7);
+            minorityPolicy = new MinorityPolicy(this, 5);
 
-            FamilyPlanning = new FamilyPlanning(this);
-            UBI = new UBI(this);
-            PovertyAid = new PovertyAid(this);
+
+            FamilyPlanning = new FamilyPlanning(this, 6);
+            UBI = new UBI(this, 10);
+            PovertyAid = new PovertyAid(this, 9);
+
+            economy = new Economy(this, 2);
+            government = new Government(this, 3);
+
 
             Culture = culture;
             NationalColor = color;

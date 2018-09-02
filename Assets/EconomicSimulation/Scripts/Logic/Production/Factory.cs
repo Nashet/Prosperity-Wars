@@ -720,8 +720,16 @@ namespace Nashet.EconomicSimulation
             // clamp difference in Options.maxFactoryFireHireSpeed []
             if (difference > maxHiringSpeed)
                 difference = maxHiringSpeed;
-            else
-                if (difference < -1 * maxHiringSpeed) difference = -1 * maxHiringSpeed;
+            else if (difference < -1 * maxHiringSpeed)
+                difference = -1 * maxHiringSpeed;
+
+            // simulates pop's slow movement from labor market to social benefits
+            if (Country.unemploymentSubsidies.SubsizionSize.Get().isBiggerOrEqual(getSalary())
+                || Country.PovertyAid.PovertyAidSize.Get().isBiggerOrEqual(getSalary())
+                || !Country.UBI.IsMoreConservativeThan(UBI.Middle) // 
+                    && Country.economy != Economy.PlannedEconomy
+                    && Country.Politics.LastTurnDefaultedSocialObligations.isZero())// should be workers statistics
+                difference = -1 * maxHiringSpeed;
 
             if (difference > 0)
             {
@@ -741,8 +749,6 @@ namespace Nashet.EconomicSimulation
                     if (getProfit() < 0m && !isSubsidized() && !isJustHiredPeople() && wasWorkforce > 0)
                         difference = 0;
                 }
-
-
             }
             //todo optimize getWorkforce() calls
             int result = wasWorkforce + difference;
@@ -1023,7 +1029,7 @@ namespace Nashet.EconomicSimulation
         {
             var newMoney = new MoneyView(gold);
             cash.Add(newMoney);
-            
+
             moneyIncomeThisTurn.Add(newMoney);
             MoneyView sentToGovernment = MoneyView.CovertFromGold(gold.Copy().Multiply(Options.GovernmentTakesShareOfGoldOutput));
 

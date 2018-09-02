@@ -43,9 +43,13 @@ namespace Nashet.EconomicSimulation
 
         public readonly Procent needsFulfilled;
 
-        private int daysUpsetByForcedReform;
-        public bool didntGetPromisedSocialBenefits;
+        protected int daysUpsetByForcedReform;
         protected bool didntGetPromisedSalary;
+
+        protected bool lastTurnDidntGetPromisedSocialBenefits;
+        protected bool didntGetPromisedSocialBenefits;
+        public bool LastTurnDidntGetPromisedSocialBenefits { get { return lastTurnDidntGetPromisedSocialBenefits; } }
+
 
         public static readonly ModifiersList modifiersLoyaltyChange, modEfficiency;
 
@@ -345,6 +349,7 @@ namespace Nashet.EconomicSimulation
         {
             base.SetStatisticToZero();
             needsFulfilled.SetZero();
+            lastTurnDidntGetPromisedSocialBenefits = didntGetPromisedSocialBenefits;
             didntGetPromisedSocialBenefits = false;
 
             // sets in ConsumeNeeds now

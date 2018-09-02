@@ -453,11 +453,6 @@ namespace Nashet.EconomicSimulation
 
                 foreach (List<Factory> factoryGroup in AllFactoriesDescendingOrder(order))
                 {
-                    if (Country.unemploymentSubsidies.SubsizionSize.Get().isBiggerOrEqual(factoryGroup[0].getSalary())
-                    && Country.economy != Economy.PlannedEconomy
-                    && Country.Politics.LastTurnDefaultedSocialObligations.isZero())                        
-                        break; // don't go to work, get social benefits instead. See below
-
                     // if there is no enough workforce to fill all factories in group then
                     // workforce should be distributed proportionally
                     int factoriesInGroupWantsTotal = 0;
@@ -496,13 +491,15 @@ namespace Nashet.EconomicSimulation
                 }
 
                 // now if there are benefits, put all unemployed workers on social benefits
-                if (Country.unemploymentSubsidies != UnemploymentSubsidies.None || Country.PovertyAid != PovertyAid.None
+                if (Country.unemploymentSubsidies != UnemploymentSubsidies.None 
+                    || Country.PovertyAid != PovertyAid.None
+                    || !Country.UBI.IsMoreConservativeThan(UBI.Middle)
                    && Country.economy != Economy.PlannedEconomy
                    && Country.Politics.LastTurnDefaultedSocialObligations.isZero())
                     foreach (var worker in AllWorkers)
                     {
                         // sit on benefits:                    
-                        if (!worker.didntGetPromisedSocialBenefits)
+                        if (!worker.LastTurnDidntGetPromisedSocialBenefits)
                             worker.SitOnSocialBenefits(worker.GetSeekingJobInt());
                     }
             }
@@ -554,9 +551,8 @@ namespace Nashet.EconomicSimulation
             allFactories.Remove(factory);
         }
 
-        /// <summary>
-        /// Very heavy method
-        /// </summary>
+        
+        // todo improve Very heavy method        
         public int getUnemployedWorkers()
         {
             int totalWorkforce = AllPops.Where(x => x.Type == PopType.Workers).Sum(x => x.population.Get());
@@ -567,6 +563,12 @@ namespace Nashet.EconomicSimulation
             //foreach (Factory factory in allFactories)
             //    employed += factory.getWorkForce();
             return totalWorkforce - employed;
+        }
+
+        
+        public int getSeeksForJob()
+        {
+            return AllWorkers.Sum(x => x.GetSeekingJobInt());            
         }
 
         public bool isThereFactoriesInUpgradeMoreThan(int limit)
