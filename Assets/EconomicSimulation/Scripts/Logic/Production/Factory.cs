@@ -666,7 +666,8 @@ namespace Nashet.EconomicSimulation
                 // Reduce salary on non-profit
                 if (margin.isSmallerThan(Options.FactoryMarginToDecreaseSalary)
                     && daysUnprofitable >= Options.minDaysBeforeSalaryCut
-                    && !isJustHiredPeople() && !isSubsidized())
+                    && !isJustHiredPeople() && !isSubsidized()
+                    && getWorkForce() != 0)
                     //salary.Subtract(Options.FactoryReduceSalaryOnNonProfit, false);
                     salary.Multiply(Options.FactoryReduceSalaryOnNonProfit, false);
 
@@ -675,8 +676,9 @@ namespace Nashet.EconomicSimulation
                     //salary.Subtract(Options.FactoryReduceSalaryOnMarket, false);
                     salary.Multiply(Options.FactoryReduceSalaryOnMarket, false);
 
-                if (getWorkForce() == 0)// && getInputFactor() == 1)
-                    salary.Set(Province.getLocalMinSalary());
+                //if (getWorkForce() == 0)// && getInputFactor() == 1)
+                //    salary.Set(Province.getLocalMinSalary());
+
                 // to help factories catch up other factories salaries
                 //    salary.set(province.getLocalMinSalary());
                 // freshly built factories should rise salary to concurrency with old ones
