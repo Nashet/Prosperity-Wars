@@ -6,7 +6,7 @@ namespace Nashet.EconomicSimulation.Reforms
 {
     public class TaxationForRich : ProcentReform//, ICopyable<TaxationForRich>
     {
-        public TaxationForRich(Country country) : base("Income tax for the rich", "", country, new List<IReformValue> {
+        public TaxationForRich(Country country, int showOrder) : base("Income tax for the rich", "", country, showOrder, new List<IReformValue> {
             RichTaxValue.TaxRate0, RichTaxValue.TaxRate10, RichTaxValue.TaxRate20,
             RichTaxValue.TaxRate30, RichTaxValue.TaxRate40, RichTaxValue.TaxRate50, RichTaxValue.TaxRate60,
             RichTaxValue.TaxRate70, RichTaxValue.TaxRate80, RichTaxValue.TaxRate90, RichTaxValue.TaxRate100 })

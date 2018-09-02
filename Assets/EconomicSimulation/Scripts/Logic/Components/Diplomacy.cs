@@ -88,7 +88,6 @@ namespace Nashet.EconomicSimulation
                 owner.Diplomacy.LastAttackDate[attacked].set(Date.Today);
             else
                 owner.Diplomacy.LastAttackDate.Add(attacked, Date.Today.Copy());
-        }
-        
+        }        
     }
 }

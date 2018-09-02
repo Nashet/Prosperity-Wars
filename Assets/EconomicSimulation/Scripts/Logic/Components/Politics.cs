@@ -1,19 +1,33 @@
 ﻿using Nashet.EconomicSimulation.Reforms;
 using Nashet.Utils;
+using Nashet.ValueSpace;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Politics : Component<Country>
+    public class Politics : Component<Country>, IStatisticable
     {
         protected readonly List<AbstractReform> reforms = new List<AbstractReform>();
         protected readonly List<Movement> movements = new List<Movement>();
 
+        protected readonly Money defaultedSocialObligations = new Money(0m);
+        protected readonly Money lastTurnDefaultedSocialObligations = new Money(0m);
+        public MoneyView LastTurnDefaultedSocialObligations { get { return lastTurnDefaultedSocialObligations; } }
+
         public Politics(Country owner) : base(owner)
         {
         }
+
+        /// <summary>
+        /// temporally
+        /// </summary>
+        public void RegisterDefaultedSocialObligations(MoneyView size)
+        {
+            defaultedSocialObligations.Add(size);
+        }
+
         public IEnumerable<Movement> AllMovements
         {
             get
@@ -49,9 +63,17 @@ namespace Nashet.EconomicSimulation
         {
             movements.Remove(movement);
         }
+
         internal void RegisterReform(AbstractReform abstractReform)
         {
-            reforms.Add(abstractReform);
+            reforms.Add(abstractReform);            
+            reforms.Sort((x, y) => x.ShowOrder - y.ShowOrder);
+        }
+
+        public void SetStatisticToZero()
+        {
+            lastTurnDefaultedSocialObligations.Set(defaultedSocialObligations);
+            defaultedSocialObligations.SetZero();
         }
     }
 }

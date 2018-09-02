@@ -101,7 +101,7 @@ namespace Nashet.EconomicSimulation
             }
 
             //Adding unemployment
-            AddCell(factory.Province.getUnemployedWorkers().ToString("N0"), factory);
+            AddCell(factory.Province.getSeeksForJob().ToString("N0"), factory);
         }
 
         protected override void AddHeader()
@@ -132,7 +132,7 @@ namespace Nashet.EconomicSimulation
             ////Adding salary
             AddCell("Salary" + salaryOrder.getSymbol(), salaryOrder);
 
-            AddCell("Unemployed" + unemploymentOrder.getSymbol(), unemploymentOrder, () => "Unemployed in province");
+            AddCell("Seeks job" + unemploymentOrder.getSymbol(), unemploymentOrder, () => "How much pops seek for a job in province.\nSome pops might sit on social benefits not willing to work");
         }
     }
 }

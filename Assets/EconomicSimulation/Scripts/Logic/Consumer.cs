@@ -221,7 +221,7 @@ namespace Nashet.EconomicSimulation
         // Do I use where need to? Yes, I do. It called from this.Buy()
         protected virtual void Buy_utility(Market market, MoneyView cost, Storage what)
         {
-            this.Pay(market, cost);
+            this.Pay(market, cost, Register.Account.MarketOperations);
             consumed.Add(what);
             consumedInMarket.Add(new KeyValuePair<Market, Storage>(market, what));
             market.SendGoods(what);

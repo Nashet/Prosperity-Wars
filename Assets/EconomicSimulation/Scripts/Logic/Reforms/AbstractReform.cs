@@ -13,16 +13,18 @@ namespace Nashet.EconomicSimulation.Reforms
         protected readonly string description;
         protected readonly string name;
         protected readonly float nameWeight;
+        public int ShowOrder { get; protected set; }
 
         protected readonly List<IReformValue> possibleValues;
 
         public IReformValue Value { get; protected set; }
 
-        protected AbstractReform(string name, string description, Country country, List<IReformValue> possibleValues) : base(country)
+        protected AbstractReform(string name, string description, Country country, int showOrder, List<IReformValue> possibleValues) : base(country)
         {
             this.name = name;
             if (name != null)
                 nameWeight = name.GetWeight();
+            this.ShowOrder = showOrder;
             this.description = description;
             country.Politics.RegisterReform(this);
             this.possibleValues = possibleValues;
@@ -148,6 +150,10 @@ namespace Nashet.EconomicSimulation.Reforms
                     yield return item;
                 }
             }
-        }       
+        }
+        public bool IsMoreConservativeThan(AbstractReformValue anotherReform)
+        {
+            return Value.IsMoreConservativeThan(anotherReform);
+        }
     }
 }

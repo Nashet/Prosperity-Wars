@@ -7,7 +7,8 @@ namespace Nashet.EconomicSimulation.Reforms
 {
     public class TaxationForPoor : ProcentReform
     {
-        public TaxationForPoor(Country country) : base("Income tax for the poor", "", country, new List<IReformValue> {
+        public TaxationForPoor(Country country, int showOrder) : base("Income tax for the poor", "", country, showOrder,
+            new List<IReformValue> {
             PoorTaxValue.TaxRate0, PoorTaxValue.TaxRate10, PoorTaxValue.TaxRate20,
             PoorTaxValue.TaxRate30, PoorTaxValue.TaxRate40, PoorTaxValue.TaxRate50, PoorTaxValue.TaxRate60,
             PoorTaxValue.TaxRate70, PoorTaxValue.TaxRate80, PoorTaxValue.TaxRate90, PoorTaxValue.TaxRate100 })

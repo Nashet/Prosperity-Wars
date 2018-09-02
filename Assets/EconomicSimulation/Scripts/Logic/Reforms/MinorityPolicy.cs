@@ -15,7 +15,8 @@ namespace Nashet.EconomicSimulation.Reforms
 
         //public readonly static Condition isEquality = new Condition(x => (x as Country).minorityPolicy.getValue() == MinorityPolicy.Equality, "Minority policy is " + MinorityPolicy.Equality.getName(), true);
         //public static Condition IsResidencyPop;
-        public MinorityPolicy(Country country) : base("Minority Policy", "", country, new List<IReformValue> { Equality, Residency, NoRights })
+        public MinorityPolicy(Country country, int showOrder) : base("Minority Policy", "", country, showOrder,
+            new List<IReformValue> { Equality, Residency, NoRights })
         {
             if (Equality == null)
                 Equality = new MinorityPolicyValue("Equality for Minorities", " - All cultures have same rights, assimilation is slower", 2,

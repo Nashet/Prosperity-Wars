@@ -38,7 +38,8 @@ namespace Nashet.EconomicSimulation.Reforms
             Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Middle, "Previous reform enacted", true)
         }));
 
-        public MinimalWage(Country country) : base("Minimum wage", "", country, new List<IReformValue> { None, Scanty, Minimal, Trinket, Middle, Big })
+        public MinimalWage(Country country, int showOrder) : base("Minimum wage", "", country, showOrder,
+            new List<IReformValue> { None, Scanty, Minimal, Trinket, Middle, Big })
         {
             WageSize = new CashedData<MoneyView>(getMinimalWage);
             SetValue(None);            
@@ -62,7 +63,7 @@ namespace Nashet.EconomicSimulation.Reforms
 
         public override string ToString()
         {
-            return base.ToString() + " (" + WageSize + ")";
+            return base.ToString() + " (" + WageSize + " per 1000 men)";
         }
 
         public class MinWageReformValue : NamedReformValue
@@ -155,7 +156,7 @@ namespace Nashet.EconomicSimulation.Reforms
 
             public string ToString(Market market)
             {
-                return base.ToString() + " (" + getMinimalWage(market) + ")";//getMinimalWage(market)
+                return base.ToString() + " (" + getMinimalWage(market) + " per 1000 men)";//getMinimalWage(market)
             }
         }
     }

@@ -7,7 +7,7 @@ namespace Nashet.EconomicSimulation
 {
     public class StatisticsPanelTable : UITableNew<Country>
     {
-        private SortOrder countryOrder, populationOrder, GDPOrder, GDPPerCapitaOrder, unemploymentOrder, averageNeedsOrder,
+        private SortOrder countryOrder, populationOrder, GDPOrder, GDPPerCapitaOrder, seekingJobOrder, averageNeedsOrder,
             richTaxOrder, economyTypeOrder, GDPShareOrder, educationOrder;
 
         public void Awake()// start doesn't work somehow
@@ -16,7 +16,7 @@ namespace Nashet.EconomicSimulation
             populationOrder = new SortOrder(this, x => x.Provinces.AllPops.Sum(y => y.population.Get()));
             GDPOrder = new SortOrder(this, x => (float)x.getGDP().Get());
             GDPPerCapitaOrder = new SortOrder(this, x => (float)x.getGDPPer1000().Get());
-            unemploymentOrder = new SortOrder(this, x => x.Provinces.AllPops.GetAverageProcent(y => y.getUnemployment()).get());
+            seekingJobOrder = new SortOrder(this, x => x.Provinces.AllPops.GetAverageProcent(y => y.GetSeekingJob()).get());
             averageNeedsOrder = new SortOrder(this, x => x.Provinces.AllPops.GetAverageProcent(y => y.needsFulfilled).get());
             richTaxOrder = new SortOrder(this, x => x.taxationForRich.tax.get());
             economyTypeOrder = new SortOrder(this, x => x.economy.GetType().GetHashCode());
@@ -48,7 +48,7 @@ namespace Nashet.EconomicSimulation
 
             AddCell(country.getGDPShare().ToString(), country);
 
-            AddCell(country.Provinces.AllPops.GetAverageProcent(x => x.getUnemployment()).ToString(), country);
+            AddCell(country.Provinces.AllPops.GetAverageProcent(x => x.GetSeekingJob()).ToString(), country);
             AddCell(country.Provinces.AllPops.GetAverageProcent(y => y.Education).ToString(), country);
 
             AddCell(country.economy.ToString(), country);
@@ -66,7 +66,7 @@ namespace Nashet.EconomicSimulation
             AddCell("GDP" + GDPOrder.getSymbol(), GDPOrder);
             AddCell("GDP per capita" + GDPPerCapitaOrder.getSymbol(), GDPPerCapitaOrder, () => "GDP per capita per 1000 men");
             AddCell("GDP share" + GDPShareOrder.getSymbol(), GDPShareOrder);
-            AddCell("Unemployment" + unemploymentOrder.getSymbol(), unemploymentOrder);
+            AddCell("Seeks job" + seekingJobOrder.getSymbol(), seekingJobOrder);
             AddCell("Education" + educationOrder.getSymbol(), educationOrder);
 
             AddCell("Economy" + economyTypeOrder.getSymbol(), economyTypeOrder);

@@ -1,100 +1,83 @@
 ﻿using Nashet.Conditions;
 using Nashet.Utils;
 using Nashet.ValueSpace;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Nashet.EconomicSimulation.Reforms
 {
-    public class UnemploymentSubsidies : AbstractReform
+    public class PovertyAid : AbstractReform
     {
-        protected UnemploymentReformValue typedValue;
+        protected PovertyAidReformValue typedValue;
 
-        public CashedData<MoneyView> SubsizionSize { get; protected set; }
+        public CashedData<MoneyView> PovertyAidSize { get; protected set; }
 
-        public static readonly UnemploymentReformValue None = new UnemploymentReformValue("No Unemployment Benefits", "", 0, new DoubleConditionsList(new List<Condition> { Economy.isNotLFOrMoreConservative, new Condition(x => (x as Country).unemploymentSubsidies == Scanty, "Previous reform enacted", true) }));
+        public static readonly PovertyAidReformValue None = new PovertyAidReformValue("No Poverty Aid", "", 0, new DoubleConditionsList(new List<Condition> { Economy.isNotLFOrMoreConservative, new Condition(x => (x as Country).PovertyAid == Scanty, "Previous reform enacted", true) }));
 
-        public static readonly UnemploymentReformValue Scanty = new UnemploymentReformValue("Bread Lines", " - The people are starving. Let them eat bread.", 1, new DoubleConditionsList(new List<Condition>
+        public static readonly PovertyAidReformValue Scanty = new PovertyAidReformValue("Scanty Poverty Aid", "", 1, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == None || (x as Country).unemploymentSubsidies == Minimal, "Previous reform enacted", true)
+            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).PovertyAid == None || (x as Country).PovertyAid == Minimal, "Previous reform enacted", true)
         }));
 
-        public static readonly UnemploymentReformValue Minimal = new UnemploymentReformValue("Food Stamps", " - Let the people buy what they need.", 2, new DoubleConditionsList(new List<Condition>
+        public static readonly PovertyAidReformValue Minimal = new PovertyAidReformValue("Minimal Poverty Aid", "", 2, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Scanty || (x as Country).unemploymentSubsidies == Trinket, "Previous reform enacted", true)
+            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).PovertyAid == Scanty || (x as Country).PovertyAid == Trinket, "Previous reform enacted", true)
         }));
 
-        public static readonly UnemploymentReformValue Trinket = new UnemploymentReformValue("Housing & Food Assistance", " - Affordable Housing for the Unemployed.", 3, new DoubleConditionsList(new List<Condition>
+        public static readonly PovertyAidReformValue Trinket = new PovertyAidReformValue("Trinket Poverty Aid", "", 3, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Minimal || (x as Country).unemploymentSubsidies == Middle, "Previous reform enacted", true)
+            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).PovertyAid == Minimal || (x as Country).PovertyAid == Middle, "Previous reform enacted", true)
         }));
 
-        public static readonly UnemploymentReformValue Middle = new UnemploymentReformValue("Welfare Ministry", " - Now there is a minister granting greater access to benefits.", 4, new DoubleConditionsList(new List<Condition>
+        public static readonly PovertyAidReformValue Middle = new PovertyAidReformValue("Middle Poverty Aid", "", 4, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Trinket || (x as Country).unemploymentSubsidies == Big, "Previous reform enacted", true)
+            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).PovertyAid == Trinket || (x as Country).PovertyAid == Big, "Previous reform enacted", true)
         }));
 
-        public static readonly UnemploymentReformValue Big = new UnemploymentReformValue("Full State Unemployment Benefits", " - Full State benefits for the downtrodden.", 5, new DoubleConditionsList(new List<Condition>
+        public static readonly PovertyAidReformValue Big = new PovertyAidReformValue("Big Poverty Aid", "", 5, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Middle, "Previous reform enacted", true)
+            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).PovertyAid == Middle, "Previous reform enacted", true)
         }));
 
-        public UnemploymentSubsidies(Country country, int showOrder) : base("Unemployment Subsidies", "", country, showOrder, 
+        public PovertyAid(Country country, int showOrder) : base("Poverty Aid", " - goes to everyone who is poorer than current reform level", country, showOrder,
             new List<IReformValue> { None, Scanty, Minimal, Trinket, Middle, Big })
         {
-            SubsizionSize = new CashedData<MoneyView>(GetSubsidiesRate);
+            PovertyAidSize = new CashedData<MoneyView>(GetPovertyAidSize);
             SetValue(None);
         }
-
-        //public bool isThatReformEnacted(int value)
-        //{
-        //    return typedvalue == PossibleStatuses[value];
-        //}
-
 
         public override void SetValue(IReformValue selectedReform)
         {
             base.SetValue(selectedReform);
-            typedValue = selectedReform as UnemploymentReformValue;
-            SubsizionSize.Recalculate();
-        }
-
-
-
-        //public override bool isAvailable(Country country)
-        //{
-        //    if (country.Science.IsInvented(Invention.Welfare))
-        //        return true;
-        //    else
-        //        return false;
-        //}
+            typedValue = selectedReform as PovertyAidReformValue;
+            PovertyAidSize.Recalculate();
+        }        
 
         public override string ToString()
         {
-            return base.ToString() + " (" + SubsizionSize + " per 1000 men)";
+            return base.ToString() + " (" + PovertyAidSize + " per 1000 men)";
         }
 
         /// <summary>
         /// Calculates Unemployment Subsidies basing on consumption cost for 1000 workers
         /// </summary>
-        protected virtual MoneyView GetSubsidiesRate()
+        internal virtual MoneyView GetPovertyAidSize()
         {
             var market = owner.market;
-            return typedValue.GetSubsidiesRate(market);
+            return typedValue.GetPovertyAidSize(market);
         }
-
-        public class UnemploymentReformValue : NamedReformValue
+        public class PovertyAidReformValue : NamedReformValue
         {
-            internal UnemploymentReformValue(string name, string description, int id, DoubleConditionsList condition)//, Procent procent
+            internal PovertyAidReformValue(string name, string description, int id, DoubleConditionsList condition)//, Procent procent
                 : base(name, description, id, condition)
             {
                 LifeQualityImpact = new Procent(ID * 2f, 10f); // doubles impact
             }
+
             /// <summary>
             /// Calculates Unemployment Subsidies basing on consumption cost for 1000 workers
             /// </summary>
-            public virtual MoneyView GetSubsidiesRate(Market market)
+            public virtual MoneyView GetPovertyAidSize(Market market)
             {
                 if (this == None)
                     return MoneyView.Zero;
@@ -151,7 +134,7 @@ namespace Nashet.EconomicSimulation.Reforms
 
             public string ToString(Market market)
             {
-                return ToString() + " (" + GetSubsidiesRate(market) + " per 1000 men)";
+                return ToString() + " (" + GetPovertyAidSize(market) + " per 1000 men)";
             }
 
 
@@ -159,7 +142,7 @@ namespace Nashet.EconomicSimulation.Reforms
             {
                 Procent result;
                 //positive - higher subsidies
-                int change = GetRelativeConservatism(pop.Country.unemploymentSubsidies.typedValue);
+                int change = GetRelativeConservatism(pop.Country.PovertyAid.typedValue);
                 if (pop.Type.isPoorStrata())
                 {
                     if (change > 0)

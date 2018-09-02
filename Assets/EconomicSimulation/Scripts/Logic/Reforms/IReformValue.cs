@@ -7,7 +7,10 @@ namespace Nashet.EconomicSimulation.Reforms
         bool IsAllowed(object firstObject, object secondObject, out string description);
         bool IsAllowed(object firstObject, object secondObject);
         float getVotingPower(PopUnit forWhom);
-        bool IsMoreConservative(AbstractReformValue another);
+        /// <summary>
+        /// Could be wrong for some reforms! Assumes that reforms go in conservative-liberal order
+        /// </summary> 
+        bool IsMoreConservativeThan(AbstractReformValue another);
         int GetRelativeConservatism(AbstractReformValue two);
         Procent howIsItGoodForPop(PopUnit pop);
         Procent LifeQualityImpact { get; }

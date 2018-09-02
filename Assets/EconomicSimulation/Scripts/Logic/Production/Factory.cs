@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Nashet.Conditions;
+﻿using Nashet.Conditions;
 using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace Nashet.EconomicSimulation
@@ -46,6 +46,10 @@ namespace Nashet.EconomicSimulation
         //private bool buildByPlannedEconomy;
         private IShareOwner currentInvestor;
 
+        /// <summary>
+        /// Had that much workforce at previous turn
+        /// </summary>
+        protected int wasWorkforce;
         private readonly Procent averageWorkersEducation = new Procent(0f);
 
         /// <summary>
@@ -357,6 +361,7 @@ namespace Nashet.EconomicSimulation
 
         public void ClearWorkforce()
         {
+            wasWorkforce = getWorkForce();
             averageWorkersEducation.SetZero();
             hiredWorkForce.Clear();
         }
@@ -366,25 +371,21 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public int hireWorkers(int amount, IEnumerable<PopUnit> popList)
         {
-            //check on no too much workers?
-            //if (amount > HowMuchWorkForceWants())
-            //    amount = HowMuchWorkForceWants();
-            int wasWorkforce = getWorkForce();
-            if (amount > 0 && wasWorkforce == 0)
-                justHiredPeople = true;
-            else
-                justHiredPeople = false;
-
-            ClearWorkforce();
+            //ClearWorkforce();
             if (amount > 0)
             {
+                if (wasWorkforce == 0)
+                    justHiredPeople = true;
+                else
+                    justHiredPeople = false;
+
                 int leftToHire = amount;
                 hiredLastTurn = 0;
                 popList = popList.OrderByDescending(x => x.Education.get()).ThenBy(x => x.population.Get()).ToList();
 
                 foreach (Workers pop in popList)
                 {
-                    if (pop.GetUnemployedPopulation() >= leftToHire) // satisfied demand
+                    if (pop.GetSeekingJobInt() >= leftToHire) // satisfied demand
                     {
                         hiredWorkForce.Add(pop, leftToHire);
                         pop.Hire(this, leftToHire);
@@ -397,7 +398,7 @@ namespace Nashet.EconomicSimulation
                     }
                     else
                     {
-                        var toHire = pop.GetUnemployedPopulation();
+                        var toHire = pop.GetSeekingJobInt();
                         hiredWorkForce.Add(pop, toHire); // hire everyone left
                         pop.Hire(this, toHire);
                         averageWorkersEducation.AddPoportionally(hiredLastTurn, toHire, pop.Education);
@@ -550,10 +551,9 @@ namespace Nashet.EconomicSimulation
                     {
                         MoneyView howMuchPay = salary.Copy().Multiply(employee.Value).Divide(workForcePerLevel);
                         if (CanPay(howMuchPay))
-                            Pay(employee.Key, howMuchPay);
-                        else if (isSubsidized()
-                        && Country.GiveFactorySubsidies(this, HowMuchLacksMoneyIncludingDeposits(howMuchPay))) //take money and try again
-                            Pay(employee.Key, howMuchPay);
+                            Pay(employee.Key, howMuchPay, Register.Account.Wage);
+                        else if (isSubsidized() && Country.GiveFactorySubsidies(this, HowMuchLacksMoneyIncludingDeposits(howMuchPay))) //take money and try again
+                            Pay(employee.Key, howMuchPay, Register.Account.Wage);
                         else
                         {
                             salary.Multiply(Options.FactoryReduceSalaryOnNonProfit);
@@ -629,7 +629,7 @@ namespace Nashet.EconomicSimulation
             //Should be rise salary if: small unemployment, has profit, need has other resources
             if (IsOpen && Economy.isMarket.checkIfTrue(Country))
             {
-                var unemployment = Province.AllPops.Where(x => x.Type == PopType.Workers).GetAverageProcent(x => x.getUnemployment());
+                var unemployment = Province.AllWorkers.GetAverageProcent(x => x.GetSeekingJob());
                 var margin = GetMargin(true);
 
                 // rise salary to attract  workforce, including workforce from other factories
@@ -666,17 +666,19 @@ namespace Nashet.EconomicSimulation
                 // Reduce salary on non-profit
                 if (margin.isSmallerThan(Options.FactoryMarginToDecreaseSalary)
                     && daysUnprofitable >= Options.minDaysBeforeSalaryCut
-                    && !isJustHiredPeople() && !isSubsidized())
+                    && !isJustHiredPeople() && !isSubsidized()
+                    && getWorkForce() != 0)
                     //salary.Subtract(Options.FactoryReduceSalaryOnNonProfit, false);
                     salary.Multiply(Options.FactoryReduceSalaryOnNonProfit, false);
 
-                // if supply > demand
+                // if labor supply > labor demand
                 if (unemployment.isBiggerThan(Options.ProvinceExcessWorkforce))
                     //salary.Subtract(Options.FactoryReduceSalaryOnMarket, false);
                     salary.Multiply(Options.FactoryReduceSalaryOnMarket, false);
 
-                if (getWorkForce() == 0)// && getInputFactor() == 1)
-                    salary.Set(Province.getLocalMinSalary());
+                //if (getWorkForce() == 0)// && getInputFactor() == 1)
+                //    salary.Set(Province.getLocalMinSalary());
+
                 // to help factories catch up other factories salaries
                 //    salary.set(province.getLocalMinSalary());
                 // freshly built factories should rise salary to concurrency with old ones
@@ -713,21 +715,29 @@ namespace Nashet.EconomicSimulation
                 return 0;
             int wants = getMaxWorkforceCapacity();// * getInputFactor());
 
-            int workForce = getWorkForce();
-            int difference = wants - workForce;
+            //int workForce = getWorkForce();
+            int difference = wants - wasWorkforce;
 
             int maxHiringSpeed = getMaxHiringSpeed();
             // clamp difference in Options.maxFactoryFireHireSpeed []
             if (difference > maxHiringSpeed)
                 difference = maxHiringSpeed;
-            else
-                if (difference < -1 * maxHiringSpeed) difference = -1 * maxHiringSpeed;
+            else if (difference < -1 * maxHiringSpeed)
+                difference = -1 * maxHiringSpeed;
+
+            // simulates pop's slow movement from labor market to social benefits
+            if (Country.unemploymentSubsidies.SubsizionSize.Get().isBiggerOrEqual(getSalary())
+                || Country.PovertyAid.PovertyAidSize.Get().isBiggerOrEqual(getSalary())
+                || !Country.UBI.IsMoreConservativeThan(UBI.Middle) // 
+                    && Country.economy != Economy.PlannedEconomy
+                    && Country.Politics.LastTurnDefaultedSocialObligations.isZero())// should be workers statistics
+                difference = -1 * maxHiringSpeed;
 
             if (difference > 0)
             {
-                float inputFactor = getInputFactor().get();
+                float inputFactor = getInputFactor2().get();
                 //fire people if no enough input.
-                if (inputFactor < 0.95f && !isSubsidized() && !isJustHiredPeople() && workForce > 0)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
+                if (inputFactor < 0.95f && !isSubsidized() && !isJustHiredPeople() && wasWorkforce > 0)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
                     difference = -1 * maxHiringSpeed;
 
                 if (Country.economy != Economy.PlannedEconomy)// commies don't care about profits
@@ -738,12 +748,12 @@ namespace Nashet.EconomicSimulation
 
                     // just don't hire more..
                     //if ((getProfit() < 0f || inputFactor < 0.95f) && !isSubsidized() && !isJustHiredPeople() && workForce > 0)
-                    if (getProfit() < 0m && !isSubsidized() && !isJustHiredPeople() && workForce > 0)
+                    if (getProfit() < 0m && !isSubsidized() && !isJustHiredPeople() && wasWorkforce > 0)
                         difference = 0;
                 }
             }
             //todo optimize getWorkforce() calls
-            int result = workForce + difference;
+            int result = wasWorkforce + difference;
             //if (result > wants)
             //    result = wants;
             if (result < 0)
@@ -825,7 +835,7 @@ namespace Nashet.EconomicSimulation
             // send remaining money to owners
             foreach (var item in ownership.GetAllShares())
             {
-                Pay(item.Key as Agent, Cash.Copy().Multiply(item.Value), false); // enterprises don't put money in bank
+                Pay(item.Key as Agent, Cash.Copy().Multiply(item.Value), Register.Account.Rest, false); // enterprises don't put money in bank
                 //pay(item.Key as Agent, item.Value.SendProcentOf(Cash), false);
             }
 
@@ -900,11 +910,11 @@ namespace Nashet.EconomicSimulation
                         var owner = item.Key as Agent;
                         MoneyView sentToOwner = dividends.Copy().Multiply(item.Value);
                         //Value sentToOwner = item.Value.SendProcentOf(dividends);
-                        Pay(owner, sentToOwner);
+                        Pay(owner, sentToOwner, Register.Account.Dividends);
                         //Country.TakeIncomeTax(owner, sentToOwner, false);
                         var isCountry = item.Key as Country;
                         if (isCountry != null)
-                            isCountry.ownedFactoriesIncomeAdd(sentToOwner);
+                            isCountry.OwnedFactoriesIncome = sentToOwner;
                     }
                 }
             }
@@ -919,7 +929,7 @@ namespace Nashet.EconomicSimulation
         }
 
         public void open(IShareOwner byWhom, bool payMoney)
-        {            
+        {
             if (Country.economy != Economy.PlannedEconomy)
                 salary.Set(Province.getLocalMinSalary());
             if (payMoney)
@@ -1009,7 +1019,27 @@ namespace Nashet.EconomicSimulation
 
         public override Procent getInputFactor()
         {
-            return getInputFactor(GetWorkForceFulFilling());
+            return getInputFactor(GetWorkForceFulFilling());  //todo here is problem for now
+        }
+
+        public Procent getInputFactor2()
+        {
+            return getInputFactor(new Procent(wasWorkforce, workForcePerLevel * level, false));  //todo here is problem for now
+        }
+
+        protected void GiveMoneyFromGoldPit(Storage gold)
+        {
+            var newMoney = new MoneyView(gold);
+            cash.Add(newMoney);
+
+            moneyIncomeThisTurn.Add(newMoney);
+            MoneyView sentToGovernment = MoneyView.CovertFromGold(gold.Copy().Multiply(Options.GovernmentTakesShareOfGoldOutput));
+
+            //send 50% to government
+            Pay(Country, sentToGovernment, Register.Account.MinedGoldTax);
+            Country.GoldMinesIncome = sentToGovernment;
+
+            gold.SetZero();
         }
 
         /// <summary>

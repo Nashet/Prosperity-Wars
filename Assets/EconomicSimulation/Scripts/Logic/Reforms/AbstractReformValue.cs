@@ -47,11 +47,11 @@ namespace Nashet.EconomicSimulation.Reforms
         }
 
         /// <summary>
-        /// Could be wrong for some reforms!
+        /// Could be wrong for some reforms!  Assumes that reforms go in conservative-liberal order
         /// </summary>        
-        public virtual bool IsMoreConservative(AbstractReformValue anotherReform)
+        public virtual bool IsMoreConservativeThan(AbstractReformValue anotherReform)
         {
-            return ID <= anotherReform.ID;
+            return ID < anotherReform.ID;
         }
 
         public virtual int GetRelativeConservatism(AbstractReformValue two)

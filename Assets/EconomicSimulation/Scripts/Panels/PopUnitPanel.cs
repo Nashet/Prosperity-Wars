@@ -78,7 +78,7 @@ namespace Nashet.EconomicSimulation
 
                 //sb.Append("\nGrowth: ").Append(pop.getGrowthSize());
                 sb.Append("\n\nLoyalty: ").Append(pop.loyalty);
-                sb.Append("\nUnemployment: ").Append(pop.getUnemployment());                
+                sb.Append("\nSeeks job: ").Append(pop.GetSeekingJob());                
                 sb.Append("\nEducation: ").Append(pop.Education);
                 sb.Append("\nCulture: ").Append(pop.culture);
                 if (!pop.isStateCulture())
@@ -119,9 +119,12 @@ namespace Nashet.EconomicSimulation
                 sb.Clear();
                 sb.Append("Cash: ").Append(pop.Cash);
                 money.text = sb.ToString();
-                money.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Money income: " + pop.moneyIncomeThisTurn
+                money.GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                //pop.Register.ToString()
+                "Money income: " + pop.moneyIncomeThisTurn
                 + "\nIncome tax (inc. foreign jurisdictions): " + pop.incomeTaxPayed
-                + "\nConsumed cost: " + Game.Player.market.getCost(pop.getConsumed()));
+                + "\nConsumed cost: " + Game.Player.market.getCost(pop.getConsumed())
+                );
 
                 if (pop.Type.isProducer())
                 {

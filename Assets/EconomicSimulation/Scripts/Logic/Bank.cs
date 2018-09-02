@@ -1,6 +1,6 @@
-﻿using System;
-using Nashet.Utils;
+﻿using Nashet.Utils;
 using Nashet.ValueSpace;
+using System;
 
 namespace Nashet.EconomicSimulation
 {
@@ -117,7 +117,7 @@ namespace Nashet.EconomicSimulation
         {
             if (taker.Country.Science.IsInvented(Invention.Banking))// find money in bank?
             {
-                MoneyView lackOfSum = desirableSum.Copy().Subtract(taker.getMoneyAvailable(), false); 
+                MoneyView lackOfSum = desirableSum.Copy().Subtract(taker.getMoneyAvailable(), false);
                 if (lackOfSum.isNotZero())
                     return GiveCredit(taker, lackOfSum);
                 else
@@ -219,7 +219,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public void Annex(Bank annexingBank)
         {
-            annexingBank.PayAllAvailableMoney(this);
+            annexingBank.PayAllAvailableMoney(this, Register.Account.Rest);
             //annexingBank.givenCredits.SendAll(this.givenCredits);
             givenCredits.Add(annexingBank.givenCredits);
             annexingBank.givenCredits.SetZero();
@@ -252,7 +252,7 @@ namespace Nashet.EconomicSimulation
 
         public void destroy(Country byWhom)
         {
-            PayAllAvailableMoney(byWhom);
+            PayAllAvailableMoney(byWhom, Register.Account.Rest);
             givenCredits.SetZero();
         }
 
@@ -263,7 +263,7 @@ namespace Nashet.EconomicSimulation
 
         public void Nationalize()
         {
-            Country.Bank.PayAllAvailableMoney(Country);
+            Country.Bank.PayAllAvailableMoney(Country, Register.Account.Rest);
             Country.Bank.givenCredits.SetZero();
             Country.loans.SetZero();
             Country.deposits.SetZero();

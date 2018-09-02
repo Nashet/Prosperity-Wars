@@ -718,7 +718,7 @@ namespace Nashet.EconomicSimulation
                             pop.LearnByWork();
                         if (pop.canSellProducts())
                             Market.GiveMoneyForSoldProduct(pop);
-                        pop.takeUnemploymentSubsidies();
+
                         if (country.Science.IsInvented(Invention.ProfessionalArmy) && country.economy != Economy.PlannedEconomy)
                         // don't need salary with PE
                         {
@@ -726,6 +726,12 @@ namespace Nashet.EconomicSimulation
                             if (soldier != null)
                                 soldier.takePayCheck();
                         }
+
+                        pop.takeUnemploymentSubsidies();
+                        pop.TakeUBISubsidies();
+                        pop.TakePovertyAid();// should be least
+
+                        
                         //because income come only after consuming, and only after FULL consumption
                         //if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
                         // POps who can't trade will pay tax BEFORE consumption, not after

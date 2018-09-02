@@ -1,8 +1,8 @@
-﻿using System.Text;
-using Nashet.EconomicSimulation.Reforms;
+﻿using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -47,16 +47,17 @@ namespace Nashet.EconomicSimulation
 
             sb.Clear();
             sb.Append("Income:");
-            sb.Append("\n Income tax for Poor (").Append(Game.Player.taxationForPoor.tax).Append("): ").Append(Game.Player.IncomeTaxStaticticPoor);
-            sb.Append("\n Income tax for Rich (").Append(Game.Player.taxationForRich.tax).Append("): ").Append(Game.Player.IncomeTaxStatisticRich);
-            sb.Append("\n Income tax for Foreigners (").Append(Game.Player.taxationForRich.tax).Append("): ").Append(Game.Player.IncomeTaxForeigner);
+            sb.Append("\n Income tax for Poor (").Append(Game.Player.taxationForPoor.tax.Procent).Append("): ").Append(Game.Player.IncomeTaxStaticticPoor);
+            sb.Append("\n Income tax for Rich (").Append(Game.Player.taxationForRich.tax.Procent).Append("): ").Append(Game.Player.IncomeTaxStatisticRich);
+            sb.Append("\n Income tax for Foreigners (").Append(Game.Player.taxationForRich.tax.Procent).Append("): ").Append(Game.Player.IncomeTaxForeigner);
             sb.Append("\n Gold mines: ").Append(Game.Player.GoldMinesIncome);
             sb.Append("\n Dividends: ").Append(Game.Player.OwnedFactoriesIncome);
             sb.Append("\n Storage sells: [code is broken #494]");//.Append(Game.Player.getCostOfAllSellsByGovernment());
             sb.Append("\n Rest: ").Append(Game.Player.RestIncome);
             sb.Append("\nTotal: ").Append(Game.Player.moneyIncomeThisTurn);
+            //sb.Append("\nRegister: ").Append(Game.Player.Register.ToString());
 
-            sb.Append("\n\nBalance: ").Append(Game.Player.getBalance());
+            sb.Append("\n\nBalance: ").Append(Game.Player.IncomeBalance);
             sb.Append("\nHave money: ").Append(Game.Player.Cash).Append(" + ").Append(Game.Player.deposits).Append(" in bank");
             sb.Append("\nLoans taken: ").Append(Game.Player.loans);
             //sb.Append("\nGDP (current prices): ").Append(Game.Player.getGDP()).Append("; GDP per thousand men: ").Append(Game.Player.getGDPPer1000());
@@ -65,13 +66,24 @@ namespace Nashet.EconomicSimulation
 
             sb.Clear();
             sb.Append("Expenses: ");
+
             sb.Append("\n Unemployment subsidies: ").Append(Game.Player.UnemploymentSubsidiesExpense)
-                .Append(" unemployment: ").Append(Game.Player.Provinces.AllPops.GetAverageProcent(x => x.getUnemployment()));
+                .Append(" seeking a job: ").Append(Game.Player.Provinces.AllPops.GetAverageProcent(x => x.GetSeekingJob()));
+
+            if (Game.Player.UBI != UBI.None)
+                sb.Append("\n Unconditional basic income: ").Append(Game.Player.UBISubsidiesExpense);
+
+            if (Game.Player.PovertyAid != PovertyAid.None)
+                sb.Append("\n Poverty Aid: ").Append(Game.Player.PovertyAidExpense);
+
             sb.Append("\n Enterprises subsidies: ").Append(Game.Player.FactorySubsidiesExpense);
+
             if (Game.Player.Science.IsInvented(Invention.ProfessionalArmy))
                 sb.Append("\n Soldiers paychecks: ").Append(Game.Player.SoldiersWageExpense);
+
             sb.Append("\n Storage buying: ").Append(Game.Player.StorageBuyingExpense);
-            sb.Append("\nTotal: ").Append(Game.Player.getExpenses());
+
+            sb.Append("\nTotal: ").Append(Game.Player.GetRegisteredExpenses());
             expensesText.text = sb.ToString();
 
             sb.Clear();
