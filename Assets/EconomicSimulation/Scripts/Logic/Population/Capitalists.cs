@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Nashet.EconomicSimulation.Reforms;
+﻿using Nashet.EconomicSimulation.Reforms;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Nashet.EconomicSimulation
@@ -62,7 +62,7 @@ namespace Nashet.EconomicSimulation
         public override void invest()
         {
             //should I invest?
-            if (Economy.isMarket.checkIfTrue(Country) && Country.Science.IsInvented(Invention.Manufactures))                
+            if (Economy.isMarket.checkIfTrue(Country) && Country.Science.IsInvented(Invention.Manufactures))
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
 
@@ -127,7 +127,7 @@ namespace Nashet.EconomicSimulation
                                 if (factoryProject != null)
                                 {
                                     Factory factory2 = factoryProject.Province.BuildFactory(this, factoryProject.Type, investmentCost);
-                                    PayWithoutRecord(factory2, investmentCost);
+                                    PayWithoutRecord(factory2, investmentCost, Register.Account.Construction);
                                 }
                                 else
                                     Debug.Log("Unknown investment type");

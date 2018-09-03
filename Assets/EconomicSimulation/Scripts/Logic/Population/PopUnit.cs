@@ -204,10 +204,10 @@ namespace Nashet.EconomicSimulation
             if (source.deposits.isNotZero())
             {
                 MoneyView returnDeposit = source.deposits.Copy().Multiply(newPopShare);
-                source.PayWithoutRecord(this, source.Bank.ReturnDeposit(source, returnDeposit));
+                source.PayWithoutRecord(this, source.Bank.ReturnDeposit(source, returnDeposit), Register.Account.Rest);
             }
             //take Cash
-            source.PayWithoutRecord(this, source.Cash.Copy().Multiply(newPopShare));
+            source.PayWithoutRecord(this, source.Cash.Copy().Multiply(newPopShare), Register.Account.Rest);
 
             //Producer's fields:
             //if convert from artisan to non-artisan
@@ -269,7 +269,7 @@ namespace Nashet.EconomicSimulation
             //didntGetPromisedUnemloymentSubsidy = false; don't change that
 
             //Agent's fields:
-            source.PayAllAvailableMoneyWithoutRecord(this); // includes deposits
+            source.PayAllAvailableMoneyWithoutRecord(this,Register.Account.Rest); // includes deposits
             loans.Add(source.loans);
             // Bank - stays same
 
@@ -672,6 +672,7 @@ namespace Nashet.EconomicSimulation
             {
                 // save some money in reserve to avoid spending all money on luxury
                 Money reserve = new Money(0m);
+                //PutInStash(Cash.Copy().Multiply(Options.savePopMoneyReserv));
                 PayWithoutRecord(reserve, Cash.Copy().Multiply(Options.savePopMoneyReserv));
 
                 //Value moneyWasBeforeEveryDayNeedsConsumption = getMoneyAvailable();

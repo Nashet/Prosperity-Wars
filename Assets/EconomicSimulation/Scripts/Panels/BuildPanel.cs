@@ -49,7 +49,7 @@ namespace Nashet.EconomicSimulation
                 if (Game.Player.CanPay(cost))
                 {
                     factory = Game.selectedProvince.BuildFactory(Game.Player, selectedFactoryType, cost);
-                    Game.Player.PayWithoutRecord(factory, cost);
+                    Game.Player.PayWithoutRecord(factory, cost, Register.Account.Construction);
                     buildSomething = true;
                     MainCamera.factoryPanel.show(factory);
                     if (Game.Player != factory.Country)

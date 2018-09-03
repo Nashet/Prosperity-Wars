@@ -212,7 +212,7 @@ namespace Nashet.EconomicSimulation
         /// Checks inside. Wouldn't pay if can't. Takes back deposits from bank, if needed
         /// Doesn't pay tax, doesn't register transaction
         /// </summary>
-        public bool PayWithoutRecord(Agent whom, MoneyView howMuch, bool showMessageAboutNegativeValue = true)
+        public bool PayWithoutRecord(Agent whom, MoneyView howMuch, Register.Account account, bool showMessageAboutNegativeValue = true)
         {
             if (CanPay(howMuch))// It does has enough cash or deposit
             {
@@ -237,10 +237,9 @@ namespace Nashet.EconomicSimulation
         /// Checks inside. Wouldn't pay if can't. Takes back deposits from bank, if needed
         /// Doesn't pay tax, doesn't register transaction
         /// </summary>
-
         public bool PayWithoutRecord(Money whom, MoneyView howMuch, bool showMessageAboutNegativeValue = true)
         {
-            // todo remove it
+            // todo remove it #510
             if (CanPay(howMuch))// It does has enough cash or deposit
             {
                 if (!CanPayCashOnly(howMuch))
@@ -265,13 +264,8 @@ namespace Nashet.EconomicSimulation
         public bool Pay(Agent incomeReceiver, MoneyView howMuch, Register.Account account, bool showMessageAboutNegativeValue = true)
         {
             if (howMuch.isNotZero())
-                if (PayWithoutRecord(incomeReceiver, howMuch, showMessageAboutNegativeValue)) // pays here
+                if (PayWithoutRecord(incomeReceiver, howMuch, account, showMessageAboutNegativeValue)) // pays here
                 {
-                    Register.RecordPayment(incomeReceiver, account, howMuch.Get());
-                    //this.moneyFlow.AddAndSum(account, howMuch.Get() * -1m);//giver
-                    //incomeReceiver.moneyFlow.AddAndSum(account, howMuch.Get());
-
-                    
                     Money howMuchPayReally = howMuch.Copy();
                     incomeReceiver.moneyIncomeThisTurn.Add(howMuchPayReally);
 
@@ -285,7 +279,7 @@ namespace Nashet.EconomicSimulation
                         && payer.country != incomeReceiver.country
                         && payer is Factory) // pay taxes in enterprise jurisdiction only if it's factory
                     {
-                        var payed = payer.country.TakeIncomeTaxFrom(incomeReceiver, howMuchPayReally, false);                        
+                        var payed = payer.country.TakeIncomeTaxFrom(incomeReceiver, howMuchPayReally, false);
                         howMuchPayReally.Subtract(payed);//and reduce taxable base
                     }
 
@@ -313,11 +307,11 @@ namespace Nashet.EconomicSimulation
             Pay(whom, cash, account);
         }
 
-        public void PayAllAvailableMoneyWithoutRecord(Agent whom)
+        public void PayAllAvailableMoneyWithoutRecord(Agent whom, Register.Account account)
         {
             if (Bank != null)
                 Bank.ReturnAllDeposits(this);
-            PayWithoutRecord(whom, cash);
+            PayWithoutRecord(whom, cash, account);
         }
 
         public override string ToString()

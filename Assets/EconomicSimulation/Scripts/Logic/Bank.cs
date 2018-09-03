@@ -36,7 +36,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public void ReceiveMoney(Agent giver, MoneyView sum)
         {
-            if (giver.PayWithoutRecord(this, sum))
+            if (giver.PayWithoutRecord(this, sum, Register.Account.BankOperation))
                 if (giver.loans.isNotZero())  //has debt (meaning has no deposits)
                     if (sum.isBiggerOrEqual(giver.loans)) // cover debt
                     {
@@ -78,7 +78,7 @@ namespace Nashet.EconomicSimulation
                     {
                         taker.loans.Set(restOfTheSum);//important
                         givenCredits.Add(restOfTheSum);
-                        PayWithoutRecord(taker, restOfTheSum);
+                        PayWithoutRecord(taker, restOfTheSum, Register.Account.BankOperation);
                         return true;
                     }
                     else
@@ -102,7 +102,7 @@ namespace Nashet.EconomicSimulation
                 {
                     taker.loans.Add(desiredCredit);
                     givenCredits.Add(desiredCredit);
-                    PayWithoutRecord(taker, desiredCredit);
+                    PayWithoutRecord(taker, desiredCredit, Register.Account.BankOperation);
                     return true;
                 }
                 else
@@ -147,7 +147,7 @@ namespace Nashet.EconomicSimulation
                     {
                         //giveMoney(toWhom, moneyToReturn);
                         toWhom.deposits.Subtract(returnMoney);
-                        PayWithoutRecord(toWhom, returnMoney);
+                        PayWithoutRecord(toWhom, returnMoney, Register.Account.BankOperation);
                     }
                     return returnMoney;
                 }

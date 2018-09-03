@@ -694,7 +694,7 @@ namespace Nashet.EconomicSimulation
                                         if (factoryProject != null)
                                         {
                                             Factory factory2 = factoryProject.Province.BuildFactory(this, factoryProject.Type, investmentCost);
-                                            PayWithoutRecord(factory2, investmentCost);
+                                            PayWithoutRecord(factory2, investmentCost, Register.Account.Construction);
                                         }
                                         else
                                             Debug.Log("Unknown investment type");
@@ -1095,7 +1095,7 @@ namespace Nashet.EconomicSimulation
         {
             if (CanPay(howMuch))
             {
-                PayWithoutRecord(byWhom, howMuch);
+                PayWithoutRecord(byWhom, howMuch, Register.Account.EnterpriseSubsidies);
                 factorySubsidiesExpense.Add(howMuch);
                 return true;
             }
@@ -1148,8 +1148,12 @@ namespace Nashet.EconomicSimulation
                 taxPayer.incomeTaxPayed.Add(taxSize);
                 statistics.Add(taxSize);
                 moneyIncomeThisTurn.Add(taxSize);
-                taxPayer.PayWithoutRecord(this, taxSize);
-                taxPayer.Register.RecordPayment(this, account, taxSize.Get());
+
+                //taxPayer.PayWithoutRecord(this, taxSize);
+                //taxPayer.Register.RecordPayment(this, account, taxSize.Get());
+
+                taxPayer.Pay(this, taxSize, account);
+
                 return taxSize;
             }
             else
@@ -1159,8 +1163,12 @@ namespace Nashet.EconomicSimulation
                 taxPayer.incomeTaxPayed.Add(availableMoney);
                 statistics.Add(availableMoney);
                 moneyIncomeThisTurn.Add(availableMoney);
-                taxPayer.Register.RecordPayment(this, account, availableMoney.Get());
-                taxPayer.PayAllAvailableMoneyWithoutRecord(this);
+
+                //taxPayer.Register.RecordPayment(this, account, availableMoney.Get());
+                //taxPayer.PayAllAvailableMoneyWithoutRecord(this);
+
+                taxPayer.PayAllAvailableMoney(this, account);
+
                 return hadMoney;
             }
         }

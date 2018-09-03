@@ -84,7 +84,7 @@ namespace Nashet.EconomicSimulation
             base.consumeNeeds();
             if (artisansProduction != null)
             {
-                PayWithoutRecord(artisansProduction, Cash);
+                PayWithoutRecord(artisansProduction, Cash, Register.Account.MarketOperations);
 
                 // take loan if don't have enough money to buy inputs
                 if (Country.Science.IsInvented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected()
@@ -95,12 +95,12 @@ namespace Nashet.EconomicSimulation
                     {
                         var loanSize = Country.market.getCost(needs); // takes little more than really need, could be fixed
                         Bank.GiveCredit(this, loanSize);
-                        PayWithoutRecord(artisansProduction, Cash);
+                        PayWithoutRecord(artisansProduction, Cash, Register.Account.MarketOperations);
                     }
                 }
 
                 artisansProduction.consumeNeeds();
-                artisansProduction.PayWithoutRecord(this, artisansProduction.Cash);
+                artisansProduction.PayWithoutRecord(this, artisansProduction.Cash, Register.Account.MarketOperations);
 
                 // consuming made in artisansProduction.consumeNeeds()
                 // here is data transferring
