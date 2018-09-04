@@ -1029,10 +1029,10 @@ namespace Nashet.EconomicSimulation
             cash.Add(newMoney);
             Register.RecordIncomeFromNowhere(Register.Account.MinedGold, newMoney.Get());
                         
-            MoneyView sentToGovernment = MoneyView.CovertFromGold(gold.Copy().Multiply(Options.GovernmentTakesShareOfGoldOutput));
+            //MoneyView sentToGovernment = MoneyView.CovertFromGold(gold.Copy().Multiply(Options.GovernmentTakesShareOfGoldOutput));
 
-            //send 50% to government
-            Pay(Country, sentToGovernment, Register.Account.MinedGoldTax);            
+            ////send 50% to government
+            //Pay(Country, sentToGovernment, Register.Account.MinedGoldTax);            
 
             gold.SetZero();
         }

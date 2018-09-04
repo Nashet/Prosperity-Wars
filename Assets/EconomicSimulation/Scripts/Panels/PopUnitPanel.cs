@@ -68,22 +68,20 @@ namespace Nashet.EconomicSimulation
 
                 //sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it
                 sb.Append("\nConsumed: ").Append(pop.getConsumed().getString(", "));
-                sb.Append("\nNeeds fulfilled (total): ").Append(pop.needsFulfilled);
-                sb.Append("\nLoyalty: ").Append(pop.loyalty);
+
+                
+                // loyalty part
                 sb.Append("\n\nCash: ").Append(pop.Cash);
                 if (pop.loans.isNotZero())
                     sb.Append("\nLoan: ").Append(pop.loans);// hide it
                 if (pop.deposits.isNotZero())
                     sb.Append("\nDeposit: ").Append(pop.deposits);// hide it
-                //sb.Append("\nAssimilation: ");
+                sb.Append("\n\nNeeds fulfilled (total): ").Append(pop.needsFulfilled);
+                sb.Append("\nLoyalty: ").Append(pop.loyalty);
+                if (pop.getMovement() != null)
+                    sb.Append("\nMember of ").Append(pop.getMovement());
 
-                //if (pop.culture != pop.Country.Culture && pop.getAssimilationSize() > 0)
-                //    sb.Append(pop.Country.Culture).Append(" ").Append(pop.getAssimilationSize());
-                //else
-                //    sb.Append("none");
-
-                //sb.Append("\nGrowth: ").Append(pop.getGrowthSize());
-                
+                //rest part
                 sb.Append("\n\nSeeks job: ").Append(pop.GetSeekingJob());
                 sb.Append("\nEducation: ").Append(pop.Education);
                 sb.Append("\nCulture: ").Append(pop.culture);
@@ -93,8 +91,7 @@ namespace Nashet.EconomicSimulation
                 if (Game.devMode)
                     sb.Append("\n\nAge: ").Append(pop.getAge());
                 sb.Append("\nMobilized: ").Append(pop.getMobilized());
-                if (pop.getMovement() != null)
-                    sb.Append("\nMember of ").Append(pop.getMovement());
+               
 
 
                 //if (Game.devMode)
