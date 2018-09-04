@@ -12,6 +12,9 @@ namespace Nashet.EconomicSimulation
         protected Money income = new Money(0m);
         public MoneyView Income { get { return income; } }
 
+        protected Money incomeLastTurn = new Money(0m);
+        public MoneyView IncomeLastTurn { get { return incomeLastTurn; } }
+
         protected Money expenses = new Money(0m);
         public MoneyView Expenses { get { return expenses; } }
 
@@ -19,6 +22,7 @@ namespace Nashet.EconomicSimulation
 
         public void SetStatisticToZero()
         {
+            incomeLastTurn.Set(income);
             income.SetZero();
             expenses.SetZero();
             moneyFlow.Clear();
@@ -72,7 +76,7 @@ namespace Nashet.EconomicSimulation
 
         public string GetExpensesText()
         {
-            expensesText.Clear().Append("\nExpenses " + expenses);
+            expensesText.Clear().Append("Expenses: " + expenses);
 
             foreach (var item in moneyFlow)
             {
@@ -104,7 +108,7 @@ namespace Nashet.EconomicSimulation
             public static readonly Account MinedGoldTax = new Account("MinedGoldTax");
             public static readonly Account MinedGold = new Account("MinedGold");
 
-            /// <summary>nationalization / closing business </summary>
+            /// <summary>nationalization / closing business / pop's merge in / pop's separation</summary>
             public static readonly Account Rest = new Account("Rest");
             //public static readonly Account DontRecord = new Account("DontRecord");
 
@@ -114,4 +118,88 @@ namespace Nashet.EconomicSimulation
             }
         }
     }
+    //protected readonly Money incomeTaxStaticticPoor = new Money(0m);
+    //public MoneyView IncomeTaxStaticticPoor { get { return incomeTaxStaticticPoor; } }
+
+    //protected readonly Money incomeTaxStatisticRich = new Money(0m);
+    //public MoneyView IncomeTaxStatisticRich { get { return incomeTaxStatisticRich; } }
+
+    //protected readonly Money incomeTaxForeigner = new Money(0m);
+    //public MoneyView IncomeTaxForeigner { get { return incomeTaxForeigner; } }
+
+    //protected readonly Money goldMinesIncome = new Money(0m);/// <summary> Assignment mean that value ADDED to this property </summary>
+    //public MoneyView GoldMinesIncome
+    //{
+    //    get { return goldMinesIncome; }
+    //    set { goldMinesIncome.Add(value); }
+    //}
+
+    //protected readonly Money ownedFactoriesIncome = new Money(0m);/// <summary> Assignment mean that value ADDED to this property </summary>
+    //public MoneyView OwnedFactoriesIncome
+    //{
+    //    get { return ownedFactoriesIncome; }
+    //    set { ownedFactoriesIncome.Add(value); }
+    //}
+
+    //protected readonly Money unemploymentSubsidiesExpense = new Money(0m);/// <summary> Assignment mean that value ADDED to this property </summary>
+    //public MoneyView UnemploymentSubsidiesExpense
+    //{
+    //    get { return unemploymentSubsidiesExpense; }
+    //    set { unemploymentSubsidiesExpense.Add(value); }
+    //}
+
+    //protected readonly Money ubiSubsidiesExpense = new Money(0m);/// <summary> Assignment mean that value ADDED to this property </summary>
+    //public MoneyView UBISubsidiesExpense
+    //{
+    //    get { return ubiSubsidiesExpense; }
+    //    set { ubiSubsidiesExpense.Add(value); }
+    //}
+
+    //protected readonly Money povertyAidExpense = new Money(0m);/// <summary> Assignment mean that value ADDED to this property </summary>
+    //public MoneyView PovertyAidExpense
+    //{
+    //    get { return povertyAidExpense; }
+    //    set { povertyAidExpense.Add(value); }
+    //}
+
+    //protected readonly Money soldiersWageExpense = new Money(0m);/// <summary> Assignment mean that value ADDED to this property </summary>
+    //public MoneyView SoldiersWageExpense
+    //{
+    //    get { return soldiersWageExpense; }
+    //    set { soldiersWageExpense.Add(value); }
+    //}
+
+    //protected readonly Money factorySubsidiesExpense = new Money(0m);
+    //public MoneyView FactorySubsidiesExpense { get { return factorySubsidiesExpense; } }
+
+    //protected readonly Money storageBuyingExpense = new Money(0m);/// <summary> Assignment mean that value ADDED to this property </summary>
+    //public MoneyView StorageBuyingExpense
+    //{
+    //    get { return storageBuyingExpense; }
+    //    set { storageBuyingExpense.Add(value); }
+    //}
+    //public MoneyView GetRegisteredExpenses()
+    //{
+    //    Money result = MoneyView.Zero.Copy();
+    //    result.Add(unemploymentSubsidiesExpense);
+    //    result.Add(factorySubsidiesExpense);
+    //    result.Add(storageBuyingExpense);
+    //    result.Add(soldiersWageExpense);
+
+    //    result.Add(ubiSubsidiesExpense);
+    //    result.Add(povertyAidExpense);
+    //    return result;
+    //}
+
+    //public Money GetRegisteredIncome()
+    //{
+    //    Money result = new Money(0m);
+    //    result.Add(incomeTaxStaticticPoor);
+    //    result.Add(incomeTaxStatisticRich);
+    //    result.Add(incomeTaxForeigner);
+    //    result.Add(goldMinesIncome);
+    //    result.Add(ownedFactoriesIncome);
+    //    result.Add(getCostOfAllSellsByGovernment());
+    //    return result;
+    //}
 }

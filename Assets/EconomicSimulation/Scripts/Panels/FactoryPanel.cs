@@ -100,16 +100,16 @@ namespace Nashet.EconomicSimulation
                 sb.Append(", Unsold: ").Append(factory.storage);
                 //sb.Append("\nBasic production: ").Append(factory.Type.basicProduction);
                 //sb.Append("\nSent to market: ").Append(factory.getSentToMarket());
-                sb.Append("\n\nMoney income: ").Append(factory.moneyIncomeThisTurn);
-                sb.Append("\n\nRegister: ").Append(factory.Register.ToString());
-                sb.Append(", Cash: ").Append(factory.Cash);
+                //sb.Append("\n\nMoney income: ").Append(factory.moneyIncomeThisTurn);
+                sb.Append("\n\n").Append(factory.Register.ToString());                
 
                 sb.Append("\nProfit: ");
                 if (Game.Player.economy != Economy.PlannedEconomy)
                     sb.Append(factory.getProfit().ToString("N3")).Append(" Gold");
                 else
                     sb.Append("unknown");
-                sb.Append(", Dividends: ").Append(factory.GetDividends());
+                sb.Append("\nCash: ").Append(factory.Cash);
+                //sb.Append(", Dividends: ").Append(factory.GetDividends());
                 if (factory.Type.hasInput())
                 {
                     sb.Append("\n\nInput required: ");
@@ -139,7 +139,8 @@ namespace Nashet.EconomicSimulation
 
                 //if (Game.devMode)
                 //    sb.Append("\nConsumed LT: ").Append(factory.getConsumedLastTurn());
-                sb.Append("\n\nSalary (per 1000 men): ").Append(factory.getSalary()).Append(", Total: ").Append(factory.getSalaryCost());
+                sb.Append("\n\nSalary (per 1000 men): ").Append(factory.getSalary());
+                    //sb.Append(", Total: ").Append(factory.getSalaryCost());
                                 
 
                 if (factory.getDaysUnprofitable() > 0)

@@ -213,7 +213,7 @@ namespace Nashet.EconomicSimulation
         {
             // todo doesn't include taxes. Should it?
             if (artisansProduction == null
-                || moneyIncomeThisTurn.Copy().Subtract(artisansProduction.getExpences(), false).isZero())
+                || Register.Income.Copy().Subtract(artisansProduction.getExpences(), false).isZero())
                 changeProductionType();
         }
     }

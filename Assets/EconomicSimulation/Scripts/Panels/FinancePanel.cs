@@ -46,52 +46,54 @@ namespace Nashet.EconomicSimulation
             captionText.text = sb.ToString();
 
             sb.Clear();
-            sb.Append("Income:");
-            sb.Append("\n Income tax for Poor (").Append(Game.Player.taxationForPoor.tax.Procent).Append("): ").Append(Game.Player.IncomeTaxStaticticPoor);
-            sb.Append("\n Income tax for Rich (").Append(Game.Player.taxationForRich.tax.Procent).Append("): ").Append(Game.Player.IncomeTaxStatisticRich);
-            sb.Append("\n Income tax for Foreigners (").Append(Game.Player.taxationForRich.tax.Procent).Append("): ").Append(Game.Player.IncomeTaxForeigner);
-            sb.Append("\n Gold mines: ").Append(Game.Player.GoldMinesIncome);
-            sb.Append("\n Dividends: ").Append(Game.Player.OwnedFactoriesIncome);
-            sb.Append("\n Storage sells: [code is broken #494]");//.Append(Game.Player.getCostOfAllSellsByGovernment());
-            sb.Append("\n Rest: ").Append(Game.Player.RestIncome);
-            sb.Append("\nTotal: ").Append(Game.Player.moneyIncomeThisTurn);
-            sb.Append("\nRegister: ").Append(Game.Player.Register.ToString());
+            //sb.Append("Income:");
+            //sb.Append("\n Income tax for Poor (").Append(Game.Player.taxationForPoor.tax.Procent).Append("): ").Append(Game.Player.IncomeTaxStaticticPoor);
+            //sb.Append("\n Income tax for Rich (").Append(Game.Player.taxationForRich.tax.Procent).Append("): ").Append(Game.Player.IncomeTaxStatisticRich);
+            //sb.Append("\n Income tax for Foreigners (").Append(Game.Player.taxationForRich.tax.Procent).Append("): ").Append(Game.Player.IncomeTaxForeigner);
+            //sb.Append("\n Gold mines: ").Append(Game.Player.GoldMinesIncome);
+            //sb.Append("\n Dividends: ").Append(Game.Player.OwnedFactoriesIncome);
+            //sb.Append("\n Storage sells: [code is broken #494]");//.Append(Game.Player.getCostOfAllSellsByGovernment());
+            //sb.Append("\n Rest: ").Append(Game.Player.RestIncome);
+            //sb.Append("\nTotal: ").Append(Game.Player.moneyIncomeThisTurn);
+            sb.Append(Game.Player.Register.GetIncomeTest());
 
-            sb.Append("\n\nBalance: ").Append(Game.Player.IncomeBalance);
+            sb.Append("\n\nBalance: ").Append(Money.DecimalToString(Game.Player.Register.Balance));
             sb.Append("\nHave money: ").Append(Game.Player.Cash).Append(" + ").Append(Game.Player.deposits).Append(" in bank");
             sb.Append("\nLoans taken: ").Append(Game.Player.loans);
             //sb.Append("\nGDP (current prices): ").Append(Game.Player.getGDP()).Append("; GDP per thousand men: ").Append(Game.Player.getGDPPer1000());
             incomeText.text = sb.ToString();
             //sb.Append("\nScreen resolution: ").Append(Screen.currentResolution).Append(" Canvas size: ").Append(MainCamera.topPanel.transform.parent.GetComponentInParent<RectTransform>().rect);
 
-            sb.Clear();
-            sb.Append("Expenses: ");
+            //sb.Clear();
+            //sb.Append("Expenses: ");
 
-            sb.Append("\n Unemployment subsidies: ").Append(Game.Player.UnemploymentSubsidiesExpense)
-                .Append(" seeking a job: ").Append(Game.Player.Provinces.AllPops.GetAverageProcent(x => x.GetSeekingJob()));
+            //sb.Append("\n Unemployment subsidies: ").Append(Game.Player.UnemploymentSubsidiesExpense)
+            //    .Append(" seeking a job: ").Append(Game.Player.Provinces.AllPops.GetAverageProcent(x => x.GetSeekingJob()));
 
-            if (Game.Player.UBI != UBI.None)
-                sb.Append("\n Unconditional basic income: ").Append(Game.Player.UBISubsidiesExpense);
+            //if (Game.Player.UBI != UBI.None)
+            //    sb.Append("\n Unconditional basic income: ").Append(Game.Player.UBISubsidiesExpense);
 
-            if (Game.Player.PovertyAid != PovertyAid.None)
-                sb.Append("\n Poverty Aid: ").Append(Game.Player.PovertyAidExpense);
+            //if (Game.Player.PovertyAid != PovertyAid.None)
+            //    sb.Append("\n Poverty Aid: ").Append(Game.Player.PovertyAidExpense);
 
-            sb.Append("\n Enterprises subsidies: ").Append(Game.Player.FactorySubsidiesExpense);
+            //sb.Append("\n Enterprises subsidies: ").Append(Game.Player.FactorySubsidiesExpense);
 
-            if (Game.Player.Science.IsInvented(Invention.ProfessionalArmy))
-                sb.Append("\n Soldiers paychecks: ").Append(Game.Player.SoldiersWageExpense);
+            //if (Game.Player.Science.IsInvented(Invention.ProfessionalArmy))
+            //    sb.Append("\n Soldiers paychecks: ").Append(Game.Player.SoldiersWageExpense);
 
-            sb.Append("\n Storage buying: ").Append(Game.Player.StorageBuyingExpense);
+            //sb.Append("\n Storage buying: ").Append(Game.Player.StorageBuyingExpense);
 
-            sb.Append("\nTotal: ").Append(Game.Player.GetRegisteredExpenses());
-            expensesText.text = sb.ToString();
+            //sb.Append("\nTotal: ").Append(Game.Player.GetRegisteredExpenses());
+            //expensesText.text = sb.ToString();
+            expensesText.text = Game.Player.Register.GetExpensesText();
 
+            // bank part
             sb.Clear();
 
             sb.Append("\n").Append(Game.Player.Bank).Append(" - reserves: ").Append(Game.Player.Bank.Cash)
                 .Append("; loans: ").Append(Game.Player.Bank.GetGivenCredits());
             //sb.Append(Game.player.bank).Append(" deposits: ").Append(Game.player.bank.getGivenLoans());
-            sb.Append("\nTotal gold (in world): ").Append(World.GetAllMoney());
+            sb.Append("\nTotal gold (in the world): ").Append(World.GetAllMoney());
             sb.Append("\n*Government and others could automatically take money from deposits");
             bankText.text = sb.ToString();
 

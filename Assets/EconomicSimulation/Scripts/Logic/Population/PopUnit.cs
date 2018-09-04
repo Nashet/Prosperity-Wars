@@ -728,7 +728,7 @@ namespace Nashet.EconomicSimulation
                     //&& Cash.isBiggerThan(Options.PopUnlimitedConsumptionLimit))  // need that to avoid poor pops
                     {
                         MoneyView spentMoneyOnAllNeeds = moneyWasBeforeLifeNeedsConsumption.Copy().Subtract(getMoneyAvailable(), false);// moneyWas - Cash.get() could be < 0 due to taking money from deposits
-                        MoneyView spendingLimit = moneyIncomeLastTurn.Copy().Subtract(spentMoneyOnAllNeeds, false);//limit is income minus expenses minus reserves
+                        MoneyView spendingLimit = Register.IncomeLastTurn.Copy().Subtract(spentMoneyOnAllNeeds, false);//limit is income minus expenses minus reserves
                         // if gain more than consumed then spent it on extra luxury consumption                        
 
                         MoneyView spentOnUnlimitedConsumption;
@@ -1076,9 +1076,7 @@ namespace Nashet.EconomicSimulation
                     MoneyView subsidy = rate.Copy().Multiply(population.Get()).Divide(1000);
                     if (Country.CanPay(subsidy))
                     {
-                        Country.Pay(this, subsidy, Register.Account.UnemploymentSubsidies);
-                        //Country.unemploymentSubsidiesExpenseAdd(subsidy);
-                        Country.UnemploymentSubsidiesExpense = subsidy;
+                        Country.Pay(this, subsidy, Register.Account.UnemploymentSubsidies);                        
                     }
                     else
                     {
@@ -1100,8 +1098,7 @@ namespace Nashet.EconomicSimulation
                 MoneyView subsidy = rate.Copy().Multiply(population.Get()).Divide(1000);
                 if (Country.CanPay(subsidy))
                 {
-                    Country.Pay(this, subsidy, Register.Account.UBISubsidies);
-                    Country.UBISubsidiesExpense = subsidy;
+                    Country.Pay(this, subsidy, Register.Account.UBISubsidies);                    
                 }
                 else
                 {
@@ -1120,13 +1117,12 @@ namespace Nashet.EconomicSimulation
                 {
                     var rate = reform.PovertyAidSize.Get();
                     MoneyView subsidy = rate.Copy().Multiply(population.Get()).Divide(1000);
-                    var haveToPay = (subsidy as Money).Subtract(moneyIncomeThisTurn, false); // subsidy - income
+                    var haveToPay = (subsidy as Money).Subtract(Register.Income, false); // subsidy - income
                     if (haveToPay.isNotZero())
                     {
                         if (Country.CanPay(subsidy))
                         {
-                            Country.Pay(this, subsidy, Register.Account.PovertyAid);
-                            Country.PovertyAidExpense = subsidy;
+                            Country.Pay(this, subsidy, Register.Account.PovertyAid);                            
                         }
                         else
                         {

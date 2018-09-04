@@ -353,13 +353,6 @@ namespace Nashet.EconomicSimulation
             return AllPops.Sum(x => x.population.Get()) * Options.familySize;
         }
 
-        public MoneyView getIncomeTax()
-        {
-            decimal res = 0m;
-            allPopUnits.ForEach(x => res += x.incomeTaxPayed.Get());
-            return new MoneyView(res);
-        }
-
         public void mobilize()
         {
             Country.mobilize(new List<Province> { this });
