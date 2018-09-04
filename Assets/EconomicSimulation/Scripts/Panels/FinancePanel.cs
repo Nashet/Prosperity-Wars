@@ -94,7 +94,7 @@ namespace Nashet.EconomicSimulation
                 .Append("; loans: ").Append(Game.Player.Bank.GetGivenCredits());
             //sb.Append(Game.player.bank).Append(" deposits: ").Append(Game.player.bank.getGivenLoans());
             sb.Append("\nTotal gold (in the world): ").Append(World.GetAllMoney());
-            sb.Append("\n*Government and others could automatically take money from deposits");
+            sb.Append("\n*Government and others could automatically take money from deposits, 1 gold bite = 1000 gold");
             bankText.text = sb.ToString();
 
             onLoanLimitChange();

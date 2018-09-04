@@ -56,7 +56,7 @@ namespace Nashet.EconomicSimulation
 
 
         public virtual void SetStatisticToZero()
-        {            
+        {
             Register.SetStatisticToZero();
         }
 
@@ -207,7 +207,7 @@ namespace Nashet.EconomicSimulation
 
         /// <summary>
         /// Checks inside. Wouldn't pay if can't. Takes back deposits from bank, if needed
-        /// Doesn't pay tax, doesn't register transaction
+        /// Doesn't pay tax
         /// </summary>
         public bool PayWithoutRecord(Agent whom, MoneyView howMuch, Register.Account account, bool showMessageAboutNegativeValue = true)
         {
@@ -231,12 +231,13 @@ namespace Nashet.EconomicSimulation
         }
 
         /// <summary>
+        /// used only to pay to stash, should be removed 
         /// Checks inside. Wouldn't pay if can't. Takes back deposits from bank, if needed
-        /// Doesn't pay tax, doesn't register transaction
+        /// Doesn't pay tax
         /// </summary>
+        // todo remove it #510
         public bool PayWithoutRecord(Money whom, MoneyView howMuch, bool showMessageAboutNegativeValue = true)
         {
-            // todo remove it #510
             if (CanPay(howMuch))// It does has enough cash or deposit
             {
                 if (!CanPayCashOnly(howMuch))

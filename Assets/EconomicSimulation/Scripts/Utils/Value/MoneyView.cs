@@ -1,6 +1,6 @@
-﻿using System;
-using Nashet.EconomicSimulation;
+﻿using Nashet.EconomicSimulation;
 using Nashet.Utils;
+using System;
 using UnityEngine;
 
 namespace Nashet.ValueSpace
@@ -86,18 +86,18 @@ namespace Nashet.ValueSpace
         {
             return data < value.data;
         }
-        
+
         public static string DecimalToString(decimal data)
         {
             //Game.devMode &&
-            if (data < 0.001m && data != 0m)
+            if (data < 0.001m && data != 0m && data > -0.001m)
                 return (data * 1000m).ToString("N3") + " Gold bites";
             else
                 return data.ToString("N3") + " Gold";
         }
         public override string ToString()
         {
-            return DecimalToString(data);            
+            return DecimalToString(data);
         }
 
         //public Money Copy()
