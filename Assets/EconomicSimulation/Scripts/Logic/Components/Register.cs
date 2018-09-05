@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Nashet.EconomicSimulation
 {
+    /// <summary>
+    /// represents ability to register money flow. Could be optimized
+    /// </summary>
     public class Register : IStatisticable
     {
         protected Dictionary<Account, decimal> moneyFlow = new Dictionary<Account, decimal>();
@@ -18,6 +21,7 @@ namespace Nashet.EconomicSimulation
         protected Money expenses = new Money(0m);
         public MoneyView Expenses { get { return expenses; } }
 
+        /// <summary> Can be negative</summary>
         public decimal Balance { get { return income.Get() - expenses.Get(); } }
 
         public void SetStatisticToZero()
@@ -55,9 +59,9 @@ namespace Nashet.EconomicSimulation
             foreach (var item in moneyFlow)
             {
                 if (item.Value > 0m)
-                    incomeText.Append("\n " + item.Key.ToString() + ": " + Money.DecimalToString(item.Value));
+                    incomeText.Append("\n " + item.Key.IncomeText + ": " + Money.DecimalToString(item.Value));
                 else if (item.Value < 0m)
-                    expensesText.Append("\n " + item.Key.ToString() + ": " + Money.DecimalToString(item.Value * -1m));
+                    expensesText.Append("\n " + item.Key.ExpenseText + ": " + Money.DecimalToString(item.Value * -1m));
             }
             return incomeText.Append(expensesText).ToString();
         }
@@ -69,7 +73,7 @@ namespace Nashet.EconomicSimulation
             foreach (var item in moneyFlow)
             {
                 if (item.Value > 0m)
-                    incomeText.Append("\n " + item.Key.ToString() + ": " + Money.DecimalToString(item.Value));
+                    incomeText.Append("\n " + item.Key.IncomeText + ": " + Money.DecimalToString(item.Value));
             }
             return incomeText.ToString();
         }
@@ -81,40 +85,44 @@ namespace Nashet.EconomicSimulation
             foreach (var item in moneyFlow)
             {
                 if (item.Value < 0m)
-                    expensesText.Append("\n " + item.Key.ToString() + ": " + Money.DecimalToString(item.Value * -1m));
+                    expensesText.Append("\n " + item.Key.ExpenseText + ": " + Money.DecimalToString(item.Value * -1m));
             }
             return expensesText.ToString();
         }
 
-        public class Account : Name
+        public class Account
         {
-            public static readonly Account RichIncomeTax = new Account("RichIncomeTax");
-            public static readonly Account ForeignIncomeTax = new Account("ForeignIncomeTax");
-            public static readonly Account PoorIncomeTax = new Account("PoorIncomeTax");
+            public static readonly Account RichIncomeTax = new Account("Income tax for rich", "Income tax for rich");
+            public static readonly Account ForeignIncomeTax = new Account("Income tax for foreigners", "Income tax for foreigners");
+            public static readonly Account PoorIncomeTax = new Account("Income tax for poor", "Income tax for poor");
 
-            public static readonly Account UnemploymentSubsidies = new Account("UnemploymentSubsidies");
-            public static readonly Account EnterpriseSubsidies = new Account("EnterpriseSubsidies");
-            public static readonly Account UBISubsidies = new Account("UBISubsidies");
-            public static readonly Account PovertyAid = new Account("PovertyAid");
+            public static readonly Account UnemploymentSubsidies = new Account("Unemployment Subsidies", "Unemployment Subsidies");
+            public static readonly Account EnterpriseSubsidies = new Account("Enterprise Subsidies", "Enterprise Subsidies");
+            public static readonly Account UBISubsidies = new Account("UBI Subsidies", "UBI Subsidies");
+            public static readonly Account PovertyAid = new Account("Poverty Aid", "Poverty Aid");
 
-            public static readonly Account MarketOperations = new Account("MarketOperations");
-            public static readonly Account Wage = new Account("Wage");
-            public static readonly Account Dividends = new Account("Dividends");
-            public static readonly Account BankOperation = new Account("BankOperation");
+            public static readonly Account MarketOperations = new Account("Selling goods", "Buying goods");
+            public static readonly Account Wage = new Account("Wage", "Wages");
+            public static readonly Account Dividends = new Account("Dividends", "Dividends");
+            public static readonly Account BankOperation = new Account("Took from bank", "Sent to bank");
 
-            public static readonly Account BuyingProperty = new Account("BuyingProperty");
-            public static readonly Account Construction = new Account("Construction");
-            
-            public static readonly Account MinedGoldTax = new Account("MinedGoldTax");
-            public static readonly Account MinedGold = new Account("MinedGold");
+            public static readonly Account BuyingProperty = new Account("Selling property", "Buying property");
+            public static readonly Account Construction = new Account("Construction", "Construction");
+
+            //public static readonly Account MinedGoldTax = new Account("MinedGoldTax");
+            public static readonly Account MinedGold = new Account("Mined Gold", "Mined Gold");
 
             /// <summary>nationalization / closing business / pop's merge in / pop's separation</summary>
-            public static readonly Account Rest = new Account("Rest");
+            public static readonly Account Rest = new Account("Rest", "Rest");
             //public static readonly Account DontRecord = new Account("DontRecord");
 
+            public string IncomeText { get; protected set; }
+            public string ExpenseText { get; protected set; }
 
-            protected Account(string name) : base(name)
+            protected Account(string positiveTransaction, string negativeTransaction)
             {
+                IncomeText = positiveTransaction;
+                ExpenseText = negativeTransaction;
             }
         }
     }
