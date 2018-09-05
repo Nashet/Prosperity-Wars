@@ -492,6 +492,7 @@ namespace Nashet.EconomicSimulation
                         income = new Money(getProfit(), false);
                     else
                         income = payedDividends.Copy();
+                    // todo possible, double tax expense calculation
                     var taxes = income.Copy().Multiply(Country.taxationForRich.tax.Procent);
                     income.Subtract(taxes);
                     return new Procent(income, ownership.GetMarketValue(), false);

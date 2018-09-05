@@ -12,18 +12,15 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class Game : ThreadedJob
     {
-        public static bool devMode = true;
+        public static bool devMode = false;
         private static bool surrended = devMode;
         public static bool logInvestments = false;
         public static bool logMarket = false;
 
         public static bool readMapFormFile = false;
         private static MyTexture mapTexture;
-
-
+        
         public static Country Player;
-
-        ///public static Random Random = new Random();
 
         public static Province selectedProvince;
         public static Province previoslySelectedProvince;
@@ -32,9 +29,6 @@ namespace Nashet.EconomicSimulation
         public static List<Province> playerVisibleProvinces = new List<Province>();
 
         private static MapModes mapMode;
-
-
-
 
         private static VoxelGrid<AbstractProvince> grid;
         private readonly Rect mapBorders;

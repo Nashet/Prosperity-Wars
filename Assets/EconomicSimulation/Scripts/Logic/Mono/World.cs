@@ -699,8 +699,8 @@ namespace Nashet.EconomicSimulation
                         else
                         {
                             Market.GiveMoneyForSoldProduct(factory);
-                            factory.ChangeSalary();
                             factory.paySalary(); // workers get gold or food here
+                            factory.ChangeSalary();                            
                             factory.payDividend(); // also pays taxes inside
                             factory.CloseUnprofitable();
                             factory.ownership.CalcMarketPrice();
