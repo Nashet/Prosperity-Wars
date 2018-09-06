@@ -44,11 +44,12 @@ namespace Nashet.EconomicSimulation
             receiver.Register.income.Add(sum);
 
             this.expensesList.AddAndSum(account, sum);//giver is this
-            this.expenses.Add(sum);
+            if (account != Register.Account.Dividends)
+                this.expenses.Add(sum);
         }
         public void RecordIncomeFromNowhere(Account account, decimal sum)
         {
-            this.incomeList.AddAndSum(account, sum);//giver is this
+            this.incomeList.AddAndSum(account, sum);
             this.income.Add(sum);
         }
 
@@ -62,7 +63,7 @@ namespace Nashet.EconomicSimulation
             foreach (var item in incomeList)
             {
                 if (item.Value != 0m)
-                    incomeText.Append("\n " + item.Key.IncomeText + ": " + Money.DecimalToString(item.Value));                
+                    incomeText.Append("\n " + item.Key.IncomeText + ": " + Money.DecimalToString(item.Value));
             }
             foreach (var item in expensesList)
             {
