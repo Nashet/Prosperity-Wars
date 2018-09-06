@@ -127,7 +127,7 @@ namespace Nashet.EconomicSimulation
         private Storage recalculateProductForConsumers(Product product, Func<Consumer, IEnumerable<Storage>> selector)
         {
             Storage result = new Storage(product); // too big circle - 22k per frame, 11Mb memory
-            foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.AllExistingCountries())
             {
                 foreach (Province province in country.AllProvinces)
                     foreach (Consumer consumer in province.AllAgents)
@@ -144,7 +144,7 @@ namespace Nashet.EconomicSimulation
         private Storage recalculateProductForBuyers(Product product, Func<Consumer, IEnumerable<Storage>> selector)
         {
             Storage result = new Storage(product);
-            foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.AllExistingCountries())
             {
                 foreach (Province province in country.AllProvinces)
                     foreach (Consumer consumer in province.AllConsumers)
@@ -162,7 +162,7 @@ namespace Nashet.EconomicSimulation
         private Storage recalculateProductForSellers(Product product, Func<ISeller, Storage> selector)
         {
             Storage result = new Storage(product);
-            foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.AllExistingCountries())
             {
                 foreach (Province province in country.AllProvinces)
                     foreach (ISeller producer in province.AllProducers)
@@ -180,7 +180,7 @@ namespace Nashet.EconomicSimulation
         private Storage recalculateProductForProducers(Product product, Func<Producer, Storage> selector)
         {
             Storage result = new Storage(product);
-            foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.AllExistingCountries())
             {
                 foreach (Province province in country.AllProvinces)
                     foreach (Producer producer in province.AllProducers)
@@ -387,7 +387,7 @@ namespace Nashet.EconomicSimulation
         public void ForceDSBRecalculation2()
         {
             // get all MarketSupply            
-            foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.AllExistingCountries())
             {
                 foreach (var agent in country.Provinces.AllAgents)
                 {
@@ -468,7 +468,7 @@ namespace Nashet.EconomicSimulation
         public void ForceDSBRecalculation()
         {
             // get all MarketSupply            
-            foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.AllExistingCountries())
             {
                 foreach (var seller in country.Provinces.AllSellers)
                 {
@@ -482,7 +482,7 @@ namespace Nashet.EconomicSimulation
             }
 
             // get all getBoughtOnMarket            
-            foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.AllExistingCountries())
             {
                 foreach (var consumer in country.Provinces.AllConsumers)
                 {
@@ -758,12 +758,12 @@ namespace Nashet.EconomicSimulation
 
         public static Market GetReachestMarket(Storage need)
         {
-            return World.AllMarkets().MaxBy(x => x.getCost(need.Product).Get());
+            return World.AllMarkets.MaxBy(x => x.getCost(need.Product).Get());
             //.Where(x => x.getDemandSupplyBalance(need.Product, false) != Options.MarketEqualityDSB)
         }
         public static Market GetCheapestMarket(Storage need)
         {
-            return World.AllMarkets().MinBy(x => x.getCost(need.Product).Get());
+            return World.AllMarkets.MinBy(x => x.getCost(need.Product).Get());
         }
     }
 }

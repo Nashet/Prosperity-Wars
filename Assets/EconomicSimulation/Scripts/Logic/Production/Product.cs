@@ -86,7 +86,7 @@ namespace Nashet.EconomicSimulation
         static Product()
         {
             //// abstract products
-            //foreach (var markets in World.AllMarkets())
+            //foreach (var markets in World.AllMarkets)
             //{
             //    foreach (var item in getAll().Where(x => !x.isAbstract()))
             //        if (item != Gold)
@@ -340,7 +340,7 @@ namespace Nashet.EconomicSimulation
             //of some freshly invented product
             if (isAbstract())
                 return true;
-            foreach (var country in World.getAllExistingCountries())
+            foreach (var country in World.AllExistingCountries())
                 if (country.Science.IsInvented(this))
                     return true;
             return false;

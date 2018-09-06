@@ -64,7 +64,7 @@ namespace Nashet.EconomicSimulation
 
         public static IEnumerable<Army> AllArmies()
         {
-            foreach (var country in World.getAllExistingCountries())
+            foreach (var country in World.AllExistingCountries())
             {
                 foreach (var army in country.AllArmies())
                 {
@@ -82,19 +82,22 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public static IEnumerable<Country> getAllExistingCountries()
+        public static IEnumerable<Country> AllExistingCountries()
         {
             foreach (var country in allCountries)
                 if (country.IsAlive && country != UncolonizedLand)
                     yield return country;
         }
 
-        public static IEnumerable<Market> AllMarkets()
+        public static IEnumerable<Market> AllMarkets
         {
-            ///foreach (var country in getAllExistingCountries())
+            get
+            {
+                ///foreach (var country in getAllExistingCountries())
 
-            //yield return country.market;
-            yield return Market.TemporalSingleMarket;
+                //yield return country.market;
+                yield return Market.TemporalSingleMarket;
+            }
         }
 
         public static IEnumerable<AbstractProvince> AllAbstractProvinces
@@ -141,7 +144,7 @@ namespace Nashet.EconomicSimulation
         public static IEnumerable<KeyValuePair<IInvestable, Procent>> GetAllAllowedInvestments(Agent investor)
         {
             Country includingCountry = investor.Country;
-            var countriesAllowingInvestments = getAllExistingCountries().Where(x => x.economy.AllowForeignInvestments || x == includingCountry);
+            var countriesAllowingInvestments = AllExistingCountries().Where(x => x.economy.AllowForeignInvestments || x == includingCountry);
             foreach (var country in countriesAllowingInvestments)
                 foreach (var item in country.allInvestmentProjects.Get())//investor
                     yield return item;
@@ -151,7 +154,7 @@ namespace Nashet.EconomicSimulation
         {
             get
             {
-                foreach (var item in getAllExistingCountries())
+                foreach (var item in AllExistingCountries())
                     foreach (var factory in item.Provinces.AllFactories)
                         yield return factory;
             }
@@ -161,7 +164,7 @@ namespace Nashet.EconomicSimulation
         {
             get
             {
-                foreach (var country in getAllExistingCountries())
+                foreach (var country in AllExistingCountries())
                 {
                     yield return country;
                     foreach (var item in country.Provinces.AllAgents)
@@ -173,7 +176,7 @@ namespace Nashet.EconomicSimulation
         public static Money GetAllMoney()
         {
             Money allMoney = new Money(0m);
-            foreach (Country country in getAllExistingCountries())
+            foreach (Country country in AllExistingCountries())
             {
                 allMoney.Add(country.Cash);
                 foreach (var agent in country.Provinces.AllAgents)
@@ -183,7 +186,7 @@ namespace Nashet.EconomicSimulation
                     //if (isArtisan!=null && isArtisan.)
                 }
             }
-            foreach (var market in World.AllMarkets())
+            foreach (var market in World.AllMarkets)
             {
                 allMoney.Add(market.Cash);
             }
@@ -408,7 +411,7 @@ namespace Nashet.EconomicSimulation
 
         private static void IndustrialStart()
         {
-            foreach (var item in getAllExistingCountries())
+            foreach (var item in AllExistingCountries())
             {
                 item.Science.Invent(Invention.Universities);
                 item.Science.Invent(Invention.Manufactures);
@@ -458,7 +461,7 @@ namespace Nashet.EconomicSimulation
         // temporally
         public static IEnumerable<KeyValuePair<IShareOwner, Procent>> GetAllShares()
         {
-            foreach (var item in getAllExistingCountries())
+            foreach (var item in AllExistingCountries())
                 foreach (var factory in item.Provinces.AllFactories)
                     foreach (var record in factory.ownership.GetAllShares())
                         yield return record;
@@ -467,7 +470,7 @@ namespace Nashet.EconomicSimulation
         // temporally
         public static IEnumerable<KeyValuePair<IShareable, Procent>> GetAllShares(IShareOwner owner)
         {
-            foreach (var item in getAllExistingCountries())
+            foreach (var item in AllExistingCountries())
                 foreach (var factory in item.Provinces.AllFactories)
                     foreach (var record in factory.ownership.GetAllShares())
                         if (record.Key == owner)
@@ -478,7 +481,7 @@ namespace Nashet.EconomicSimulation
         {
             get
             {
-                foreach (var country in getAllExistingCountries())
+                foreach (var country in AllExistingCountries())
                 {
                     foreach (var item in country.Provinces.AllPops)
                         yield return item;
@@ -489,7 +492,7 @@ namespace Nashet.EconomicSimulation
         {
             get
             {
-                foreach (var country in getAllExistingCountries())
+                foreach (var country in AllExistingCountries())
                 {
                     foreach (var item in country.Provinces.AllProducers)
                         yield return item;
@@ -501,7 +504,7 @@ namespace Nashet.EconomicSimulation
         {
             get
             {
-                foreach (var country in getAllExistingCountries())
+                foreach (var country in AllExistingCountries())
                 {
                     foreach (var item in country.Provinces.AllConsumers)
                         yield return item;
@@ -512,7 +515,7 @@ namespace Nashet.EconomicSimulation
         {
             get
             {
-                foreach (var country in getAllExistingCountries())
+                foreach (var country in AllExistingCountries())
                 {
                     foreach (var item in country.Provinces.AllSellers)
                         yield return item;
@@ -572,9 +575,9 @@ namespace Nashet.EconomicSimulation
 
         public static void prepareForNewTick()
         {
-            AllMarkets().PerformAction(x => x.SetStatisticToZero());
+            AllMarkets.PerformAction(x => x.SetStatisticToZero());
 
-            foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.AllExistingCountries())
             {
                 country.SetStatisticToZero();
                 foreach (Province province in country.AllProvinces)
@@ -599,7 +602,7 @@ namespace Nashet.EconomicSimulation
             if (Game.devMode)
                 Debug.Log("New date! - " + Date.Today);
             // strongly before PrepareForNewTick
-            AllMarkets().PerformAction(x => x.simulatePriceChangeBasingOnLastTurnData());
+            AllMarkets.PerformAction(x => x.simulatePriceChangeBasingOnLastTurnData());
 
             // rise event on day passed
             // DayPassed?.Invoke(World.Get, EventArgs.Empty);
@@ -616,13 +619,13 @@ namespace Nashet.EconomicSimulation
             prepareForNewTick();
 
             // big PRODUCE circle
-            foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.AllExistingCountries())
                 foreach (Province province in country.AllProvinces)
                     foreach (var producer in province.AllProducers)
                         producer.produce();
 
             // big CONCUME circle
-            foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.AllExistingCountries())
             {
                 country.consumeNeeds();
                 if (country.economy == Economy.PlannedEconomy)
@@ -666,7 +669,7 @@ namespace Nashet.EconomicSimulation
                     }
             }
             //force DSB recalculation. Helped with precise calculation of DSB & how much money seller should get
-            //AllMarkets().PerformAction(x =>
+            //AllMarkets.PerformAction(x =>
             ////x.ForceDSBRecalculation()
             //x.getDemandSupplyBalance(null, true)
             //);
@@ -684,7 +687,7 @@ namespace Nashet.EconomicSimulation
                 //}
             }
             // big AFTER all and get money for sold circle
-            foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.AllExistingCountries())
             {
                 Market.GiveMoneyForSoldProduct(country);
                 foreach (Province province in country.AllProvinces)//Province.allProvinces)
@@ -758,7 +761,7 @@ namespace Nashet.EconomicSimulation
                 }
             }
             //investments circle. Needs to be separate, otherwise cashed  investments can conflict
-            foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.AllExistingCountries())
             {
                 foreach (var province in country.AllProvinces)
                 {
@@ -797,7 +800,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public void TestOldDSB()
         {
-            AllMarkets().PerformAction(x =>
+            AllMarkets.PerformAction(x =>
            //x.ForceDSBRecalculation()
            x.getDemandSupplyBalance(null, true)
            );
@@ -806,7 +809,7 @@ namespace Nashet.EconomicSimulation
 
         public void TestNewDSB()
         {
-            AllMarkets().PerformAction(x =>
+            AllMarkets.PerformAction(x =>
            x.ForceDSBRecalculation()
            //x.getDemandSupplyBalance(null, true)
            );
@@ -818,16 +821,16 @@ namespace Nashet.EconomicSimulation
             {
                 DateOfIsThereBadboyCountry.set(Date.Today);
                 float worldStrenght = 0f;
-                foreach (var item in World.getAllExistingCountries())
+                foreach (var item in World.AllExistingCountries())
                     worldStrenght += item.getStrengthExluding(null);
                 float streghtLimit = worldStrenght * Options.CountryBadBoyWorldLimit;
-                Badboy = World.getAllExistingCountries().Where(x => x != World.UncolonizedLand && x.getStrengthExluding(null) >= streghtLimit).MaxBy(x => x.getStrengthExluding(null));
+                Badboy = World.AllExistingCountries().Where(x => x != World.UncolonizedLand && x.getStrengthExluding(null) >= streghtLimit).MaxBy(x => x.getStrengthExluding(null));
             }
             return Badboy;
         }
         public static IEnumerable<Staff> AllStaffs()
         {
-            foreach (var country in getAllExistingCountries())
+            foreach (var country in AllExistingCountries())
                 if (country.IsAlive && country != World.UncolonizedLand)
                 {
                     yield return country;

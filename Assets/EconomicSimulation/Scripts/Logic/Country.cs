@@ -207,7 +207,7 @@ namespace Nashet.EconomicSimulation
 
         public static void setUnityAPI()
         {
-            foreach (var country in World.getAllExistingCountries())
+            foreach (var country in World.AllExistingCountries())
             {
                 // can't do it before cause graphics isn't loaded
                 if (country != World.UncolonizedLand)
@@ -284,7 +284,7 @@ namespace Nashet.EconomicSimulation
 
         private bool isOnlyCountry()
         {
-            if (World.getAllExistingCountries().Any(x => x != this))
+            if (World.AllExistingCountries().Any(x => x != this))
                 return false;
             else
                 return true;
@@ -659,7 +659,7 @@ namespace Nashet.EconomicSimulation
 
             //todo performance - do it not every tick?
             //International opinion;
-            foreach (var item in World.getAllExistingCountries())
+            foreach (var item in World.AllExistingCountries())
                 if (item != this)
                 {
                     Diplomacy.ChangeRelation(item, modMyOpinionOfXCountry.getModifier(item));
@@ -902,7 +902,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public int getGDPRank()
         {
-            var list = World.getAllExistingCountries().OrderByDescending(x => x.getGDP().Get());
+            var list = World.AllExistingCountries().OrderByDescending(x => x.getGDP().Get());
             return list.FindIndex(x => x == this) + 1; // starts with zero;
 
             //var list = new List<KeyValuePair<Country, Value>>();
@@ -920,7 +920,7 @@ namespace Nashet.EconomicSimulation
         public int getGDPPer1000Rank()
         {
             var list = new List<KeyValuePair<Country, float>>();
-            foreach (var item in World.getAllExistingCountries())
+            foreach (var item in World.AllExistingCountries())
             {
                 list.Add(new KeyValuePair<Country, float>(item, (float)item.getGDPPer1000().Get()));
             }
@@ -931,7 +931,7 @@ namespace Nashet.EconomicSimulation
         public Procent getGDPShare()
         {
             Money worldGDP = new Money(0m);
-            foreach (var item in World.getAllExistingCountries())
+            foreach (var item in World.AllExistingCountries())
             {
                 worldGDP.Add(item.getGDP());
             }
@@ -944,7 +944,7 @@ namespace Nashet.EconomicSimulation
         public int getPopulationRank()
         {
             var list = new List<KeyValuePair<Country, int>>();
-            foreach (var country in World.getAllExistingCountries())
+            foreach (var country in World.AllExistingCountries())
             {
                 list.Add(new KeyValuePair<Country, int>(country, country.Provinces.getFamilyPopulation()));
             }
@@ -958,7 +958,7 @@ namespace Nashet.EconomicSimulation
         public int getSizeRank()
         {
             var list = new List<KeyValuePair<Country, int>>();
-            foreach (var country in World.getAllExistingCountries())
+            foreach (var country in World.AllExistingCountries())
             {
                 list.Add(new KeyValuePair<Country, int>(country, country.Provinces.Count));
             }

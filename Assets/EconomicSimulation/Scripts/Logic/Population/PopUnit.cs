@@ -1274,7 +1274,7 @@ namespace Nashet.EconomicSimulation
             // where life is rich and I where I have some rights
             if (type != PopType.Aristocrats && type != PopType.Capitalists) // redo
 
-                foreach (var country in World.getAllExistingCountries())
+                foreach (var country in World.AllExistingCountries())
                     //if (
                     //(country.Culture == this.culture || country.minorityPolicy.getValue() == MinorityPolicy.Equality)
                     //&& country != this.Country)

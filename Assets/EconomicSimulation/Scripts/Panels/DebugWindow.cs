@@ -66,7 +66,7 @@ namespace Nashet.EconomicSimulation
 
             for (int i = 0; i < 200; i++)
             {
-               // World.AllMarkets().PerformAction(x => x.ForceDSBRecalculation());
+               // World.AllMarkets.PerformAction(x => x.ForceDSBRecalculation());
             }
             var tookTime = System.DateTime.Now - before;
 
@@ -79,7 +79,7 @@ namespace Nashet.EconomicSimulation
 
             for (int i = 0; i < 200; i++)
             {
-               // World.AllMarkets().PerformAction(x => x.ForceDSBRecalculation2());
+               // World.AllMarkets.PerformAction(x => x.ForceDSBRecalculation2());
             }
             var tookTime = System.DateTime.Now - before;
 

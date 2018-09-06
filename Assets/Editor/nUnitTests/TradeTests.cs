@@ -45,11 +45,11 @@ public class TradeTests
         buyer.Buy(new Storage(Product.Fruit, 10f), null);
 
         //force DSB recalculation
-        World.AllMarkets().PerformAction(x => x.getDemandSupplyBalance(null, true));
+        World.AllMarkets.PerformAction(x => x.getDemandSupplyBalance(null, true));
 
         Market.GiveMoneyForSoldProduct(factory);
 
-        World.getAllExistingCountries().PerformAction(x => Debug.Log(x + "\n"));
+        World.AllExistingCountries().PerformAction(x => Debug.Log(x + "\n"));
         Assert.AreEqual(new MoneyView(10).Get(), factory.Cash.Get());
 
     }
@@ -83,11 +83,11 @@ public class TradeTests
         buyer.Buy(new Storage(Product.Fruit, 10f), null);
 
         //force DSB recalculation
-        World.AllMarkets().PerformAction(x => x.getDemandSupplyBalance(null, true));
+        World.AllMarkets.PerformAction(x => x.getDemandSupplyBalance(null, true));
 
         Market.GiveMoneyForSoldProduct(factory);
         Debug.Log("factory has " + factory.Cash + " default fruit price is 1 ");
-        World.getAllExistingCountries().PerformAction(x => Debug.Log(x));
+        World.AllExistingCountries().PerformAction(x => Debug.Log(x));
         Assert.AreEqual(new MoneyView(10).Get(), factory.Cash.Get());
 
     }
