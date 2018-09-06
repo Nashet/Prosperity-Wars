@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Nashet.EconomicSimulation.Reforms;
 using Nashet.Utils;
 using Nashet.ValueSpace;
 
@@ -27,7 +28,7 @@ namespace Nashet.EconomicSimulation
 
         public override bool canThisPromoteInto(PopType targetType)
         {
-            if (targetType == PopType.Capitalists && Country.Invented(Invention.Manufactures))
+            if (targetType == PopType.Capitalists && Country.Science.IsInvented(Invention.Manufactures))
                 return true;
             else
                 return false;
@@ -36,7 +37,7 @@ namespace Nashet.EconomicSimulation
         public override void produce()
         {
             // artisan shouldn't work with PE
-            if (Country.economy.getValue() == Economy.PlannedEconomy)
+            if (Country.economy == Economy.PlannedEconomy)
                 artisansProduction = null;
             else
             {
@@ -53,13 +54,13 @@ namespace Nashet.EconomicSimulation
                             if (getGainGoodsThisTurn().isNotZero())
                                 SendToMarket(getGainGoodsThisTurn());
                         }
-                        else if (Country.economy.getValue() == Economy.NaturalEconomy)
+                        else if (Country.economy == Economy.NaturalEconomy)
                         {
                             // send to market?
                             if (getGainGoodsThisTurn().isNotZero())
                                 SendToMarket(getGainGoodsThisTurn());
                         }
-                        else if (Country.economy.getValue() == Economy.PlannedEconomy)
+                        else if (Country.economy == Economy.PlannedEconomy)
                         {
                             storage.sendAll(Country.countryStorageSet);
                         }
@@ -83,10 +84,10 @@ namespace Nashet.EconomicSimulation
             base.consumeNeeds();
             if (artisansProduction != null)
             {
-                PayWithoutRecord(artisansProduction, Cash);
+                PayWithoutRecord(artisansProduction, Cash, Register.Account.MarketOperations);
 
                 // take loan if don't have enough money to buy inputs
-                if (Country.Invented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected()
+                if (Country.Science.IsInvented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected()
                     && artisansProduction.Type.getPossibleProfit(Country.market).isNotZero())
                 {
                     var needs = artisansProduction.getRealAllNeeds();
@@ -94,17 +95,17 @@ namespace Nashet.EconomicSimulation
                     {
                         var loanSize = Country.market.getCost(needs); // takes little more than really need, could be fixed
                         Bank.GiveCredit(this, loanSize);
-                        PayWithoutRecord(artisansProduction, Cash);
+                        PayWithoutRecord(artisansProduction, Cash, Register.Account.MarketOperations);
                     }
                 }
 
                 artisansProduction.consumeNeeds();
-                artisansProduction.PayWithoutRecord(this, artisansProduction.Cash);
+                artisansProduction.PayWithoutRecord(this, artisansProduction.Cash, Register.Account.MarketOperations);
 
                 // consuming made in artisansProduction.consumeNeeds()
                 // here is data transferring
                 // todo rework data transferring from artisans?
-                foreach (var item in artisansProduction.getAllConsumedInMarket())
+                foreach (var item in artisansProduction.AllConsumedInMarket())
                 {
                     consumedInMarket.Add(item);
                 }
@@ -120,7 +121,7 @@ namespace Nashet.EconomicSimulation
 
         public override bool canTrade()
         {
-            if (Country.economy.getValue() == Economy.PlannedEconomy)
+            if (Country.economy == Economy.PlannedEconomy)
                 return false;
             else
                 return true;
@@ -136,19 +137,19 @@ namespace Nashet.EconomicSimulation
             return true;
         }
 
-        public override bool canVote(Government.ReformValue reform)
+        public override bool CanVoteWithThatGovernment(Government.GovernmentReformValue reform)
         {
             if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
                 || reform == Government.BourgeoisDictatorship)
-                && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality))
+                && (isStateCulture() || Country.minorityPolicy == MinorityPolicy.Equality))
                 return true;
             else
                 return false;
         }
 
-        public override int getVotingPower(Government.ReformValue reformValue)
+        public override int getVotingPower(Government.GovernmentReformValue reformValue)
         {
-            if (canVote(reformValue))
+            if (CanVoteWithThatGovernment(reformValue))
                 if (reformValue == Government.WealthDemocracy)
                     return Options.PopMiddleStrataVotePower;
                 else
@@ -212,7 +213,7 @@ namespace Nashet.EconomicSimulation
         {
             // todo doesn't include taxes. Should it?
             if (artisansProduction == null
-                || moneyIncomeThisTurn.Copy().Subtract(artisansProduction.getExpences(), false).isZero())
+                || Register.Income.Copy().Subtract(artisansProduction.getExpences(), false).isZero())
                 changeProductionType();
         }
     }

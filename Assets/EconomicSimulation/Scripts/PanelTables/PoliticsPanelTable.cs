@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
+using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
@@ -7,16 +9,16 @@ namespace Nashet.EconomicSimulation
     {
         protected override IEnumerable<AbstractReform> ContentSelector()
         {
-            return Game.Player.reforms;
+            return Game.Player.Politics.AllReforms;
         }
 
         protected override void AddRow(AbstractReform reform, int number)
         {
             // Adding reform name
-            AddCell(reform.ToString(), reform);
+            AddCell(reform.ShortName, reform);
 
             ////Adding Status
-            AddCell(reform.getValue().ToString(), reform);
+            AddCell(reform.Value.ToString(), reform);
 
             ////Adding Can change possibility
             //if (next.canChange())

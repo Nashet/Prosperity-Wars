@@ -1,4 +1,5 @@
-﻿using Nashet.ValueSpace;
+﻿using Nashet.EconomicSimulation.Reforms;
+using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
@@ -14,7 +15,7 @@ namespace Nashet.EconomicSimulation
         {
             if (targetType == PopType.Aristocrats // should be officers
              || targetType == PopType.Artisans
-             || targetType == PopType.Farmers && Country.Invented(Invention.Farming)
+             || targetType == PopType.Farmers && Country.Science.IsInvented(Invention.Farming)
              )
                 return true;
             else
@@ -26,18 +27,18 @@ namespace Nashet.EconomicSimulation
             return false;
         }
 
-        public override bool canVote(Government.ReformValue reform)
+        public override bool CanVoteWithThatGovernment(Government.GovernmentReformValue reform)
         {
             if ((reform == Government.Democracy || reform == Government.Junta)
-                && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality))
+                && (isStateCulture() || Country.minorityPolicy == MinorityPolicy.Equality))
                 return true;
             else
                 return false;
         }
 
-        public override int getVotingPower(Government.ReformValue reformValue)
+        public override int getVotingPower(Government.GovernmentReformValue reformValue)
         {
-            if (canVote(reformValue))
+            if (CanVoteWithThatGovernment(reformValue))
                 return 1;
             else
                 return 0;
@@ -53,8 +54,7 @@ namespace Nashet.EconomicSimulation
             payCheck.Multiply(population.Get() / 1000m);
             if (Country.CanPay(payCheck))
             {
-                Country.Pay(this, payCheck);
-                Country.soldiersWageExpenseAdd(payCheck);
+                Country.Pay(this, payCheck, Register.Account.Wage);                
                 didntGetPromisedSalary = false;
             }
             else

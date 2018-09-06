@@ -54,12 +54,12 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Use for only reads!
         /// </summary>
-        public IEnumerable<Storage> getConsumedInMarket(Market market)
+        public IEnumerable<Storage> AllConsumedInMarket(Market market)
         {
             foreach (var item in consumedInMarket.Where(x => x.Key == market))
                 yield return item.Value;
         }
-        public IEnumerable<KeyValuePair<Market, Storage>> getAllConsumedInMarket()
+        public IEnumerable<KeyValuePair<Market, Storage>> AllConsumedInMarket()
         {
             foreach (var item in consumedInMarket)
                 yield return item;
@@ -218,10 +218,10 @@ namespace Nashet.EconomicSimulation
                     return new Storage(need.Product, 0f);
             }
         }
-        // Do I use where need to? Yes, I do. It called from this.Buy()
+        // Do I use it where need to? Yes, I do. It called from this.Buy()
         protected virtual void Buy_utility(Market market, MoneyView cost, Storage what)
         {
-            this.Pay(market, cost);
+            this.Pay(market, cost, Register.Account.MarketOperations);
             consumed.Add(what);
             consumedInMarket.Add(new KeyValuePair<Market, Storage>(market, what));
             market.SendGoods(what);

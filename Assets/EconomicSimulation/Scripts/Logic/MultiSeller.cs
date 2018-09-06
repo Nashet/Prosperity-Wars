@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
         public MultiSeller(float money, Country place) : base(place)
         {
             //Country = place;
-            foreach (var item in Product.getAll().Where(x => !x.isAbstract()))
+            foreach (var item in Product.AllNonAbstract())
             //if (item != Product.Gold)
             {
                 if (item == Product.Grain)
@@ -126,7 +126,7 @@ namespace Nashet.EconomicSimulation
 
         public void producedTotalAdd(Storage produced)
         {
-            producedTotal.addMy(produced.Product, produced);
+            producedTotal.AddAndSum(produced.Product, produced);
         }
 
         public ReadOnlyValue getProducedTotal(Product product)
@@ -178,9 +178,9 @@ namespace Nashet.EconomicSimulation
         public Procent getWorldProductionShare(Product product)
         {
             Storage worldProduction = new Storage(product);
-            foreach (var item in World.getAllExistingCountries())
+            foreach (var item in World.AllMarkets)
             {
-                worldProduction.Add(item.market.getProductionTotal(product, true));
+                worldProduction.Add(item.getProductionTotal(product, true));
             }
 
             if (worldProduction.isZero())

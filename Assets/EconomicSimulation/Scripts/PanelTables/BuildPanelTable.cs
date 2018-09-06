@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 
@@ -25,7 +26,7 @@ namespace Nashet.EconomicSimulation
             if (Economy.isMarket.checkIfTrue(Game.Player))
                 AddCell(factoryType.GetBuildCost(Game.Player.market).ToString(), factoryType);
             else
-                AddCell(factoryType.GetBuildNeeds().getString(""), factoryType);
+                AddCell(factoryType.GetBuildNeeds().ToString(""), factoryType);
 
             ////Adding resource needed
             //AddButton(next.resourceInput.ToString(), next);
@@ -34,7 +35,7 @@ namespace Nashet.EconomicSimulation
             AddCell(factoryType.basicProduction.ToString(), factoryType);
 
             ////Adding potential profit
-            if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
+            if (Game.Player.economy == Economy.PlannedEconomy)
                 AddCell("unknown", factoryType);
             else
                 AddCell(factoryType.GetPossibleMargin(Game.selectedProvince).ToString(), factoryType);

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using Nashet.Conditions;
+using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
@@ -35,8 +36,8 @@ namespace Nashet.EconomicSimulation
         ///duplicated in Factory
         public static DoubleCondition allowsForeignInvestments = new DoubleCondition((agent, province) =>
         (province as Province).Country == (agent as Agent).Country
-        || ((province as Province).Country.economy.getTypedValue().AllowForeignInvestments
-        && (agent as Agent).Country.economy.getTypedValue() != Economy.PlannedEconomy),
+        || ((province as Province).Country.economy.AllowForeignInvestments
+        && (agent as Agent).Country.economy != Economy.PlannedEconomy),
             agent => "Local government allows foreign investments or it isn't foreign investment", true);
 
         // empty trade
@@ -175,7 +176,7 @@ namespace Nashet.EconomicSimulation
                 delegate (object forWhom)
                 {
                     var agent = forWhom as Agent;
-                    if (agent.Country.economy.getValue() == Economy.PlannedEconomy)
+                    if (agent.Country.economy == Economy.PlannedEconomy)
                     {
                         return agent.Country.countryStorageSet.has(GetBuildNeeds());
                     }
@@ -191,7 +192,7 @@ namespace Nashet.EconomicSimulation
                     // var cost = GetBuildCost(agent.Country.market);
                     //sb.Append("Has ").Append(cost).Append(" coins");
                     sb.Append("Has enough coins");
-                    sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") has ").Append(GetBuildNeeds().getString(", "));
+                    sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") has ").Append(GetBuildNeeds().ToString(", "));
                     return sb.ToString();
                 }, true);
 
@@ -217,7 +218,7 @@ namespace Nashet.EconomicSimulation
         public static IEnumerable<ProductionType> getAllInventedFactories(Country country)
         {
             foreach (var next in allTypes)
-                if (country.InventedFactory(next))
+                if (country.Science.IsInventedFactory(next))
                     yield return next;
         }
 
@@ -231,7 +232,7 @@ namespace Nashet.EconomicSimulation
         public static IEnumerable<ProductionType> getAllInventedArtisanships(Country country)
         {
             foreach (var next in allTypes)
-                if (country.InventedArtisanship(next))
+                if (country.Science.IsInventedArtisanship(next))
                     yield return next;
         }
 
@@ -402,7 +403,7 @@ namespace Nashet.EconomicSimulation
         public Procent GetPossibleMargin(Province province)
         {
             var profit = getPossibleProfit(province).Copy();
-            var taxes = profit.Copy().Multiply(province.Country.taxationForRich.getTypedValue().tax);
+            var taxes = profit.Copy().Multiply(province.Country.taxationForRich.tax.Procent);
             profit.Subtract(taxes);
             return new Procent(profit, GetBuildCost(province.Country.market));
         }
@@ -415,7 +416,7 @@ namespace Nashet.EconomicSimulation
             if (where.hasFactory(this))
                 return false;
             if (isResourceGathering() && basicProduction.Product != where.getResource()
-                || (builder != null && !builder.Country.InventedFactory(this)) // check it out side
+                || (builder != null && !builder.Country.Science.IsInventedFactory(this)) // check it out side
                 || (builder != null && !allowsForeignInvestments.checkIftrue(builder, where))// check it out side
                                                                                              //|| !basicProduction.Product.IsInventedByAnyOne()
                 )
@@ -434,9 +435,12 @@ namespace Nashet.EconomicSimulation
             return basicProduction.Product == product;
         }
 
-        public float GetNameWeight()
+        public float NameWeight
         {
-            return nameWeight;
+            get
+            {
+                return nameWeight;
+            }
         }
 
         //public Procent GetWorkForceFulFilling()

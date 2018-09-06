@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nashet.EconomicSimulation.Reforms;
 using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
@@ -60,11 +61,11 @@ namespace Nashet.EconomicSimulation
 
         {
             //return (float)(moneyIncomeThisTurn.Get() - getExpences().Get());
-            if (Country.economy.getValue() == Economy.PlannedEconomy)
+            if (Country.economy == Economy.PlannedEconomy)
                 return 0m;
             else
                 //return base.getProfit() - (float)getSalaryCost().Get();
-                return moneyIncomeThisTurn.Get() - getExpences().Get();
+                return Register.Balance;
         }
 
         /// <summary>

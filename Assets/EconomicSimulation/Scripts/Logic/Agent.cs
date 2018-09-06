@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Nashet.Utils;
+﻿using Nashet.Utils;
 using Nashet.ValueSpace;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Nashet.EconomicSimulation
@@ -11,11 +11,13 @@ namespace Nashet.EconomicSimulation
     public abstract class Agent : IHasCountry, IStatisticable
     {
         /// <summary> Used to calculate income tax, now it's only for statistics </summary>
-        public Money moneyIncomeThisTurn = new Money(0);
+        //public Money moneyIncomeThisTurn = new Money(0);
 
-        protected readonly Money moneyIncomeLastTurn = new Money(0);
+        //protected readonly Money moneyIncomeLastTurn = new Money(0);
         protected readonly Money cash = new Money(0);
         public MoneyView Cash { get { return cash; } }
+
+        public readonly Register Register = new Register();
 
         /// <summary> could be null</summary>
         //private Bank bank;
@@ -23,7 +25,7 @@ namespace Nashet.EconomicSimulation
 
         public Money deposits = new Money(0);
 
-        public Money incomeTaxPayed = new Money(0);
+        //public Money incomeTaxPayed = new Money(0);
 
         public abstract void simulate();
 
@@ -51,24 +53,11 @@ namespace Nashet.EconomicSimulation
             cash.Add(money);
         }
 
-        public void GiveMoneyFromGoldPit(Storage gold)
-        {
-            var newMoney = new MoneyView(gold);
-            cash.Add(newMoney);
-            gold.SetZero();
-            moneyIncomeThisTurn.Add(newMoney);
-            MoneyView sentToGovernment = MoneyView.CovertFromGold(gold.Copy().Multiply(Options.GovernmentTakesShareOfGoldOutput));
 
-            //send 50% to government
-            Pay(country, sentToGovernment);
-            country.goldMinesIncomeAdd(sentToGovernment);
-        }
 
         public virtual void SetStatisticToZero()
         {
-            moneyIncomeLastTurn.Set(moneyIncomeThisTurn);
-            moneyIncomeThisTurn.SetZero();
-            incomeTaxPayed.SetZero();
+            Register.SetStatisticToZero();
         }
 
         /// <summary> Returns difference between moneyIncomeLastTurn and value</summary>
@@ -218,15 +207,15 @@ namespace Nashet.EconomicSimulation
 
         /// <summary>
         /// Checks inside. Wouldn't pay if can't. Takes back deposits from bank, if needed
-        /// Doesn't pay tax, doesn't register transaction
+        /// Doesn't pay tax
         /// </summary>
-        public bool PayWithoutRecord(Agent whom, MoneyView howMuch, bool showMessageAboutNegativeValue = true)
+        public bool PayWithoutRecord(Agent whom, MoneyView howMuch, Register.Account account, bool showMessageAboutNegativeValue = true)
         {
             if (CanPay(howMuch))// It does has enough cash or deposit
             {
                 if (!CanPayCashOnly(howMuch))
                     Bank.ReturnDeposit(this, HowMuchLacksMoneyCashOnly(howMuch));
-
+                Register.RecordPayment(whom, account, howMuch.Get());
                 whom.cash.Add(howMuch);
                 cash.Subtract(howMuch);
                 return true;
@@ -242,16 +231,19 @@ namespace Nashet.EconomicSimulation
         }
 
         /// <summary>
+        /// used only to pay to stash, should be removed 
         /// Checks inside. Wouldn't pay if can't. Takes back deposits from bank, if needed
-        /// Doesn't pay tax, doesn't register transaction
+        /// Doesn't pay tax
         /// </summary>
+        // todo remove it #510
         public bool PayWithoutRecord(Money whom, MoneyView howMuch, bool showMessageAboutNegativeValue = true)
         {
             if (CanPay(howMuch))// It does has enough cash or deposit
             {
                 if (!CanPayCashOnly(howMuch))
                     Bank.ReturnDeposit(this, HowMuchLacksMoneyCashOnly(howMuch));
-
+                whom.Add(howMuch);
+                cash.Subtract(howMuch);
                 return true;
             }
             else
@@ -268,18 +260,19 @@ namespace Nashet.EconomicSimulation
         /// Checks inside. Wouldn't pay if can't. Takes back deposit from bank if needed
         /// Registers moneyIncomeThisTurn, pays tax. Returns true if was able to pay
         /// </summary>
-        public bool Pay(Agent incomeReceiver, MoneyView howMuch, bool showMessageAboutNegativeValue = true)
+        public bool Pay(Agent incomeReceiver, MoneyView howMuch, Register.Account account, bool showMessageAboutNegativeValue = true)
         {
             if (howMuch.isNotZero())
-                if (PayWithoutRecord(incomeReceiver, howMuch, showMessageAboutNegativeValue))
+                if (PayWithoutRecord(incomeReceiver, howMuch, account, showMessageAboutNegativeValue)) // pays here
                 {
-                    // income tax calculation
                     Money howMuchPayReally = howMuch.Copy();
-                    incomeReceiver.moneyIncomeThisTurn.Add(howMuchPayReally);
+
                     if (incomeReceiver is Market) // Market wouldn't pay taxes cause it's abstract entity
                         return true;
+
                     Agent payer = this;
 
+                    // foreigners income tax calculation
                     if (payer is Market == false //&& incomeReceiver is Market == false
                         && payer.country != incomeReceiver.country
                         && payer is Factory) // pay taxes in enterprise jurisdiction only if it's factory
@@ -305,18 +298,18 @@ namespace Nashet.EconomicSimulation
             return true;
         }
 
-        public void PayAllAvailableMoney(Agent whom)
+        public void PayAllAvailableMoney(Agent whom, Register.Account account)
         {
             if (Bank != null)
                 Bank.ReturnAllDeposits(this);
-            Pay(whom, cash);
+            Pay(whom, cash, account);
         }
 
-        public void PayAllAvailableMoneyWithoutRecord(Agent whom)
+        public void PayAllAvailableMoneyWithoutRecord(Agent whom, Register.Account account)
         {
             if (Bank != null)
                 Bank.ReturnAllDeposits(this);
-            PayWithoutRecord(whom, cash);
+            PayWithoutRecord(whom, cash, account);
         }
 
         public override string ToString()

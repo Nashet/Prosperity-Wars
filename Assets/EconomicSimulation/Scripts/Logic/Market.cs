@@ -18,6 +18,8 @@ namespace Nashet.EconomicSimulation
         private Date dateOfDSB = Date.Never.Copy();
 
         private readonly StorageSet DSBbuffer = new StorageSet();
+        Dictionary<Product, Value> marketSupply = new Dictionary<Product, Value>();
+        Dictionary<Product, Value> boughtOnMarket = new Dictionary<Product, Value>();
 
         private Date dateOfgetSupplyOnMarket = Date.Never.Copy();
         private readonly StorageSet supplyOnMarket = new StorageSet();
@@ -48,7 +50,7 @@ namespace Nashet.EconomicSimulation
         public void Initialize(Country country)
         {
             priceHistory = new PricePool();
-            foreach (var item in Product.getAll().Where(x => !x.isAbstract()))
+            foreach (var item in Product.AllNonAbstract())
                 if (item != Product.Gold)
                 {
                     prices.Set(new Storage(item, (float)item.defaultPrice.Get()));
@@ -125,10 +127,10 @@ namespace Nashet.EconomicSimulation
         private Storage recalculateProductForConsumers(Product product, Func<Consumer, IEnumerable<Storage>> selector)
         {
             Storage result = new Storage(product); // too big circle - 22k per frame, 11Mb memory
-            foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.AllExistingCountries())
             {
-                foreach (Province province in country.AllProvinces())
-                    foreach (Consumer consumer in province.getAllAgents())
+                foreach (Province province in country.AllProvinces)
+                    foreach (Consumer consumer in province.AllAgents)
                     {
                         Storage found = selector(consumer).GetFirstSubstituteStorage(product);
                         result.add(found);
@@ -142,10 +144,10 @@ namespace Nashet.EconomicSimulation
         private Storage recalculateProductForBuyers(Product product, Func<Consumer, IEnumerable<Storage>> selector)
         {
             Storage result = new Storage(product);
-            foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.AllExistingCountries())
             {
-                foreach (Province province in country.AllProvinces())
-                    foreach (Consumer consumer in province.getAllBuyers())
+                foreach (Province province in country.AllProvinces)
+                    foreach (Consumer consumer in province.AllConsumers)
                     {
                         Storage re = selector(consumer).GetFirstSubstituteStorage(product);
                         result.add(re);
@@ -160,10 +162,10 @@ namespace Nashet.EconomicSimulation
         private Storage recalculateProductForSellers(Product product, Func<ISeller, Storage> selector)
         {
             Storage result = new Storage(product);
-            foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.AllExistingCountries())
             {
-                foreach (Province province in country.AllProvinces())
-                    foreach (ISeller producer in province.getAllProducers())
+                foreach (Province province in country.AllProvinces)
+                    foreach (ISeller producer in province.AllProducers)
                     {
                         var found = selector(producer);
                         if (found.isExactlySameProduct(product))
@@ -178,10 +180,10 @@ namespace Nashet.EconomicSimulation
         private Storage recalculateProductForProducers(Product product, Func<Producer, Storage> selector)
         {
             Storage result = new Storage(product);
-            foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.AllExistingCountries())
             {
-                foreach (Province province in country.AllProvinces())
-                    foreach (Producer producer in province.getAllProducers())
+                foreach (Province province in country.AllProvinces)
+                    foreach (Producer producer in province.AllProducers)
                     {
                         var found = selector(producer);
                         if (found.isExactlySameProduct(product))
@@ -196,7 +198,7 @@ namespace Nashet.EconomicSimulation
             if (takeThisTurnData)
             {
                 // recalculate only 1 product
-                return recalculateProductForBuyers(product, x => x.getConsumedInMarket(this));
+                return recalculateProductForBuyers(product, x => x.AllConsumedInMarket(this));
             }
             if (!dateOfgetBought.IsToday)
             {
@@ -204,7 +206,7 @@ namespace Nashet.EconomicSimulation
                 foreach (Storage recalculatingProduct in prices)
                     if (recalculatingProduct.Product.isTradable())
                     {
-                        var result = recalculateProductForConsumers(recalculatingProduct.Product, x => x.getConsumedInMarket(this));
+                        var result = recalculateProductForConsumers(recalculatingProduct.Product, x => x.AllConsumedInMarket(this));
 
                         bought.Set(new Storage(recalculatingProduct.Product, result));
                     }
@@ -382,6 +384,160 @@ namespace Nashet.EconomicSimulation
             //return new Storage(need.Product, BuyingAmountAvailable);
         }
 
+        public void ForceDSBRecalculation2()
+        {
+            // get all MarketSupply            
+            foreach (Country country in World.AllExistingCountries())
+            {
+                foreach (var agent in country.Provinces.AllAgents)
+                {
+                    //if (found.isExactlySameProduct(product))
+                    var isSeller = agent as Producer;
+                    if (isSeller != null)
+                        foreach (var deal in isSeller.AllSellDeals())
+                        {
+                            if (deal.Key == this)// && deal.Value.Product.isTradable())
+                                marketSupply.AddAndSum(deal.Value.Product, deal.Value);
+                        }
+                    var isConsumer = agent as Consumer;
+                    if (isConsumer!=null)
+                        foreach (var deal in isConsumer.AllConsumedInMarket(this))
+                        {
+                            //if (deal.Product.isTradable())
+                            boughtOnMarket.AddAndSum(deal.Product, deal);
+                        }
+                }
+            }
+
+            // get all getBoughtOnMarket            
+            //foreach (Country country in World.getAllExistingCountries())
+            //{
+            //    foreach (var consumer in country.AllConsumers())
+            //    {
+            //        //if (found.isExactlySameProduct(product))
+            //        foreach (var deal in consumer.AllConsumedInMarket(this))
+            //        {
+            //            //if (deal.Product.isTradable())
+            //            boughtOnMarket.AddAndSum(deal.Product, deal);
+            //        }
+            //    }
+            //}
+
+            //calculate DSB
+
+            foreach (var product in Product.AllNonAbstract())
+            {
+                float balance, demand = 0f, supply = 0f;
+
+                Value demandValue;
+                if (boughtOnMarket.TryGetValue(product, out demandValue))
+                    demand = demandValue.get();
+
+                Value supplyValue;
+                if (marketSupply.TryGetValue(product, out supplyValue))
+                    supply = supplyValue.get();
+
+
+                if (supply == 0)
+                    balance = Options.MarketInfiniteDSB; // supply zero
+                else
+                {
+                    if (demand == 0f) // demand zero
+                        balance = Options.MarketZeroDSB; // otherwise - furniture bag
+                    else
+                        balance = demand / supply;
+                }
+
+
+                if (supply != 0f && demand == 0f)
+                    balance = Options.MarketZeroDSB; // Options.MarketInfiniteDSB; // supply zero
+                else if (supply == 0f && demand == 0f)
+                    balance = Options.MarketInfiniteDSB; // Options.MarketInfiniteDSB; // supply zero
+                else
+                {
+                    if (demand == 0f) // demand zero
+                        balance = Options.MarketZeroDSB; // otherwise - furniture bag
+                    else
+                        balance = demand / supply;
+                }
+                DSBbuffer.Set(new Storage(product, balance));
+
+            }
+            dateOfDSB.set(Date.Today);
+        }
+        public void ForceDSBRecalculation()
+        {
+            // get all MarketSupply            
+            foreach (Country country in World.AllExistingCountries())
+            {
+                foreach (var seller in country.Provinces.AllSellers)
+                {
+                    //if (found.isExactlySameProduct(product))
+                    foreach (var deal in seller.AllSellDeals())
+                    {
+                        if (deal.Key == this)// && deal.Value.Product.isTradable())
+                            marketSupply.AddAndSum(deal.Value.Product, deal.Value);
+                    }
+                }
+            }
+
+            // get all getBoughtOnMarket            
+            foreach (Country country in World.AllExistingCountries())
+            {
+                foreach (var consumer in country.Provinces.AllConsumers)
+                {
+                    //if (found.isExactlySameProduct(product))
+                    foreach (var deal in consumer.AllConsumedInMarket(this))
+                    {
+                        //if (deal.Product.isTradable())
+                        boughtOnMarket.AddAndSum(deal.Product, deal);
+                    }
+                }
+            }
+
+            //calculate DSB
+
+            foreach (var product in Product.AllNonAbstract())
+            {
+                float balance, demand = 0f, supply = 0f;
+
+                Value demandValue;
+                if (boughtOnMarket.TryGetValue(product, out demandValue))
+                    demand = demandValue.get();
+
+                Value supplyValue;
+                if (marketSupply.TryGetValue(product, out supplyValue))
+                    supply = supplyValue.get();
+
+
+                if (supply == 0)
+                    balance = Options.MarketInfiniteDSB; // supply zero
+                else
+                {
+                    if (demand == 0f) // demand zero
+                        balance = Options.MarketZeroDSB; // otherwise - furniture bag
+                    else
+                        balance = demand / supply;
+                }
+
+
+                if (supply != 0f && demand == 0f)
+                    balance = Options.MarketZeroDSB; // Options.MarketInfiniteDSB; // supply zero
+                else if (supply == 0f && demand == 0f)
+                    balance = Options.MarketInfiniteDSB; // Options.MarketInfiniteDSB; // supply zero
+                else
+                {
+                    if (demand == 0f) // demand zero
+                        balance = Options.MarketZeroDSB; // otherwise - furniture bag
+                    else
+                        balance = demand / supply;
+                }
+                DSBbuffer.Set(new Storage(product, balance));
+
+            }
+            dateOfDSB.set(Date.Today);
+        }
+
         /// <summary>
         /// Result > 1 mean demand is higher, price should go up   Result fewer 1 mean supply is higher, price should go down
         /// based on last turn data
@@ -390,50 +546,51 @@ namespace Nashet.EconomicSimulation
         {
             if (product == Product.Gold)
                 return Options.MarketInfiniteDSB;
-            //Debug.Log("I'm in DSBBalancer, dateOfDSB = " + dateOfDSB);
-            float balance;
+            //Debug.Log("I'm in DSBBalancer, dateOfDSB = " + dateOfDSB);            
 
             if (!dateOfDSB.IsToday || forceDSBRecalculation)
             // recalculate DSBbuffer
             {
+                ForceDSBRecalculation();
                 //Debug.Log("Recalculation of DSB started");
-                foreach (Storage nextProduct in prices)
-                    if (nextProduct.Product.isTradable())
-                    {
-                        //getProductionTotal(product, false); // for pre-turn initialization
-                        //getTotalConsumption(product, false);// for pre-turn initialization
-                        float supply = getMarketSupply(nextProduct.Product, forceDSBRecalculation).get();
-                        float demand = getBouthOnMarket(nextProduct.Product, forceDSBRecalculation).get();
+                //foreach (Storage nextProduct in prices)
+                //    if (nextProduct.Product.isTradable())
+                //    {
+                //        float balance;
+                //        //getProductionTotal(product, false); // for pre-turn initialization
+                //        //getTotalConsumption(product, false);// for pre-turn initialization
+                //        float supply = getMarketSupply(nextProduct.Product, forceDSBRecalculation).get();
+                //        float demand = getBouthOnMarket(nextProduct.Product, forceDSBRecalculation).get();
 
-                        if (supply == 0)
-                            balance = Options.MarketInfiniteDSB; // supply zero
-                        else
-                        {
-                            if (demand == 0f) // demand zero
-                                balance = Options.MarketZeroDSB; // otherwise - furniture bag
-                            else
-                                balance = demand / supply;
-                        }
+                //        if (supply == 0)
+                //            balance = Options.MarketInfiniteDSB; // supply zero
+                //        else
+                //        {
+                //            if (demand == 0f) // demand zero
+                //                balance = Options.MarketZeroDSB; // otherwise - furniture bag
+                //            else
+                //                balance = demand / supply;
+                //        }
 
-                        //if (supply == 0 && demand == 0) // both zero
-                        //    balance = Options.MarketInfiniteDSB;
-                        //else
-                        //{
-                        if (supply != 0f && demand == 0f)
-                            balance = Options.MarketZeroDSB; // Options.MarketInfiniteDSB; // supply zero
-                        else if (supply == 0f && demand == 0f)
-                            balance = Options.MarketInfiniteDSB; // Options.MarketInfiniteDSB; // supply zero
-                        else
-                        {
-                            if (demand == 0f) // demand zero
-                                balance = Options.MarketZeroDSB; // otherwise - furniture bag
-                            else
-                                balance = demand / supply;
-                        }
-                        //}
-                        DSBbuffer.Set(new Storage(nextProduct.Product, balance));
-                    }
-                dateOfDSB.set(Date.Today);
+                //        //if (supply == 0 && demand == 0) // both zero
+                //        //    balance = Options.MarketInfiniteDSB;
+                //        //else
+                //        //{
+                //        if (supply != 0f && demand == 0f)
+                //            balance = Options.MarketZeroDSB; // Options.MarketInfiniteDSB; // supply zero
+                //        else if (supply == 0f && demand == 0f)
+                //            balance = Options.MarketInfiniteDSB; // Options.MarketInfiniteDSB; // supply zero
+                //        else
+                //        {
+                //            if (demand == 0f) // demand zero
+                //                balance = Options.MarketZeroDSB; // otherwise - furniture bag
+                //            else
+                //                balance = demand / supply;
+                //        }
+                //        //}
+                //        DSBbuffer.Set(new Storage(nextProduct.Product, balance));
+                //    }
+                //dateOfDSB.set(Date.Today);
             }
             if (product == null)
                 return 0f;
@@ -455,7 +612,7 @@ namespace Nashet.EconomicSimulation
             foreach (Storage price in prices)
                 if (price.Product.isTradable())
                 {
-                    // first call of DSB
+                    // first call of DSB, based on last turn data
                     balance = getDemandSupplyBalance(price.Product, false);
                     /// Result > 1 mean demand is higher, price should go up
                     /// Result fewer 1 mean supply is higher, price should go down
@@ -496,6 +653,16 @@ namespace Nashet.EconomicSimulation
         {
             base.SetStatisticToZero();
             receivedGoods.setZero();
+
+            foreach (var item in marketSupply)
+            {
+                item.Value.SetZero();
+            }
+
+            foreach (var item in boughtOnMarket)
+            {
+                item.Value.SetZero();
+            }
         }
 
         public override string ToString()
@@ -507,7 +674,7 @@ namespace Nashet.EconomicSimulation
         {
             var res = new Storage(product);
             foreach (var deal in seller.AllSellDeals().Where(x => x.Value.Product == product))
-            {                
+            {
                 // Key is a market, Value is a Storage
                 var market = deal.Key;
                 var sentToMarket = deal.Value;
@@ -566,14 +733,14 @@ namespace Nashet.EconomicSimulation
 
                         if (market.CanPay(cost)) //&& Country.market.tmpMarketStorage.has(realSold))
                         {
-                            market.Pay(seller as Agent, cost);
+                            market.Pay(seller as Agent, cost, Register.Account.MarketOperations);
                         }
                         else
                         {
-                            //if (Game.devMode)// && Country.market.HowMuchLacksMoneyIncludingDeposits(cost).Get() > 10m)
-                            Debug.Log("Failed market - lacks " + market.HowMuchLacksMoneyIncludingDeposits(cost)
-                                    + " for " + realSold + " " + sentToMarket.Product + " " + seller + " trade: " + cost); // money in market ended... Only first lucky get money
-                            market.PayAllAvailableMoney(seller as Agent);
+                            if (Game.devMode)// && Country.market.HowMuchLacksMoneyIncludingDeposits(cost).Get() > 10m)
+                                Debug.Log("Failed market - lacks " + market.HowMuchLacksMoneyIncludingDeposits(cost)
+                                        + " for " + realSold + " " + sentToMarket.Product + " " + seller + " trade: " + cost); // money in market ended... Only first lucky get money
+                            market.PayAllAvailableMoney(seller as Agent, Register.Account.MarketOperations);
 
                         }
                     }
@@ -591,11 +758,12 @@ namespace Nashet.EconomicSimulation
 
         public static Market GetReachestMarket(Storage need)
         {
-            return World.AllMarkets().Where(x => x.getBouthOnMarket(need.Product, false).get() != Options.MarketEqualityDSB).MaxBy(x => x.getCost(need.Product).Get());
+            return World.AllMarkets.MaxBy(x => x.getCost(need.Product).Get());
+            //.Where(x => x.getDemandSupplyBalance(need.Product, false) != Options.MarketEqualityDSB)
         }
         public static Market GetCheapestMarket(Storage need)
         {
-            return World.AllMarkets().MinBy(x => x.getCost(need.Product).Get());
+            return World.AllMarkets.MinBy(x => x.getCost(need.Product).Get());
         }
     }
 }

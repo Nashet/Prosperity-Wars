@@ -1,7 +1,8 @@
-﻿using System.Text;
+﻿using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -45,55 +46,69 @@ namespace Nashet.EconomicSimulation
             captionText.text = sb.ToString();
 
             sb.Clear();
-            sb.Append("Income:");
-            sb.Append("\n Income tax for Poor (").Append(Game.Player.taxationForPoor.getTypedValue().tax).Append("): ").Append(Game.Player.IncomeTaxStaticticPoor);
-            sb.Append("\n Income tax for Rich (").Append(Game.Player.taxationForRich.getTypedValue().tax).Append("): ").Append(Game.Player.IncomeTaxStatisticRich);
-            sb.Append("\n Income tax for Foreigners (").Append(Game.Player.taxationForRich.getTypedValue().tax).Append("): ").Append(Game.Player.IncomeTaxForeigner);
-            sb.Append("\n Gold mines: ").Append(Game.Player.GoldMinesIncome);
-            sb.Append("\n Dividends: ").Append(Game.Player.OwnedFactoriesIncome);
-            sb.Append("\n Storage sells: [code is broken #494]");//.Append(Game.Player.getCostOfAllSellsByGovernment());
-            sb.Append("\n Rest: ").Append(Game.Player.RestIncome);
-            sb.Append("\nTotal: ").Append(Game.Player.moneyIncomeThisTurn);
+            //sb.Append("Income:");
+            //sb.Append("\n Income tax for Poor (").Append(Game.Player.taxationForPoor.tax.Procent).Append("): ").Append(Game.Player.IncomeTaxStaticticPoor);
+            //sb.Append("\n Income tax for Rich (").Append(Game.Player.taxationForRich.tax.Procent).Append("): ").Append(Game.Player.IncomeTaxStatisticRich);
+            //sb.Append("\n Income tax for Foreigners (").Append(Game.Player.taxationForRich.tax.Procent).Append("): ").Append(Game.Player.IncomeTaxForeigner);
+            //sb.Append("\n Gold mines: ").Append(Game.Player.GoldMinesIncome);
+            //sb.Append("\n Dividends: ").Append(Game.Player.OwnedFactoriesIncome);
+            //sb.Append("\n Storage sells: [code is broken #494]");//.Append(Game.Player.getCostOfAllSellsByGovernment());
+            //sb.Append("\n Rest: ").Append(Game.Player.RestIncome);
+            //sb.Append("\nTotal: ").Append(Game.Player.moneyIncomeThisTurn);
+            sb.Append(Game.Player.Register.GetIncomeTest());
 
-            sb.Append("\n\nBalance: ").Append(Game.Player.getBalance());
+            sb.Append("\n\nBalance: ").Append(Money.DecimalToString(Game.Player.Register.Balance));
             sb.Append("\nHave money: ").Append(Game.Player.Cash).Append(" + ").Append(Game.Player.deposits).Append(" in bank");
             sb.Append("\nLoans taken: ").Append(Game.Player.loans);
             //sb.Append("\nGDP (current prices): ").Append(Game.Player.getGDP()).Append("; GDP per thousand men: ").Append(Game.Player.getGDPPer1000());
             incomeText.text = sb.ToString();
             //sb.Append("\nScreen resolution: ").Append(Screen.currentResolution).Append(" Canvas size: ").Append(MainCamera.topPanel.transform.parent.GetComponentInParent<RectTransform>().rect);
 
-            sb.Clear();
-            sb.Append("Expenses: ");
-            sb.Append("\n Unemployment subsidies: ").Append(Game.Player.UnemploymentSubsidiesExpense)
-                .Append(" unemployment: ").Append(Game.Player.GetAllPopulation().GetAverageProcent(x => x.getUnemployment()));
-            sb.Append("\n Enterprises subsidies: ").Append(Game.Player.FactorySubsidiesExpense);
-            if (Game.Player.Invented(Invention.ProfessionalArmy))
-                sb.Append("\n Soldiers paychecks: ").Append(Game.Player.SoldiersWageExpense);
-            sb.Append("\n Storage buying: ").Append(Game.Player.StorageBuyingExpense);
-            sb.Append("\nTotal: ").Append(Game.Player.getExpenses());
-            expensesText.text = sb.ToString();
+            //sb.Clear();
+            //sb.Append("Expenses: ");
 
+            //sb.Append("\n Unemployment subsidies: ").Append(Game.Player.UnemploymentSubsidiesExpense)
+            //    .Append(" seeking a job: ").Append(Game.Player.Provinces.AllPops.GetAverageProcent(x => x.GetSeekingJob()));
+
+            //if (Game.Player.UBI != UBI.None)
+            //    sb.Append("\n Unconditional basic income: ").Append(Game.Player.UBISubsidiesExpense);
+
+            //if (Game.Player.PovertyAid != PovertyAid.None)
+            //    sb.Append("\n Poverty Aid: ").Append(Game.Player.PovertyAidExpense);
+
+            //sb.Append("\n Enterprises subsidies: ").Append(Game.Player.FactorySubsidiesExpense);
+
+            //if (Game.Player.Science.IsInvented(Invention.ProfessionalArmy))
+            //    sb.Append("\n Soldiers paychecks: ").Append(Game.Player.SoldiersWageExpense);
+
+            //sb.Append("\n Storage buying: ").Append(Game.Player.StorageBuyingExpense);
+
+            //sb.Append("\nTotal: ").Append(Game.Player.GetRegisteredExpenses());
+            //expensesText.text = sb.ToString();
+            expensesText.text = Game.Player.Register.GetExpensesText();
+
+            // bank part
             sb.Clear();
 
             sb.Append("\n").Append(Game.Player.Bank).Append(" - reserves: ").Append(Game.Player.Bank.Cash)
                 .Append("; loans: ").Append(Game.Player.Bank.GetGivenCredits());
             //sb.Append(Game.player.bank).Append(" deposits: ").Append(Game.player.bank.getGivenLoans());
-            sb.Append("\nTotal gold (in world): ").Append(World.GetAllMoney());
-            sb.Append("\n*Government and others could automatically take money from deposits");
+            sb.Append("\nTotal gold (in the world): ").Append(World.GetAllMoney());
+            sb.Append("\n*Government and others could automatically take money from deposits, 1 gold = 1000 gold bites");
             bankText.text = sb.ToString();
 
             onLoanLimitChange();
             onDepositLimitChange();
             //AutoPutInBankText.text = Game.Player.autoPutInBankLimit.ToString();
             autoPutInBankLimit.exponentialValue = (float)Game.Player.autoPutInBankLimit.Get();
-            if (Game.Player.Invented(Invention.Banking))
+            if (Game.Player.Science.IsInvented(Invention.Banking))
                 bankPanel.interactable = true;
             else
             {
                 bankPanel.interactable = false;
                 autoSendMoneyToBank.isOn = false;
             }
-            if (Game.Player.Invented(Invention.ProfessionalArmy))
+            if (Game.Player.Science.IsInvented(Invention.ProfessionalArmy))
             {
                 ssSoldiersWage.maxValue = ssSoldiersWage.ConvertToSliderFormat((float)(Game.Player.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).Get() * 2m));
                 ssSoldiersWage.exponentialValue = (float)Game.Player.getSoldierWage().Get(); // could be changed by AI
@@ -106,7 +121,7 @@ namespace Nashet.EconomicSimulation
                 //ssSoldiersWage.GetComponent<CanvasGroup>().alpha = 0f;
                 //ssSoldiersWage.enabled = false;
                 ssSoldiersWage.gameObject.SetActive(false);
-            if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
+            if (Game.Player.economy == Economy.PlannedEconomy)
             {
                 ssSoldiersWage.enabled = false;
                 ssSoldiersWage.GetComponent<ToolTipHandler>().SetText("With Planned Economy soldiers take products from country stockpile");
@@ -130,14 +145,14 @@ namespace Nashet.EconomicSimulation
         //            if (fact.getOwner() is PopUnit)
         //            {
         //                var owner = fact.getOwner() as PopUnit;
-        //                if (!owner.isAlive())
+        //                if (!owner.IsAlive)
         //                    new Message("", "Dead pop owner in " + item + " " + fact, "Got it"); ;
         //            }
         //            else
         //            if (fact.getOwner() is Country)
         //            {
         //                var c = fact.getOwner() as Country;
-        //                if (!c.isAlive())
+        //                if (!c.IsAlive)
         //                    new Message("", "Dead country owner in " + item + " " + fact, "Got it"); ;
         //            }
         //        }
@@ -174,7 +189,7 @@ namespace Nashet.EconomicSimulation
         private void refreshSoldierWageText()
         {
             sb.Clear();
-            sb.Append("Soldiers wage: ").Append(string.Format("{0:N3}", ssSoldiersWage.exponentialValue)).Append(" men: ").Append(Game.Player.getPopulationAmountByType(PopType.Soldiers));
+            sb.Append("Soldiers wage: ").Append(string.Format("{0:N3}", ssSoldiersWage.exponentialValue)).Append(" men: ").Append(Game.Player.Provinces.getPopulationAmountByType(PopType.Soldiers));
             ssSoldiersWage.GetComponentInChildren<Text>().text = sb.ToString();
         }
 

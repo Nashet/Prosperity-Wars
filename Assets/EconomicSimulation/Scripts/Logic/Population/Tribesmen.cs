@@ -1,4 +1,5 @@
-﻿using Nashet.ValueSpace;
+﻿using Nashet.EconomicSimulation.Reforms;
+using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
@@ -50,18 +51,18 @@ namespace Nashet.EconomicSimulation
             return true;
         }
 
-        public override bool canVote(Government.ReformValue reform)
+        public override bool CanVoteWithThatGovernment(Government.GovernmentReformValue reform)
         {
             if ((reform == Government.Tribal || reform == Government.Democracy)
-                && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality))
+                && (isStateCulture() || Country.minorityPolicy == MinorityPolicy.Equality))
                 return true;
             else
                 return false;
         }
 
-        public override int getVotingPower(Government.ReformValue reformValue)
+        public override int getVotingPower(Government.GovernmentReformValue reformValue)
         {
-            if (canVote(reformValue))
+            if (CanVoteWithThatGovernment(reformValue))
                 return 1;
             else
                 return 0;

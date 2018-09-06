@@ -341,7 +341,7 @@ namespace Nashet.EconomicSimulation
                         cost = purchaseValue;
                     var buyingAgent = buyer as Agent;
 
-                    if (buyingAgent.Pay(shareToBuy.Key as Agent, cost))
+                    if (buyingAgent.Pay(shareToBuy.Key as Agent, cost, Register.Account.BuyingProperty))
                     {
                         if (Game.logInvestments)
                         {

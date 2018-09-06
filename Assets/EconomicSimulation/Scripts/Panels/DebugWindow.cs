@@ -1,6 +1,7 @@
 ﻿using Nashet.UnityUIUtils;
 using UnityEngine.UI;
 using UnityEngine;
+using Nashet.Utils;
 
 namespace Nashet.EconomicSimulation
 {
@@ -56,6 +57,33 @@ namespace Nashet.EconomicSimulation
         public void OnLogMarketFailsChange(bool value)
         {
             Game.logMarket = value;
+
+        }
+        public void Test1()
+        {
+            Debug.Log("Test1 started");
+            var before = System.DateTime.Now;
+
+            for (int i = 0; i < 200; i++)
+            {
+               // World.AllMarkets.PerformAction(x => x.ForceDSBRecalculation());
+            }
+            var tookTime = System.DateTime.Now - before;
+
+            Debug.Log("Test1 took " + tookTime.Milliseconds / 1000f);
+        }
+        public void Test2()
+        {
+            Debug.Log("Test2 started");
+            var before = System.DateTime.Now;
+
+            for (int i = 0; i < 200; i++)
+            {
+               // World.AllMarkets.PerformAction(x => x.ForceDSBRecalculation2());
+            }
+            var tookTime = System.DateTime.Now - before;
+
+            Debug.Log("Test2 took " + tookTime.Milliseconds / 1000f);
         }
     }
 }

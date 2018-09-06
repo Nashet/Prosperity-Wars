@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
         /// Sum of existing armies men + unmobilized reserve
         /// </summary>
         /// <returns></returns>
-        /// //todo performance hit 7% 420 calls 1.4mb 82 ms
+        //todo performance hit 7% 420 calls 1.4mb 82 ms
         public float getStrengthExluding(Staff againstWho)
         {
             return howMuchCanMobilize(againstWho) + getAllArmiesSize();
@@ -48,8 +48,8 @@ namespace Nashet.EconomicSimulation
         public float howMuchCanMobilize(Staff againstWho)
         {
             float result = 0f;
-            foreach (var province in Country.AllProvinces())
-                foreach (var pop in province.GetAllPopulation())
+            foreach (var province in Country.AllProvinces)
+                foreach (var pop in province.AllPops)
                     if (pop.Type.canMobilize(this))
                         result += pop.howMuchCanMobilize(this, againstWho);
             return result;
@@ -134,7 +134,7 @@ namespace Nashet.EconomicSimulation
             foreach (var province in source)
             {
                 // mirrored in Army
-                if (province.GetAllPopulation().Any(x=>x.Type.canMobilize(this) && x.howMuchCanMobilize(this, null) > 0))
+                if (province.AllPops.Any(x=>x.Type.canMobilize(this) && x.howMuchCanMobilize(this, null) > 0))
                     //if (pop.Type.canMobilize(this) && pop.howMuchCanMobilize(this, null) > 0) 
                     {
                         armyCount++;
@@ -234,16 +234,7 @@ namespace Nashet.EconomicSimulation
             //    return a;
         }
 
-        public static IEnumerable<Staff> getAllStaffs()
-        {
-            foreach (var country in World.getAllExistingCountries())
-                if (country.isAlive() && country != World.UncolonizedLand)
-                {
-                    yield return country;
-                    foreach (var staff in country.movements)
-                        yield return staff;
-                }
-        }
+       
 
         /// <summary>
         /// Just a place holder, never intended to call. Just need it to record battle deaths

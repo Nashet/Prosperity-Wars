@@ -1,49 +1,59 @@
-﻿using System.Collections.Generic;
-using Nashet.Conditions;
+﻿using Nashet.Conditions;
 using Nashet.ValueSpace;
+using System.Collections.Generic;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.EconomicSimulation.Reforms
 {
-    public class Separatism : AbstractReformValue
+    public class Separatism : AbstractReform
     {
-        private static readonly List<Separatism> allSeparatists = new List<Separatism>();
-        private static readonly Procent willing = new Procent(3f);
-        private readonly Condition separatismAllowed;
+        protected static readonly Procent willing = new Procent(3f);
+        protected readonly Condition separatismAllowed;
+        protected Goal typedValue { get; }
+        public Country goal { get { return typedValue.separatismTarget; } }
 
-        private readonly Country separatismTarget;
-
-        private Separatism(Country country) : base(country.ShortName + " independence", "", 0,
-            new DoubleConditionsList())//new ConditionsList(Condition.AlwaysYes))
+        protected Separatism(Country country) : base(country.ShortName + " independence", "", country,
+          0, null)//new ConditionsList(Condition.AlwaysYes))
         {
-            separatismAllowed = new Condition(x => isAvailable(x as Country), "Separatism target is valid", true);
-            allowed.add(separatismAllowed);
-            separatismTarget = country;
-            allSeparatists.Add(this);
-        }
+            //separatismAllowed = new Condition(x => isAvailable(x as Country), "Separatism target is valid", true);
+            //allowed.add(separatismAllowed);
+            //separatismTarget = country;
 
-        public static Separatism find(Country country)
+        }       
+
+        protected static List<Goal> allSeparatists = new List<Goal>();
+        public static Goal Get(Country country)
         {
+            //possibleValues
             var found = allSeparatists.Find(x => x.separatismTarget == country);
             if (found == null)
-                return new Separatism(country);
+            {
+                var res = new Goal(country);
+                allSeparatists.Add(res);
+                return res;
+            }
             else
                 return found;
         }
 
-        protected override Procent howIsItGoodForPop(PopUnit pop)
-        {
-            //return Procent.HundredProcent;
-            return willing;
-        }
 
-        public override bool isAvailable(Country country)
-        {
-            return !separatismTarget.isAlive();
-        }
 
-        public Country Country
+        public class Goal : AbstractReformValue
         {
-            get { return separatismTarget; }
+            public Country separatismTarget { get; protected set; }
+
+            internal Goal(Country separatismTarget) : base(0, new DoubleConditionsList())
+            {
+                this.separatismTarget = separatismTarget;
+            }
+
+            public override Procent howIsItGoodForPop(PopUnit pop)
+            {
+                return willing;
+            }
+            public override string ToString()
+            {
+                return separatismTarget + " separatists";
+            }
         }
     }
 }

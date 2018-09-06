@@ -41,23 +41,23 @@ namespace Nashet.EconomicSimulation
 
             sb.Append("You rule: ").Append(Game.Player.FullName);
 
-            if (!Game.Player.isAlive())
+            if (!Game.Player.IsAlive)
                 sb.Append(" (destroyed by enemies, but could rise again)");
             sb.Append("    Month: ").Append(Date.Today);
 
-            if (Game.Player.isAlive())
-                sb.Append("   Population: ").Append(Game.Player.getFamilyPopulation().ToString("N0"))
+            if (Game.Player.IsAlive)
+                sb.Append("   Population: ").Append(Game.Player.Provinces.getFamilyPopulation().ToString("N0"))
                     .Append(" (")
-                    .Append(Game.Player.getAllPopulationChanges().Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != Game.Player))
+                    .Append(Game.Player.Provinces.AllPopsChanges.Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != Game.Player))
                     .Sum(x=>x.Value).ToString("+0;-0;0"))
                     .Append(")");
 
             sb.Append("\nMoney: ").Append(Game.Player.Cash)
-            .Append("   Tech points: ").Append(Game.Player.sciencePoints.get().ToString("F0"));
+            .Append("   Tech points: ").Append(Game.Player.Science.Points.ToString("F0"));
 
-            if (Game.Player.isAlive())                
-                sb.Append("   Loyalty: ").Append(Game.Player.GetAllPopulation().GetAverageProcent(x => x.loyalty))
-                .Append("   Education: ").Append(Game.Player.GetAllPopulation().GetAverageProcent(x => x.Education));
+            if (Game.Player.IsAlive)                
+                sb.Append("   Loyalty: ").Append(Game.Player.Provinces.AllPops.GetAverageProcent(x => x.loyalty))
+                .Append("   Education: ").Append(Game.Player.Provinces.AllPops.GetAverageProcent(x => x.Education));
 
             generalText.text = sb.ToString();
         }

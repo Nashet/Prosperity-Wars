@@ -1,6 +1,6 @@
-﻿using System;
-using Nashet.Utils;
+﻿using Nashet.Utils;
 using Nashet.ValueSpace;
+using System;
 
 namespace Nashet.EconomicSimulation
 {
@@ -36,7 +36,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public void ReceiveMoney(Agent giver, MoneyView sum)
         {
-            if (giver.PayWithoutRecord(this, sum))
+            if (giver.PayWithoutRecord(this, sum, Register.Account.BankOperation))
                 if (giver.loans.isNotZero())  //has debt (meaning has no deposits)
                     if (sum.isBiggerOrEqual(giver.loans)) // cover debt
                     {
@@ -78,7 +78,7 @@ namespace Nashet.EconomicSimulation
                     {
                         taker.loans.Set(restOfTheSum);//important
                         givenCredits.Add(restOfTheSum);
-                        PayWithoutRecord(taker, restOfTheSum);
+                        PayWithoutRecord(taker, restOfTheSum, Register.Account.BankOperation);
                         return true;
                     }
                     else
@@ -102,7 +102,7 @@ namespace Nashet.EconomicSimulation
                 {
                     taker.loans.Add(desiredCredit);
                     givenCredits.Add(desiredCredit);
-                    PayWithoutRecord(taker, desiredCredit);
+                    PayWithoutRecord(taker, desiredCredit, Register.Account.BankOperation);
                     return true;
                 }
                 else
@@ -115,9 +115,9 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public bool GiveLackingMoneyInCredit(Agent taker, MoneyView desirableSum)
         {
-            if (taker.Country.Invented(Invention.Banking))// find money in bank?
+            if (taker.Country.Science.IsInvented(Invention.Banking))// find money in bank?
             {
-                MoneyView lackOfSum = desirableSum.Copy().Subtract(taker.getMoneyAvailable(), false); 
+                MoneyView lackOfSum = desirableSum.Copy().Subtract(taker.getMoneyAvailable(), false);
                 if (lackOfSum.isNotZero())
                     return GiveCredit(taker, lackOfSum);
                 else
@@ -132,7 +132,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public MoneyView ReturnDeposit(Agent toWhom, MoneyView howMuchWants)
         {
-            if (toWhom.Country.Invented(Invention.Banking))// find money in bank? //todo remove checks, make bank==null if uninvented
+            if (toWhom.Country.Science.IsInvented(Invention.Banking))// find money in bank? //todo remove checks, make bank==null if uninvented
             {
                 var maxReturnLimit = HowMuchDepositCanReturn(toWhom);
                 if (maxReturnLimit.isBiggerOrEqual(howMuchWants))
@@ -147,7 +147,7 @@ namespace Nashet.EconomicSimulation
                     {
                         //giveMoney(toWhom, moneyToReturn);
                         toWhom.deposits.Subtract(returnMoney);
-                        PayWithoutRecord(toWhom, returnMoney);
+                        PayWithoutRecord(toWhom, returnMoney, Register.Account.BankOperation);
                     }
                     return returnMoney;
                 }
@@ -219,7 +219,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public void Annex(Bank annexingBank)
         {
-            annexingBank.PayAllAvailableMoney(this);
+            annexingBank.PayAllAvailableMoney(this, Register.Account.Rest);
             //annexingBank.givenCredits.SendAll(this.givenCredits);
             givenCredits.Add(annexingBank.givenCredits);
             annexingBank.givenCredits.SetZero();
@@ -252,7 +252,7 @@ namespace Nashet.EconomicSimulation
 
         public void destroy(Country byWhom)
         {
-            PayAllAvailableMoney(byWhom);
+            PayAllAvailableMoney(byWhom, Register.Account.Rest);
             givenCredits.SetZero();
         }
 
@@ -263,7 +263,7 @@ namespace Nashet.EconomicSimulation
 
         public void Nationalize()
         {
-            Country.Bank.PayAllAvailableMoney(Country);
+            Country.Bank.PayAllAvailableMoney(Country, Register.Account.Rest);
             Country.Bank.givenCredits.SetZero();
             Country.loans.SetZero();
             Country.deposits.SetZero();

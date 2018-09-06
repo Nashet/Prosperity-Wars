@@ -26,7 +26,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public IEnumerable<Factory> getOwnedFactories()
         {
-            foreach (var item in World.GetAllFactories())
+            foreach (var item in World.AllFactories)
                 if (item.ownership.HasOwner(this))
                     yield return item;
         }

@@ -141,7 +141,7 @@ namespace Nashet.EconomicSimulation
         public void OnEntireWorldSelected()
         {
             ClearAllFiltres();
-            table.SetContent(World.GetAllFactories);
+            table.SetContent(World.AllFactories);
             Refresh();
         }
     }

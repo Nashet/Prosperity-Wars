@@ -113,7 +113,7 @@
   <Class Name="Nashet.EconomicSimulation.ProductionType" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="54.25" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>BAKAAEABGAAMAwBEAAAEABAgAcCGAYoAYEA6AAkQABE=</HashCode>
+      <HashCode>BAKAAEABGAAMAxBEAAAEABAgAcCGAYoAYEA6AAkQABE=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Production\FactoryType.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
@@ -137,7 +137,7 @@
   <Class Name="Nashet.EconomicSimulation.Product" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="52.5" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>gQlAggCSAMABECIVUAgAMAKUFxyACCOmsiAqkgYBEQk=</HashCode>
+      <HashCode>AQFAggCSAMABECIV0AgAMAKUFxyAACOmsqAqkkQBEQk=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Production\Product.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
@@ -196,7 +196,7 @@
   <Class Name="Nashet.EconomicSimulation.Consumer" Collapsed="true">
     <Position X="33" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAIAABQAgIAAIKAAAAAAAAACAAAAAAAAAAAABCQAAAA=</HashCode>
+      <HashCode>AAIEABQAgIAAIKAAAAAAAAAAAAAAAAAAAAAABCQAAAA=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Consumer.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -217,7 +217,7 @@
   <Class Name="Nashet.EconomicSimulation.Country" Collapsed="true">
     <Position X="44.25" Y="6.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ucLH0AMK4rzXhorPptnFTTLAHaFtTowAoUJH5a2gGpY=</HashCode>
+      <HashCode>uULG0AMK4rzXhoJPptnFTTLgHaFtTowBoUJH5a2oGpY=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Country.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -233,14 +233,14 @@
   <Class Name="Nashet.EconomicSimulation.MainCamera" Collapsed="true">
     <Position X="52.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ABQUQAAAkqgEQAJAAAVAAgAEAEBABAK4igFAACAAAAE=</HashCode>
+      <HashCode>ABQUQAAAkqgGQAJAAAVAAgAEAGBABAK4igFAAAgAICE=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\EntryPoint\MainCamera.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Nashet.EconomicSimulation.Game" Collapsed="true">
     <Position X="49" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAABAAAChAMAGhIAAKAEkAAEAAAIAAAABgAEAQAgICQ=</HashCode>
+      <HashCode>AACBAAAChAMCHhIAAIAEkAAEAAAIAAAABgAEAQAgICQ=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Game.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -263,7 +263,7 @@
   <Class Name="Nashet.EconomicSimulation.MultiSeller" Collapsed="true">
     <Position X="44.25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>gAAABCAAgIAAAAaAIBAAEABCAAEAEAAECAASAAhAgEA=</HashCode>
+      <HashCode>gAAABCAAgIAAAAaAIAAAEABCAAEAEAAECAACAAhAgEA=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\MultiSeller.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -278,7 +278,7 @@
   <Class Name="Nashet.EconomicSimulation.Province" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="56" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>HQEBKkRGoiegkaiaC4iQeCSAFQYoABHSG8SQgFR3UA4=</HashCode>
+      <HashCode>DQEBCERGoCcgGagSKwCQUCSgFYYoBBGCFMyQAFA/UA4=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Province.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
@@ -294,14 +294,14 @@
   <Class Name="Nashet.EconomicSimulation.World" Collapsed="true">
     <Position X="52.5" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>IQJRABAgACWAAQBIgsAwQIEACQAAEGAACIAIQAAACFA=</HashCode>
+      <HashCode>AAIQQBAgECFABYBAosAgQIMgGYIgFGAACIAIQAAICFA=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Mono\World.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Nashet.EconomicSimulation.Market" Collapsed="true">
     <Position X="19.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AhIBgBEAAoCIARCEQCCKAAABSQACFSAAgAEAQEQAACE=</HashCode>
+      <HashCode>AhIBgBEAAoCIARCFQCCKABABSQACFSAAgEUAQEwAAAE=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Market.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -326,32 +326,32 @@
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Production\Ownership.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="Nashet.EconomicSimulation.IHasCountry" Collapsed="true">
-    <Position X="52.25" Y="5.75" Width="1.5" />
+  <Interface Name="Nashet.EconomicSimulation.ISeller" Collapsed="true">
+    <Position X="49" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Assets\EconomicSimulation\Scripts\Logic\Interfaces.cs</FileName>
-    </TypeIdentifier>
-  </Interface>
-  <Interface Name="Nashet.EconomicSimulation.IWayOfLifeChange">
-    <Position X="57.75" Y="5.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAA=</HashCode>
-      <FileName>Assets\EconomicSimulation\Scripts\Logic\Interfaces.cs</FileName>
+      <HashCode>AAAAACAAAAAAAAAAAAAAEAAAAAEAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Interfaces\ISeller.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="Nashet.EconomicSimulation.IInvestable" Collapsed="true">
     <Position X="52.25" Y="7" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAACAEAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Assets\EconomicSimulation\Scripts\Logic\Interfaces.cs</FileName>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Interfaces\IInvestable.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="Nashet.EconomicSimulation.ISeller" Collapsed="true">
-    <Position X="49" Y="4.75" Width="1.5" />
+  <Interface Name="Nashet.EconomicSimulation.IWayOfLifeChange">
+    <Position X="57.75" Y="5.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAACAAAAAAAAAAAAAAEAAAAAEAAAAAAAAAAABAAAA=</HashCode>
-      <FileName>Assets\EconomicSimulation\Scripts\Logic\Interfaces.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Interfaces\IWayOfLifeChange.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Nashet.EconomicSimulation.IHasCountry" Collapsed="true">
+    <Position X="52.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Interfaces\IHasCountry.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Font Name="Segoe UI" Size="9" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 
 namespace Nashet.EconomicSimulation
@@ -9,12 +10,12 @@ namespace Nashet.EconomicSimulation
         private SortOrder typeOrder, provinceOrder, productionOrder, resourcesOrder, workForceOrder, profitOrder,
             profitabilityOrder, salaryOrder, unemploymentOrder;
 
-        private Func<IEnumerable<Factory>> content;
+        private IEnumerable<Factory> content;
 
         private void Start()
         {
-            typeOrder = new SortOrder(this, x => x.Type.GetNameWeight());
-            provinceOrder = new SortOrder(this, x => x.Province.GetNameWeight());
+            typeOrder = new SortOrder(this, x => x.Type.NameWeight);
+            provinceOrder = new SortOrder(this, x => x.Province.NameWeight);
             productionOrder = new SortOrder(this, x => x.getGainGoodsThisTurn().get());
             resourcesOrder = new SortOrder(this, x => x.getInputFactor().get());
             workForceOrder = new SortOrder(this, x => x.getWorkForce());
@@ -30,15 +31,15 @@ namespace Nashet.EconomicSimulation
             {
                 var selectedProvince = MainCamera.productionWindow.SelectedProvince;
                 if (selectedProvince == null)
-                    return Game.Player.getAllFactories();
+                    return Game.Player.Provinces.AllFactories;
                 else
-                    return selectedProvince.getAllFactories();
+                    return selectedProvince.AllFactories;
             }
             else
-                return content();
+                return content;
         }
 
-        public void SetContent(Func<IEnumerable<Factory>> content)
+        public void SetContent(IEnumerable<Factory> content)
         {
             this.content = content;
         }
@@ -61,7 +62,7 @@ namespace Nashet.EconomicSimulation
             AddCell(factory.getWorkForce().ToString(), factory);
 
             ////Adding profit
-            if (factory.Country.economy.getValue() == Economy.PlannedEconomy)
+            if (factory.Country.economy == Economy.PlannedEconomy)
                 AddCell("none", factory);
             else
                 AddCell(factory.getProfit().ToString("F3") + " Gold", factory);
@@ -79,7 +80,7 @@ namespace Nashet.EconomicSimulation
                         AddCell("Closed", factory, () => "Proposed margin (tax included) is " + factory.GetMargin());
                     else
                     {
-                        if (factory.Country.economy.getValue() == Economy.PlannedEconomy)
+                        if (factory.Country.economy == Economy.PlannedEconomy)
                             AddCell("none", factory);
                         else
                             AddCell(factory.GetMargin().ToString(), factory, () => "Tax included");
@@ -89,18 +90,18 @@ namespace Nashet.EconomicSimulation
 
             ////Adding salary
             //if (Game.player.isInvented(InventionType.capitalism))
-            if (factory.Country.economy.getValue() == Economy.PlannedEconomy)
+            if (factory.Country.economy == Economy.PlannedEconomy)
                 AddCell("centralized", factory);
             else
             {
-                if (factory.Country.economy.getValue() == Economy.NaturalEconomy)
+                if (factory.Country.economy == Economy.NaturalEconomy)
                     AddCell(factory.getSalary() + " food", factory);
                 else
                     AddCell(factory.getSalary().ToString(), factory);
             }
 
             //Adding unemployment
-            AddCell(factory.Province.getUnemployedWorkers().ToString("N0"), factory);
+            AddCell(factory.Province.getSeeksForJob().ToString("N0"), factory);
         }
 
         protected override void AddHeader()
@@ -131,7 +132,7 @@ namespace Nashet.EconomicSimulation
             ////Adding salary
             AddCell("Salary" + salaryOrder.getSymbol(), salaryOrder);
 
-            AddCell("Unemployed" + unemploymentOrder.getSymbol(), unemploymentOrder, () => "Unemployed in province");
+            AddCell("Seeks job" + unemploymentOrder.getSymbol(), unemploymentOrder, () => "How much pops seek for a job in province.\nSome pops might sit on social benefits not willing to work");
         }
     }
 }

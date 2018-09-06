@@ -3,53 +3,6 @@ using UnityEngine.EventSystems;
 
 namespace Nashet.UnityUIUtils
 {
-    public interface IRefreshable
-    {
-        void Refresh();
-    }
-
-    public interface IHideable
-    {
-        void Hide();
-
-        void Show();
-    }
-
-    public abstract class Hideable : MonoBehaviour, IHideable
-    {
-        // declare delegate (type)
-        public delegate void HideEventHandler(Hideable eventData);
-
-        //declare event of type delegate
-        public event HideEventHandler Hidden;
-
-        public virtual void Hide()
-        {
-            gameObject.SetActive(false);
-            var @event = Hidden;
-            if (@event != null)// check for subscribers
-                @event(this); //fires event for all subscribers
-        }
-
-        public virtual void Show()
-        {
-            gameObject.SetActive(true);
-        }
-    }
-
-    /// <summary>
-    /// Represent UI object that can be refreshed and hidden
-    /// </summary>
-    public abstract class Window : Hideable, IRefreshable
-    {
-        public abstract void Refresh();
-
-        public override void Show()
-        {
-            base.Show();
-            Refresh();
-        }
-    }
 
     /// <summary>
     /// Represents movable and hideable window
