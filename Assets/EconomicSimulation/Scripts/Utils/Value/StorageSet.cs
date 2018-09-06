@@ -461,7 +461,7 @@ namespace Nashet.ValueSpace
         /// </summary>
         public string GetString(String lineBreaker)
         {
-            return collection.GetString(lineBreaker);
+            return collection.ToString(lineBreaker);
         }
 
         //public string GetString(String lineBreaker)

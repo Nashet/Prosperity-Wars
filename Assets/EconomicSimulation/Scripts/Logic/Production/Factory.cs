@@ -492,6 +492,7 @@ namespace Nashet.EconomicSimulation
                         income = new Money(getProfit(), false);
                     else
                         income = payedDividends.Copy();
+                    // todo possible, double tax expense calculation
                     var taxes = income.Copy().Multiply(Country.taxationForRich.tax.Procent);
                     income.Subtract(taxes);
                     return new Procent(income, ownership.GetMarketValue(), false);
@@ -910,11 +911,7 @@ namespace Nashet.EconomicSimulation
                         var owner = item.Key as Agent;
                         MoneyView sentToOwner = dividends.Copy().Multiply(item.Value);
                         //Value sentToOwner = item.Value.SendProcentOf(dividends);
-                        Pay(owner, sentToOwner, Register.Account.Dividends);
-                        //Country.TakeIncomeTax(owner, sentToOwner, false);
-                        var isCountry = item.Key as Country;
-                        if (isCountry != null)
-                            isCountry.OwnedFactoriesIncome = sentToOwner;
+                        Pay(owner, sentToOwner, Register.Account.Dividends);                        
                     }
                 }
             }
@@ -935,7 +932,7 @@ namespace Nashet.EconomicSimulation
             if (payMoney)
             {
                 var agent = byWhom as Agent;
-                agent.PayWithoutRecord(this, getReopenCost());
+                agent.PayWithoutRecord(this, getReopenCost(), Register.Account.BuyingProperty);
                 ownership.Add(byWhom, getReopenCost());
                 if (Game.logInvestments)
                     Debug.Log(byWhom + " invested " + getReopenCost() + " in reopening " + this + " awaiting " + this.Type.GetPossibleMargin(Province) + " margin");
@@ -984,7 +981,7 @@ namespace Nashet.EconomicSimulation
             if ((byWhom as Agent).Country.economy != Economy.PlannedEconomy)
             {
                 var cost = Country.market.getCost(getUpgradeNeeds());
-                (byWhom as Agent).PayWithoutRecord(this, cost);
+                (byWhom as Agent).PayWithoutRecord(this, cost, Register.Account.BuyingProperty);
                 ownership.Add(byWhom, cost);
                 if (Game.logInvestments)
                     Debug.Log(byWhom + " invested " + cost + " in upgrading " + this + " awaiting " + GetMargin() + " margin");
@@ -1031,13 +1028,12 @@ namespace Nashet.EconomicSimulation
         {
             var newMoney = new MoneyView(gold);
             cash.Add(newMoney);
+            Register.RecordIncomeFromNowhere(Register.Account.MinedGold, newMoney.Get());
+                        
+            //MoneyView sentToGovernment = MoneyView.CovertFromGold(gold.Copy().Multiply(Options.GovernmentTakesShareOfGoldOutput));
 
-            moneyIncomeThisTurn.Add(newMoney);
-            MoneyView sentToGovernment = MoneyView.CovertFromGold(gold.Copy().Multiply(Options.GovernmentTakesShareOfGoldOutput));
-
-            //send 50% to government
-            Pay(Country, sentToGovernment, Register.Account.MinedGoldTax);
-            Country.GoldMinesIncome = sentToGovernment;
+            ////send 50% to government
+            //Pay(Country, sentToGovernment, Register.Account.MinedGoldTax);            
 
             gold.SetZero();
         }
@@ -1151,14 +1147,14 @@ namespace Nashet.EconomicSimulation
                     else if (isUpgrading())
                         isBuyingComplete = Buy(constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
 
-                    // get money from current investor, not owner
+                    //If need extra money get it from current investor, not owner
                     MoneyView needExtraFonds = wantsMinMoneyReserv().Copy().Subtract(Cash, false);
                     if (needExtraFonds.isNotZero())
                     {
                         var investor = currentInvestor as Agent;
                         if (investor.CanPay(needExtraFonds))
                         {
-                            investor.PayWithoutRecord(this, needExtraFonds);
+                            investor.PayWithoutRecord(this, needExtraFonds, Register.Account.BuyingProperty);
                             ownership.Add(currentInvestor, needExtraFonds);
                         }
                         else
@@ -1166,7 +1162,7 @@ namespace Nashet.EconomicSimulation
                             investor.Bank.GiveLackingMoneyInCredit(investor, needExtraFonds);
                             if (investor.CanPay(needExtraFonds))
                             {
-                                investor.PayWithoutRecord(this, needExtraFonds);
+                                investor.PayWithoutRecord(this, needExtraFonds, Register.Account.BuyingProperty);
                                 ownership.Add(currentInvestor, needExtraFonds);
                             }
                         }

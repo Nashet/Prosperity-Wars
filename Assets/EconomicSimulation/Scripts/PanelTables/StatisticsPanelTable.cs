@@ -26,7 +26,7 @@ namespace Nashet.EconomicSimulation
 
         protected override IEnumerable<Country> ContentSelector()
         {
-            return World.getAllExistingCountries();
+            return World.AllExistingCountries();
         }
 
         protected override void AddRow(Country country, int number)

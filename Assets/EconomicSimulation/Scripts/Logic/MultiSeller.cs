@@ -178,9 +178,9 @@ namespace Nashet.EconomicSimulation
         public Procent getWorldProductionShare(Product product)
         {
             Storage worldProduction = new Storage(product);
-            foreach (var item in World.getAllExistingCountries())
+            foreach (var item in World.AllMarkets)
             {
-                worldProduction.Add(item.market.getProductionTotal(product, true));
+                worldProduction.Add(item.getProductionTotal(product, true));
             }
 
             if (worldProduction.isZero())

@@ -26,7 +26,7 @@ namespace Nashet.EconomicSimulation.Reforms
         public static readonly EconomyReformValue LaissezFaire = new EconomyReformValue("Laissez faire", "", 4, new DoubleConditionsList(capitalism), true, TaxationForPoor.PoorTaxValue.TaxRate50);
 
         public static readonly DoubleCondition isNotLFOrMoreConservative = new DoubleCondition((country, newReform) => (country as Country).economy != Economy.LaissezFaire
-        || (newReform as IReformValue).IsMoreConservativeThan((country as Country).economy.typedValue),
+        || (newReform as IReformValue).IsMoreConservativeThan((country as Country).Politics.GetReform(newReform as AbstractReformValue).Value),
             x => "Economy policy is not Laissez Faire or that is reform rollback", true);
 
         public static readonly Condition isNotLF = new Condition(delegate (object forWhom) { return (forWhom as Country).economy != LaissezFaire; }, "Economy policy is not Laissez Faire", true);

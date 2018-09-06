@@ -136,7 +136,7 @@ namespace Nashet.EconomicSimulation
                             if (CanPay(investmentCost))
                             {
                                 var factory = Province.BuildFactory(this, factoryProject.Type, investmentCost);  // build new one
-                                PayWithoutRecord(factory, investmentCost);
+                                PayWithoutRecord(factory, investmentCost, Register.Account.Construction);
                             }
                         }
                     }

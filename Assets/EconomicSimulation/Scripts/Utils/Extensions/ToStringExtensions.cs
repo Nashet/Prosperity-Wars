@@ -10,7 +10,7 @@ namespace Nashet.Utils
 {
     public static class ToStringExtensions
     {
-        public static string GetString(this Dictionary<Product, Storage> collection, String lineBreaker)
+        public static string ToString(this Dictionary<Product, Storage> collection, String lineBreaker)
         {
             if (collection.Any(x => x.Value.isNotZero()))
             {
@@ -30,7 +30,7 @@ namespace Nashet.Utils
                 return "none";
         }
 
-        public static string getString(this IEnumerable<Storage> list, string lineBreaker)
+        public static string ToString(this IEnumerable<Storage> list, string lineBreaker)
         {
             if (list.Any(x => x.isNotZero()))
             {
@@ -60,7 +60,7 @@ namespace Nashet.Utils
         /// <summary>
         /// Uses FullName instead of standard ToString()
         /// </summary>
-        public static string getString(this IEnumerable<Movement> source)
+        public static string ToString(this IEnumerable<Movement> source)
         {
             StringBuilder sb = new StringBuilder();
             foreach (var item in source)
@@ -122,7 +122,7 @@ namespace Nashet.Utils
                 return "none";
         }
 
-        public static string getString<TValue>(this IEnumerable<TValue> list, string lineBreaker)
+        public static string ToString<TValue>(this IEnumerable<TValue> list, string lineBreaker)
         {
             if (list.Count() > 0)
             {
@@ -147,7 +147,7 @@ namespace Nashet.Utils
         //{
         //    return source.Key + separator + source.Value;
         //}
-        public static string getString<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> source, string intermediateString, string lineBreaker)
+        public static string ToString<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> source, string intermediateString, string lineBreaker)
         {
             if (source.Count() == 0)
                 return "none";
@@ -165,7 +165,7 @@ namespace Nashet.Utils
             return sb.ToString();
         }
 
-        public static string getString(this KeyValuePair<IWayOfLifeChange, int> source, PopUnit pop)
+        public static string ToString(this KeyValuePair<IWayOfLifeChange, int> source, PopUnit pop)
         {
             var sb = new StringBuilder();
             if (source.Key == null)
@@ -238,7 +238,7 @@ namespace Nashet.Utils
         }
 
         //public static string getString(this IEnumerable<IGrouping<IWayOfLifeChange, KeyValuePair<IWayOfLifeChange, int>>> source, string lineBreaker)
-        public static string getString(this IEnumerable<KeyValuePair<IWayOfLifeChange, int>> source, string lineBreaker, string totalString)
+        public static string ToString(this IEnumerable<KeyValuePair<IWayOfLifeChange, int>> source, string lineBreaker, string totalString)
         {
             var sb = new StringBuilder();
 
@@ -262,7 +262,7 @@ namespace Nashet.Utils
                     if (item.Sum > 0)
                         sb.Append("+");
                     var toShow = new KeyValuePair<IWayOfLifeChange, int>(item.Key, item.Sum);
-                    sb.Append(item.Sum).Append(" ").Append(toShow.getString(null)).Append(lineBreaker);
+                    sb.Append(item.Sum).Append(" ").Append(toShow.ToString(null)).Append(lineBreaker);
                     total += item.Sum;
                 }
             }
@@ -271,7 +271,7 @@ namespace Nashet.Utils
             return sb.ToString();
         }
 
-        public static string getString(this IEnumerable<KeyValuePair<IWayOfLifeChange, int>> source, string lineBreaker, PopUnit pop, string totalString)
+        public static string ToString(this IEnumerable<KeyValuePair<IWayOfLifeChange, int>> source, string lineBreaker, PopUnit pop, string totalString)
         {
             if (!source.Any(x => x.Value != 0))
                 return "no changes";
@@ -290,13 +290,13 @@ namespace Nashet.Utils
                         sb.Append("+");
 
                     sb.Append(item.Value).Append(" ");
-                    sb.Append(item.getString(pop));
+                    sb.Append(item.ToString(pop));
                 }
             sb.Append(lineBreaker).Append(totalString).Append(total);
             return sb.ToString();
         }
 
-        public static string getString(IEnumerable<KeyValuePair<TemporaryModifier, Date>> dictionary)
+        public static string ToString(IEnumerable<KeyValuePair<TemporaryModifier, Date>> dictionary)
         {
             if (dictionary.Count() == 0)
                 return "none";

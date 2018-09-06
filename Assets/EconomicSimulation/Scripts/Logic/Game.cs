@@ -19,11 +19,8 @@ namespace Nashet.EconomicSimulation
 
         public static bool readMapFormFile = false;
         private static MyTexture mapTexture;
-
-
+        
         public static Country Player;
-
-        ///public static Random Random = new Random();
 
         public static Province selectedProvince;
         public static Province previoslySelectedProvince;
@@ -32,9 +29,6 @@ namespace Nashet.EconomicSimulation
         public static List<Province> playerVisibleProvinces = new List<Province>();
 
         private static MapModes mapMode;
-
-
-
 
         private static VoxelGrid<AbstractProvince> grid;
         private readonly Rect mapBorders;

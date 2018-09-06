@@ -88,7 +88,7 @@ namespace Nashet.EconomicSimulation
             //selectedCountry.inventions.getInvented(selectedCountry).ToString();
             generalText.text = sb.ToString();
             var found = World.GetAllShares(selectedCountry).OrderByDescending(x => x.Value.get());
-            property.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Owns:\n" + found.getString(", ", "\n"));
+            property.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Owns:\n" + found.ToString(", ", "\n"));
         }
 
         public Country getSelectedCountry()

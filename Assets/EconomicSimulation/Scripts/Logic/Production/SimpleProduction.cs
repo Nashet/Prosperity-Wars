@@ -65,7 +65,7 @@ namespace Nashet.EconomicSimulation
                 return 0m;
             else
                 //return base.getProfit() - (float)getSalaryCost().Get();
-                return moneyIncomeThisTurn.Get() - getExpences().Get();
+                return Register.Balance;
         }
 
         /// <summary>

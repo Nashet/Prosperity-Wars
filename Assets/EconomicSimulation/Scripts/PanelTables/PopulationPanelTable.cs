@@ -77,7 +77,7 @@ namespace Nashet.EconomicSimulation
 
             AddCell(pop.needsFulfilled.ToString(), pop,
                 //() => ert.consumedTotal.ToStringWithLines()
-                () => "Consumed:\n" + pop.getConsumed().getString("\n")
+                () => "Consumed:\n" + pop.getConsumed().ToString("\n")
                 );
 
             ////Adding loyalty

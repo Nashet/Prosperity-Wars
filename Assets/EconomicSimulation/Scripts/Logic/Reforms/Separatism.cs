@@ -18,27 +18,8 @@ namespace Nashet.EconomicSimulation.Reforms
             //allowed.add(separatismAllowed);
             //separatismTarget = country;
 
-        }
+        }       
 
-        //public static Separatism find(Country country)
-        //{
-        //    var found = allSeparatists.Find(x => x.separatismTarget == country);
-        //    if (found == null)
-        //        return new Separatism(country);
-        //    else
-        //        return found;
-        //}
-
-        public Procent howIsItGoodForPop(PopUnit pop)
-        {
-            //return Procent.HundredProcent;
-            return willing;
-        }
-
-        //public override bool isAvailable(Country country)
-        //{
-        //    return !separatismTarget.IsAlive;
-        //}
         protected static List<Goal> allSeparatists = new List<Goal>();
         public static Goal Get(Country country)
         {
@@ -53,62 +34,25 @@ namespace Nashet.EconomicSimulation.Reforms
             else
                 return found;
         }
-        public class Goal : IReformValue
+
+
+
+        public class Goal : AbstractReformValue
         {
             public Country separatismTarget { get; protected set; }
 
-            internal Goal(Country separatismTarget)
+            internal Goal(Country separatismTarget) : base(0, new DoubleConditionsList())
             {
                 this.separatismTarget = separatismTarget;
             }
-            /// <summary>
-            /// Doesn't have sense for that reform
-            /// </summary>            
-            public bool IsMoreConservativeThan(AbstractReformValue anotherReform)
-            {
-                throw new System.NotImplementedException();
-            }
 
-            /// <summary>
-            /// Doesn't have sense for that reform
-            /// </summary>            
-            public int GetRelativeConservatism(AbstractReformValue two)
+            public override Procent howIsItGoodForPop(PopUnit pop)
             {
-                throw new System.NotImplementedException();
+                return willing;
             }
-
-            Procent IReformValue.LifeQualityImpact
+            public override string ToString()
             {
-                get
-                {
-                    throw new System.NotImplementedException();
-                }
-            }
-
-            public Procent LifeQualityImpact()
-            {
-                return Procent.ZeroProcent.Copy();
-            }
-
-            public float getVotingPower(PopUnit forWhom)
-            {
-                return 0f;
-            }
-
-            public Procent howIsItGoodForPop(PopUnit pop)
-            {
-                return Procent.ZeroProcent.Copy();
-            }
-
-            public bool IsAllowed(object firstObject, object secondObject, out string description)
-            {
-                description = null;
-                return true;
-            }
-
-            public bool IsAllowed(object firstObject, object secondObject)
-            {
-                return true;
+                return separatismTarget + " separatists";
             }
         }
     }

@@ -66,7 +66,7 @@ namespace Nashet.EconomicSimulation
 
         internal void RegisterReform(AbstractReform abstractReform)
         {
-            reforms.Add(abstractReform);            
+            reforms.Add(abstractReform);
             reforms.Sort((x, y) => x.ShowOrder - y.ShowOrder);
         }
 
@@ -75,5 +75,19 @@ namespace Nashet.EconomicSimulation
             lastTurnDefaultedSocialObligations.Set(defaultedSocialObligations);
             defaultedSocialObligations.SetZero();
         }
+
+        /// <summary>
+        /// Gets reform which can take given value
+        /// </summary>
+        public AbstractReform GetReform(IReformValue abstractReformValue)
+        {
+            foreach (var item in reforms)
+            {
+                if (item.AllPossibleValues.Any(x => x == abstractReformValue))
+                    return item;
+            }
+            return null;
+        }
+
     }
 }

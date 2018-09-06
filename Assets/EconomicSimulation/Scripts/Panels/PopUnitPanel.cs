@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using System.Text;
-using Nashet.UnityUIUtils;
+﻿using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -56,44 +56,43 @@ namespace Nashet.EconomicSimulation
                         sb.Append(", Storage: ").Append(pop.storage);
                     else
                         sb.Append(", Unsold: ").Append(pop.storage);
-                
+
                 if (isArtisan != null)
                 {
                     sb.Append("\nInput required: ");
-                    foreach (Storage next in isArtisan.GetResurceInput() )
+                    foreach (Storage next in isArtisan.GetResurceInput())
                         sb.Append(next.get() * isArtisan.population.Get() / Population.PopulationMultiplier).Append(" ").Append(next.Product).Append(";");
 
-                    sb.Append("\nStockpile:  ").Append(isArtisan.getInputProducts()).Append(", Resource availability: ").Append(isArtisan.getInputFactor());                    
+                    sb.Append("\nStockpile:  ").Append(isArtisan.getInputProducts()).Append(", Resource availability: ").Append(isArtisan.getInputFactor());
                 }
-                
+
                 //sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it
-                sb.Append("\nConsumed: ").Append(pop.getConsumed().getString(", "));
-                sb.Append("\nNeeds fulfilled (total): ").Append(pop.needsFulfilled);
-                //sb.Append("\nAssimilation: ");
+                sb.Append("\nConsumed: ").Append(pop.getConsumed().ToString(", "));
 
-                //if (pop.culture != pop.Country.Culture && pop.getAssimilationSize() > 0)
-                //    sb.Append(pop.Country.Culture).Append(" ").Append(pop.getAssimilationSize());
-                //else
-                //    sb.Append("none");
-
-                //sb.Append("\nGrowth: ").Append(pop.getGrowthSize());
-                sb.Append("\n\nLoyalty: ").Append(pop.loyalty);
-                sb.Append("\nSeeks job: ").Append(pop.GetSeekingJob());                
-                sb.Append("\nEducation: ").Append(pop.Education);
-                sb.Append("\nCulture: ").Append(pop.culture);
-                if (!pop.isStateCulture())
-                    sb.Append(", minority");
-                               
-                                                                             //if (Game.devMode)
-                sb.Append("\n\nAge: ").Append(pop.getAge());
-                sb.Append("\nMobilized: ").Append(pop.getMobilized());
-                if (pop.getMovement() != null)
-                    sb.Append("\nMember of ").Append(pop.getMovement());
-
+                
+                // loyalty part
+                sb.Append("\n\nCash: ").Append(pop.Cash);
                 if (pop.loans.isNotZero())
                     sb.Append("\nLoan: ").Append(pop.loans);// hide it
                 if (pop.deposits.isNotZero())
                     sb.Append("\nDeposit: ").Append(pop.deposits);// hide it
+                sb.Append("\n\nNeeds fulfilled (total): ").Append(pop.needsFulfilled);
+                sb.Append("\nLoyalty: ").Append(pop.loyalty);
+                if (pop.getMovement() != null)
+                    sb.Append("\nMember of ").Append(pop.getMovement());
+
+                //rest part
+                sb.Append("\n\nSeeks job: ").Append(pop.GetSeekingJob());
+                sb.Append("\nEducation: ").Append(pop.Education);
+                sb.Append("\nCulture: ").Append(pop.culture);
+                if (!pop.isStateCulture())
+                    sb.Append(", minority");
+
+                if (Game.devMode)
+                    sb.Append("\n\nAge: ").Append(pop.getAge());
+                sb.Append("\nMobilized: ").Append(pop.getMobilized());
+               
+
 
                 //if (Game.devMode)
                 //    sb.Append("\nConsumedLT: ").Append(pop.getConsumedLastTurn()).Append(" cost: ").Append(Country.market.getCost(pop.getConsumedLastTurn())
@@ -103,27 +102,27 @@ namespace Nashet.EconomicSimulation
 
                 sb.Clear();
                 sb.Append("Life needs: ").Append(pop.getLifeNeedsFullfilling()).Append(" fulfilled");
-                lifeNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => " Life needs wants:\n" + pop.population.getRealLifeNeeds().getString("\n"));
+                lifeNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => " Life needs wants:\n" + pop.population.getRealLifeNeeds().ToString("\n"));
                 lifeNeedsText.text = sb.ToString();
 
                 sb.Clear();
                 sb.Append("Everyday needs: ").Append(pop.getEveryDayNeedsFullfilling()).Append(" fulfilled");
-                everyDayNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Everyday needs wants:\n" + pop.population.getRealEveryDayNeeds().getString("\n"));
+                everyDayNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Everyday needs wants:\n" + pop.population.getRealEveryDayNeeds().ToString("\n"));
                 everyDayNeedsText.text = sb.ToString();
 
                 sb.Clear();
                 sb.Append("Luxury needs: ").Append(pop.getLuxuryNeedsFullfilling()).Append(" fulfilled");
-                luxuryNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Luxury needs wants:\n" + pop.population.getRealLuxuryNeeds().getString("\n"));
+                luxuryNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Luxury needs wants:\n" + pop.population.getRealLuxuryNeeds().ToString("\n"));
                 luxuryNeedsText.text = sb.ToString();
 
                 sb.Clear();
-                sb.Append("Cash: ").Append(pop.Cash);
+                sb.Append("Balance: ").Append(Money.DecimalToString(pop.Register.Balance));
                 money.text = sb.ToString();
                 money.GetComponent<ToolTipHandler>().SetTextDynamic(() =>
-                //pop.Register.ToString()
-                "Money income: " + pop.moneyIncomeThisTurn
-                + "\nIncome tax (inc. foreign jurisdictions): " + pop.incomeTaxPayed
-                + "\nConsumed cost: " + Game.Player.market.getCost(pop.getConsumed())
+                pop.Register.ToString()
+                //"Money income: " + pop.moneyIncomeThisTurn
+                //+ "\nIncome tax (inc. foreign jurisdictions): " + pop.incomeTaxPayed
+                //+ "\nConsumed cost: " + Game.Player.market.getCost(pop.getConsumed())
                 );
 
                 if (pop.Type.isProducer())
@@ -142,7 +141,7 @@ namespace Nashet.EconomicSimulation
                 {
                     property.gameObject.SetActive(true);
                     var found = World.GetAllShares(thisInvestor).OrderByDescending(x => x.Value.get());
-                    property.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Owns:\n" + found.getString(", ", "\n"));
+                    property.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Owns:\n" + found.ToString(", ", "\n"));
                 }
                 else
                     property.gameObject.SetActive(false);
@@ -154,13 +153,13 @@ namespace Nashet.EconomicSimulation
                         //            orderby pair.Value descending
                         //            select pair;
                         var items = pop.getIssues().OrderByDescending(x => x.Value);
-                        return "Issues:\n" + items.getString(" willing ", "\n");
+                        return "Issues:\n" + items.ToString(" willing ", "\n");
                     }
                     );
                 populationChange.text = "Population change: " + pop.getAllPopulationChanges().Sum(x => x.Value);
                 populationChange.GetComponent<ToolTipHandler>().SetTextDynamic(() =>
                 "Population change:\n" +
-                pop.getAllPopulationChanges().getString("\n", pop, "Total change: "));
+                pop.getAllPopulationChanges().ToString("\n", pop, "Total change: "));
             }
         }
 

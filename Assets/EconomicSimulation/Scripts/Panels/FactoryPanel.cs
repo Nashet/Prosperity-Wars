@@ -21,7 +21,7 @@ namespace Nashet.EconomicSimulation
         private Slider priority;
 
         [SerializeField]
-        private Text generaltext, efficiencyText, caption, onSaleText, ownership;
+        private Text generaltext, efficiencyText, caption, onSaleText, ownership, profitText;
 
         private Factory factory;
         private reopenButtonStatus reopenButtonflag;
@@ -100,16 +100,12 @@ namespace Nashet.EconomicSimulation
                 sb.Append(", Unsold: ").Append(factory.storage);
                 //sb.Append("\nBasic production: ").Append(factory.Type.basicProduction);
                 //sb.Append("\nSent to market: ").Append(factory.getSentToMarket());
-                sb.Append("\n\nMoney income: ").Append(factory.moneyIncomeThisTurn);
-                //sb.Append("\n\nRegister: ").Append(factory.Register.ToString());
-                sb.Append(", Cash: ").Append(factory.Cash);
+                //sb.Append("\n\nMoney income: ").Append(factory.moneyIncomeThisTurn);
+                //sb.Append("\n\n").Append(factory.Register.ToString());                
 
-                sb.Append("\nProfit: ");
-                if (Game.Player.economy != Economy.PlannedEconomy)
-                    sb.Append(factory.getProfit().ToString("N3")).Append(" Gold");
-                else
-                    sb.Append("unknown");
-                sb.Append(", Dividends: ").Append(factory.GetDividends());
+                
+                sb.Append("\nCash: ").Append(factory.Cash);
+                //sb.Append(", Dividends: ").Append(factory.GetDividends());
                 if (factory.Type.hasInput())
                 {
                     sb.Append("\n\nInput required: ");
@@ -132,14 +128,15 @@ namespace Nashet.EconomicSimulation
                         sb.Append("\nStockpile: nothing");
 
                     if (factory.getConsumed().Count() > 0)
-                        sb.Append("\nBought: ").Append(factory.getConsumed().getString(", ")).Append(", Cost: ").Append(Game.Player.market.getCost(factory.getConsumed()));
+                        sb.Append("\nBought: ").Append(factory.getConsumed().ToString(", ")).Append(", Cost: ").Append(Game.Player.market.getCost(factory.getConsumed()));
                 }
                 if (factory.Type.hasInput())
                     sb.Append("\nResource availability: ").Append(factory.getInputFactor());
 
                 //if (Game.devMode)
                 //    sb.Append("\nConsumed LT: ").Append(factory.getConsumedLastTurn());
-                sb.Append("\n\nSalary (per 1000 men): ").Append(factory.getSalary()).Append(", Total: ").Append(factory.getSalaryCost());
+                sb.Append("\n\nSalary (per 1000 men): ").Append(factory.getSalary());
+                    //sb.Append(", Total: ").Append(factory.getSalaryCost());
                                 
 
                 if (factory.getDaysUnprofitable() > 0)
@@ -164,7 +161,17 @@ namespace Nashet.EconomicSimulation
 
                 var owners = factory.ownership.GetAllShares().OrderByDescending(x => x.Value.get()).ToList();//.getString(" ", "\n");
                 ownership.text = "Biggest owner: " + owners[0].Key + " " + owners[0].Value + " (hover mouse for rest)";
-                ownership.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Owners:\n" + owners.getString(" ", "\n"));
+                ownership.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Owners:\n" + owners.ToString(" ", "\n"));
+
+                sb.Clear();
+                sb.Append("Profit: ");
+                if (Game.Player.economy != Economy.PlannedEconomy)
+                    sb.Append(factory.getProfit().ToString("N3")).Append(" Gold");
+                else
+                    sb.Append("unknown");
+                profitText.text = sb.ToString();
+                profitText.GetComponent<ToolTipHandler>().SetTextDynamic(() => factory.Register.ToString());
+
                 RefreshBuySellButtons();
             }
         }

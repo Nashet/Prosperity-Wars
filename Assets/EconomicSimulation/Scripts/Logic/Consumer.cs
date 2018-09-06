@@ -218,7 +218,7 @@ namespace Nashet.EconomicSimulation
                     return new Storage(need.Product, 0f);
             }
         }
-        // Do I use where need to? Yes, I do. It called from this.Buy()
+        // Do I use it where need to? Yes, I do. It called from this.Buy()
         protected virtual void Buy_utility(Market market, MoneyView cost, Storage what)
         {
             this.Pay(market, cost, Register.Account.MarketOperations);
