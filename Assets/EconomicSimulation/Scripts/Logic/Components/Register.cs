@@ -10,7 +10,8 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class Register : IStatisticable
     {
-        protected Dictionary<Account, decimal> moneyFlow = new Dictionary<Account, decimal>();
+        protected Dictionary<Account, decimal> incomeList = new Dictionary<Account, decimal>();
+        protected Dictionary<Account, decimal> expensesList = new Dictionary<Account, decimal>();
 
         protected Money income = new Money(0m);
         public MoneyView Income { get { return income; } }
@@ -29,7 +30,9 @@ namespace Nashet.EconomicSimulation
             incomeLastTurn.Set(income);
             income.SetZero();
             expenses.SetZero();
-            moneyFlow.Clear();
+
+            incomeList.Clear();
+            expensesList.Clear();
             //foreach (var item in moneyFlow)
             //{
             //    item.Value = 0m;                    
@@ -37,15 +40,15 @@ namespace Nashet.EconomicSimulation
         }
         public void RecordPayment(Agent receiver, Account account, decimal sum)
         {
-            receiver.Register.moneyFlow.AddAndSum(account, sum);
+            receiver.Register.incomeList.AddAndSum(account, sum);
             receiver.Register.income.Add(sum);
 
-            this.moneyFlow.AddAndSum(account, sum * -1m);//giver is this
+            this.expensesList.AddAndSum(account, sum);//giver is this
             this.expenses.Add(sum);
         }
         public void RecordIncomeFromNowhere(Account account, decimal sum)
         {
-            this.moneyFlow.AddAndSum(account, sum);//giver is this
+            this.incomeList.AddAndSum(account, sum);//giver is this
             this.income.Add(sum);
         }
 
@@ -56,12 +59,15 @@ namespace Nashet.EconomicSimulation
             incomeText.Clear().Append("Income: " + income);
             expensesText.Clear().Append("\nExpenses " + expenses);
 
-            foreach (var item in moneyFlow)
+            foreach (var item in incomeList)
             {
-                if (item.Value > 0m)
-                    incomeText.Append("\n " + item.Key.IncomeText + ": " + Money.DecimalToString(item.Value));
-                else if (item.Value < 0m)
-                    expensesText.Append("\n " + item.Key.ExpenseText + ": " + Money.DecimalToString(item.Value * -1m));
+                if (item.Value != 0m)
+                    incomeText.Append("\n " + item.Key.IncomeText + ": " + Money.DecimalToString(item.Value));                
+            }
+            foreach (var item in expensesList)
+            {
+                if (item.Value != 0m)
+                    expensesText.Append("\n " + item.Key.ExpenseText + ": " + Money.DecimalToString(item.Value));
             }
             return incomeText.Append(expensesText).ToString();
         }
@@ -70,9 +76,9 @@ namespace Nashet.EconomicSimulation
         {
             incomeText.Clear().Append("Income: " + income);
 
-            foreach (var item in moneyFlow)
+            foreach (var item in incomeList)
             {
-                if (item.Value > 0m)
+                if (item.Value != 0m)
                     incomeText.Append("\n " + item.Key.IncomeText + ": " + Money.DecimalToString(item.Value));
             }
             return incomeText.ToString();
@@ -82,10 +88,10 @@ namespace Nashet.EconomicSimulation
         {
             expensesText.Clear().Append("Expenses: " + expenses);
 
-            foreach (var item in moneyFlow)
+            foreach (var item in expensesList)
             {
-                if (item.Value < 0m)
-                    expensesText.Append("\n " + item.Key.ExpenseText + ": " + Money.DecimalToString(item.Value * -1m));
+                if (item.Value != 0m)
+                    expensesText.Append("\n " + item.Key.ExpenseText + ": " + Money.DecimalToString(item.Value));
             }
             return expensesText.ToString();
         }
