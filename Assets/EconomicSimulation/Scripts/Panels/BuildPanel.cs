@@ -94,7 +94,7 @@ namespace Nashet.EconomicSimulation
             {
                 sb.Clear();
                 sb.Append("Build ").Append(selectedFactoryType);
-                sb.Append("\n\nResources to build: ").Append(selectedFactoryType.GetBuildNeeds().getString(", "));
+                sb.Append("\n\nResources to build: ").Append(selectedFactoryType.GetBuildNeeds().ToString(", "));
                 sb.Append(".");
                 if (Game.Player.economy != Economy.PlannedEconomy)
                 {

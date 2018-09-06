@@ -55,7 +55,7 @@ namespace Nashet.EconomicSimulation
             captionText.text = sb.ToString();
             var armiesToShow=Game.Player.AllArmies().OrderByDescending(x=>x.getSize());
 
-            newText.text = "Your armies:\n\n" + armiesToShow.getString("\n\n");
+            newText.text = "Your armies:\n\n" + armiesToShow.ToString("\n\n");
             //sb.Clear();
             //sb.Append("Home army: ").Append(Game.Player.getDefenceForces().getName());
             //allArmySizeText.text = sb.ToString();

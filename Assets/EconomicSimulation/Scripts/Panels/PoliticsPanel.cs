@@ -132,7 +132,7 @@ namespace Nashet.EconomicSimulation
         private void refresh(bool callRebuildDropDown)
         {
             table.Refresh();
-            movementsText.text = Game.Player.Politics.AllMovements.OrderByDescending(x => x.getRelativeStrength(Game.Player).get()).getString();
+            movementsText.text = ToStringExtensions.ToString(Game.Player.Politics.AllMovements.OrderByDescending(x => x.getRelativeStrength(Game.Player).get()));
             if (movementsText.preferredHeight > 90 && movementsText.preferredHeight < 130)
                 movementsText.text += "\n\n\n\n";
 

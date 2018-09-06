@@ -744,7 +744,7 @@ namespace Nashet.EconomicSimulation
             {
                 //foreach (var next in getAmountByTypes())
                 //    sb.Append(next.Value).Append(" ").Append(next.Key).Append(", ");
-                sb.Append(getAmountByTypes().getString(": ", ", "));
+                sb.Append(getAmountByTypes().ToString(": ", ", "));
                 sb.Append(", Total size: ").Append(getSize());
                 sb.Append(", Morale: ").Append(GetAverageCorps(x => x.getMorale()));
                 sb.Append(", Provision: ").Append(getConsumption());

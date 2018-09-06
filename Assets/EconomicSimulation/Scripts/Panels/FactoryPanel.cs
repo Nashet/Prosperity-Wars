@@ -132,7 +132,7 @@ namespace Nashet.EconomicSimulation
                         sb.Append("\nStockpile: nothing");
 
                     if (factory.getConsumed().Count() > 0)
-                        sb.Append("\nBought: ").Append(factory.getConsumed().getString(", ")).Append(", Cost: ").Append(Game.Player.market.getCost(factory.getConsumed()));
+                        sb.Append("\nBought: ").Append(factory.getConsumed().ToString(", ")).Append(", Cost: ").Append(Game.Player.market.getCost(factory.getConsumed()));
                 }
                 if (factory.Type.hasInput())
                     sb.Append("\nResource availability: ").Append(factory.getInputFactor());
@@ -165,7 +165,7 @@ namespace Nashet.EconomicSimulation
 
                 var owners = factory.ownership.GetAllShares().OrderByDescending(x => x.Value.get()).ToList();//.getString(" ", "\n");
                 ownership.text = "Biggest owner: " + owners[0].Key + " " + owners[0].Value + " (hover mouse for rest)";
-                ownership.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Owners:\n" + owners.getString(" ", "\n"));
+                ownership.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Owners:\n" + owners.ToString(" ", "\n"));
                 RefreshBuySellButtons();
             }
         }

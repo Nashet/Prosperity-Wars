@@ -132,7 +132,7 @@ namespace Nashet.EconomicSimulation
             if (Game.devMode)
             {
                 sb.Append("\nID: ").Append(Game.selectedProvince.ID);
-                sb.Append("\nNeighbors: ").Append(Game.selectedProvince.AllNeighbors().getString(", "));
+                sb.Append("\nNeighbors: ").Append(Game.selectedProvince.AllNeighbors().ToString(", "));
             }
             sb.Append("\nPopulation (with families): ").Append(Game.selectedProvince.getFamilyPopulation());
 
@@ -156,7 +156,7 @@ namespace Nashet.EconomicSimulation
                 .OrderByDescending(x => x.Value.get()).ToString(", ", 0));
 
             if (Game.selectedProvince.getModifiers().Count > 0)
-                sb.Append("\nModifiers: ").Append(ToStringExtensions.getString(Game.selectedProvince.getModifiers()));
+                sb.Append("\nModifiers: ").Append(ToStringExtensions.ToString(Game.selectedProvince.getModifiers()));
 
             Text text = btnOwner.GetComponentInChildren<Text>();
             text.text = "Owner: " + Game.selectedProvince.Country;

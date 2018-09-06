@@ -244,13 +244,13 @@ namespace Nashet.EconomicSimulation
                            "Country: " + hoveredProvince.Country + ", population (men): " + hoveredProvince.Country.Provinces.AllPops.Sum(x => x.population.Get())
                            + "\n" + hoveredProvince.Country.Provinces.AllPopsChanges
                            .Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != hoveredProvince.Country))
-                           .getString("\n", "Total change: "));
+                           .ToString("\n", "Total change: "));
                         else
                             tooltip.SetTextDynamic(() =>
                            "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.AllPops.Sum(x => x.population.Get())
                            + "\n" + hoveredProvince.AllPopsChanges
                            .Where(y => y.Key == null || y.Key is Province || y.Key is Staff)
-                           .getString("\n", "Total change: ")
+                           .ToString("\n", "Total change: ")
                             );
                         tooltip.Show();
                     }

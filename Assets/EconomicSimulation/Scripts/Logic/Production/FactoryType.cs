@@ -192,7 +192,7 @@ namespace Nashet.EconomicSimulation
                     // var cost = GetBuildCost(agent.Country.market);
                     //sb.Append("Has ").Append(cost).Append(" coins");
                     sb.Append("Has enough coins");
-                    sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") has ").Append(GetBuildNeeds().getString(", "));
+                    sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") has ").Append(GetBuildNeeds().ToString(", "));
                     return sb.ToString();
                 }, true);
 

@@ -67,7 +67,7 @@ namespace Nashet.EconomicSimulation
                 }
 
                 //sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it
-                sb.Append("\nConsumed: ").Append(pop.getConsumed().getString(", "));
+                sb.Append("\nConsumed: ").Append(pop.getConsumed().ToString(", "));
 
                 
                 // loyalty part
@@ -102,17 +102,17 @@ namespace Nashet.EconomicSimulation
 
                 sb.Clear();
                 sb.Append("Life needs: ").Append(pop.getLifeNeedsFullfilling()).Append(" fulfilled");
-                lifeNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => " Life needs wants:\n" + pop.population.getRealLifeNeeds().getString("\n"));
+                lifeNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => " Life needs wants:\n" + pop.population.getRealLifeNeeds().ToString("\n"));
                 lifeNeedsText.text = sb.ToString();
 
                 sb.Clear();
                 sb.Append("Everyday needs: ").Append(pop.getEveryDayNeedsFullfilling()).Append(" fulfilled");
-                everyDayNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Everyday needs wants:\n" + pop.population.getRealEveryDayNeeds().getString("\n"));
+                everyDayNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Everyday needs wants:\n" + pop.population.getRealEveryDayNeeds().ToString("\n"));
                 everyDayNeedsText.text = sb.ToString();
 
                 sb.Clear();
                 sb.Append("Luxury needs: ").Append(pop.getLuxuryNeedsFullfilling()).Append(" fulfilled");
-                luxuryNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Luxury needs wants:\n" + pop.population.getRealLuxuryNeeds().getString("\n"));
+                luxuryNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Luxury needs wants:\n" + pop.population.getRealLuxuryNeeds().ToString("\n"));
                 luxuryNeedsText.text = sb.ToString();
 
                 sb.Clear();
@@ -141,7 +141,7 @@ namespace Nashet.EconomicSimulation
                 {
                     property.gameObject.SetActive(true);
                     var found = World.GetAllShares(thisInvestor).OrderByDescending(x => x.Value.get());
-                    property.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Owns:\n" + found.getString(", ", "\n"));
+                    property.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Owns:\n" + found.ToString(", ", "\n"));
                 }
                 else
                     property.gameObject.SetActive(false);
@@ -153,13 +153,13 @@ namespace Nashet.EconomicSimulation
                         //            orderby pair.Value descending
                         //            select pair;
                         var items = pop.getIssues().OrderByDescending(x => x.Value);
-                        return "Issues:\n" + items.getString(" willing ", "\n");
+                        return "Issues:\n" + items.ToString(" willing ", "\n");
                     }
                     );
                 populationChange.text = "Population change: " + pop.getAllPopulationChanges().Sum(x => x.Value);
                 populationChange.GetComponent<ToolTipHandler>().SetTextDynamic(() =>
                 "Population change:\n" +
-                pop.getAllPopulationChanges().getString("\n", pop, "Total change: "));
+                pop.getAllPopulationChanges().ToString("\n", pop, "Total change: "));
             }
         }
 
