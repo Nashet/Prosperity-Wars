@@ -55,7 +55,7 @@ namespace Nashet.EconomicSimulation
             //sb.Append("\n Storage sells: [code is broken #494]");//.Append(Game.Player.getCostOfAllSellsByGovernment());
             //sb.Append("\n Rest: ").Append(Game.Player.RestIncome);
             //sb.Append("\nTotal: ").Append(Game.Player.moneyIncomeThisTurn);
-            sb.Append(Game.Player.Register.GetIncomeTest());
+            sb.Append(Game.Player.Register.GetIncomeText());
 
             sb.Append("\n\nBalance: ").Append(Money.DecimalToString(Game.Player.Register.Balance));
             sb.Append("\nHave money: ").Append(Game.Player.Cash).Append(" + ").Append(Game.Player.deposits).Append(" in bank");

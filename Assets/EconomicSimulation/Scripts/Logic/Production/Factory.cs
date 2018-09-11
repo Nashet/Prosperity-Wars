@@ -1026,9 +1026,9 @@ namespace Nashet.EconomicSimulation
 
         protected void GiveMoneyFromGoldPit(Storage gold)
         {
-            var newMoney = new MoneyView(gold);
+            var newMoney = new Money(gold);
             cash.Add(newMoney);
-            Register.RecordIncomeFromNowhere(Register.Account.MinedGold, newMoney.Get());
+            Register.RecordIncomeFromNowhere(Register.Account.MinedGold, newMoney);
                         
             //MoneyView sentToGovernment = MoneyView.CovertFromGold(gold.Copy().Multiply(Options.GovernmentTakesShareOfGoldOutput));
 

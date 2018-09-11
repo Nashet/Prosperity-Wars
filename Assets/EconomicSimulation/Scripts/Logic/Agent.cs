@@ -215,7 +215,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (!CanPayCashOnly(howMuch))
                     Bank.ReturnDeposit(this, HowMuchLacksMoneyCashOnly(howMuch));
-                Register.RecordPayment(whom, account, howMuch.Get());
+                Register.RecordPayment(whom, account, howMuch);
                 whom.cash.Add(howMuch);
                 cash.Subtract(howMuch);
                 return true;

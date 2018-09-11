@@ -1035,7 +1035,7 @@ namespace Nashet.EconomicSimulation
             else
             {
                 var hadMoney = taxPayer.getMoneyAvailable().Copy();
-                var availableMoney = taxPayer.getMoneyAvailable();             
+                //var availableMoney = taxPayer.getMoneyAvailable();             
 
                 taxPayer.PayAllAvailableMoney(this, account);
 
