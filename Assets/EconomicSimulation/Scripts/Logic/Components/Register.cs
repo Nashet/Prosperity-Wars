@@ -99,7 +99,7 @@ namespace Nashet.EconomicSimulation
         private readonly Money UBIIncome = new Money(0);
         private readonly Money UBIExpense = new Money(0);
 
-        protected readonly Money richTaxIncome = new Money(0);
+        private readonly Money richTaxIncome = new Money(0);
         private readonly Money richTaxExpense = new Money(0);
 
         public override string ToString()
