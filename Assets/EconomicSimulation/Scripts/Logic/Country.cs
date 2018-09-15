@@ -75,6 +75,8 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public Country(string name, Culture culture, Color color, Province capital, float money) : base(money, null)
         {
+            FailedPayments.Enable();
+
             Provinces = new ProvinceOwner(this);
             Science = new Science(this);
             Diplomacy = new Diplomacy(this);

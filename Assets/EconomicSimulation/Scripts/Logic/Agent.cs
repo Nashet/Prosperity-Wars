@@ -18,6 +18,7 @@ namespace Nashet.EconomicSimulation
         public MoneyView Cash { get { return cash; } }
 
         public readonly Register Register = new Register();
+        public readonly Register FailedPayments = new Register(); 
 
         /// <summary> could be null</summary>
         //private Bank bank;
@@ -41,6 +42,7 @@ namespace Nashet.EconomicSimulation
         protected Agent(Country country)
         {
             this.country = country;
+            FailedPayments.Disable();
         }
 
         public void OnProvinceOwnerChanged(Country newOner)
@@ -53,11 +55,10 @@ namespace Nashet.EconomicSimulation
             cash.Add(money);
         }
 
-
-
         public virtual void SetStatisticToZero()
         {
             Register.SetStatisticToZero();
+            FailedPayments.SetStatisticToZero();
         }
 
         /// <summary> Returns difference between moneyIncomeLastTurn and value</summary>
@@ -130,7 +131,7 @@ namespace Nashet.EconomicSimulation
             if (CanPay(cost))
                 return new Storage(need);
             else
-                return new Storage(need.Product, (float)(getMoneyAvailable().Copy()).Divide(Country.market.getCost(need.Product).Get()).Get());
+                return new Storage(need.Product, (float)getMoneyAvailable().Copy().Divide(Country.market.getCost(need.Product).Get()).Get());
         }
 
         /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
@@ -222,6 +223,7 @@ namespace Nashet.EconomicSimulation
             }
             else
             {
+                FailedPayments.RecordIncomeFromNowhere(account, howMuch);
                 if (showMessageAboutNegativeValue)
                     Debug.Log(this + " doesn't have " + howMuch + " to pay in Agent.payWithoutRecord2 " + whom
                         + " has " + getMoneyAvailable());

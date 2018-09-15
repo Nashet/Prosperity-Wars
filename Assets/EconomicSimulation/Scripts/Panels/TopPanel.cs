@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using System.Text;
-using Nashet.UnityUIUtils;
+﻿using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,26 +13,36 @@ namespace Nashet.EconomicSimulation
         private MainCamera mainCamera;
 
         [SerializeField]
-        private Button btnPlay, btnStep, btnTrade;
+        private Button btnPlay, btnStep, btnTrade, financeButton;
 
         [SerializeField]
         private Text generalText, specificText;
 
         [SerializeField]
         private World world;
+
         // Use this for initialization
         private void Awake()
         {
             MainCamera.topPanel = this;
+            buttonSelector = new ColorSelector(Color.red); //UISelector.AddTo(this, LinksManager.Get.UISelectedMaterial,);
         }
 
         private bool firstUpdate = true;
+
+        protected ISelector buttonSelector;
 
         private void Update()
         {
             if (firstUpdate)
                 btnPlay.image.color = GUIChanger.DisabledButtonColor;
             firstUpdate = false;
+
+            if (Game.Player != null)
+                if (Game.Player.FailedPayments.Income.isNotZero())
+                    buttonSelector.Select(financeButton.gameObject);
+                else
+                    buttonSelector.Deselect(financeButton.gameObject);
         }
 
         public override void Refresh()
@@ -49,13 +59,13 @@ namespace Nashet.EconomicSimulation
                 sb.Append("   Population: ").Append(Game.Player.Provinces.getFamilyPopulation().ToString("N0"))
                     .Append(" (")
                     .Append(Game.Player.Provinces.AllPopsChanges.Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != Game.Player))
-                    .Sum(x=>x.Value).ToString("+0;-0;0"))
+                    .Sum(x => x.Value).ToString("+0;-0;0"))
                     .Append(")");
 
             sb.Append("\nMoney: ").Append(Game.Player.Cash)
             .Append("   Tech points: ").Append(Game.Player.Science.Points.ToString("F0"));
 
-            if (Game.Player.IsAlive)                
+            if (Game.Player.IsAlive)
                 sb.Append("   Loyalty: ").Append(Game.Player.Provinces.AllPops.GetAverageProcent(x => x.loyalty))
                 .Append("   Education: ").Append(Game.Player.Provinces.AllPops.GetAverageProcent(x => x.Education));
 
@@ -95,7 +105,7 @@ namespace Nashet.EconomicSimulation
         {
             if (MainCamera.productionWindow.isActiveAndEnabled)
             {
-                if (MainCamera.productionWindow.IsSelectedProvince(Game.selectedProvince) 
+                if (MainCamera.productionWindow.IsSelectedProvince(Game.selectedProvince)
                     && Game.selectedProvince != null)
                 {
                     MainCamera.productionWindow.ClearAllFiltres();
@@ -145,7 +155,7 @@ namespace Nashet.EconomicSimulation
         public void onbtnStepClick(Button button)
         {
             if (world.IsRunning)
-            {                
+            {
                 switchHaveToRunSimulation();
             }
             else

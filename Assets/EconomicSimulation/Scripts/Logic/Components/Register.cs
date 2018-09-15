@@ -13,6 +13,7 @@ namespace Nashet.EconomicSimulation
     {
         //protected Dictionary<Account, Money> incomeList = new Dictionary<Account, Money>();
         //protected Dictionary<Account, Money> expensesList = new Dictionary<Account, Money>();
+        protected bool enabled = true;
 
         protected Money income = new Money(0m);
         public MoneyView Income { get { return income; } }
@@ -32,13 +33,16 @@ namespace Nashet.EconomicSimulation
 
         public void SetStatisticToZero()
         {
-            incomeLastTurn.Set(income);
-            income.SetZero();
-            expenses.SetZero();
-            foreach (var account in Account.AllAccounts)
+            if (enabled)
             {
-                account.GetIncomeAccount(this).SetZero();
-                account.GetExpenseAccount(this).SetZero();
+                incomeLastTurn.Set(income);
+                income.SetZero();
+                expenses.SetZero();
+                foreach (var account in Account.AllAccounts)
+                {
+                    account.GetIncomeAccount(this).SetZero();
+                    account.GetExpenseAccount(this).SetZero();
+                }
             }
             //incomeList.Clear();
             //expensesList.Clear();
@@ -48,26 +52,43 @@ namespace Nashet.EconomicSimulation
             //    item.Value.SetZero();
 
         }
+
+        public void Disable()
+        {
+            enabled = false;
+        }
+
+        internal void Enable()
+        {
+            enabled = true;
+        }
+
         public void RecordPayment(Agent receiver, Account account, MoneyView sum)
         {
-            account.GetIncomeAccount(receiver.Register).Add(sum);
-            //receiver.Register.incomeList.AddAndSum(account, sum);
-            receiver.Register.income.Add(sum);
+            if (enabled)
+            {
+                account.GetIncomeAccount(receiver.Register).Add(sum);
+                //receiver.Register.incomeList.AddAndSum(account, sum);
+                receiver.Register.income.Add(sum);
 
-            account.GetExpenseAccount(this).Add(sum);
-            //this.expensesList.AddAndSum(account, sum);//giver is this
-            if (account != Account.Dividends)
-                this.expenses.Add(sum);
+                account.GetExpenseAccount(this).Add(sum);
+                //this.expensesList.AddAndSum(account, sum);//giver is this
+                if (account != Account.Dividends)
+                    this.expenses.Add(sum);
+            }
         }
         public void RecordIncomeFromNowhere(Account account, MoneyView sum)
         {
-            account.GetIncomeAccount(this).Add(sum);
-            //this.incomeList.AddAndSum(account, sum);
-            this.income.Add(sum);
+            if (enabled)
+            {
+                account.GetIncomeAccount(this).Add(sum);
+                //this.incomeList.AddAndSum(account, sum);
+                this.income.Add(sum);
+            }
         }
 
         private readonly StringBuilder incomeText = new StringBuilder();
-        private readonly StringBuilder expensesText = new StringBuilder();
+        private readonly StringBuilder expensesText = new StringBuilder();                
 
         private readonly Money foreignTaxIncome = new Money(0);
         private readonly Money foreignTaxExpense = new Money(0);
@@ -104,12 +125,12 @@ namespace Nashet.EconomicSimulation
 
         public override string ToString()
         {
-            return GetIncomeText() + "\n" + GetExpensesText();
+            return "Income: " + income + GetIncomeText() + "\n" + GetExpensesText();
         }
 
         public string GetIncomeText()
         {
-            incomeText.Clear().Append("Income: " + income);
+            incomeText.Clear();//.Append("Income: " + income);
 
             foreach (var account in Account.AllAccounts)
             {
@@ -141,7 +162,7 @@ namespace Nashet.EconomicSimulation
                 get
                 {
                     foreach (var item in allAccounts)
-                        yield return  item;
+                        yield return item;
                 }
             }
 

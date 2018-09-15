@@ -52,16 +52,16 @@ namespace Nashet.EconomicSimulation
         {
             Money payCheck = Country.getSoldierWage().Copy();
             payCheck.Multiply(population.Get() / 1000m);
-            if (Country.CanPay(payCheck))
-            {
+            //if (Country.CanPay(payCheck))
+            //{
                 Country.Pay(this, payCheck, Register.Account.Wage);                
-                didntGetPromisedSalary = false;
-            }
-            else
-            {
-                didntGetPromisedSalary = true;
-                Country.failedToPaySoldiers = true;
-            }
+            //    didntGetPromisedSalary = false;
+            //}
+            //else
+            //{
+            //    didntGetPromisedSalary = true;
+            //    Country.failedToPaySoldiers = true;
+            //}
         }
     }
 }
