@@ -1074,15 +1074,12 @@ namespace Nashet.EconomicSimulation
                 {
                     var rate = reform.SubsizionSize.Get();
                     MoneyView subsidy = rate.Copy().Multiply(population.Get()).Divide(1000);
-                    //if (Country.CanPay(subsidy))
-                    //{
-                        Country.Pay(this, subsidy, Register.Account.UnemploymentSubsidies);
-                    //}
-                    //else
-                    //{
-                    //    didntGetPromisedSocialBenefits = true;
-                    //    Country.Politics.RegisterDefaultedSocialObligations(subsidy);
-                    //}
+
+                    if (!Country.Pay(this, subsidy, Register.Account.UnemploymentSubsidies))
+                    {
+                        didntGetPromisedSocialBenefits = true;
+                        //Country.Politics.RegisterDefaultedSocialObligations(subsidy);
+                    }
                 }
             }
         }
@@ -1096,15 +1093,12 @@ namespace Nashet.EconomicSimulation
             {
                 var rate = reform.UBISize.Get();
                 MoneyView subsidy = rate.Copy().Multiply(population.Get()).Divide(1000);
-                //if (Country.CanPay(subsidy))
-                //{
-                    Country.Pay(this, subsidy, Register.Account.UBISubsidies);
-                //}
-                //else
-                //{
-                //    didntGetPromisedSocialBenefits = true;
-                //    Country.Politics.RegisterDefaultedSocialObligations(subsidy);
-                //}
+
+                if (!Country.Pay(this, subsidy, Register.Account.UBISubsidies))
+                {
+                    didntGetPromisedSocialBenefits = true;
+                    //Country.Politics.RegisterDefaultedSocialObligations(subsidy);
+                }
             }
         }
         public void TakePovertyAid()
@@ -1120,15 +1114,11 @@ namespace Nashet.EconomicSimulation
                     var haveToPay = (subsidy as Money).Subtract(Register.Income, false); // subsidy - income
                     if (haveToPay.isNotZero())
                     {
-                        //if (Country.CanPay(subsidy))
-                        //{
-                            Country.Pay(this, subsidy, Register.Account.PovertyAid);
-                        //}
-                        //else
-                        //{
-                        //    didntGetPromisedSocialBenefits = true;
-                        //    Country.Politics.RegisterDefaultedSocialObligations(subsidy);
-                        //}
+                        if (!Country.Pay(this, subsidy, Register.Account.PovertyAid))
+                        {
+                            didntGetPromisedSocialBenefits = true;
+                            //Country.Politics.RegisterDefaultedSocialObligations(subsidy);
+                        }
                     }
                 }
             }

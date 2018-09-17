@@ -731,7 +731,10 @@ namespace Nashet.EconomicSimulation
                 || Country.PovertyAid.PovertyAidSize.Get().isBiggerOrEqual(getSalary())
                 || !Country.UBI.IsMoreConservativeThan(UBI.Middle) // 
                     && Country.economy != Economy.PlannedEconomy
-                    && Country.Politics.LastTurnDefaultedSocialObligations.isZero())// should be workers statistics
+                    //&& Country.Politics.LastTurnDefaultedSocialObligations.isZero()
+                    && Register.Account.PovertyAid.GetIncomeAccount(Country.FailedPayments).isNotZero()
+                        || Register.Account.UBISubsidies.GetIncomeAccount(Country.FailedPayments).isNotZero()
+                        || Register.Account.UnemploymentSubsidies.GetIncomeAccount(Country.FailedPayments).isNotZero())// should be workers statistics
                 difference = -1 * maxHiringSpeed;
 
             if (difference > 0)
@@ -911,7 +914,7 @@ namespace Nashet.EconomicSimulation
                         var owner = item.Key as Agent;
                         MoneyView sentToOwner = dividends.Copy().Multiply(item.Value);
                         //Value sentToOwner = item.Value.SendProcentOf(dividends);
-                        Pay(owner, sentToOwner, Register.Account.Dividends);                        
+                        Pay(owner, sentToOwner, Register.Account.Dividends);
                     }
                 }
             }
@@ -1029,7 +1032,7 @@ namespace Nashet.EconomicSimulation
             var newMoney = new Money(gold);
             cash.Add(newMoney);
             Register.RecordIncomeFromNowhere(Register.Account.MinedGold, newMoney);
-                        
+
             //MoneyView sentToGovernment = MoneyView.CovertFromGold(gold.Copy().Multiply(Options.GovernmentTakesShareOfGoldOutput));
 
             ////send 50% to government

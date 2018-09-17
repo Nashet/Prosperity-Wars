@@ -22094,7 +22094,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: 
-  isDynamic: 0
+  isDynamic: 1
 --- !u!1 &1003814264
 GameObject:
   m_ObjectHideFlags: 0

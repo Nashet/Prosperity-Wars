@@ -36,13 +36,7 @@ namespace Nashet.EconomicSimulation
         {
             if (firstUpdate)
                 btnPlay.image.color = GUIChanger.DisabledButtonColor;
-            firstUpdate = false;
-
-            if (Game.Player != null)
-                if (Game.Player.FailedPayments.Income.isNotZero())
-                    buttonSelector.Select(financeButton.gameObject);
-                else
-                    buttonSelector.Deselect(financeButton.gameObject);
+            firstUpdate = false;            
         }
 
         public override void Refresh()
@@ -68,6 +62,19 @@ namespace Nashet.EconomicSimulation
             if (Game.Player.IsAlive)
                 sb.Append("   Loyalty: ").Append(Game.Player.Provinces.AllPops.GetAverageProcent(x => x.loyalty))
                 .Append("   Education: ").Append(Game.Player.Provinces.AllPops.GetAverageProcent(x => x.Education));
+
+            if (Game.Player != null)
+                if (Game.Player.FailedPayments.Income.isNotZero())
+                {
+                    buttonSelector.Select(financeButton.gameObject);
+                    financeButton.GetComponent<ToolTipHandler>().RemoveTextStartingWith("\nCan't");
+                    financeButton.GetComponent<ToolTipHandler>().AddText("\nCan't pay for:" + Game.Player.FailedPayments.GetIncomeText());
+                }
+                else
+                {
+                    buttonSelector.Deselect(financeButton.gameObject);
+                    financeButton.GetComponent<ToolTipHandler>().RemoveTextStartingWith("\nCan't");
+                }
 
             generalText.text = sb.ToString();
         }
