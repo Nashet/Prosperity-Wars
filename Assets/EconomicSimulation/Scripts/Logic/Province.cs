@@ -489,9 +489,9 @@ namespace Nashet.EconomicSimulation
                     || !Country.UBI.IsMoreConservativeThan(UBI.Middle)
                    && Country.economy != Economy.PlannedEconomy
                    //&& Country.Politics.LastTurnDefaultedSocialObligations.isZero())
-                   && Register.Account.PovertyAid.GetIncomeAccount(Country.FailedPayments).isNotZero()
-                        || Register.Account.UBISubsidies.GetIncomeAccount(Country.FailedPayments).isNotZero()
-                        || Register.Account.UnemploymentSubsidies.GetIncomeAccount(Country.FailedPayments).isNotZero())
+                   && Register.Account.PovertyAid.GetIncomeAccount(Country.FailedPayments).isZero()
+                   && Register.Account.UBISubsidies.GetIncomeAccount(Country.FailedPayments).isZero()
+                   && Register.Account.UnemploymentSubsidies.GetIncomeAccount(Country.FailedPayments).isZero())
                     foreach (var worker in AllWorkers)
                     {
                         // sit on benefits:                    

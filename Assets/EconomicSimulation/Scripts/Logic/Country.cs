@@ -526,12 +526,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Money newWage;
                     Money soldierAllNeedsCost = Country.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).Copy();
-                    if (Register.Account.Wage.GetIncomeAccount(FailedPayments).isNotZero())//failedToPaySoldiers
-                    {
-                        newWage = getSoldierWage().Copy().Multiply(0.8m);
-                        //getSoldierWage().Get() - getSoldierWage().Get() * 0.2m;
-                    }
-                    else
+                    if (Register.Account.Wage.GetIncomeAccount(FailedPayments).isZero())//didn't failedToPaySoldiers
                     {
                         var balance = Register.Balance;
 
@@ -545,6 +540,11 @@ namespace Nashet.EconomicSimulation
                             newWage = getSoldierWage().Copy().Multiply(0.5m);
                         else
                             newWage = getSoldierWage().Copy(); // don't change wage
+                    }
+                    else
+                    {
+                        newWage = getSoldierWage().Copy().Multiply(0.8m);
+                        //getSoldierWage().Get() - getSoldierWage().Get() * 0.2m;                        
                     }
                     //newWage = newWage.Clamp(0, soldierAllNeedsCost * 2m);
                     var limit = soldierAllNeedsCost.Copy().Multiply(2m);
