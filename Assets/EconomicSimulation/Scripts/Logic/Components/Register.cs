@@ -88,7 +88,7 @@ namespace Nashet.EconomicSimulation
         }
 
         private readonly StringBuilder incomeText = new StringBuilder();
-        private readonly StringBuilder expensesText = new StringBuilder();                
+        private readonly StringBuilder expensesText = new StringBuilder();
 
         private readonly Money foreignTaxIncome = new Money(0);
         private readonly Money foreignTaxExpense = new Money(0);
@@ -122,6 +122,11 @@ namespace Nashet.EconomicSimulation
 
         private readonly Money richTaxIncome = new Money(0);
         private readonly Money richTaxExpense = new Money(0);
+
+        public Register(bool enabled = true)
+        {
+            this.enabled = enabled;
+        }
 
         public override string ToString()
         {

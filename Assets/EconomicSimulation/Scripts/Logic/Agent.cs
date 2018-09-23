@@ -9,45 +9,41 @@ namespace Nashet.EconomicSimulation
     /// represent ability to take loans/deposits
     /// </summary>
     public abstract class Agent : IHasCountry, IStatisticable
-    {
-        /// <summary> Used to calculate income tax, now it's only for statistics </summary>
-        //public Money moneyIncomeThisTurn = new Money(0);
-
-        //protected readonly Money moneyIncomeLastTurn = new Money(0);
+    {       
         protected readonly Money cash = new Money(0);
         public MoneyView Cash { get { return cash; } }
 
         public readonly Register Register = new Register();
-        public readonly Register FailedPayments = new Register(); 
+        public readonly Register FailedPayments = new Register(false); 
 
         /// <summary> could be null</summary>
         //private Bank bank;
+
         public Money loans = new Money(0);
 
         public Money deposits = new Money(0);
-
-        //public Money incomeTaxPayed = new Money(0);
+       
 
         public abstract void simulate();
 
-        private Country country;
+        //private Country country;
 
         public Country Country
         {
             //get { return province.Country; }
-            get { return country; }
-            protected set { country = value; }
+            get;//{ return country; }
+            protected set; //{ country = value; 
+                
         }
 
         protected Agent(Country country)
         {
-            this.country = country;
-            FailedPayments.Disable();
+            Country = country;           
         }
 
         public void OnProvinceOwnerChanged(Country newOner)
         {
-            country = newOner;
+            Country = newOner;
         }
 
         public void GiveMoneyFromNoWhere(decimal money)
@@ -71,10 +67,10 @@ namespace Nashet.EconomicSimulation
         {
             get
             {
-                if (country == null)
+                if (Country == null)
                     return null; // to deal with no-country Agents like Market
                 else
-                    return country.Bank;
+                    return Country.Bank;
             }
         }
 
@@ -276,17 +272,17 @@ namespace Nashet.EconomicSimulation
 
                     // foreigners income tax calculation
                     if (payer is Market == false //&& incomeReceiver is Market == false
-                        && payer.country != incomeReceiver.country
+                        && payer.Country != incomeReceiver.Country
                         && payer is Factory) // pay taxes in enterprise jurisdiction only if it's factory
                     {
-                        var payed = payer.country.TakeIncomeTaxFrom(incomeReceiver, howMuchPayReally, false);
+                        var payed = payer.Country.TakeIncomeTaxFrom(incomeReceiver, howMuchPayReally, false);
                         howMuchPayReally.Subtract(payed);//and reduce taxable base
                     }
 
                     // in rest cases only pops pay taxes
                     var popReceiver = incomeReceiver as PopUnit;
                     if (popReceiver != null)
-                        incomeReceiver.country.TakeIncomeTaxFrom(popReceiver, howMuchPayReally, popReceiver.Type.isPoorStrata());
+                        incomeReceiver.Country.TakeIncomeTaxFrom(popReceiver, howMuchPayReally, popReceiver.Type.isPoorStrata());
                     //else // if it's not Pop than it should by dividends from enterprise..
                     //{
                     //    //var countryPayer = incomeReceiver as Country;

@@ -38,8 +38,9 @@ namespace Nashet.EconomicSimulation
         private int daysInConstruction;
         private int daysUnprofitable;
         private int daysClosed;
-        private bool justHiredPeople = true;
-        private int hiredLastTurn;
+        /// <summary> Returns true if there was 0 workers last turn and now there are some workers</summary>
+        public bool IsFirstTimeHired { get; protected set; } = true;
+        private int hiredLastTime;
         public readonly Owners ownership;
 
         /// <summary>used only on initial factory building</summary>
@@ -322,12 +323,7 @@ namespace Nashet.EconomicSimulation
         public bool isBuilding()
         {
             return building;
-        }
-
-        public bool isJustHiredPeople()
-        {
-            return justHiredPeople;
-        }
+        }       
 
         public override string ToString()
         {
@@ -375,12 +371,12 @@ namespace Nashet.EconomicSimulation
             if (amount > 0)
             {
                 if (wasWorkforce == 0)
-                    justHiredPeople = true;
+                    IsFirstTimeHired = true;
                 else
-                    justHiredPeople = false;
+                    IsFirstTimeHired = false;
 
                 int leftToHire = amount;
-                hiredLastTurn = 0;
+                hiredLastTime = 0;
                 popList = popList.OrderByDescending(x => x.Education.get()).ThenBy(x => x.population.Get()).ToList();
 
                 foreach (Workers pop in popList)
@@ -391,9 +387,9 @@ namespace Nashet.EconomicSimulation
                         pop.Hire(this, leftToHire);
                         //hiredLastTurn = getWorkForce() - wasWorkforce;
 
-                        averageWorkersEducation.AddPoportionally(hiredLastTurn, leftToHire, pop.Education);
-                        hiredLastTurn += leftToHire;
-                        return hiredLastTurn;
+                        averageWorkersEducation.AddPoportionally(hiredLastTime, leftToHire, pop.Education);
+                        hiredLastTime += leftToHire;
+                        return hiredLastTime;
                         //break;
                     }
                     else
@@ -401,13 +397,13 @@ namespace Nashet.EconomicSimulation
                         var toHire = pop.GetSeekingJobInt();
                         hiredWorkForce.Add(pop, toHire); // hire everyone left
                         pop.Hire(this, toHire);
-                        averageWorkersEducation.AddPoportionally(hiredLastTurn, toHire, pop.Education);
-                        hiredLastTurn += toHire;
+                        averageWorkersEducation.AddPoportionally(hiredLastTime, toHire, pop.Education);
+                        hiredLastTime += toHire;
                         leftToHire -= toHire;
                     }
                 }
                 //hiredLastTurn = getWorkForce() - wasWorkforce;
-                return hiredLastTurn;
+                return hiredLastTime;
             }
             else
                 return 0;
@@ -667,7 +663,7 @@ namespace Nashet.EconomicSimulation
                 // Reduce salary on non-profit
                 if (margin.isSmallerThan(Options.FactoryMarginToDecreaseSalary)
                     && daysUnprofitable >= Options.minDaysBeforeSalaryCut
-                    && !isJustHiredPeople() && !isSubsidized()
+                    && !IsFirstTimeHired && !isSubsidized()
                     && getWorkForce() != 0)
                     //salary.Subtract(Options.FactoryReduceSalaryOnNonProfit, false);
                     salary.Multiply(Options.FactoryReduceSalaryOnNonProfit, false);
@@ -741,18 +737,18 @@ namespace Nashet.EconomicSimulation
             {
                 float inputFactor = getInputFactor2().get();
                 //fire people if no enough input.
-                if (inputFactor < 0.95f && !isSubsidized() && !isJustHiredPeople() && wasWorkforce > 0)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
+                if (inputFactor < 0.95f && !isSubsidized() && !IsFirstTimeHired && wasWorkforce > 0)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
                     difference = -1 * maxHiringSpeed;
 
                 if (Country.economy != Economy.PlannedEconomy)// commies don't care about profits
                 {
                     //fire people if unprofitable.
-                    if (getProfit() < 0m && !isSubsidized() && !isJustHiredPeople() && daysUnprofitable >= Options.minDaysBeforeSalaryCut)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
+                    if (getProfit() < 0m && !isSubsidized() && !IsFirstTimeHired && daysUnprofitable >= Options.minDaysBeforeSalaryCut)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
                         difference = -1 * maxHiringSpeed;
 
                     // just don't hire more..
                     //if ((getProfit() < 0f || inputFactor < 0.95f) && !isSubsidized() && !isJustHiredPeople() && workForce > 0)
-                    if (getProfit() < 0m && !isSubsidized() && !isJustHiredPeople() && wasWorkforce > 0)
+                    if (getProfit() < 0m && !isSubsidized() && !IsFirstTimeHired && wasWorkforce > 0)
                         difference = 0;
                 }
             }
@@ -767,7 +763,7 @@ namespace Nashet.EconomicSimulation
 
         public int getHowMuchHiredLastTurn()
         {
-            return hiredLastTurn;
+            return hiredLastTime;
         }
 
         public Procent GetWorkForceFulFilling()
@@ -795,7 +791,7 @@ namespace Nashet.EconomicSimulation
             Procent efficencyFactor;
             Procent workforceProcent = GetWorkForceFulFilling();
             Procent inputFactor = getInputFactor();
-            if (inputFactor.isZero() & isJustHiredPeople())
+            if (inputFactor.isZero() & IsFirstTimeHired)
                 inputFactor = Procent.HundredProcent.Copy();
 
             if (inputFactor.isSmallerThan(workforceProcent))
