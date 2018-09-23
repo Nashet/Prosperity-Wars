@@ -16,27 +16,27 @@ namespace Nashet.EconomicSimulation.Reforms
 
         public static readonly UBIReformValue Scanty = new UBIReformValue("Scant UBI", " - Half-hungry", 1, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).UBI == None || (x as Country).UBI == Minimal, "Previous reform enacted", true)
+            Invention.Welfare.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).UBI == None || (x as Country).UBI == Minimal, "Previous reform enacted", true)
         }));
 
         public static readonly UBIReformValue Minimal = new UBIReformValue("Subsistence UBI", " - Just enough to feed yourself", 2, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).UBI == Scanty || (x as Country).UBI == Trinket, "Previous reform enacted", true)
+            Invention.Welfare.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).UBI == Scanty || (x as Country).UBI == Trinket, "Previous reform enacted", true)
         }));
 
         public static readonly UBIReformValue Trinket = new UBIReformValue("Mid-Level UBI", " - You can buy some small stuff", 3, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).UBI == Minimal || (x as Country).UBI == Middle, "Previous reform enacted", true)
+            Invention.Welfare.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).UBI == Minimal || (x as Country).UBI == Middle, "Previous reform enacted", true)
         }));
 
         public static readonly UBIReformValue Middle = new UBIReformValue("Mediocre UBI", " - Pops will start to leave job with that benefits", 4, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).UBI == Trinket || (x as Country).UBI == Big, "Previous reform enacted", true)
+            Invention.Welfare.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).UBI == Trinket || (x as Country).UBI == Big, "Previous reform enacted", true)
         }));
 
         public static readonly UBIReformValue Big = new UBIReformValue("Generous UBI", " - Can live almost like a king. Almost..", 5, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).UBI == Middle, "Previous reform enacted", true)
+            Invention.Welfare.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).UBI == Middle, "Previous reform enacted", true)
         }));
 
         

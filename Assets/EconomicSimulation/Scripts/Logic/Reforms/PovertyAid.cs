@@ -16,27 +16,27 @@ namespace Nashet.EconomicSimulation.Reforms
 
         public static readonly PovertyAidReformValue Scanty = new PovertyAidReformValue("Scanty Poverty Aid", "", 1, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).PovertyAid == None || (x as Country).PovertyAid == Minimal, "Previous reform enacted", true)
+            Invention.Welfare.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).PovertyAid == None || (x as Country).PovertyAid == Minimal, "Previous reform enacted", true)
         }));
 
         public static readonly PovertyAidReformValue Minimal = new PovertyAidReformValue("Minimal Poverty Aid", "", 2, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).PovertyAid == Scanty || (x as Country).PovertyAid == Trinket, "Previous reform enacted", true)
+            Invention.Welfare.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).PovertyAid == Scanty || (x as Country).PovertyAid == Trinket, "Previous reform enacted", true)
         }));
 
         public static readonly PovertyAidReformValue Trinket = new PovertyAidReformValue("Trinket Poverty Aid", "", 3, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).PovertyAid == Minimal || (x as Country).PovertyAid == Middle, "Previous reform enacted", true)
+            Invention.Welfare.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).PovertyAid == Minimal || (x as Country).PovertyAid == Middle, "Previous reform enacted", true)
         }));
 
         public static readonly PovertyAidReformValue Middle = new PovertyAidReformValue("Middle Poverty Aid", "", 4, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).PovertyAid == Trinket || (x as Country).PovertyAid == Big, "Previous reform enacted", true)
+            Invention.Welfare.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).PovertyAid == Trinket || (x as Country).PovertyAid == Big, "Previous reform enacted", true)
         }));
 
         public static readonly PovertyAidReformValue Big = new PovertyAidReformValue("Big Poverty Aid", "", 5, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).PovertyAid == Middle, "Previous reform enacted", true)
+            Invention.Welfare.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).PovertyAid == Middle, "Previous reform enacted", true)
         }));
 
         public PovertyAid(Country country, int showOrder) : base("Poverty Aid", " - goes to everyone who is poorer than current reform level", country, showOrder,

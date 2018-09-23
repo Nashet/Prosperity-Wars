@@ -195,8 +195,8 @@ namespace Nashet.EconomicSimulation
             modifierEfficiency = new ModifiersList(new List<Condition>
             {
            Modifier.modifierDefault1,
-            new Modifier(Invention.SteamPowerInvented, x => (x as Factory).Country, 0.25f, false),
-            new Modifier(Invention.CombustionEngineInvented, x => (x as Factory).Country, 0.5f, false),
+            new Modifier(Invention.SteamPower.Invented, x => (x as Factory).Country, 0.25f, false),
+            new Modifier(Invention.CombustionEngine.Invented, x => (x as Factory).Country, 0.5f, false),
 
             new Modifier(Economy.isStateCapitlism, x => (x as Factory).Country,  0.10f, false),
             new Modifier(Economy.isInterventionism, x => (x as Factory).Country,  0.30f, false),

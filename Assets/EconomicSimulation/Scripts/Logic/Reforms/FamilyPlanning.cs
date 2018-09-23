@@ -16,22 +16,22 @@ namespace Nashet.EconomicSimulation.Reforms
 
         public static readonly FamilyPlanningValue FourKids = new FamilyPlanningValue("4 kids limit", " per family", 1, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, new Condition(x => (x as Country).FamilyPlanning == None || (x as Country).FamilyPlanning == ThreeKids, "Previous reform enacted", true)
+            Invention.Welfare.Invented, new Condition(x => (x as Country).FamilyPlanning == None || (x as Country).FamilyPlanning == ThreeKids, "Previous reform enacted", true)
         }), new Procent(0.015f));
 
         public static readonly FamilyPlanningValue ThreeKids = new FamilyPlanningValue("3 kids limit", " per family", 2, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, new Condition(x => (x as Country).FamilyPlanning == FourKids || (x as Country).FamilyPlanning == TwoKids, "Previous reform enacted", true)
+            Invention.Welfare.Invented, new Condition(x => (x as Country).FamilyPlanning == FourKids || (x as Country).FamilyPlanning == TwoKids, "Previous reform enacted", true)
         }), new Procent(0.010f));
 
         public static readonly FamilyPlanningValue TwoKids = new FamilyPlanningValue("2 kids limit", " per family", 3, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, new Condition(x => (x as Country).FamilyPlanning == ThreeKids || (x as Country).FamilyPlanning == OneKid, "Previous reform enacted", true)
+            Invention.Welfare.Invented, new Condition(x => (x as Country).FamilyPlanning == ThreeKids || (x as Country).FamilyPlanning == OneKid, "Previous reform enacted", true)
         }), new Procent(0.005f));
 
         public static readonly FamilyPlanningValue OneKid = new FamilyPlanningValue("1 kid limit", " per family", 4, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, new Condition(x => (x as Country).FamilyPlanning == TwoKids, "Previous reform enacted", true)
+            Invention.Welfare.Invented, new Condition(x => (x as Country).FamilyPlanning == TwoKids, "Previous reform enacted", true)
         }), new Procent(0.0f));
 
 

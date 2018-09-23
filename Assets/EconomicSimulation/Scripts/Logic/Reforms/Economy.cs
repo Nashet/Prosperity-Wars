@@ -11,12 +11,12 @@ namespace Nashet.EconomicSimulation.Reforms
         protected EconomyReformValue typedValue;
         public static readonly EconomyReformValue PlannedEconomy = new EconomyReformValue("Planned economy", "", 0,
             new DoubleConditionsList(new List<Condition> {
-            Invention.CollectivismInvented, Government.isProletarianDictatorship }), false);
+            Invention.Collectivism.Invented, Government.isProletarianDictatorship }), false);
 
         private static readonly ConditionsList capitalism = new ConditionsList(new List<Condition>
         {
-            Invention.IndividualRightsInvented,
-            Invention.BankingInvented,
+            Invention.IndividualRights.Invented,
+            Invention.Banking.Invented,
             Serfdom.IsAbolishedInAnyWay
         });
 

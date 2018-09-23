@@ -38,28 +38,28 @@ namespace Nashet.EconomicSimulation
         public IEnumerable<KeyValuePair<Invention, bool>> AllAvailableInventions()
         {
             foreach (var invention in inventions)
-                if (invention.Key.IsInvented(owner))
+                if (invention.Key.CanInvent(owner))
                     yield return invention;
         }
 
         public IEnumerable<Invention> AllUninvented()
         {
             foreach (var invention in inventions)
-                if (invention.Value == false && invention.Key.IsInvented(owner))
+                if (invention.Value == false && invention.Key.CanInvent(owner))
                     yield return invention.Key;
         }
 
         public IEnumerable<Invention> AllInvented()
         {
             foreach (var invention in inventions)
-                if (invention.Value && invention.Key.IsInvented(owner))
+                if (invention.Value && invention.Key.CanInvent(owner))
                     yield return invention.Key;
         }
 
         public void Invent(Invention type)
         {
             inventions[type] = true;
-            Points -= type.getCost().get();
+            Points -= type.Cost.get();
             if (Points < 0f)
                 Points = 0f;
         }

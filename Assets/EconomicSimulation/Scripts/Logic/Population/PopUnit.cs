@@ -113,8 +113,8 @@ namespace Nashet.EconomicSimulation
             modEfficiency = new ModifiersList(new List<Condition> {
             Modifier.modifierDefault1,
             new Modifier(x=>(x as PopUnit).Province.getOverpopulationAdjusted(x as PopUnit), "Overpopulation", -1f, false),
-            new Modifier(Invention.SteamPowerInvented, x=>(x as PopUnit).Country, 0.25f, false),
-            new Modifier(Invention.CombustionEngineInvented, x=>(x as PopUnit).Country, 0.5f, false),
+            new Modifier(Invention.SteamPower.Invented, x=>(x as PopUnit).Country, 0.25f, false),
+            new Modifier(Invention.CombustionEngine.Invented, x=>(x as PopUnit).Country, 0.5f, false),
 
             new Modifier(Economy.isStateCapitlism, x=>(x as PopUnit).Country,  0.10f, false),
             new Modifier(Economy.isInterventionism, x=>(x as PopUnit).Country,  0.30f, false),
