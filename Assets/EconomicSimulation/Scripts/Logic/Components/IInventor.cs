@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents ability to invent Inventions
     /// </summary>
-    public interface ICanInvent //: IPopulated
+    public interface IInventor //: IPopulated
     {
         Science Science { get; }        
     }

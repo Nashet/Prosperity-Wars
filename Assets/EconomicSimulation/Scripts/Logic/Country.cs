@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Country : MultiSeller, IClickable, IShareOwner, ISortableName, INameable, IProvinceOwner, ICanInvent, IDiplomat
+    public class Country : MultiSeller, IClickable, IShareOwner, ISortableName, INameable, IProvinceOwner, IInventor, IDiplomat
     {
         public readonly Government government;
         public readonly Economy economy;
@@ -675,7 +675,7 @@ namespace Nashet.EconomicSimulation
 
         private void aiInvent()
         {
-            var invention = Science.AllUninvented().Where(x => Science.Points >= x.getCost().get()).Random();//.ToList()
+            var invention = Science.AllUninvented().Where(x => Science.Points >= x.Cost.get()).Random();//.ToList()
             if (invention != null)
                 Science.Invent(invention);
         }

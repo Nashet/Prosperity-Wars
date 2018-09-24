@@ -33,7 +33,7 @@ namespace Nashet.EconomicSimulation
 
             Collectivism = new Invention("Collectivism", "Allows Proletarian dictatorship & Planned Economy", new Value(100f)),
             SteamPower = new Invention("Steam Power",
-                "Allows Machinery & cement, Increases efficiency of all enterprises by 25%", 
+                "Allows Machinery & Cement, Increases efficiency of all enterprises by 25%", 
                 new Value(100f), Metal, Manufactures),
 
             Welfare = new Invention("Welfare", "Allows min wage and.. other", new Value(90f)),
@@ -66,9 +66,9 @@ namespace Nashet.EconomicSimulation
             if (requiredInventions != null)
                 foreach (var item in requiredInventions)
                 {
-                    InventedPreviousTechs.add(new Condition(x => (x as ICanInvent).Science.IsInvented(item), item.ShortName + " aren't invented", true));
+                    InventedPreviousTechs.add(new Condition(x => (x as IInventor).Science.IsInvented(item), item.ShortName + " aren't invented", true));
                 }
-            Invented = new Condition(x => (x as ICanInvent).Science.IsInvented(this), "Invented " + name, true);
+            Invented = new Condition(x => (x as IInventor).Science.IsInvented(this), "Invented " + name, true);
         }
 
         public static IEnumerable<Invention> All
@@ -82,7 +82,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public bool CanInvent(ICanInvent inventor)
+        public bool CanInvent(IInventor inventor)
         {
             return InventedPreviousTechs.isAllTrue(inventor);
         }

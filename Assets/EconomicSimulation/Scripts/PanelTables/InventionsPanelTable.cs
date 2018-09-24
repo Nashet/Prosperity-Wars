@@ -8,7 +8,7 @@ namespace Nashet.EconomicSimulation
     {
         protected override IEnumerable<KeyValuePair<Invention, bool>> ContentSelector()
         {
-            return Game.Player.Science.AllAvailableInventions().OrderBy(x => x.Value).ThenBy(x => x.Key.getCost().get());
+            return Game.Player.Science.AllAvailableInventions().OrderBy(x => x.Value).ThenBy(x => x.Key.Cost.get());
         }
 
         protected override void AddRow(KeyValuePair<Invention, bool> invention, int number)
@@ -21,7 +21,7 @@ namespace Nashet.EconomicSimulation
             else
                 AddCell("Uninvented", invention.Key);
             ////Adding invention price
-            AddCell(invention.Key.getCost().ToString(), invention.Key);
+            AddCell(invention.Key.Cost.ToString(), invention.Key);
         }
 
         protected override void AddHeader()
