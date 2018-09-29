@@ -97,6 +97,7 @@ namespace Nashet.EconomicSimulation
             //        }
             //}
         }
+
         public IEnumerable<Invention> AllRequiredInventions
         {
             get {
@@ -106,6 +107,7 @@ namespace Nashet.EconomicSimulation
                 }
             }
         }
+
         /// <summary>
         /// General constructor
         /// </summary>        

@@ -102,15 +102,18 @@ namespace Nashet.EconomicSimulation
 
         public bool IsInventedFactory(ProductionType production)
         {
-            //if (!Invented(production.basicProduction.Product)
-            // || production.IsResourceProcessing() && !Invented(Invention.Manufactures)
-            // || (production.basicProduction.Product == Product.Cattle && !Invented(Invention.Domestication))
-            if (!IsInventedArtisanship(production)
-                 || production.IsResourceProcessing() && !IsInvented(Invention.Manufactures)
-             )
-                return false;
-            else
-                return true;
+            return IsInvented(production.basicProduction.Product)
+                && production.AllRequiredInventions.All(x => IsInvented(x)); // returns true is requirements are empty
+
+
+            // why it's not invented
+            //if (!IsInventedArtisanship(production)
+            //     || production.IsResourceProcessing() && !IsInvented(Invention.Manufactures)
+            //     || production == ProductionType.WeaverFactory && !IsInvented(Invention.JohnKayFlyingshuttle)
+            // )
+            //    return false;
+            //else
+            //    return true;
         }
 
         public bool IsInventedArtisanship(ProductionType production)

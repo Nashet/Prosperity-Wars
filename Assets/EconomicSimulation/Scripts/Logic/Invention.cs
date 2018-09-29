@@ -21,7 +21,8 @@ namespace Nashet.EconomicSimulation
                 "Allows national bank, credits and deposits. Also allows serfdom abolishment with compensation for aristocrats",
                 new Value(100f)),
 
-            Manufactures = new Invention("Manufactures", "Allows building manufactures to process raw product", new Value(70f)),
+            Manufactures = new Invention("Manufactures", "Allows building manufactures to process raw product", new Value(80f)),
+            JohnKayFlyingshuttle = new Invention("John Kay's Flying shuttle", "", new Value(60f)),
             Mining = new Invention("Mining",
                 "Allows resource gathering from holes in ground, increasing it's efficiency by 50%",
                 new Value(100f)),
@@ -56,6 +57,7 @@ namespace Nashet.EconomicSimulation
             Tobacco = new Invention("Tobacco", "Allows Tobacco", new Value(100f)),
             Coal = new Invention("Coal", "Allows coal", new Value(100f), Metal),
             Universities = new Invention("Universities", "Allows building of Universities", new Value(150f));
+        
 
 
         protected Invention(string name, string description, Value cost, params Invention[] requiredInventions) : base(name)
