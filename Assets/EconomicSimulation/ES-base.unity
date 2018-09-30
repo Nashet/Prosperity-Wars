@@ -3626,6 +3626,7 @@ MonoBehaviour:
   btnPlay: {fileID: 1141240135}
   btnStep: {fileID: 1286130974}
   btnTrade: {fileID: 685281367}
+  financeButton: {fileID: 996118680}
   generalText: {fileID: 1505497595}
   specificText: {fileID: 0}
   world: {fileID: 984703830}
@@ -22093,7 +22094,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: 
-  isDynamic: 0
+  isDynamic: 1
 --- !u!1 &1003814264
 GameObject:
   m_ObjectHideFlags: 0

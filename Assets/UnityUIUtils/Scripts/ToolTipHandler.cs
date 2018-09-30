@@ -13,11 +13,9 @@ namespace Nashet.UnityUIUtils
         [TextArea]
         public string text;
 
-        [SerializeField]
-        private bool isDynamic;
-
-        //[SerializeField]
-        //private Hideable ownerWindow;
+        /// <summary>forces tooltip to update</summary>
+        [SerializeField]          
+        private bool isDynamic;        
 
         private bool inside;
 
@@ -25,10 +23,10 @@ namespace Nashet.UnityUIUtils
         /// Need that to use in descendant
         /// </summary>
         protected void Start()
-        {            
+        {
             var ownerWindow = GetComponentInParent<Hideable>();
             if (ownerWindow != null)
-                ownerWindow.Hidden += OnHiddenOwner;         
+                ownerWindow.Hidden += OnHiddenOwner;
         }
 
         private void OnHiddenOwner(Hideable eventData)
@@ -97,6 +95,13 @@ namespace Nashet.UnityUIUtils
                     TooltipBase.get().SetTooltip(dynamicText());
                 inside = true;
             }
+        }
+
+        internal void RemoveTextStartingWith(string v)
+        {
+            var index = text.LastIndexOf(v);
+            if (index != -1)
+                text = text.Substring(0, index);
         }
     }
 }

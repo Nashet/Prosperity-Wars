@@ -21,8 +21,7 @@ namespace Nashet.UnityUIUtils
         private Button button;
 
         private static List<HotKey> AllHotKeys = new List<HotKey>();
-
-        //private ToolTipHandler tooltip;
+        
         private void Start()
         {
             button = GetComponent<Button>();

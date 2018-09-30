@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Country : MultiSeller, IClickable, IShareOwner, ISortableName, INameable, IProvinceOwner, ICanInvent, IDiplomat
+    public class Country : MultiSeller, IClickable, IShareOwner, ISortableName, INameable, IProvinceOwner, IInventor, IDiplomat
     {
         public readonly Government government;
         public readonly Economy economy;
@@ -49,9 +49,9 @@ namespace Nashet.EconomicSimulation
         private Province capital;
         public bool IsAlive { get; protected set; } = true;
 
-        private readonly Money soldiersWage = new Money(0m);        
+        private readonly Money soldiersWage = new Money(0m);
 
-        public bool failedToPaySoldiers;
+        //public bool failedToPaySoldiers;
         public Money autoPutInBankLimit = new Money(2000);
 
         private readonly Procent ownershipSecurity = Procent.HundredProcent.Copy();
@@ -61,7 +61,7 @@ namespace Nashet.EconomicSimulation
         {
             get { return ownershipSecurity.Copy(); }
         }
-        
+
         private float nameWeight;
 
         private TextMesh meshCapitalText;
@@ -75,6 +75,8 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public Country(string name, Culture culture, Color color, Province capital, float money) : base(money, null)
         {
+            FailedPayments.Enable();
+
             Provinces = new ProvinceOwner(this);
             Science = new Science(this);
             Diplomacy = new Diplomacy(this);
@@ -524,12 +526,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Money newWage;
                     Money soldierAllNeedsCost = Country.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).Copy();
-                    if (failedToPaySoldiers)
-                    {
-                        newWage = getSoldierWage().Copy().Multiply(0.8m);
-                        //getSoldierWage().Get() - getSoldierWage().Get() * 0.2m;
-                    }
-                    else
+                    if (Register.Account.Wage.GetIncomeAccount(FailedPayments).isZero())//didn't failedToPaySoldiers
                     {
                         var balance = Register.Balance;
 
@@ -543,6 +540,11 @@ namespace Nashet.EconomicSimulation
                             newWage = getSoldierWage().Copy().Multiply(0.5m);
                         else
                             newWage = getSoldierWage().Copy(); // don't change wage
+                    }
+                    else
+                    {
+                        newWage = getSoldierWage().Copy().Multiply(0.8m);
+                        //getSoldierWage().Get() - getSoldierWage().Get() * 0.2m;                        
                     }
                     //newWage = newWage.Clamp(0, soldierAllNeedsCost * 2m);
                     var limit = soldierAllNeedsCost.Copy().Multiply(2m);
@@ -673,7 +675,7 @@ namespace Nashet.EconomicSimulation
 
         private void aiInvent()
         {
-            var invention = Science.AllUninvented().Where(x => Science.Points >= x.getCost().get()).Random();//.ToList()
+            var invention = Science.AllUninvented().Where(x => Science.Points >= x.Cost.get()).Random();//.ToList()
             if (invention != null)
                 Science.Invent(invention);
         }
@@ -845,7 +847,7 @@ namespace Nashet.EconomicSimulation
             Storage realyBougth = Buy(toBuy, null);
             if (realyBougth.isNotZero())
             {
-                countryStorageSet.Add(realyBougth);                
+                countryStorageSet.Add(realyBougth);
             }
         }
 
@@ -968,13 +970,12 @@ namespace Nashet.EconomicSimulation
 
         public override void SetStatisticToZero()
         {
-            base.SetStatisticToZero();            
-            countryStorageSet.SetStatisticToZero();
-            failedToPaySoldiers = false;
+            base.SetStatisticToZero();
+            countryStorageSet.SetStatisticToZero();            
             Politics.SetStatisticToZero();
         }
 
-        
+
 
         /// <summary>
         /// Returns true if was able to give a subsidy
@@ -983,7 +984,7 @@ namespace Nashet.EconomicSimulation
         {
             if (CanPay(howMuch))
             {
-                PayWithoutRecord(byWhom, howMuch, Register.Account.EnterpriseSubsidies);                
+                PayWithoutRecord(byWhom, howMuch, Register.Account.EnterpriseSubsidies);
                 return true;
             }
             else
@@ -1007,27 +1008,27 @@ namespace Nashet.EconomicSimulation
                 //&& Serfdom.IsNotAbolishedInAnyWay.checkIfTrue(Country))
                 && government == Government.Aristocracy)
                 return MoneyView.Zero; // don't pay with monarchy
-            Procent tax;            
+            Procent tax;
             Register.Account account;
             if (isPoorStrata)
             {
-                tax = taxationForPoor.tax.Procent;                
+                tax = taxationForPoor.tax.Procent;
                 account = Register.Account.PoorIncomeTax;
             }
             else //if (type is TaxationForRich)
             {
-                tax = taxationForRich.tax.Procent;                
+                tax = taxationForRich.tax.Procent;
                 account = Register.Account.RichIncomeTax;
             }
             if (!(taxPayer is Market) && taxPayer.Country != this) //foreigner
-            {                
+            {
                 account = Register.Account.ForeignIncomeTax;
             }
 
             // paying tax
             var taxSize = taxable.Copy().Multiply(tax);
             if (taxPayer.CanPay(taxSize))
-            {                
+            {
                 taxPayer.Pay(this, taxSize, account);
 
                 return taxSize;
@@ -1035,7 +1036,7 @@ namespace Nashet.EconomicSimulation
             else
             {
                 var hadMoney = taxPayer.getMoneyAvailable().Copy();
-                var availableMoney = taxPayer.getMoneyAvailable();             
+                //var availableMoney = taxPayer.getMoneyAvailable();             
 
                 taxPayer.PayAllAvailableMoney(this, account);
 

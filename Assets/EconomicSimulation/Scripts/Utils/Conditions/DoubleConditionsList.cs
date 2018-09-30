@@ -24,16 +24,16 @@ namespace Nashet.Conditions
         /// </summary>
         public DoubleConditionsList(Condition condition) : base(condition)
         {
-        }
-
-        public DoubleConditionsList()
-        {
-        }
+        }        
 
         /// <summary>
         /// copy constructor
         /// </summary>
         public DoubleConditionsList(ConditionsList conditionsList) : base(conditionsList)
+        {
+        }
+
+        public DoubleConditionsList(params Condition[] conditions) : base(conditions)
         {
         }
 

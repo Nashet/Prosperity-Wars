@@ -249,6 +249,7 @@ GameObject:
   - component: {fileID: 222802433676590114}
   - component: {fileID: 114570758784703466}
   - component: {fileID: 114238468841070394}
+  - component: {fileID: 114632837570560524}
   m_Layer: 5
   m_Name: RichectAgents
   m_TagString: Untagged
@@ -275,7 +276,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1464287978395498
 GameObject:
   m_ObjectHideFlags: 1
@@ -329,7 +330,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1612326375140732
 GameObject:
   m_ObjectHideFlags: 1
@@ -401,7 +402,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1666280238517874
 GameObject:
   m_ObjectHideFlags: 1
@@ -507,7 +508,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1865797743901884
 GameObject:
   m_ObjectHideFlags: 1
@@ -1621,7 +1622,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Richest agents
+  m_Text: Richest agents (hover mouse)
 --- !u!114 &114591104312298102
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1734,6 +1735,19 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114632837570560524
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1395595823579136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99f87c8e4381dd140816922f1be162f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: 
+  isDynamic: 0
 --- !u!114 &114642107148425866
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2484,10 +2498,10 @@ RectTransform:
   m_Father: {fileID: 224221413402231180}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 3, y: -334.05554}
+  m_SizeDelta: {x: 392, y: 30}
   m_Pivot: {x: 0, y: 0}
 --- !u!224 &224060835955636416
 RectTransform:
@@ -2503,10 +2517,10 @@ RectTransform:
   m_Father: {fileID: 224221413402231180}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 3, y: -274.05554}
+  m_SizeDelta: {x: 392, y: 30}
   m_Pivot: {x: 0, y: 0}
 --- !u!224 &224083168818422748
 RectTransform:
@@ -2541,10 +2555,10 @@ RectTransform:
   m_Father: {fileID: 224221413402231180}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 3, y: -364.05554}
+  m_SizeDelta: {x: 392, y: 30}
   m_Pivot: {x: 0, y: 0}
 --- !u!224 &224177712732333394
 RectTransform:
@@ -3072,8 +3086,8 @@ RectTransform:
   m_Father: {fileID: 224221413402231180}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 3, y: -304.05554}
+  m_SizeDelta: {x: 392, y: 30}
   m_Pivot: {x: 0, y: 0}

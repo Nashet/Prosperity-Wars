@@ -232,7 +232,7 @@ namespace Nashet.EconomicSimulation
                             forceDecisionButton.interactable = false;
                             voteButton.GetComponentInChildren<Text>().text = "Vote for " + selectedReformValue;
                         }
-                        else // can't vote for reform or is despotism
+                        else // not enough votes for reform or is despotism
                         {
                             voteButton.interactable = false;
                             forceDecisionButton.interactable = selectedReformValue.IsAllowed(Game.Player, selectedReformValue, out forceDecisionButton.GetComponent<ToolTipHandler>().text);

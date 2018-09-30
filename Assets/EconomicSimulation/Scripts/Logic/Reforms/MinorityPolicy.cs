@@ -20,7 +20,7 @@ namespace Nashet.EconomicSimulation.Reforms
         {
             if (Equality == null)
                 Equality = new MinorityPolicyValue("Equality for Minorities", " - All cultures have same rights, assimilation is slower", 2,
-                    new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }));
+                    new DoubleConditionsList(new List<Condition> { Invention.IndividualRights.Invented }));
             if (Residency == null)
                 Residency = new MinorityPolicyValue("Restricted Rights for Minorities", " - Only state culture can vote, assimilation occurs except foreign core provinces", 1, new DoubleConditionsList());
 

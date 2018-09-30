@@ -77,6 +77,14 @@ namespace Nashet.Utils
                 dictionary.Add(what, value);
         }
 
+        public static void AddAndSum<T>(this Dictionary<T, Money> dictionary, T what, Money value)
+        {
+            if (dictionary.ContainsKey(what))
+                dictionary[what].Add(value);
+            else
+                dictionary.Add(what, value);
+        }
+
         public static void setMy<T>(this Dictionary<T, Value> dictionary, T what, Value value)
         {
             if (dictionary.ContainsKey(what))

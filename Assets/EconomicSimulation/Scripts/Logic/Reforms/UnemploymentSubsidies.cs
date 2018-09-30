@@ -17,27 +17,27 @@ namespace Nashet.EconomicSimulation.Reforms
 
         public static readonly UnemploymentReformValue Scanty = new UnemploymentReformValue("Bread Lines", " - The people are starving. Let them eat bread.", 1, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == None || (x as Country).unemploymentSubsidies == Minimal, "Previous reform enacted", true)
+            Invention.Welfare.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == None || (x as Country).unemploymentSubsidies == Minimal, "Previous reform enacted", true)
         }));
 
         public static readonly UnemploymentReformValue Minimal = new UnemploymentReformValue("Food Stamps", " - Let the people buy what they need.", 2, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Scanty || (x as Country).unemploymentSubsidies == Trinket, "Previous reform enacted", true)
+            Invention.Welfare.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Scanty || (x as Country).unemploymentSubsidies == Trinket, "Previous reform enacted", true)
         }));
 
         public static readonly UnemploymentReformValue Trinket = new UnemploymentReformValue("Housing & Food Assistance", " - Affordable Housing for the Unemployed.", 3, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Minimal || (x as Country).unemploymentSubsidies == Middle, "Previous reform enacted", true)
+            Invention.Welfare.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Minimal || (x as Country).unemploymentSubsidies == Middle, "Previous reform enacted", true)
         }));
 
         public static readonly UnemploymentReformValue Middle = new UnemploymentReformValue("Welfare Ministry", " - Now there is a minister granting greater access to benefits.", 4, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Trinket || (x as Country).unemploymentSubsidies == Big, "Previous reform enacted", true)
+            Invention.Welfare.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Trinket || (x as Country).unemploymentSubsidies == Big, "Previous reform enacted", true)
         }));
 
         public static readonly UnemploymentReformValue Big = new UnemploymentReformValue("Full State Unemployment Benefits", " - Full State benefits for the downtrodden.", 5, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Middle, "Previous reform enacted", true)
+            Invention.Welfare.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Middle, "Previous reform enacted", true)
         }));
 
         public UnemploymentSubsidies(Country country, int showOrder) : base("Unemployment Subsidies", "", country, showOrder, 

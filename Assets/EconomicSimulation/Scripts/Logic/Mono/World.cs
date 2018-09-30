@@ -582,11 +582,8 @@ namespace Nashet.EconomicSimulation
                 country.SetStatisticToZero();
                 foreach (Province province in country.AllProvinces)
                 {
-                    province.BalanceEmployableWorkForce();
-                    {
-                        foreach (var item in province.AllAgents)
-                            item.SetStatisticToZero();
-                    }
+                    foreach (var item in province.AllAgents)
+                        item.SetStatisticToZero();
                 }
             }
             PopType.sortNeeds(Market.TemporalSingleMarket);//getAllExistingCountries().Random().market
@@ -703,7 +700,7 @@ namespace Nashet.EconomicSimulation
                         {
                             Market.GiveMoneyForSoldProduct(factory);
                             factory.paySalary(); // workers get gold or food here
-                            factory.ChangeSalary();                            
+                            factory.ChangeSalary();
                             factory.payDividend(); // also pays taxes inside
                             factory.CloseUnprofitable();
                             factory.ownership.CalcMarketPrice();
@@ -734,7 +731,7 @@ namespace Nashet.EconomicSimulation
                         pop.TakeUBISubsidies();
                         pop.TakePovertyAid();// should be least
 
-                        
+
                         //because income come only after consuming, and only after FULL consumption
                         //if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
                         // POps who can't trade will pay tax BEFORE consumption, not after
@@ -787,6 +784,7 @@ namespace Nashet.EconomicSimulation
 
                     PopUnit.PopListToAddToGeneralList.Clear();
                     province.simulate();
+                    province.BalanceEmployableWorkForce();
                 }
                 country.simulate();
                 if (country.isAI())

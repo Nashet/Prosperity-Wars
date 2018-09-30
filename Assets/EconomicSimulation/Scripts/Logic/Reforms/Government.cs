@@ -26,16 +26,16 @@ namespace Nashet.EconomicSimulation.Reforms
             new DoubleConditionsList(Condition.IsNotImplemented), "States", 40, 1f);
 
         public static readonly GovernmentReformValue Democracy = new GovernmentReformValue("Universal Democracy", " - The ideal democracy. Everyone's vote is equal.", 3,
-            new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "Republic", 100, 1f);
+            new DoubleConditionsList(new List<Condition> { Invention.IndividualRights.Invented }), "Republic", 100, 1f);
 
         public static readonly GovernmentReformValue BourgeoisDictatorship = new GovernmentReformValue("Bourgeois Dictatorship", " - Robber Barons or Captains of Industry? You decide!", 6,
-            new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "Oligarchy", 20, 1f, TaxationForPoor.PoorTaxValue.TaxRate10, TaxationForRich.RichTaxValue.TaxRate10);
+            new DoubleConditionsList(new List<Condition> { Invention.IndividualRights.Invented }), "Oligarchy", 20, 1f, TaxationForPoor.PoorTaxValue.TaxRate10, TaxationForRich.RichTaxValue.TaxRate10);
 
         public static readonly GovernmentReformValue Junta = new GovernmentReformValue("Junta", " - The military knows what's best for the people...", 7,
-            new DoubleConditionsList(new List<Condition> { Invention.ProfessionalArmyInvented }), "Junta", 20, 0.3f);
+            new DoubleConditionsList(Invention.ProfessionalArmy.Invented), "Junta", 20, 0.3f);
 
         public static readonly GovernmentReformValue ProletarianDictatorship = new GovernmentReformValue("Proletarian Dictatorship", " - Bureaucrats ruling with a terrifying hammer and a friendly sickle.", 4,
-            new DoubleConditionsList(new List<Condition> { Invention.CollectivismInvented, Invention.ManufacturesInvented }), "SSR", 20, 0.5f, TaxationForPoor.PoorTaxValue.TaxRate50, TaxationForRich.RichTaxValue.TaxRate100);
+            new DoubleConditionsList(new List<Condition> { Invention.Collectivism.Invented, Invention.Manufactures.Invented }), "SSR", 20, 0.5f, TaxationForPoor.PoorTaxValue.TaxRate50, TaxationForRich.RichTaxValue.TaxRate100);
 
         public static readonly Condition isPolis = new Condition(x => (x as Country).government == Polis, "Government is " + Polis, true);
         public static readonly Condition isTribal = new Condition(x => (x as Country).government == Tribal, "Government is " + Tribal, true);
