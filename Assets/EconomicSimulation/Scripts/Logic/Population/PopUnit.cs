@@ -1067,7 +1067,8 @@ namespace Nashet.EconomicSimulation
             // no subsidies with PE
             // maybe replace by Condition?
             var reform = Country.unemploymentSubsidies;
-            if (Type == PopType.Workers && Country.economy != Economy.PlannedEconomy && reform != UnemploymentSubsidies.None)
+            if (Type == PopType.Workers && Country.economy != Economy.PlannedEconomy && reform != UnemploymentSubsidies.None
+                && (isStateCulture() || Country.minorityPolicy == MinorityPolicy.Equality))
             {
                 var unemployment = GetUnemployment();
                 if (unemployment.isNotZero())
@@ -1089,7 +1090,8 @@ namespace Nashet.EconomicSimulation
             // no subsidies with PE
             // maybe replace by Condition?
             var reform = Country.UBI;
-            if (canTrade() && Country.economy != Economy.PlannedEconomy && reform != UBI.None)
+            if (canTrade() && Country.economy != Economy.PlannedEconomy && reform != UBI.None
+                && (isStateCulture() || Country.minorityPolicy == MinorityPolicy.Equality))
             {
                 var rate = reform.UBISize.Get();
                 MoneyView subsidy = rate.Copy().Multiply(population.Get()).Divide(1000);
@@ -1097,28 +1099,25 @@ namespace Nashet.EconomicSimulation
                 if (!Country.Pay(this, subsidy, Register.Account.UBISubsidies))
                 {
                     didntGetPromisedSocialBenefits = true;
-                    //Country.Politics.RegisterDefaultedSocialObligations(subsidy);
                 }
             }
         }
         public void TakePovertyAid()
         {
             // no subsidies with PE
-            if (canTrade() && Country.economy != Economy.PlannedEconomy)
+            var reform = Country.PovertyAid;
+            if (canTrade() && Country.economy != Economy.PlannedEconomy && reform != PovertyAid.None
+                && (isStateCulture() || Country.minorityPolicy == MinorityPolicy.Equality))
             {
-                var reform = Country.PovertyAid;
-                if (reform != PovertyAid.None)
+                var rate = reform.PovertyAidSize.Get();
+                MoneyView subsidy = rate.Copy().Multiply(population.Get()).Divide(1000);
+                var haveToPay = (subsidy as Money).Subtract(Register.Income, false); // subsidy - income
+                if (haveToPay.isNotZero())
                 {
-                    var rate = reform.PovertyAidSize.Get();
-                    MoneyView subsidy = rate.Copy().Multiply(population.Get()).Divide(1000);
-                    var haveToPay = (subsidy as Money).Subtract(Register.Income, false); // subsidy - income
-                    if (haveToPay.isNotZero())
+                    if (!Country.Pay(this, subsidy, Register.Account.PovertyAid))
                     {
-                        if (!Country.Pay(this, subsidy, Register.Account.PovertyAid))
-                        {
-                            didntGetPromisedSocialBenefits = true;
-                            //Country.Politics.RegisterDefaultedSocialObligations(subsidy);
-                        }
+                        didntGetPromisedSocialBenefits = true;
+                        //Country.Politics.RegisterDefaultedSocialObligations(subsidy);
                     }
                 }
             }
