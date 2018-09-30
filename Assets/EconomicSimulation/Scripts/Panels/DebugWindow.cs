@@ -1,7 +1,11 @@
 ﻿using Nashet.UnityUIUtils;
-using UnityEngine.UI;
-using UnityEngine;
 using Nashet.Utils;
+using Nashet.ValueSpace;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nashet.EconomicSimulation
 {
@@ -32,6 +36,18 @@ namespace Nashet.EconomicSimulation
             logInvestmentsToggle.isOn = Game.logInvestments;
             logMarketFailsToggle.isOn = Game.logMarket;
             FOWToggle.isOn = Game.DrawFogOfWar;
+            richestAgents.GetComponent<ToolTipHandler>().SetTextDynamic(() => gett(World.AllAgents.OrderByDescending(x => x.Cash.Get()).Take(10)));//.ToString("\n")
+        }
+
+        private string gett(IEnumerable<Agent> collection)
+        {
+            var sb = new StringBuilder();
+            var allMoney = World.GetAllMoney();
+            foreach (var item in collection)
+            {
+                sb.Append(item).Append(" ").Append(item.Cash).Append(" ").Append(new Procent(item.Cash, allMoney)).Append("\n ");
+            }
+            return sb.ToString();
         }
 
         public override void Hide()
@@ -66,7 +82,7 @@ namespace Nashet.EconomicSimulation
 
             for (int i = 0; i < 200; i++)
             {
-               // World.AllMarkets.PerformAction(x => x.ForceDSBRecalculation());
+                // World.AllMarkets.PerformAction(x => x.ForceDSBRecalculation());
             }
             var tookTime = System.DateTime.Now - before;
 
@@ -79,7 +95,7 @@ namespace Nashet.EconomicSimulation
 
             for (int i = 0; i < 200; i++)
             {
-               // World.AllMarkets.PerformAction(x => x.ForceDSBRecalculation2());
+                // World.AllMarkets.PerformAction(x => x.ForceDSBRecalculation2());
             }
             var tookTime = System.DateTime.Now - before;
 
