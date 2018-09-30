@@ -15,12 +15,12 @@ namespace Nashet.EconomicSimulation.Reforms
         public Procent AristocratTax { get { return typedValue.AristocratTax; } }
 
         public static SerfdomReformValue Abolished = new SerfdomReformValue("Abolished", " - Abolished with no obligations", 2,
-            new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented, Condition.IsNotImplemented }));
+            new DoubleConditionsList(new List<Condition> { Invention.IndividualRights.Invented, Condition.IsNotImplemented }));
 
         public static SerfdomReformValue AbolishedWithLandPayment = new SerfdomReformValue("Abolished with land payment", " - Peasants are personally free now but they have to pay debt for land", 3,
             new DoubleConditionsList(new List<Condition>
             {
-            Invention.IndividualRightsInvented,Invention.BankingInvented, Condition.IsNotImplemented
+            Invention.IndividualRights.Invented,Invention.Banking.Invented, Condition.IsNotImplemented
             }));
 
         public static SerfdomReformValue AbolishedAndNationalized = new SerfdomReformValue("Abolished and Nationalized land", " - Aristocrats loose property", 4,

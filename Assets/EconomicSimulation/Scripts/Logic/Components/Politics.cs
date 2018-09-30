@@ -12,9 +12,9 @@ namespace Nashet.EconomicSimulation
         protected readonly List<AbstractReform> reforms = new List<AbstractReform>();
         protected readonly List<Movement> movements = new List<Movement>();
 
-        protected readonly Money defaultedSocialObligations = new Money(0m);
-        protected readonly Money lastTurnDefaultedSocialObligations = new Money(0m);
-        public MoneyView LastTurnDefaultedSocialObligations { get { return lastTurnDefaultedSocialObligations; } }
+        //protected readonly Money defaultedSocialObligations = new Money(0m);
+        //protected readonly Money lastTurnDefaultedSocialObligations = new Money(0m);
+        //public MoneyView LastTurnDefaultedSocialObligations { get { return lastTurnDefaultedSocialObligations; } }
 
         public Politics(Country owner) : base(owner)
         {
@@ -23,10 +23,10 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// temporally
         /// </summary>
-        public void RegisterDefaultedSocialObligations(MoneyView size)
-        {
-            defaultedSocialObligations.Add(size);
-        }
+        //public void RegisterDefaultedSocialObligations(MoneyView size)
+        //{
+        //    defaultedSocialObligations.Add(size);
+        //}
 
         public IEnumerable<Movement> AllMovements
         {
@@ -72,8 +72,8 @@ namespace Nashet.EconomicSimulation
 
         public void SetStatisticToZero()
         {
-            lastTurnDefaultedSocialObligations.Set(defaultedSocialObligations);
-            defaultedSocialObligations.SetZero();
+            //lastTurnDefaultedSocialObligations.Set(defaultedSocialObligations);
+            //defaultedSocialObligations.SetZero();
         }
 
         /// <summary>

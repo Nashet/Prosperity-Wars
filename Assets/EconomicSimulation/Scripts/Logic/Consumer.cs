@@ -122,7 +122,7 @@ namespace Nashet.EconomicSimulation
                     {
                         float val = (float)(this.getMoneyAvailable().Get() / price.Get());
                         howMuchCanConsume = new Storage(sale.Product, val);
-                        howMuchCanConsume.Subtract(0.001f, false); // to fix percision bug
+                        howMuchCanConsume.Subtract(0.001f, false); // to fix precision bug
                         if (howMuchCanConsume.isZero())
                             return howMuchCanConsume;
                         else

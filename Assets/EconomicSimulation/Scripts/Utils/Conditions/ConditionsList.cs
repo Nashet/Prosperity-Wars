@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Nashet.Conditions
 {
@@ -12,9 +13,9 @@ namespace Nashet.Conditions
         /// <summary>
         /// Only for descendants
         /// </summary>
-        public ConditionsList()
+        public ConditionsList(params Condition[] conditions)
         {
-            list = new List<Condition>();
+            list = conditions.ToList();
         }
 
         /// <summary>

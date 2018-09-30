@@ -1,4 +1,5 @@
 ﻿using Nashet.Utils;
+using System;
 using UnityEngine;
 
 namespace Nashet.ValueSpace
@@ -7,6 +8,12 @@ namespace Nashet.ValueSpace
     {
         public Money(decimal value, bool showMessageAboutNegativeValue = true) : base(value, showMessageAboutNegativeValue)
         { }
+
+        public Money(Storage value) : this((decimal)value.get())
+        {
+            if (value.Product != EconomicSimulation.Product.Gold)
+                throw new Exception("THAT IS NOT REAL GOLD");
+        }
 
         public Money(MoneyView value) : base(value)
         { }

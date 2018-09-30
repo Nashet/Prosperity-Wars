@@ -15,27 +15,27 @@ namespace Nashet.EconomicSimulation.Reforms
 
         public static readonly MinWageReformValue Scanty = new MinWageReformValue("Scant Minimum Wage", " - Half-hungry", 1, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == None || (x as Country).unemploymentSubsidies == Minimal, "Previous reform enacted", true)
+            Invention.Collectivism.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == None || (x as Country).unemploymentSubsidies == Minimal, "Previous reform enacted", true)
         }));
 
         public static readonly MinWageReformValue Minimal = new MinWageReformValue("Subsistence Minimum Wage", " - Just enough to feed yourself", 2, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Scanty || (x as Country).unemploymentSubsidies == Trinket, "Previous reform enacted", true)
+            Invention.Collectivism.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Scanty || (x as Country).unemploymentSubsidies == Trinket, "Previous reform enacted", true)
         }));
 
         public static readonly MinWageReformValue Trinket = new MinWageReformValue("Mid-Level Minimum Wage", " - You can buy some small stuff", 3, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Minimal || (x as Country).unemploymentSubsidies == Middle, "Previous reform enacted", true)
+            Invention.Collectivism.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Minimal || (x as Country).unemploymentSubsidies == Middle, "Previous reform enacted", true)
         }));
 
         public static readonly MinWageReformValue Middle = new MinWageReformValue("Social Security", " - Minimum Wage & Retirement benefits", 4, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Trinket || (x as Country).unemploymentSubsidies == Big, "Previous reform enacted", true)
+            Invention.Collectivism.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Trinket || (x as Country).unemploymentSubsidies == Big, "Previous reform enacted", true)
         }));
 
         public static readonly MinWageReformValue Big = new MinWageReformValue("Generous Minimum Wage", " - Can live almost like a king. Almost..", 5, new DoubleConditionsList(new List<Condition>
         {
-            Invention.WelfareInvented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Middle, "Previous reform enacted", true)
+            Invention.Collectivism.Invented, Economy.isNotLFOrMoreConservative, Economy.isNotPlanned, new Condition(x => (x as Country).unemploymentSubsidies == Middle, "Previous reform enacted", true)
         }));
 
         public MinimalWage(Country country, int showOrder) : base("Minimum wage", "", country, showOrder,

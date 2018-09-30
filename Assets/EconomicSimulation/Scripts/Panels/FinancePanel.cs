@@ -46,22 +46,19 @@ namespace Nashet.EconomicSimulation
             captionText.text = sb.ToString();
 
             sb.Clear();
-            //sb.Append("Income:");
-            //sb.Append("\n Income tax for Poor (").Append(Game.Player.taxationForPoor.tax.Procent).Append("): ").Append(Game.Player.IncomeTaxStaticticPoor);
-            //sb.Append("\n Income tax for Rich (").Append(Game.Player.taxationForRich.tax.Procent).Append("): ").Append(Game.Player.IncomeTaxStatisticRich);
-            //sb.Append("\n Income tax for Foreigners (").Append(Game.Player.taxationForRich.tax.Procent).Append("): ").Append(Game.Player.IncomeTaxForeigner);
-            //sb.Append("\n Gold mines: ").Append(Game.Player.GoldMinesIncome);
-            //sb.Append("\n Dividends: ").Append(Game.Player.OwnedFactoriesIncome);
-            //sb.Append("\n Storage sells: [code is broken #494]");//.Append(Game.Player.getCostOfAllSellsByGovernment());
-            //sb.Append("\n Rest: ").Append(Game.Player.RestIncome);
-            //sb.Append("\nTotal: ").Append(Game.Player.moneyIncomeThisTurn);
-            sb.Append(Game.Player.Register.GetIncomeTest());
+            sb.Append("Income: " + Game.Player.Register.Income).Append(Game.Player.Register.GetIncomeText());
 
             sb.Append("\n\nBalance: ").Append(Money.DecimalToString(Game.Player.Register.Balance));
             sb.Append("\nHave money: ").Append(Game.Player.Cash).Append(" + ").Append(Game.Player.deposits).Append(" in bank");
             sb.Append("\nLoans taken: ").Append(Game.Player.loans);
             //sb.Append("\nGDP (current prices): ").Append(Game.Player.getGDP()).Append("; GDP per thousand men: ").Append(Game.Player.getGDPPer1000());
+
+            if (Game.Player.FailedPayments.Income.isNotZero())
+                sb.Append("\n\nFailed to pay: ").Append(Game.Player.FailedPayments.Income).Append(Game.Player.FailedPayments.GetIncomeText());
+
+
             incomeText.text = sb.ToString();
+
             //sb.Append("\nScreen resolution: ").Append(Screen.currentResolution).Append(" Canvas size: ").Append(MainCamera.topPanel.transform.parent.GetComponentInParent<RectTransform>().rect);
 
             //sb.Clear();
