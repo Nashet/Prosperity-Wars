@@ -56,12 +56,12 @@ namespace Nashet.EconomicSimulation
         static ProductionType()
         {
             new ProductionType("Forestry", new Storage(Product.Wood, 2f), false);
-            new ProductionType("Gold pit", new Storage(Product.Gold, 2f * Options.goldToCoinsConvert), true);
-            new ProductionType("Metal pit", new Storage(Product.MetalOre, 2f), true);
+            GoldMine = new ProductionType("Gold pit", new Storage(Product.Gold, 2f * Options.goldToCoinsConvert), true);
+            MetalDigging = new ProductionType("Metal pit", new Storage(Product.MetalOre, 2f), true);
             new ProductionType("Coal pit", new Storage(Product.Coal, 6f), true);
             new ProductionType("Cotton farm", new Storage(Product.Cotton, 2f), false);
             new ProductionType("Quarry", new Storage(Product.Stone, 2f), true);
-            new ProductionType("Orchard", new Storage(Product.Fruit, 2f), false);
+            Orchard = new ProductionType("Orchard", new Storage(Product.Fruit, 2f), false);
             new ProductionType("Fishery", new Storage(Product.Fish, 2f), false);
             new ProductionType("Tobacco farm", new Storage(Product.Tobacco, 2f), false);
 
@@ -70,11 +70,11 @@ namespace Nashet.EconomicSimulation
 
             StorageSet resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Grain, 1f));
-            new ProductionType("Barnyard", new Storage(Product.Cattle, 2f), resourceInput, Invention.Domestication);
+            Barnyard = new ProductionType("Barnyard", new Storage(Product.Cattle, 2f), resourceInput, Invention.Domestication);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Lumber, 1f));
-            new ProductionType("Furniture factory", new Storage(Product.Furniture, 4f), resourceInput, Invention.Manufactures);
+            Furniture = new ProductionType("Furniture factory", new Storage(Product.Furniture, 4f), resourceInput, Invention.Manufactures);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Wood, 1f));
@@ -83,7 +83,7 @@ namespace Nashet.EconomicSimulation
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Fuel, 0.5f));
             resourceInput.Set(new Storage(Product.MetalOre, 2f));
-            new ProductionType("Metal smelter", new Storage(Product.Metal, 8f), resourceInput, Invention.Manufactures);
+            MetalSmelter = new ProductionType("Metal smelter", new Storage(Product.Metal, 8f), resourceInput, Invention.Manufactures);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Fibers, 1f));
@@ -158,20 +158,10 @@ namespace Nashet.EconomicSimulation
         public ProductionType(string name, Storage basicProduction, bool shaft, params Invention[] requiredInventions)
         {
             this.requiredInventions = requiredInventions;
-            //var product = basicProduction.Product;
-            //if (product == Product.Cattle|| product == Product.Cotton || product == Product.Fish
-            //    || product == Product.Fruit|| product == Product.Grain
-            //    || product == Product.Tobacco || product == Product.Wood )
-            //    _isRural = true;
-
             this.name = name;
+            this.shaft = shaft;
             nameWeight = name.GetWeight();
-            if (name == "Gold pit") GoldMine = this;
-            if (name == "Furniture factory") Furniture = this;
-            if (name == "Orchard") Orchard = this;
-            if (name == "Metal pit") MetalDigging = this;
-            if (name == "Metal smelter") MetalSmelter = this;
-            if (name == "Barnyard") Barnyard = this;
+
             allTypes.Add(this);
             this.basicProduction = basicProduction;
 
@@ -206,8 +196,7 @@ namespace Nashet.EconomicSimulation
             // or put it in FactoryProject
             conditionsBuildThis = new DoubleConditionsList(new List<Condition> {
                 Economy.isNotLF, Economy.isNotInterventionism, enoughMoneyOrResourcesToBuild,
-                allowsForeignInvestments}); //
-            this.shaft = shaft;
+                allowsForeignInvestments}); //            
         }
 
         /// <summary>

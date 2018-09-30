@@ -9,7 +9,7 @@ namespace Nashet.EconomicSimulation.Reforms
     public class Economy : AbstractReform
     {
         protected EconomyReformValue typedValue;
-        public static readonly EconomyReformValue PlannedEconomy = new EconomyReformValue("Planned economy", "", 0,
+        public static readonly EconomyReformValue PlannedEconomy = new EconomyReformValue("Planned economy", "No market, no private business, everything is free (except freedom)", 0,
             new DoubleConditionsList(new List<Condition> {
             Invention.Collectivism.Invented, Government.isProletarianDictatorship }), false);
 
@@ -20,10 +20,15 @@ namespace Nashet.EconomicSimulation.Reforms
             Serfdom.IsAbolishedInAnyWay
         });
 
-        public static readonly EconomyReformValue NaturalEconomy = new EconomyReformValue("Natural economy", " ", 1, new DoubleConditionsList(Condition.IsNotImplemented), false);//new ConditionsList(Condition.AlwaysYes));
-        public static readonly EconomyReformValue StateCapitalism = new EconomyReformValue("State capitalism", "", 2, new DoubleConditionsList(capitalism), false, null, TaxationForPoor.PoorTaxValue.TaxRate20);
-        public static readonly EconomyReformValue Interventionism = new EconomyReformValue("Limited interventionism", "", 3, new DoubleConditionsList(capitalism), true);
-        public static readonly EconomyReformValue LaissezFaire = new EconomyReformValue("Laissez faire", "", 4, new DoubleConditionsList(capitalism), true, TaxationForPoor.PoorTaxValue.TaxRate50);
+        public static readonly EconomyReformValue NaturalEconomy = new EconomyReformValue("Natural economy", "No market", 1, new DoubleConditionsList(Condition.IsNotImplemented), false);//new ConditionsList(Condition.AlwaysYes));
+        public static readonly EconomyReformValue StateCapitalism = new EconomyReformValue("State capitalism", "Coexistence of the private and government economy", 2, new DoubleConditionsList(capitalism), false, null, TaxationForPoor.PoorTaxValue.TaxRate20);
+        public static readonly EconomyReformValue Interventionism = new EconomyReformValue("Limited interventionism", "", 3,
+           new DoubleConditionsList(       
+            Invention.Keynesianism.Invented,
+            Invention.Banking.Invented,
+            Serfdom.IsAbolishedInAnyWay)        
+        , true);
+        public static readonly EconomyReformValue LaissezFaire = new EconomyReformValue("Laissez faire", "No Government Intervention", 4, new DoubleConditionsList(capitalism), true, TaxationForPoor.PoorTaxValue.TaxRate50);
 
         public static readonly DoubleCondition isNotLFOrMoreConservative = new DoubleCondition((country, newReform) => (country as Country).economy != Economy.LaissezFaire
         || (newReform as IReformValue).IsMoreConservativeThan((country as Country).Politics.GetReform(newReform as AbstractReformValue).Value),

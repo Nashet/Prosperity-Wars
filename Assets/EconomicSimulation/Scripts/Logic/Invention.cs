@@ -22,24 +22,28 @@ namespace Nashet.EconomicSimulation
                 new Value(100f)),
 
             Manufactures = new Invention("Manufactures", "Allows building manufactures to process raw product", new Value(80f)),
-            JohnKayFlyingshuttle = new Invention("John Kay's Flying shuttle", "", new Value(60f)),
+            JohnKayFlyingshuttle = new Invention("John Kay's Flying shuttle", "Allows Weaver factory", new Value(60f)),
             Mining = new Invention("Mining",
                 "Allows resource gathering from holes in ground, increasing it's efficiency by 50%",
                 new Value(100f)),
             //religion = new InventionType("Religion", "Allows clerics, gives loyalty boost", new Value(100f)),
             Metal = new Invention("Metal", "Allows metal ore and smelting. Allows Cold arms", new Value(100f)),
-            IndividualRights = new Invention("Individual rights",
-                "Allows Limited interventionism, Laissez faire, Universal Democracy, Bourgeois dictatorship",
-                new Value(80f)),//Allows Capitalism, Serfdom & Slavery abolishments
+            // Add here capitalism and link it to serfdom
+            IndividualRights = new Invention("Classical liberalism",
+                "Allows Laissez faire policy, Universal Democracy, Bourgeois dictatorship",
+                new Value(80f)),
+            Keynesianism = new Invention("Keynesianism",
+                "Allows Limited Interventionism in economy",
+                new Value(80f), IndividualRights),
 
             Collectivism = new Invention("Collectivism", "Allows Proletarian dictatorship & Planned Economy", new Value(100f)),
             SteamPower = new Invention("Steam Power",
-                "Allows Machinery & Cement, Increases efficiency of all enterprises by 25%", 
+                "Allows Machinery & Cement, Increases efficiency of all enterprises by 25%",
                 new Value(100f), Metal, Manufactures),
 
-            Welfare = new Invention("Welfare", "Allows min wage and.. other", new Value(90f)),
+            Welfare = new Invention("Welfare", "Allows Unemployment Benefits and UBI", new Value(90f)),
             Gunpowder = new Invention("Gunpowder", "Allows Artillery & Ammunition", new Value(100f), Metal),
-            Firearms = new Invention("Hand-held cannons", 
+            Firearms = new Invention("Hand-held cannons",
                 "Allows Firearms, very efficient in battles", new Value(200f), Gunpowder),
 
             CombustionEngine = new Invention("Combustion engine",
@@ -57,13 +61,13 @@ namespace Nashet.EconomicSimulation
             Tobacco = new Invention("Tobacco", "Allows Tobacco", new Value(100f)),
             Coal = new Invention("Coal", "Allows coal", new Value(100f), Metal),
             Universities = new Invention("Universities", "Allows building of Universities", new Value(150f));
-        
+
 
 
         protected Invention(string name, string description, Value cost, params Invention[] requiredInventions) : base(name)
         {
             this.description = description;
-            this.Cost = cost;           
+            this.Cost = cost;
             allInventions.Add(this);
             if (requiredInventions != null)
                 foreach (var item in requiredInventions)
