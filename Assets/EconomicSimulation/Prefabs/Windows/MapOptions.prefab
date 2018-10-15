@@ -178,8 +178,8 @@ GameObject:
   - component: {fileID: 222882264958887170}
   - component: {fileID: 114047766381429180}
   - component: {fileID: 114118554472638412}
-  - component: {fileID: 114816064630874036}
-  - component: {fileID: 114200193465289832}
+  - component: {fileID: 114172558753918444}
+  - component: {fileID: 114404548447935094}
   m_Layer: 5
   m_Name: SeeExamplesLink
   m_TagString: Untagged
@@ -771,6 +771,47 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Map from file (experimental)
+--- !u!114 &114172558753918444
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1431445449371796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 114047766381429180}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &114177825915308396
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -798,18 +839,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114200193465289832
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1431445449371796}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9395090cd34a3c42aa833e359f757a1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  url: https://github.com/Nashet/Prosperity-Wars/issues/209
 --- !u!114 &114211768187477798
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -984,6 +1013,18 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114404548447935094
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1431445449371796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c024de45684420c4fb96cc42ef6aed1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  url: https://github.com/Nashet/Prosperity-Wars/issues/209
 --- !u!114 &114409628089195552
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1351,18 +1392,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Random map
---- !u!114 &114816064630874036
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1431445449371796}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9395090cd34a3c42aa833e359f757a1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  url: https://github.com/Nashet/Prosperity-Wars/issues/209
 --- !u!114 &114829446812641738
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -80,7 +80,7 @@ namespace Nashet.Utils
         /// <summary>
         /// Use this instead
         /// </summary>        
-        new public static TimedSelectorWithMaterial AddTo(GameObject toWhom, Material selectionMaterial, float selectionTime)
+        public static TimedSelectorWithMaterial AddTo(GameObject toWhom, Material selectionMaterial, float selectionTime)
         {
             var added = toWhom.AddComponent<TimedSelectorWithMaterial>();
             added.selectionMaterial = selectionMaterial;
