@@ -11,16 +11,16 @@ namespace Nashet.EconomicSimulation
     public class BottomPanel : Window
     {
         [SerializeField]
-        private Text generalText;
+        protected Text generalText;
 
         [SerializeField]
-        private GameObject debugWindowPrefab;
+        protected GameObject debugWindowPrefab;        
 
         // Use this for initialization
         private void Awake() // used to position other windows
         {
             MainCamera.bottomPanel = this;
-            generalText.text = "Prosperity Wars v0.20.9";
+            generalText.text = "Prosperity Wars v0.20.9+";            
             Hide();
         }
 
