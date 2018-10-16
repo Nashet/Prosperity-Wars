@@ -37,12 +37,12 @@ namespace Nashet.UnityUIUtils
         {
             animator.Play("Opening");
             animator.SetBool("IsClosed", false);
-            base.Show();            
+            base.Show();
         }
 
         public override void Hide()
         {
-            animator.SetBool("IsClosed", true);            
+            animator.SetBool("IsClosed", true);
         }
 
 
