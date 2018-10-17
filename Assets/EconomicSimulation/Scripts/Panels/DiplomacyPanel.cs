@@ -9,25 +9,25 @@ using UnityEngine.UI;
 
 namespace Nashet.UISystem
 {
-    public class DiplomacyPanel : DragPanel
+    class DiplomacyPanel : DragPanel
     {
         [SerializeField]
-        private Text captionText, generalText, property;
+        protected Text captionText, generalText, property;
 
         [SerializeField]
-        private Button giveControlToAi, giveControlToPlayer, declareWar;
+        protected Button giveControlToAi, giveControlToPlayer, declareWar;
 
         // [SerializeField]
         //private MainCamera mainCamera;
 
         [SerializeField]
-        private RawImage flag;
+        protected RawImage flag;
 
-        private Country selectedCountry;
-        private StringBuilder sb = new StringBuilder();
+        protected Country selectedCountry;
+        protected StringBuilder sb = new StringBuilder();
 
         // Use this for initialization
-        private void Start()
+        protected void Start()
         {
             //MainCamera.diplomacyPanel = this;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, 45);
@@ -36,7 +36,7 @@ namespace Nashet.UISystem
         }
 
         // Update is called once per frame
-        private void Update()
+        protected void Update()
         {
             //if (Game.Player != null)
             //    Game.Player.events.WantedToSeeDiplomacy += WantedToSeeDiplomacy;
@@ -96,19 +96,14 @@ namespace Nashet.UISystem
             property.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Owns:\n" + found.ToString(", ", "\n"));
         }
 
-        public Country getSelectedCountry()
-        {
-            return selectedCountry;
-        }
-
-        public void show(Country country)
+        protected void show(Country country)
         {
             selectedCountry = country;
             Show();
             flag.texture = country.Flag;
         }
 
-        private void setButtonsState()
+        protected void setButtonsState()
         {
             giveControlToPlayer.interactable = selectedCountry.isAI();
             giveControlToAi.interactable = !selectedCountry.isAI();
@@ -143,26 +138,22 @@ namespace Nashet.UISystem
             setButtonsState();
         }
 
-        //todo temporally
-        public static DiplomacyPanel Instance;
-        private void Awake()
+        //todo Instance
+        protected static DiplomacyPanel Instance;
+        protected void Awake()
         {
             base.Awake();
             Instance = this;
         }
 
-        
-
-       
-
-        public static void WantedToSeeDiplomacy(object sender, EventArgs e)
+        public static void WantedToSeeDiplomacyHandler(object sender, EventArgs e)
         {
             var isCountryArguments = e as CountryEventArgs;
             if (isCountryArguments != null)
             {
                 if (Instance.isActiveAndEnabled)
                 {
-                    if (Instance.getSelectedCountry() == isCountryArguments.Country)
+                    if (Instance.selectedCountry == isCountryArguments.Country)
                         Instance.Hide();
                     else
                         Instance.show(isCountryArguments.Country);

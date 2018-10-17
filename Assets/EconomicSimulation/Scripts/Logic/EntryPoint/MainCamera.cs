@@ -30,7 +30,7 @@ namespace Nashet.EconomicSimulation
         public static ProductionWindow productionWindow;
         public static FactoryPanel factoryPanel;
         public static GoodsPanel goodsPanel;
-        public static InventionsPanel inventionsPanel;
+        //public static InventionsPanel inventionsPanel;
         public static BuildPanel buildPanel;
         public static PoliticsPanel politicsPanel;
         public static FinancePanel financePanel;
@@ -111,7 +111,10 @@ namespace Nashet.EconomicSimulation
         {
             Game.setUnityAPI();
 
-            Game.Player.events.WantedToSeeDiplomacy += DiplomacyPanel.WantedToSeeDiplomacy;
+            //todo temporally links
+            Game.Player.events.WantedToSeeDiplomacy += DiplomacyPanel.WantedToSeeDiplomacyHandler;
+            Game.Player.events.WantedToSeeInventions += InventionsPanel.WantedToSeeInventionsHandler;
+
             FocusOnProvince(Game.Player.Capital, false);
             loadingPanel.Hide();
             topPanel.Show();
@@ -305,7 +308,8 @@ namespace Nashet.EconomicSimulation
             if (factoryPanel.isActiveAndEnabled) factoryPanel.Refresh();
             if (productionWindow.isActiveAndEnabled) productionWindow.Refresh();
             if (goodsPanel.isActiveAndEnabled) goodsPanel.Refresh();
-            if (inventionsPanel.isActiveAndEnabled) inventionsPanel.Refresh();
+            //if (inventionsPanel.isActiveAndEnabled) inventionsPanel.Refresh();
+            Game.Player.events.OnWantedToSeeInventions(null);
             if (buildPanel.isActiveAndEnabled) buildPanel.Refresh();
             if (politicsPanel.isActiveAndEnabled) politicsPanel.Refresh();
             if (financePanel.isActiveAndEnabled) financePanel.Refresh();

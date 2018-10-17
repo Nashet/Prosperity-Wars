@@ -1,27 +1,29 @@
-﻿using System.Text;
+﻿using Nashet.EconomicSimulation;
 using Nashet.UnityUIUtils;
+using System;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.UISystem
 {
-    public class InventionsPanel : DragPanel
+    class InventionsPanel : DragPanel
     {
         [SerializeField]
-        private InventionsPanelTable table;
+        protected InventionsPanelTable table;
 
         [SerializeField]
-        private Text descriptionText;
+        protected Text descriptionText;
 
         [SerializeField]
-        private Button inventButton;
+        protected Button inventButton;
 
-        private Invention selectedInvention;
+        protected Invention selectedInvention;
 
         // Use this for initialization
         private void Start()
         {
-            MainCamera.inventionsPanel = this;
+            //MainCamera.inventionsPanel = this;
             inventButton.interactable = false;
             GetComponent<RectTransform>().position = new Vector2(0f, -458f + Screen.height);
             Hide();
@@ -41,7 +43,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public void selectInvention(Invention newSelection)
+        protected void selectInvention(Invention newSelection)
         {
             selectedInvention = newSelection;
         }
@@ -80,6 +82,31 @@ namespace Nashet.EconomicSimulation
                 }
             }
             descriptionText.text = sb.ToString();
+        }
+
+        //todo Instance
+        protected static InventionsPanel Instance;
+        protected void Awake()
+        {
+            base.Awake();
+            Instance = this;
+        }
+
+        public static void WantedToSeeInventionsHandler(object sender, EventArgs e)
+        {
+            var isInventionArgs = e as InventionEventArgs;
+            if (isInventionArgs == null)
+            {
+                if (Instance.isActiveAndEnabled)
+                    Instance.Hide();
+                else
+                    Instance.Show();
+            }
+            else
+            {
+                Instance.selectInvention(isInventionArgs.Invention);
+                Instance.Show();
+            }
         }
     }
 }

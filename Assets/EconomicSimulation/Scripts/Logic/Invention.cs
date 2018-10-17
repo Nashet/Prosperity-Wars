@@ -100,8 +100,9 @@ namespace Nashet.EconomicSimulation
 
         public void OnClicked()
         {
-            MainCamera.inventionsPanel.selectInvention(this);
-            MainCamera.inventionsPanel.Refresh();
+            Game.Player.events.OnWantedToSeeInventions(new InventionEventArgs(this));
+            //MainCamera.inventionsPanel.selectInvention(this);
+            //MainCamera.inventionsPanel.Refresh();
         }
     }
 }

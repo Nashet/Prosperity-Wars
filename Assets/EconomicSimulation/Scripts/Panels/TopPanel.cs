@@ -1,5 +1,6 @@
 ﻿using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using System;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -102,10 +103,11 @@ namespace Nashet.EconomicSimulation
 
         public void onInventionsClick()
         {
-            if (MainCamera.inventionsPanel.isActiveAndEnabled)
-                MainCamera.inventionsPanel.Hide();
-            else
-                MainCamera.inventionsPanel.Show();
+            Game.Player.events.OnWantedToSeeInventions(null);
+        //    if (MainCamera.inventionsPanel.isActiveAndEnabled)
+        //        MainCamera.inventionsPanel.Hide();
+        //    else
+        //        MainCamera.inventionsPanel.Show();
         }
 
         public void onEnterprisesClick()
