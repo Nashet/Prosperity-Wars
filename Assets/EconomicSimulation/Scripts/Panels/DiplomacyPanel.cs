@@ -1,11 +1,13 @@
-﻿using System.Linq;
-using System.Text;
+﻿using Nashet.EconomicSimulation;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using System;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.UISystem
 {
     public class DiplomacyPanel : DragPanel
     {
@@ -15,8 +17,8 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private Button giveControlToAi, giveControlToPlayer, declareWar;
 
-        [SerializeField]
-        private MainCamera mainCamera;
+        // [SerializeField]
+        //private MainCamera mainCamera;
 
         [SerializeField]
         private RawImage flag;
@@ -27,14 +29,17 @@ namespace Nashet.EconomicSimulation
         // Use this for initialization
         private void Start()
         {
-            MainCamera.diplomacyPanel = this;
+            //MainCamera.diplomacyPanel = this;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, 45);
             Hide();
+            //Game.Player.events.WantedToSeeDiplomacy += WantedToSeeDiplomacy;
         }
 
         // Update is called once per frame
         private void Update()
         {
+            //if (Game.Player != null)
+            //    Game.Player.events.WantedToSeeDiplomacy += WantedToSeeDiplomacy;
             //refresh();
         }
 
@@ -128,14 +133,63 @@ namespace Nashet.EconomicSimulation
 
         public void onGoToClick()
         {
-            if (selectedCountry != World.UncolonizedLand)
-                mainCamera.FocusOnProvince(selectedCountry.Capital, true);
+            //if (selectedCountry != World.UncolonizedLand)
+            //mainCamera.FocusOnProvince(selectedCountry.Capital, true);
         }
 
         public void onRegainControlClick()
         {
             Game.GivePlayerControlOf(selectedCountry);
             setButtonsState();
+        }
+
+        //todo temporally
+        public static DiplomacyPanel Instance;
+        private void Awake()
+        {
+            base.Awake();
+            Instance = this;
+        }
+
+        
+
+       
+
+        public static void WantedToSeeDiplomacy(object sender, EventArgs e)
+        {
+            var isCountryArguments = e as CountryEventArgs;
+            if (isCountryArguments != null)
+            {
+                if (Instance.isActiveAndEnabled)
+                {
+                    if (Instance.getSelectedCountry() == isCountryArguments.Country)
+                        Instance.Hide();
+                    else
+                        Instance.show(isCountryArguments.Country);
+                }
+                else
+                    Instance.show(isCountryArguments.Country);
+            }
+            //if (MainCamera.diplomacyPanel.isActiveAndEnabled)
+            //{
+            //    if (MainCamera.diplomacyPanel.getSelectedCountry() == Game.selectedProvince.Country)
+
+            //        MainCamera.diplomacyPanel.Hide();
+            //    else
+            //        MainCamera.diplomacyPanel.show(Game.selectedProvince.Country);
+            //}
+            //else
+            //    MainCamera.diplomacyPanel.show(Game.selectedProvince.Country);
+
+            //if (MainCamera.diplomacyPanel.isActiveAndEnabled)
+            //{
+            //    if (MainCamera.diplomacyPanel.getSelectedCountry() == this)
+            //        MainCamera.diplomacyPanel.Hide();
+            //    else
+            //        MainCamera.diplomacyPanel.show(this);
+            //}
+            //else
+            //    MainCamera.diplomacyPanel.show(this);
         }
     }
 }

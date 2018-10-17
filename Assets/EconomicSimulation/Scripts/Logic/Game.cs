@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class Game : ThreadedJob
     {
-        public static bool devMode = false;
+        public static bool devMode = true;
         private static bool surrended = devMode;
         public static bool logInvestments = false;
         public static bool logMarket = false;
@@ -20,7 +20,7 @@ namespace Nashet.EconomicSimulation
         public static bool readMapFormFile = false;
         private static MyTexture mapTexture;
         
-        public static Country Player;
+        public static Country Player { get;  set; }
 
         public static Province selectedProvince;
         public static Province previoslySelectedProvince;

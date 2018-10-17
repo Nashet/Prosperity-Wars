@@ -3,6 +3,7 @@ using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -24,6 +25,8 @@ namespace Nashet.EconomicSimulation
         public readonly FamilyPlanning FamilyPlanning;
 
         public readonly MinorityPolicy minorityPolicy;
+
+        public readonly UIEvents events;
 
         /// <summary> could be null</summary>
         private readonly Bank bank;
@@ -75,6 +78,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public Country(string name, Culture culture, Color color, Province capital, float money) : base(money, null)
         {
+            events = new UIEvents(this);
             FailedPayments.Enable();
 
             Provinces = new ProvinceOwner(this);
@@ -250,7 +254,7 @@ namespace Nashet.EconomicSimulation
         public void OnKillCountry(Country byWhom)
         {
             if (meshCapitalText != null) //todo WTF!!
-                Object.Destroy(meshCapitalText.gameObject);
+                UnityEngine.Object.Destroy(meshCapitalText.gameObject);
 
             if (this != Game.Player)
             {
@@ -1062,15 +1066,16 @@ namespace Nashet.EconomicSimulation
 
         public void OnClicked()
         {
-            if (MainCamera.diplomacyPanel.isActiveAndEnabled)
-            {
-                if (MainCamera.diplomacyPanel.getSelectedCountry() == this)
-                    MainCamera.diplomacyPanel.Hide();
-                else
-                    MainCamera.diplomacyPanel.show(this);
-            }
-            else
-                MainCamera.diplomacyPanel.show(this);
+            Game.Player.events.OnWantedToSeeDiplomacy(new CountryEventArgs(this));
+            //if (MainCamera.diplomacyPanel.isActiveAndEnabled)
+            //{
+            //    if (MainCamera.diplomacyPanel.getSelectedCountry() == this)
+            //        MainCamera.diplomacyPanel.Hide();
+            //    else
+            //        MainCamera.diplomacyPanel.show(this);
+            //}
+            //else
+            //    MainCamera.diplomacyPanel.show(this);
         }
 
         public float NameWeight

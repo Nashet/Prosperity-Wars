@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
@@ -44,16 +45,18 @@ namespace Nashet.EconomicSimulation
 
         public void onCountryDiplomacyClick()
         {
-            if (MainCamera.diplomacyPanel.isActiveAndEnabled)
-            {
-                if (MainCamera.diplomacyPanel.getSelectedCountry() == Game.selectedProvince.Country)
+            Game.Player.events.OnWantedToSeeDiplomacy(new CountryEventArgs(Game.selectedProvince.Country));
 
-                    MainCamera.diplomacyPanel.Hide();
-                else
-                    MainCamera.diplomacyPanel.show(Game.selectedProvince.Country);
-            }
-            else
-                MainCamera.diplomacyPanel.show(Game.selectedProvince.Country);
+            //if (MainCamera.diplomacyPanel.isActiveAndEnabled)
+            //{
+            //    if (MainCamera.diplomacyPanel.getSelectedCountry() == Game.selectedProvince.Country)
+
+            //        MainCamera.diplomacyPanel.Hide();
+            //    else
+            //        MainCamera.diplomacyPanel.show(Game.selectedProvince.Country);
+            //}
+            //else
+            //    MainCamera.diplomacyPanel.show(Game.selectedProvince.Country);
         }
 
         public void onMobilizeClick()

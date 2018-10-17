@@ -1,8 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using Nashet.UISystem;
 using Nashet.UnitSelection;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -24,7 +25,7 @@ namespace Nashet.EconomicSimulation
         public static ProvincePanel provincePanel;
         public static PopulationPanel populationPanel;
         public static PopUnitPanel popUnitPanel;
-        public static DiplomacyPanel diplomacyPanel;
+        // public static DiplomacyPanel diplomacyPanel;
         public static TradeWindow tradeWindow;
         public static ProductionWindow productionWindow;
         public static FactoryPanel factoryPanel;
@@ -110,7 +111,7 @@ namespace Nashet.EconomicSimulation
         {
             Game.setUnityAPI();
 
-
+            Game.Player.events.WantedToSeeDiplomacy += DiplomacyPanel.WantedToSeeDiplomacy;
             FocusOnProvince(Game.Player.Capital, false);
             loadingPanel.Hide();
             topPanel.Show();
@@ -309,7 +310,8 @@ namespace Nashet.EconomicSimulation
             if (politicsPanel.isActiveAndEnabled) politicsPanel.Refresh();
             if (financePanel.isActiveAndEnabled) financePanel.Refresh();
             if (militaryPanel.isActiveAndEnabled) militaryPanel.Refresh();
-            if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.Refresh();
+            //if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.Refresh();
+            Game.Player.events.OnWantedToSeeDiplomacy(new CountryEventArgs(Game.Player));
             if (popUnitPanel.isActiveAndEnabled) popUnitPanel.Refresh();
             if (StatisticPanel.isActiveAndEnabled) StatisticPanel.Refresh();
             if (provincePanel.isActiveAndEnabled) provincePanel.Refresh();
