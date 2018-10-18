@@ -40,12 +40,13 @@ namespace Nashet.EconomicSimulation
                 whomGrant = Game.selectedProvince.AllCores().Where(x => x != Game.Player).Random();
 
             whomGrant.onGrantedProvince(Game.selectedProvince);
-            MainCamera.refreshAllActive();
+            //MainCamera.refreshAllActive();
+            UIEvents.RiseSomethingVisibleToPlayerChangedInWorld(EventArgs.Empty, this);
         }
 
         public void onCountryDiplomacyClick()
         {
-            Game.Player.events.OnWantedToSeeDiplomacy(new CountryEventArgs(Game.selectedProvince.Country));
+            Game.Player.events.RiseClickedOnDiplomacy(new CountryEventArgs(Game.selectedProvince.Country));
 
             //if (MainCamera.diplomacyPanel.isActiveAndEnabled)
             //{

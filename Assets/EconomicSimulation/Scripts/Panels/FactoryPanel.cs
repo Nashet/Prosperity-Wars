@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
 using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
@@ -236,7 +237,8 @@ namespace Nashet.EconomicSimulation
         public void OnBuyClick()
         {
             factory.ownership.BuyStandardShare(Game.Player);
-            MainCamera.refreshAllActive();
+            UIEvents.RiseSomethingVisibleToPlayerChangedInWorld(EventArgs.Empty, this);
+            //MainCamera.refreshAllActive();
         }
 
         public void OnSellClick()
@@ -250,7 +252,8 @@ namespace Nashet.EconomicSimulation
             //if (shownFactory.getConditionsForFactoryUpgradeFast(Game.player))
             {
                 factory.upgrade(Game.Player);
-                MainCamera.refreshAllActive();
+                //MainCamera.refreshAllActive();
+                UIEvents.RiseSomethingVisibleToPlayerChangedInWorld(EventArgs.Empty, this);
                 if (Game.Player != factory.Country)
                     factory.Country.Diplomacy.ChangeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
             }
@@ -261,14 +264,16 @@ namespace Nashet.EconomicSimulation
             //if (shownFactory.whyCantDestroyFactory() == null)
             {
                 factory.destroyImmediately();
-                MainCamera.refreshAllActive();
+                //MainCamera.refreshAllActive();
+                UIEvents.RiseSomethingVisibleToPlayerChangedInWorld(EventArgs.Empty, this);
             }
         }
 
         public void onNationalizeClick()
         {
             Game.Player.Nationilize(factory);
-            MainCamera.refreshAllActive();
+            //MainCamera.refreshAllActive();
+            UIEvents.RiseSomethingVisibleToPlayerChangedInWorld(EventArgs.Empty, this);
         }
     }
 }

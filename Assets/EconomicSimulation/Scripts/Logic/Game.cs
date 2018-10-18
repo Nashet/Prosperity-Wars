@@ -1,6 +1,7 @@
 ﻿using Nashet.MarchingSquares;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -116,12 +117,13 @@ namespace Nashet.EconomicSimulation
                 Player = newCountry;
                 MainCamera.politicsPanel.selectReform(null);
                 //MainCamera.inventionsPanel.selectInvention(null);
-                Game.Player.events.OnChangedCountry(new CountryEventArgs(newCountry));
+                Game.Player.events.RiseChangedCountry(new CountryEventArgs(newCountry));
 
                 // not necessary since it will change automatically on province selection
-                MainCamera.buildPanel.selectFactoryType(null);
+                //MainCamera.buildPanel.selectFactoryType(null);
 
-                MainCamera.refreshAllActive();
+                //MainCamera.refreshAllActive();
+                //UIEvents.RiseSomethingChangedInWorld(EventArgs.Empty, null);
             }
         }
 

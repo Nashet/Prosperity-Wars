@@ -54,7 +54,8 @@ namespace Nashet.EconomicSimulation
             if (!(ReferenceEquals(selectedReformType, null)) && selectedReformValue != null && selectedReformType != selectedReformValue)
             {
                 selectedReformType.SetValue(selectedReformValue);
-                MainCamera.refreshAllActive();
+                //MainCamera.refreshAllActive();
+                UIEvents.RiseSomethingVisibleToPlayerChangedInWorld(EventArgs.Empty, this);
             }
         }
 

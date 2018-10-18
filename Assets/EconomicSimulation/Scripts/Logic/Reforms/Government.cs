@@ -1,5 +1,6 @@
 ﻿using Nashet.Conditions;
 using Nashet.ValueSpace;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -219,7 +220,8 @@ namespace Nashet.EconomicSimulation.Reforms
                 }
             }
             if (owner == Game.Player)
-                MainCamera.refreshAllActive();
+                //MainCamera.refreshAllActive();
+                UIEvents.RiseSomethingVisibleToPlayerChangedInWorld(EventArgs.Empty, this);
         }
         public class GovernmentReformValue : NamedReformValue
         {

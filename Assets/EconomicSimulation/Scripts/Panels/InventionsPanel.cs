@@ -86,13 +86,13 @@ namespace Nashet.UISystem
 
         //todo Instance
         protected static InventionsPanel Instance;
-        protected void Awake()
+        new protected void Awake()
         {
             base.Awake();
             Instance = this;
         }
 
-        public static void WantedToSeeInventionsHandler(object sender, EventArgs e)
+        public static void OnClickedOnInventions(object sender, EventArgs e)
         {
             var isInventionArgs = e as InventionEventArgs;
             if (isInventionArgs == null)

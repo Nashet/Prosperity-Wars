@@ -17,8 +17,9 @@ namespace Nashet.EconomicSimulation
         private GameObject debugWindowPrefab;
 
         // Use this for initialization
-        private void Awake() // used to position other windows
+        new private void Awake() // used to position other windows
         {
+            base.Awake();
             MainCamera.bottomPanel = this;
             generalText.text = "Prosperity Wars v0.20.9";
             Hide();

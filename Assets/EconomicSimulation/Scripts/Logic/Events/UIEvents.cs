@@ -10,55 +10,29 @@ namespace Nashet.EconomicSimulation
         {           
         }
 
-        public event EventHandler WantedToSeeDiplomacy;
-        public virtual void OnWantedToSeeDiplomacy(CountryEventArgs e)
+        public event EventHandler ClickedOnDiplomacy;
+        public virtual void RiseClickedOnDiplomacy(CountryEventArgs e)
         {
-            EventHandler handler = WantedToSeeDiplomacy;
-            if (handler != null)
-            {
-                //var e = new CountryEventArgs(owner);
-                handler(this, e);
-            }
+            ClickedOnDiplomacy?.Invoke(this, e);
         }
 
-        public event EventHandler WantedToSeeInventions;
-        public virtual void OnWantedToSeeInventions(InventionEventArgs e)
+        public event EventHandler ClickedOnInventions;
+        public virtual void RiseClickedOnInventions(InventionEventArgs e)
         {
-            EventHandler handler = WantedToSeeInventions;
-            if (handler != null)
-            {
-                //var e = new CountryEventArgs(owner);
-                handler(this, e);
-            }
+            ClickedOnInventions?.Invoke(this, e);
         }
 
-        public event EventHandler ChangedCountry;
-        public virtual void OnChangedCountry(CountryEventArgs e)
+        public event EventHandler PlayerChangedCountry;
+        public virtual void RiseChangedCountry(CountryEventArgs e)
         {
-            EventHandler handler = ChangedCountry;
-            if (handler != null)
-            {
-                //var e = new CountryEventArgs(owner);
-                handler(this, e);
-            }
+            PlayerChangedCountry?.Invoke(this, e);
+            RiseSomethingVisibleToPlayerChangedInWorld(e, this);
         }
-    }
-    public class CountryEventArgs : EventArgs
-    {
-        public Country Country { get; protected set; }
 
-        public CountryEventArgs(Country country)
+        public static event EventHandler SomethingVisibleToPlayerChangedInWorld;
+        public static void RiseSomethingVisibleToPlayerChangedInWorld(EventArgs e, object sender)
         {
-            this.Country = country;
-        }
-    }
-    public class InventionEventArgs : EventArgs
-    {
-        public Invention Invention { get; protected set; }
-
-        public InventionEventArgs(Invention invention)
-        {
-            this.Invention = invention;
+            SomethingVisibleToPlayerChangedInWorld?.Invoke(sender, e);
         }
     }
 }

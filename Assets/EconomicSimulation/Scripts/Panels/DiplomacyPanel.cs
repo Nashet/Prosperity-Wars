@@ -140,26 +140,26 @@ namespace Nashet.UISystem
 
         //todo Instance
         protected static DiplomacyPanel Instance;
-        protected void Awake()
+        new protected void Awake()
         {
             base.Awake();
             Instance = this;
         }
 
-        public static void WantedToSeeDiplomacyHandler(object sender, EventArgs e)
+        public static void OnClickedOnDiplomacy(object sender, EventArgs e)
         {
             var isCountryArguments = e as CountryEventArgs;
             if (isCountryArguments != null)
             {
                 if (Instance.isActiveAndEnabled)
                 {
-                    if (Instance.selectedCountry == isCountryArguments.Country)
+                    if (Instance.selectedCountry == isCountryArguments.NewCountry)
                         Instance.Hide();
                     else
-                        Instance.show(isCountryArguments.Country);
+                        Instance.show(isCountryArguments.NewCountry);
                 }
                 else
-                    Instance.show(isCountryArguments.Country);
+                    Instance.show(isCountryArguments.NewCountry);
             }
             //if (MainCamera.diplomacyPanel.isActiveAndEnabled)
             //{

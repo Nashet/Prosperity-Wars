@@ -112,8 +112,8 @@ namespace Nashet.EconomicSimulation
             Game.setUnityAPI();
 
             //todo temporally links
-            Game.Player.events.WantedToSeeDiplomacy += DiplomacyPanel.WantedToSeeDiplomacyHandler;
-            Game.Player.events.WantedToSeeInventions += InventionsPanel.WantedToSeeInventionsHandler;
+            Game.Player.events.ClickedOnDiplomacy += DiplomacyPanel.OnClickedOnDiplomacy;
+            Game.Player.events.ClickedOnInventions += InventionsPanel.OnClickedOnInventions;
 
             FocusOnProvince(Game.Player.Capital, false);
             loadingPanel.Hide();
@@ -156,7 +156,8 @@ namespace Nashet.EconomicSimulation
                         //Unit.RedrawAll();
 
                         previousFrameTime = Time.time;
-                        refreshAllActive();
+                        //refreshAllActive();
+                        UIEvents.RiseSomethingVisibleToPlayerChangedInWorld(EventArgs.Empty, this);
                     }
                 }
 
@@ -297,30 +298,6 @@ namespace Nashet.EconomicSimulation
                 if (tooltip.IsInside()) // hide only if it's that tooltip is shown
                     tooltip.Hide();
             }
-        }
-
-
-        public static void refreshAllActive()
-        {
-            if (topPanel.isActiveAndEnabled) topPanel.Refresh();
-            if (populationPanel.isActiveAndEnabled) populationPanel.Refresh();
-            if (tradeWindow.isActiveAndEnabled) tradeWindow.Refresh();
-            if (factoryPanel.isActiveAndEnabled) factoryPanel.Refresh();
-            if (productionWindow.isActiveAndEnabled) productionWindow.Refresh();
-            if (goodsPanel.isActiveAndEnabled) goodsPanel.Refresh();
-            //if (inventionsPanel.isActiveAndEnabled) inventionsPanel.Refresh();
-            Game.Player.events.OnWantedToSeeInventions(null);
-            if (buildPanel.isActiveAndEnabled) buildPanel.Refresh();
-            if (politicsPanel.isActiveAndEnabled) politicsPanel.Refresh();
-            if (financePanel.isActiveAndEnabled) financePanel.Refresh();
-            if (militaryPanel.isActiveAndEnabled) militaryPanel.Refresh();
-            //if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.Refresh();
-            Game.Player.events.OnWantedToSeeDiplomacy(new CountryEventArgs(Game.Player));
-            if (popUnitPanel.isActiveAndEnabled) popUnitPanel.Refresh();
-            if (StatisticPanel.isActiveAndEnabled) StatisticPanel.Refresh();
-            if (provincePanel.isActiveAndEnabled) provincePanel.Refresh();
-
-            //if (bottomPanel.isActiveAndEnabled) bottomPanel.refresh();
         }
 
         public static void selectProvince(int number)

@@ -23,8 +23,9 @@ namespace Nashet.EconomicSimulation
         private World world;
 
         // Use this for initialization
-        private void Awake()
+        new private void Awake()
         {
+            base.Awake();
             MainCamera.topPanel = this;
             buttonSelector = new ColorSelector(Color.red); //UISelector.AddTo(this, LinksManager.Get.UISelectedMaterial,);
         }
@@ -103,7 +104,7 @@ namespace Nashet.EconomicSimulation
 
         public void onInventionsClick()
         {
-            Game.Player.events.OnWantedToSeeInventions(null);
+            Game.Player.events.RiseClickedOnInventions(null);
         //    if (MainCamera.inventionsPanel.isActiveAndEnabled)
         //        MainCamera.inventionsPanel.Hide();
         //    else
