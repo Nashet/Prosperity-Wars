@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace Nashet.UISystem
 {
-    class InventionsPanel : DragPanel
+    internal class InventionsPanel : DragPanel
     {
         [SerializeField]
         protected InventionsPanelTable table;
@@ -43,9 +43,24 @@ namespace Nashet.UISystem
             }
         }
 
-        protected void selectInvention(Invention newSelection)
+        protected void OnClickedOn(object sender, EventArgs e)
         {
-            selectedInvention = newSelection;
+            var isInventionArgs = e as InventionEventArgs;
+            if (isInventionArgs != null)
+            {
+                if (isInventionArgs.Invention == null)
+                {
+                    if (Instance.isActiveAndEnabled)
+                        Instance.Hide();
+                    else
+                        Instance.Show();
+                }
+                else
+                {
+                    Instance.selectedInvention = isInventionArgs.Invention;
+                    Instance.Show();
+                }
+            }
         }
 
         public override void Refresh()
@@ -86,27 +101,11 @@ namespace Nashet.UISystem
 
         //todo Instance
         protected static InventionsPanel Instance;
-        new protected void Awake()
+        protected new void Awake()
         {
             base.Awake();
             Instance = this;
-        }
-
-        public static void OnClickedOnInventions(object sender, EventArgs e)
-        {
-            var isInventionArgs = e as InventionEventArgs;
-            if (isInventionArgs == null)
-            {
-                if (Instance.isActiveAndEnabled)
-                    Instance.Hide();
-                else
-                    Instance.Show();
-            }
-            else
-            {
-                Instance.selectInvention(isInventionArgs.Invention);
-                Instance.Show();
-            }
+            UIEvents.ClickedOn += OnClickedOn;
         }
     }
 }

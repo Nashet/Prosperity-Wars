@@ -109,11 +109,7 @@ namespace Nashet.EconomicSimulation
         }
         private void OnGameLoaded()
         {
-            Game.setUnityAPI();
-
-            //todo temporally links
-            Game.Player.events.ClickedOnDiplomacy += DiplomacyPanel.OnClickedOnDiplomacy;
-            Game.Player.events.ClickedOnInventions += InventionsPanel.OnClickedOnInventions;
+            Game.setUnityAPI();            
 
             FocusOnProvince(Game.Player.Capital, false);
             loadingPanel.Hide();

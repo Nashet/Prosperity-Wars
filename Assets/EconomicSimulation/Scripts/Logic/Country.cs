@@ -1066,7 +1066,7 @@ namespace Nashet.EconomicSimulation
 
         public void OnClicked()
         {
-            Game.Player.events.RiseClickedOnDiplomacy(new CountryEventArgs(this));
+            Game.Player.events.RiseClickedOn(new CountryEventArgs(this));
             //if (MainCamera.diplomacyPanel.isActiveAndEnabled)
             //{
             //    if (MainCamera.diplomacyPanel.getSelectedCountry() == this)

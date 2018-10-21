@@ -100,7 +100,7 @@ namespace Nashet.EconomicSimulation
 
         public void OnClicked()
         {
-            Game.Player.events.RiseClickedOnInventions(new InventionEventArgs(this));
+            Game.Player.events.RiseClickedOn(new InventionEventArgs(this));
             //MainCamera.inventionsPanel.selectInvention(this);
             //MainCamera.inventionsPanel.Refresh();
         }

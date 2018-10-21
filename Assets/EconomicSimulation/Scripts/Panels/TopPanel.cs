@@ -104,7 +104,7 @@ namespace Nashet.EconomicSimulation
 
         public void onInventionsClick()
         {
-            Game.Player.events.RiseClickedOnInventions(null);
+            Game.Player.events.RiseClickedOn(new InventionEventArgs(null));
         //    if (MainCamera.inventionsPanel.isActiveAndEnabled)
         //        MainCamera.inventionsPanel.Hide();
         //    else
