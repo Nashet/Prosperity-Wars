@@ -109,7 +109,7 @@ namespace Nashet.EconomicSimulation
         }
         private void OnGameLoaded()
         {
-            Game.setUnityAPI();            
+            Game.setUnityAPI();
 
             FocusOnProvince(Game.Player.Capital, false);
             loadingPanel.Hide();
@@ -161,6 +161,10 @@ namespace Nashet.EconomicSimulation
                 {
                     Unit.RedrawAll();
                 }
+
+                if (Input.GetKeyDown(KeyCode.Return)) // enter key
+                    CloseToppestPanel();
+
                 DrawFogOfWar();
 
                 //if (Message.HasUnshownMessages())
@@ -333,7 +337,7 @@ namespace Nashet.EconomicSimulation
                 buildPanel.Refresh();
         }
 
-        public void closeToppestPanel()
+        private void CloseToppestPanel()
         {
             //canvas.GetComponentInChildren<DragPanel>();
             var lastChild = LinksManager.Get.CameraLayerCanvas.transform.GetChild(LinksManager.Get.CameraLayerCanvas.transform.childCount - 1);
@@ -343,7 +347,7 @@ namespace Nashet.EconomicSimulation
             else
             {
                 lastChild.SetAsFirstSibling();
-                closeToppestPanel();
+                CloseToppestPanel();
             }
         }
 

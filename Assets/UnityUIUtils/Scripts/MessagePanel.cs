@@ -1,4 +1,5 @@
-﻿using Nashet.EconomicSimulation;
+﻿using System;
+using Nashet.EconomicSimulation;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -15,9 +16,7 @@ namespace Nashet.UnityUIUtils
         private Text caption, message, closeText;
 
         [SerializeField]
-        private Toggle showDefeatingAttackerMessage;
-
-        private static GameObject messagePanelPrefab; //FixedJoint it
+        private Toggle showDefeatingAttackerMessage;      
 
         private MainCamera mainCamera;
 
@@ -27,9 +26,9 @@ namespace Nashet.UnityUIUtils
         protected DragPanel dragPanel;
 
         protected static bool firstLaunch = true;
+
+        ///<summary>How much shifts window if there is more than 1 window</summary>
         protected Vector3 offset = new Vector2(-10f, 30f);
-
-
 
         public void OnDrag(PointerEventData data) // need it to place windows in stair-order
         {
@@ -60,6 +59,7 @@ namespace Nashet.UnityUIUtils
             messageSource = mess;
 
             dragPanel = GetComponent<DragPanel>();
+            dragPanel.Hidden += OnHidden;
             GUIChanger.Apply(gameObject);
             showDefeatingAttackerMessage.isOn = Message.ShowDefeatingAttackersMessages;
 
@@ -78,9 +78,13 @@ namespace Nashet.UnityUIUtils
             dragPanel.Show();
         }
 
-        public void Hide()
+        private void OnHidden(Hideable eventData)
         {
-            dragPanel.Hide();
+            Hide();
+        }
+
+        public void Hide()
+        {           
             howMuchPausedWindowsOpen--;
             //previousWindowLastPosition = transform.localPosition;
             Destroy(gameObject);
