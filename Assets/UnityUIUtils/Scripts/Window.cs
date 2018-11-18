@@ -29,5 +29,9 @@ namespace Nashet.UnityUIUtils
             base.Show();
             Refresh();
         }
+        private void OnDestroy()
+        {
+            UIEvents.SomethingVisibleToPlayerChangedInWorld -= OnSomethingVisibleToPlayerChangedInWorld;
+        }
     }
 }

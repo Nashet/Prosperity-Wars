@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Nashet.UnityUIUtils;
+﻿using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,7 +15,7 @@ namespace Nashet.EconomicSimulation
         private Dropdown ddProvinceSelect;
 
         [SerializeField]
-        private Text allArmySizeText, captionText, sendingArmySizeText, newText;
+        private Text captionText, sendingArmySizeText, armiesList;
 
         [SerializeField]
         private Slider armySendLimit;
@@ -53,9 +53,9 @@ namespace Nashet.EconomicSimulation
             sb.Clear();
             sb.Append("Military of ").Append(Game.Player);
             captionText.text = sb.ToString();
-            var armiesToShow=Game.Player.AllArmies().OrderByDescending(x=>x.getSize());
+            var armiesToShow = Game.Player.AllArmies().OrderByDescending(x => x.getSize());
 
-            newText.text = "Your armies:\n\n" + armiesToShow.ToString("\n\n");
+            armiesList.text = "Your armies:\n\n" + armiesToShow.ToString("\n\n");
             //sb.Clear();
             //sb.Append("Home army: ").Append(Game.Player.getDefenceForces().getName());
             //allArmySizeText.text = sb.ToString();
@@ -140,7 +140,7 @@ namespace Nashet.EconomicSimulation
         }
 
         public void onArmyLimitChanged(float value)
-        {            
+        {
             //virtualArmyToSend = Game.Player.consolidateArmies().balance(new Procent(value));
             //refresh(false);
         }

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using Nashet.EconomicSimulation.Reforms;
+﻿using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using System;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,7 +22,7 @@ namespace Nashet.EconomicSimulation
         private Slider priority;
 
         [SerializeField]
-        private Text generaltext, efficiencyText, caption, onSaleText, ownership, profitText;
+        private Text generaltext, efficiencyText, caption, ownership, profitText;
 
         private Factory factory;
         private reopenButtonStatus reopenButtonflag;
@@ -98,13 +98,13 @@ namespace Nashet.EconomicSimulation
                 sb.Append("Workforce: ").Append(factory.getWorkForce()).Append(", average education: ").Append(factory.AverageWorkersEducation);
                 sb.Append("\nProduced: ").Append(factory.getGainGoodsThisTurn());
                 if (factory.storage.isNotZero())
-                sb.Append(", Unsold: ").Append(factory.storage);
+                    sb.Append(", Unsold: ").Append(factory.storage);
                 //sb.Append("\nBasic production: ").Append(factory.Type.basicProduction);
                 //sb.Append("\nSent to market: ").Append(factory.getSentToMarket());
                 //sb.Append("\n\nMoney income: ").Append(factory.moneyIncomeThisTurn);
                 //sb.Append("\n\n").Append(factory.Register.ToString());                
 
-                
+
                 sb.Append("\nCash: ").Append(factory.Cash);
                 //sb.Append(", Dividends: ").Append(factory.GetDividends());
                 if (factory.Type.hasInput())
@@ -137,8 +137,8 @@ namespace Nashet.EconomicSimulation
                 //if (Game.devMode)
                 //    sb.Append("\nConsumed LT: ").Append(factory.getConsumedLastTurn());
                 sb.Append("\n\nSalary (per 1000 men): ").Append(factory.getSalary());
-                    //sb.Append(", Total: ").Append(factory.getSalaryCost());
-                                
+                //sb.Append(", Total: ").Append(factory.getSalaryCost());
+
 
                 if (factory.getDaysUnprofitable() > 0)
                     sb.Append("\nDays unprofitable: ").Append(factory.getDaysUnprofitable());

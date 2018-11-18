@@ -25,7 +25,7 @@ namespace Nashet.EconomicSimulation
         private Button forceDecisionButton;
 
         [SerializeField]
-        private Dropdown dropDown;
+        private Dropdown reformsDropDown;
 
         [SerializeField]
         private Scrollbar movementsHorizontalScrollBar;
@@ -43,7 +43,7 @@ namespace Nashet.EconomicSimulation
         {
             MainCamera.politicsPanel = this;
             voteButton.interactable = false;
-            dropDown.interactable = false;
+            reformsDropDown.interactable = false;
             forceDecisionButton.interactable = false;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(15f, 45f);
             Hide();
@@ -81,38 +81,38 @@ namespace Nashet.EconomicSimulation
 
         public void onChoiceValueChanged()
         {
-            selectedReformValue = assotiateTable[dropDown.value];
+            selectedReformValue = assotiateTable[reformsDropDown.value];
             refresh(false);
         }
 
         private void rebuildDropDown()
         {
             //dropDown.Hide();
-            var toDestroy = dropDown.transform.Find("Dropdown List");
+            var toDestroy = reformsDropDown.transform.Find("Dropdown List");
             if (toDestroy != null)
                 Destroy(toDestroy.gameObject);
-            dropDown.interactable = true;
-            dropDown.ClearOptions();
+            reformsDropDown.interactable = true;
+            reformsDropDown.ClearOptions();
             byte count = 0;
             assotiateTable.Clear();
             foreach (IReformValue next in selectedReformType.AllPossibleValues)
             {
                 //if (next.isAvailable(Game.player))
                 {
-                    dropDown.options.Add(new Dropdown.OptionData { text = next.ToString() });
+                    reformsDropDown.options.Add(new Dropdown.OptionData { text = next.ToString() });
                     assotiateTable.Add(next);
                     if (selectedReformType == next)
                     {
                         //selectedReformValue = next;
                         // selecting non empty option
-                        dropDown.value = count;
+                        reformsDropDown.value = count;
                     }
                     count++;
                 }
             }
 
             onChoiceValueChanged(); // need it to set correct caption in DropDown
-            dropDown.RefreshShownValue();
+            reformsDropDown.RefreshShownValue();
             //dropDown.Show();
         }
 
@@ -125,7 +125,7 @@ namespace Nashet.EconomicSimulation
         {
             selectedReformType = newSelection;
             if (ReferenceEquals(newSelection, null))
-                dropDown.interactable = false;
+                reformsDropDown.interactable = false;
             Refresh();
         }
 

@@ -17,7 +17,7 @@ namespace Nashet.EconomicSimulation
         private Button btnPlay, btnStep, btnTrade, financeButton;
 
         [SerializeField]
-        private Text generalText, specificText;
+        private Text generalText;
 
         [SerializeField]
         private World world;

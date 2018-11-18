@@ -5,11 +5,11 @@ using UnityEngine.UI;
 
 namespace Nashet.UnityUIUtils
 {
-
-    public class MessagePanel : DragPanel
+    [RequireComponent(typeof(DragPanel))]
+    internal class MessagePanel : MonoBehaviour, IDragHandler
     {
         ///<summary>Stores position of top-level message window. Used to correctly place next message window</summary>
-        private static Vector3 lastDragPosition;
+        private static Vector3 previousWindowLastPosition;
 
         [SerializeField]
         private Text caption, message, closeText;
@@ -17,7 +17,6 @@ namespace Nashet.UnityUIUtils
         [SerializeField]
         private Toggle showDefeatingAttackerMessage;
 
-        [SerializeField]
         private static GameObject messagePanelPrefab; //FixedJoint it
 
         private MainCamera mainCamera;
@@ -25,43 +24,21 @@ namespace Nashet.UnityUIUtils
         private static int howMuchPausedWindowsOpen;
         private Message messageSource;
 
-        public static void showMessageBox(Canvas canvas, MainCamera mainCamera)
-        {
-            if (messagePanelPrefab == null)
-                messagePanelPrefab = Resources.Load("Prefabs\\MessagePanel", typeof(GameObject)) as GameObject;
-            Message message = Message.PopAndDeleteMessage();
-            GameObject newObject = Instantiate(messagePanelPrefab, canvas.transform);
-            //newObject.transform.SetParent(canvas.transform, true);
+        protected DragPanel dragPanel;
 
-            MessagePanel mesPanel = newObject.GetComponent<MessagePanel>();
-            mesPanel.Awake();
-            mesPanel.show(message, mainCamera);
+        protected static bool firstLaunch = true;
+        protected Vector3 offset = new Vector2(-10f, 30f);
+
+
+
+        public void OnDrag(PointerEventData data) // need it to place windows in stair-order
+        {
+            previousWindowLastPosition = transform.localPosition;
         }
 
-        // Use this for initialization
-        private void Start()
-        {
-            Vector3 position = Vector3.zero;
-            position.Set(lastDragPosition.x - 10f, lastDragPosition.y - 10f, 0);
-            transform.localPosition = position;
-            lastDragPosition = transform.localPosition;
-            GUIChanger.Apply(gameObject);
-            showDefeatingAttackerMessage.isOn = Message.ShowDefeatingAttackersMessages;
-            var rect = GetComponent<RectTransform>();
-            rect.transform.position = new Vector3((Screen.width - rect.sizeDelta.x) / 2, (Screen.height - rect.sizeDelta.y) / 2, rect.position.z);
-        }
-
-        public override void OnDrag(PointerEventData data) // need it to place windows in stair-order
-        {
-            base.OnDrag(data);
-            lastDragPosition = transform.localPosition;
-        }
-
-        public override void Refresh()
-        {
-            //
-        }
-
+        /// <summary>
+        /// From UI
+        /// </summary>        
         public void OnShowMessagesChanged(bool value)
         {
             Message.SetShowDefeatingAttackersMessages(value);
@@ -73,7 +50,7 @@ namespace Nashet.UnityUIUtils
                 mainCamera.FocusOnPoint(messageSource.getFocus());
         }
 
-        private void show(Message mess, MainCamera mainCamera)
+        public void Show(Message mess, MainCamera mainCamera, int howMuchShift)
         {
             this.mainCamera = mainCamera;
             howMuchPausedWindowsOpen++;
@@ -81,13 +58,31 @@ namespace Nashet.UnityUIUtils
             message.text = mess.GetText();
             closeText.text = mess.GetClosetext();
             messageSource = mess;
-            Show();
+
+            dragPanel = GetComponent<DragPanel>();
+            GUIChanger.Apply(gameObject);
+            showDefeatingAttackerMessage.isOn = Message.ShowDefeatingAttackersMessages;
+
+            if (firstLaunch)
+            {
+                var rect = GetComponent<RectTransform>();
+                rect.transform.position = new Vector3((Screen.width - rect.sizeDelta.x) / 2, (Screen.height - rect.sizeDelta.y) / 2, rect.position.z);
+                previousWindowLastPosition = transform.localPosition;
+            }
+            else
+            {
+                transform.localPosition = previousWindowLastPosition - offset * howMuchShift;
+            }
+            
+            firstLaunch = false;
+            dragPanel.Show();
         }
 
-        public override void Hide()
+        public void Hide()
         {
-            base.Hide();
+            dragPanel.Hide();
             howMuchPausedWindowsOpen--;
+            //previousWindowLastPosition = transform.localPosition;
             Destroy(gameObject);
         }
 

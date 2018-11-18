@@ -8,20 +8,27 @@ namespace Nashet.UnityUIUtils
     /// Can be only 1 instance
     /// </summary>
     [RequireComponent(typeof(Hideable))]
-    public class ModalWindow : MonoSingleton, IPointerEnterHandler, IPointerExitHandler
+    public class ModalWindow : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField]
         protected Text generalText;
 
-        //public static ModalWindow Instance { get; protected set; }
+        public static ModalWindow Instance { get; protected set; }
         protected bool isMouseInside;
         protected Animator animator;
 
         protected IHideable hideable;
 
-        protected override void Start()
+        protected void Start()
         {
-            base.Start();
+            //singleton pattern
+            if (Instance == null)
+                Instance = this;
+            else
+            {
+                Debug.Log(this + " singleton  already created. Exterminating..");
+                Destroy(this);
+            }
             hideable = GetComponent<IHideable>();            
             Hide();
             animator = GetComponent<Animator>();

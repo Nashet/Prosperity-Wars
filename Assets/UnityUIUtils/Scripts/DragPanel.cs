@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Nashet.EconomicSimulation;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Nashet.UnityUIUtils
@@ -7,7 +8,7 @@ namespace Nashet.UnityUIUtils
     /// <summary>
     /// Represents movable and hideable window
     /// </summary>
-    public abstract class DragPanel : Window, IPointerDownHandler, IDragHandler
+    public class DragPanel : Window, IPointerDownHandler, IDragHandler
     {
         private Vector2 pointerOffset;
         private RectTransform canvasRectTransform;
@@ -93,5 +94,10 @@ namespace Nashet.UnityUIUtils
             //var rect = GetComponent<RectTransform>();
             //rect.transform.position = new Vector3((Screen.width - rect.sizeDelta.x) / 2, (Screen.height - rect.sizeDelta.y) / 2, rect.position.z);
         }
+
+        public override void Refresh()
+        {
+            
+        }        
     }
 }

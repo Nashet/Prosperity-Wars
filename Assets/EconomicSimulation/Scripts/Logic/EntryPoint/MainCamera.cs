@@ -162,8 +162,9 @@ namespace Nashet.EconomicSimulation
                     Unit.RedrawAll();
                 }
                 DrawFogOfWar();
-                if (Message.HasUnshownMessages())
-                    MessagePanel.showMessageBox(LinksManager.Get.CameraLayerCanvas, this);
+
+                //if (Message.HasUnshownMessages())
+                //    MessagePanel.Instance.ShowMessageBox(LinksManager.Get.CameraLayerCanvas, this);
 
             }
 
