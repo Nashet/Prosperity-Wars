@@ -13,7 +13,7 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class Game : ThreadedJob
     {
-        public static bool devMode = false;
+        public static bool devMode = true;
         private static bool surrended = devMode;
         public static bool logInvestments = false;
         public static bool logMarket = false;
