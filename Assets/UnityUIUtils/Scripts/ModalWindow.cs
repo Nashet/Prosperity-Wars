@@ -1,5 +1,4 @@
-﻿
-using System.Text;
+﻿using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -8,7 +7,8 @@ namespace Nashet.UnityUIUtils
     /// <summary>
     /// Can be only 1 instance
     /// </summary>
-    public class ModalWindow : Hideable, IPointerEnterHandler, IPointerExitHandler
+    [RequireComponent(typeof(Hideable))]
+    public class ModalWindow : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField]
         protected Text generalText;
@@ -17,34 +17,43 @@ namespace Nashet.UnityUIUtils
         protected bool isMouseInside;
         protected Animator animator;
 
+        protected IHideable hideable;
+
         protected void Start()
         {
-            Instance = this;
-            //todo add check for multiple objects with that script
+            //singleton pattern
+            if (Instance == null)
+                Instance = this;
+            else
+            {
+                Debug.Log(this + " singleton  already created. Exterminating..");
+                Destroy(this);
+            }
+            hideable = GetComponent<IHideable>();            
+            Hide();
             animator = GetComponent<Animator>();
         }
 
         /// <summary>
         /// Overwrites previous modal window if it was open
         /// </summary>    
-        internal static void Show(string text)
+        internal void Show(string text)
         {
-            Instance.generalText.text = text;
-            Instance.Show();
+            generalText.text = text;
+            Show();
         }
 
-        public override void Show()
+        protected void Show()
         {
             animator.Play("Opening");
             animator.SetBool("IsClosed", false);
-            base.Show();            
+            hideable.Show();
         }
 
-        public override void Hide()
+        protected void Hide()
         {
-            animator.SetBool("IsClosed", true);            
+            animator.SetBool("IsClosed", true);
         }
-
 
         // Update is called once per frame
         protected void Update()
@@ -52,9 +61,10 @@ namespace Nashet.UnityUIUtils
             // close if clicked outside
             if (Input.GetMouseButtonUp(0) && !isMouseInside)
                 Hide();
+
             if (animator.GetCurrentAnimatorStateInfo(0).IsName("Finished"))
             {
-                base.Hide();
+                hideable.Hide();
             }
         }
 
@@ -66,20 +76,6 @@ namespace Nashet.UnityUIUtils
         public void OnPointerExit(PointerEventData eventData)
         {
             isMouseInside = false;
-        }
-
-        /// <summary>
-        /// For tests only
-        /// </summary>
-        public void OnBigTextTest()
-        {
-            var sb = new StringBuilder();
-            for (int i = 0; i < 90; i++)
-            {
-                sb.Append("Testing long text ");
-            }
-
-            generalText.text = sb.ToString();
-        }
+        }        
     }
 }

@@ -592,7 +592,7 @@ namespace Nashet.EconomicSimulation
                 Path = null;
                 Game.provincesToRedrawArmies.Add(Province);
                 //Province.RedrawLocalArmies(); 
-                Message.NewMessage(this.FullName + " arrived!", "Commander, " + this.FullName + " stopped at " + Province + " province", "Fine", false, Province.Position);
+                MessageSystem.Instance.NewMessage(this.FullName + " arrived!", "Commander, " + this.FullName + " stopped at " + Province + " province", "Fine", false, Province.Position);
             }
         }
 
@@ -656,7 +656,7 @@ namespace Nashet.EconomicSimulation
                             if (isCountryOwner != null && isCountryOwner != Province.Country)
                             {
                                 if (Province.Country == Game.Player && !Game.isPlayerSurrended())
-                                    Message.NewMessage("Province lost!", "Commander, " + isCountryOwner + " took " + Province, "Fine", false, Province.Position);
+                                    MessageSystem.Instance.NewMessage("Province lost!", "Commander, " + isCountryOwner + " took " + Province, "Fine", false, Province.Position);
                                 isCountryOwner.Provinces.TakeProvince(Province, true);
 
                             }

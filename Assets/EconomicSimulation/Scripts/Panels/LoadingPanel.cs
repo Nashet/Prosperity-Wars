@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Nashet.EconomicSimulation
 {
-    public class LoadingPanel : Hideable
+    public class LoadingPanel : Window
     {
         [SerializeField]
         private Text loadingText;
@@ -23,6 +23,11 @@ namespace Nashet.EconomicSimulation
         public void updateStatus(string text)
         {
             loadingText.text = text;
+        }
+
+        public override void Refresh()
+        {
+            
         }
     }
 }

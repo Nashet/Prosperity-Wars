@@ -1,5 +1,6 @@
 ﻿using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using System;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -16,14 +17,15 @@ namespace Nashet.EconomicSimulation
         private Button btnPlay, btnStep, btnTrade, financeButton;
 
         [SerializeField]
-        private Text generalText, specificText;
+        private Text generalText;
 
         [SerializeField]
         private World world;
 
         // Use this for initialization
-        private void Awake()
+        new private void Awake()
         {
+            base.Awake();
             MainCamera.topPanel = this;
             buttonSelector = new ColorSelector(Color.red); //UISelector.AddTo(this, LinksManager.Get.UISelectedMaterial,);
         }
@@ -102,10 +104,11 @@ namespace Nashet.EconomicSimulation
 
         public void onInventionsClick()
         {
-            if (MainCamera.inventionsPanel.isActiveAndEnabled)
-                MainCamera.inventionsPanel.Hide();
-            else
-                MainCamera.inventionsPanel.Show();
+            Game.Player.events.RiseClickedOn(new InventionEventArgs(null));
+        //    if (MainCamera.inventionsPanel.isActiveAndEnabled)
+        //        MainCamera.inventionsPanel.Hide();
+        //    else
+        //        MainCamera.inventionsPanel.Show();
         }
 
         public void onEnterprisesClick()

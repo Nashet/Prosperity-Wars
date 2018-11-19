@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
@@ -39,21 +40,24 @@ namespace Nashet.EconomicSimulation
                 whomGrant = Game.selectedProvince.AllCores().Where(x => x != Game.Player).Random();
 
             whomGrant.onGrantedProvince(Game.selectedProvince);
-            MainCamera.refreshAllActive();
+            //MainCamera.refreshAllActive();
+            UIEvents.RiseSomethingVisibleToPlayerChangedInWorld(EventArgs.Empty, this);
         }
 
         public void onCountryDiplomacyClick()
         {
-            if (MainCamera.diplomacyPanel.isActiveAndEnabled)
-            {
-                if (MainCamera.diplomacyPanel.getSelectedCountry() == Game.selectedProvince.Country)
+            Game.Player.events.RiseClickedOn(new CountryEventArgs(Game.selectedProvince.Country));
 
-                    MainCamera.diplomacyPanel.Hide();
-                else
-                    MainCamera.diplomacyPanel.show(Game.selectedProvince.Country);
-            }
-            else
-                MainCamera.diplomacyPanel.show(Game.selectedProvince.Country);
+            //if (MainCamera.diplomacyPanel.isActiveAndEnabled)
+            //{
+            //    if (MainCamera.diplomacyPanel.getSelectedCountry() == Game.selectedProvince.Country)
+
+            //        MainCamera.diplomacyPanel.Hide();
+            //    else
+            //        MainCamera.diplomacyPanel.show(Game.selectedProvince.Country);
+            //}
+            //else
+            //    MainCamera.diplomacyPanel.show(Game.selectedProvince.Country);
         }
 
         public void onMobilizeClick()

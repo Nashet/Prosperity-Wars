@@ -11,8 +11,8 @@ namespace Nashet.EconomicSimulation
     public class PopUnitPanel : DragPanel
     {
         [SerializeField]
-        private Text generaltext, luxuryNeedsText, everyDayNeedsText, lifeNeedsText, efficiencyText,
-            issues, money, caption, property, populationChange;
+        private Text generaltext, caption, luxuryNeedsText, everyDayNeedsText, lifeNeedsText, efficiencyText,
+            issues, money, property, populationChange;
 
         private PopUnit pop;
 
@@ -69,7 +69,7 @@ namespace Nashet.EconomicSimulation
                 //sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it
                 sb.Append("\nConsumed: ").Append(pop.getConsumed().ToString(", "));
 
-                
+
                 // loyalty part
                 sb.Append("\n\nCash: ").Append(pop.Cash);
                 if (pop.loans.isNotZero())
@@ -91,7 +91,7 @@ namespace Nashet.EconomicSimulation
                 if (Game.devMode)
                     sb.Append("\n\nAge: ").Append(pop.getAge());
                 sb.Append("\nMobilized: ").Append(pop.getMobilized());
-               
+
 
 
                 //if (Game.devMode)

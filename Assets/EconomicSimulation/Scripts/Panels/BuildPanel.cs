@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
 using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
@@ -75,7 +76,8 @@ namespace Nashet.EconomicSimulation
             if (buildSomething)
             {
                 selectedFactoryType = null;
-                MainCamera.refreshAllActive();
+                UIEvents.RiseSomethingVisibleToPlayerChangedInWorld(EventArgs.Empty, this);
+                //MainCamera.refreshAllActive();
             }
         }
 
