@@ -223,7 +223,7 @@ namespace Nashet.EconomicSimulation
 
         private static void makeHelloMessage()
         {
-            Message.NewMessage("Tutorial", "Hi, this is VERY early demo of game-like economy simulator called 'Prosperity wars'" +
+            MessageSystem.Instance.NewMessage("Tutorial", "Hi, this is VERY early demo of game-like economy simulator called 'Prosperity wars'" +
                 "\n\nCurrently there is: "
                 + "\n\tpopulation agents \\ factories \\ countries \\ national banks"
                 + "\n\tbasic trade \\ production \\ consumption \n\tbasic warfare \n\tbasic inventions"

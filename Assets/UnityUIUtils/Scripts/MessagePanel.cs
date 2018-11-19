@@ -1,5 +1,5 @@
-﻿using System;
-using Nashet.EconomicSimulation;
+﻿using Nashet.EconomicSimulation;
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -10,18 +10,19 @@ namespace Nashet.UnityUIUtils
     internal class MessagePanel : MonoBehaviour, IDragHandler
     {
         ///<summary>Stores position of top-level message window. Used to correctly place next message window</summary>
-        private static Vector3 previousWindowLastPosition;
+        protected static Vector3 previousWindowLastPosition;
 
         [SerializeField]
-        private Text caption, message, closeText;
+        protected Text caption, message, closeText;
 
         [SerializeField]
-        private Toggle showDefeatingAttackerMessage;      
+        protected Toggle showDefeatingAttackerMessage;
 
-        private MainCamera mainCamera;
+        protected MainCamera mainCamera;
 
-        private static int howMuchPausedWindowsOpen;
-        private Message messageSource;
+        protected static int howMuchPausedWindowsOpen;
+
+        protected Message messageSource;
 
         protected DragPanel dragPanel;
 
@@ -30,26 +31,12 @@ namespace Nashet.UnityUIUtils
         ///<summary>How much shifts window if there is more than 1 window</summary>
         protected Vector3 offset = new Vector2(-10f, 30f);
 
-        public void OnDrag(PointerEventData data) // need it to place windows in stair-order
+        public static bool IsOpenAny()
         {
-            previousWindowLastPosition = transform.localPosition;
+            return howMuchPausedWindowsOpen > 0;
         }
 
-        /// <summary>
-        /// From UI
-        /// </summary>        
-        public void OnShowMessagesChanged(bool value)
-        {
-            Message.SetShowDefeatingAttackersMessages(value);
-        }
-
-        public void OnFocusClicked()
-        {
-            if (messageSource.HasFocus)
-                mainCamera.FocusOnPoint(messageSource.getFocus());
-        }
-
-        public void Show(Message mess, MainCamera mainCamera, int howMuchShift)
+        internal void Show(Message mess, MainCamera mainCamera, int howMuchShift)
         {
             this.mainCamera = mainCamera;
             howMuchPausedWindowsOpen++;
@@ -61,7 +48,7 @@ namespace Nashet.UnityUIUtils
             dragPanel = GetComponent<DragPanel>();
             dragPanel.Hidden += OnHidden;
             GUIChanger.Apply(gameObject);
-            showDefeatingAttackerMessage.isOn = Message.ShowDefeatingAttackersMessages;
+            showDefeatingAttackerMessage.isOn = MessageSystem.Instance.ShowDefeatingAttackersMessages;
 
             if (firstLaunch)
             {
@@ -73,26 +60,40 @@ namespace Nashet.UnityUIUtils
             {
                 transform.localPosition = previousWindowLastPosition - offset * howMuchShift;
             }
-            
+
             firstLaunch = false;
             dragPanel.Show();
         }
 
-        private void OnHidden(Hideable eventData)
+        public void OnDrag(PointerEventData data) // need it to place windows in stair-order
+        {
+            previousWindowLastPosition = transform.localPosition;
+        }
+
+        protected void OnHidden(Hideable eventData)
         {
             Hide();
         }
 
-        public void Hide()
-        {           
+        #region UI callbacks
+
+        internal void Hide()
+        {
             howMuchPausedWindowsOpen--;
             //previousWindowLastPosition = transform.localPosition;
             Destroy(gameObject);
         }
 
-        public static bool IsOpenAny()
+        internal void OnShowMessagesChanged(bool value)
         {
-            return howMuchPausedWindowsOpen > 0;
+            MessageSystem.Instance.SetShowDefeatingAttackersMessages(value);
         }
+
+        internal void OnFocusClicked()
+        {
+            if (messageSource.HasFocus)
+                mainCamera.FocusOnPoint(messageSource.getFocus());
+        }
+        #endregion
     }
 }
