@@ -2,7 +2,7 @@
 
 namespace Nashet.UnityUIUtils
 {
-    public abstract class Hideable : MonoBehaviour, IHideable
+    public class Hideable : MonoBehaviour, IHideable
     {
         // declare delegate (type)
         public delegate void HideEventHandler(Hideable eventData);

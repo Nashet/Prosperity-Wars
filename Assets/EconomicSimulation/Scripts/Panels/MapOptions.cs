@@ -76,7 +76,7 @@ namespace Nashet.EconomicSimulation
             else //take picture
             { 
                 if (loadedImage.texture == null) //todo thats never true
-                    Message.NewMessage("", "Wasn't able to load that image", "Ok", false);
+                    MessageSystem.Instance.NewMessage("", "Wasn't able to load that image", "Ok", false);
                 else
                 {
                     Game.readMapFormFile = true;

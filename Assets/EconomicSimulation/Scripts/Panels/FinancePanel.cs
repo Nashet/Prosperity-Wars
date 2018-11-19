@@ -2,6 +2,7 @@
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using System;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
@@ -161,7 +162,8 @@ namespace Nashet.EconomicSimulation
             if (loanLimit.value != 1f)
                 loan.Multiply((decimal)loanLimit.value);
             Game.Player.Bank.GiveCredit(Game.Player, loan);
-            MainCamera.refreshAllActive();
+            //MainCamera.refreshAllActive();
+            UIEvents.RiseSomethingVisibleToPlayerChangedInWorld(EventArgs.Empty, this);
         }
 
         public void onPutInDeposit()
@@ -170,7 +172,8 @@ namespace Nashet.EconomicSimulation
                 Game.Player.Bank.ReceiveMoney(Game.Player, Game.Player.Cash);
             else
                 Game.Player.Bank.ReceiveMoney(Game.Player, Game.Player.Cash.Copy().Multiply((decimal)depositLimit.value));
-            MainCamera.refreshAllActive();
+            //MainCamera.refreshAllActive();
+            UIEvents.RiseSomethingVisibleToPlayerChangedInWorld(EventArgs.Empty, this);
         }
 
         public void onLoanLimitChange()

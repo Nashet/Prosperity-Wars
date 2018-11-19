@@ -3628,7 +3628,6 @@ MonoBehaviour:
   btnTrade: {fileID: 685281367}
   financeButton: {fileID: 996118680}
   generalText: {fileID: 1505497595}
-  specificText: {fileID: 0}
   world: {fileID: 984703830}
 --- !u!114 &164165862
 MonoBehaviour:
@@ -6790,7 +6789,7 @@ GameObject:
   - component: {fileID: 316011190}
   - component: {fileID: 316011191}
   m_Layer: 5
-  m_Name: Choise
+  m_Name: ReformsDropDown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8721,7 +8720,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
-  m_MinWidth: 158.8
+  m_MinWidth: 162
   m_MinHeight: -1
   m_PreferredWidth: 2000
   m_PreferredHeight: -1
@@ -10791,7 +10790,6 @@ GameObject:
   - component: {fileID: 510117783}
   - component: {fileID: 510117784}
   - component: {fileID: 510117786}
-  - component: {fileID: 510117787}
   m_Layer: 5
   m_Name: StatisticsPanel
   m_TagString: Untagged
@@ -10831,7 +10829,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   table: {fileID: 554204633}
-  animator: {fileID: 0}
 --- !u!114 &510117784
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10887,23 +10884,6 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
---- !u!95 &510117787
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 510117781}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 102ccda1bf8a7f54d8602791cca1d5d1, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!1 &518412316
 GameObject:
   m_ObjectHideFlags: 0
@@ -11301,13 +11281,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generaltext: {fileID: 2006552294}
+  caption: {fileID: 594134591}
   luxuryNeedsText: {fileID: 109123634}
   everyDayNeedsText: {fileID: 1756714895}
   lifeNeedsText: {fileID: 181740074}
   efficiencyText: {fileID: 834139826}
   issues: {fileID: 277838323}
   money: {fileID: 1823930273}
-  caption: {fileID: 594134591}
   property: {fileID: 723274849}
   populationChange: {fileID: 872636412}
 --- !u!114 &523373760
@@ -13306,6 +13286,48 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 614924154}
+--- !u!1 &616426206
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 616426208}
+  - component: {fileID: 616426207}
+  m_Layer: 0
+  m_Name: MessageSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &616426207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 616426206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32a9c8d548844bd468da5ce15123053c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  messagePanelPrefab: {fileID: 1199945698575938, guid: 89148f67d11a7ae48a5f822dd58b567c,
+    type: 2}
+--- !u!4 &616426208
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 616426206}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &621368168
 GameObject:
   m_ObjectHideFlags: 0
@@ -17999,10 +18021,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ddProvinceSelect: {fileID: 844205448}
-  allArmySizeText: {fileID: 1709794983}
   captionText: {fileID: 1129266932}
   sendingArmySizeText: {fileID: 167605884}
-  newText: {fileID: 920621698}
+  armiesList: {fileID: 920621698}
   armySendLimit: {fileID: 19358757}
   sendArmy: {fileID: 684853784}
 --- !u!114 &840772529
@@ -19661,7 +19682,6 @@ MonoBehaviour:
   generaltext: {fileID: 1065585676}
   efficiencyText: {fileID: 1270452775}
   caption: {fileID: 2108871203}
-  onSaleText: {fileID: 0}
   ownership: {fileID: 509497467}
   profitText: {fileID: 269487112}
 --- !u!114 &889415546
@@ -22450,7 +22470,7 @@ MonoBehaviour:
   movementsText: {fileID: 572295246}
   voteButton: {fileID: 831414567}
   forceDecisionButton: {fileID: 1773527414}
-  dropDown: {fileID: 316011187}
+  reformsDropDown: {fileID: 316011187}
   movementsHorizontalScrollBar: {fileID: 2119095861}
 --- !u!114 &1015555333
 MonoBehaviour:
@@ -26648,7 +26668,7 @@ GameObject:
   - component: {fileID: 1235226180}
   - component: {fileID: 1235226178}
   m_Layer: 5
-  m_Name: Content
+  m_Name: PoliticsTable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27468,7 +27488,7 @@ Prefab:
     - target: {fileID: 224336004146051616, guid: 2e9a2c5c8af860144a72f7782a82a934,
         type: 2}
       propertyPath: m_RootOrder
-      value: 18
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 224336004146051616, guid: 2e9a2c5c8af860144a72f7782a82a934,
         type: 2}
@@ -30835,7 +30855,6 @@ MonoBehaviour:
   giveControlToAi: {fileID: 1052839879}
   giveControlToPlayer: {fileID: 856059902}
   declareWar: {fileID: 329250678}
-  mainCamera: {fileID: 1869157520}
   flag: {fileID: 1562757687}
 --- !u!114 &1434863693
 MonoBehaviour:
@@ -31660,6 +31679,7 @@ MonoBehaviour:
   ProvinceSelecionMaterial: {fileID: 2100000, guid: c25b338ab39471d4582add0f324ced07,
     type: 2}
   FogOfWarMaterial: {fileID: 2100000, guid: 2e32210884a66044b86f2a5a9884162c, type: 2}
+  objectsToInstantiateIn2DCanvas: []
 --- !u!4 &1464641335
 Transform:
   m_ObjectHideFlags: 0
@@ -36594,7 +36614,7 @@ GameObject:
   - component: {fileID: 1713467398}
   - component: {fileID: 1713467397}
   m_Layer: 5
-  m_Name: Content
+  m_Name: ProductionTable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38677,7 +38697,7 @@ GameObject:
   - component: {fileID: 1785541138}
   - component: {fileID: 1785541139}
   m_Layer: 5
-  m_Name: Content
+  m_Name: CountryStorageTable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41749,7 +41769,7 @@ GameObject:
   - component: {fileID: 1930860527}
   - component: {fileID: 1930860529}
   m_Layer: 5
-  m_Name: Content
+  m_Name: WorldMarketTable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44624,7 +44644,7 @@ GameObject:
   - component: {fileID: 2085982080}
   - component: {fileID: 2085982082}
   m_Layer: 5
-  m_Name: Content
+  m_Name: PopulationTable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

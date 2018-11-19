@@ -1,8 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using Nashet.UISystem;
 using Nashet.UnitSelection;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -24,12 +25,12 @@ namespace Nashet.EconomicSimulation
         public static ProvincePanel provincePanel;
         public static PopulationPanel populationPanel;
         public static PopUnitPanel popUnitPanel;
-        public static DiplomacyPanel diplomacyPanel;
+        // public static DiplomacyPanel diplomacyPanel;
         public static TradeWindow tradeWindow;
         public static ProductionWindow productionWindow;
         public static FactoryPanel factoryPanel;
         public static GoodsPanel goodsPanel;
-        public static InventionsPanel inventionsPanel;
+        //public static InventionsPanel inventionsPanel;
         public static BuildPanel buildPanel;
         public static PoliticsPanel politicsPanel;
         public static FinancePanel financePanel;
@@ -110,7 +111,6 @@ namespace Nashet.EconomicSimulation
         {
             Game.setUnityAPI();
 
-
             FocusOnProvince(Game.Player.Capital, false);
             loadingPanel.Hide();
             topPanel.Show();
@@ -152,7 +152,8 @@ namespace Nashet.EconomicSimulation
                         //Unit.RedrawAll();
 
                         previousFrameTime = Time.time;
-                        refreshAllActive();
+                        //refreshAllActive();
+                        UIEvents.RiseSomethingVisibleToPlayerChangedInWorld(EventArgs.Empty, this);
                     }
                 }
 
@@ -160,9 +161,14 @@ namespace Nashet.EconomicSimulation
                 {
                     Unit.RedrawAll();
                 }
+
+                if (Input.GetKeyDown(KeyCode.Return)) // enter key
+                    CloseToppestPanel();
+
                 DrawFogOfWar();
-                if (Message.HasUnshownMessages())
-                    MessagePanel.showMessageBox(LinksManager.Get.CameraLayerCanvas, this);
+
+                //if (Message.HasUnshownMessages())
+                //    MessagePanel.Instance.ShowMessageBox(LinksManager.Get.CameraLayerCanvas, this);
 
             }
 
@@ -295,28 +301,6 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-
-        public static void refreshAllActive()
-        {
-            if (topPanel.isActiveAndEnabled) topPanel.Refresh();
-            if (populationPanel.isActiveAndEnabled) populationPanel.Refresh();
-            if (tradeWindow.isActiveAndEnabled) tradeWindow.Refresh();
-            if (factoryPanel.isActiveAndEnabled) factoryPanel.Refresh();
-            if (productionWindow.isActiveAndEnabled) productionWindow.Refresh();
-            if (goodsPanel.isActiveAndEnabled) goodsPanel.Refresh();
-            if (inventionsPanel.isActiveAndEnabled) inventionsPanel.Refresh();
-            if (buildPanel.isActiveAndEnabled) buildPanel.Refresh();
-            if (politicsPanel.isActiveAndEnabled) politicsPanel.Refresh();
-            if (financePanel.isActiveAndEnabled) financePanel.Refresh();
-            if (militaryPanel.isActiveAndEnabled) militaryPanel.Refresh();
-            if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.Refresh();
-            if (popUnitPanel.isActiveAndEnabled) popUnitPanel.Refresh();
-            if (StatisticPanel.isActiveAndEnabled) StatisticPanel.Refresh();
-            if (provincePanel.isActiveAndEnabled) provincePanel.Refresh();
-
-            //if (bottomPanel.isActiveAndEnabled) bottomPanel.refresh();
-        }
-
         public static void selectProvince(int number)
         {
             if (number < 0 || World.FindProvince(number) == Game.selectedProvince)// same province clicked, hide selection
@@ -353,7 +337,7 @@ namespace Nashet.EconomicSimulation
                 buildPanel.Refresh();
         }
 
-        public void closeToppestPanel()
+        private void CloseToppestPanel()
         {
             //canvas.GetComponentInChildren<DragPanel>();
             var lastChild = LinksManager.Get.CameraLayerCanvas.transform.GetChild(LinksManager.Get.CameraLayerCanvas.transform.childCount - 1);
@@ -363,7 +347,7 @@ namespace Nashet.EconomicSimulation
             else
             {
                 lastChild.SetAsFirstSibling();
-                closeToppestPanel();
+                CloseToppestPanel();
             }
         }
 

@@ -6,24 +6,25 @@ namespace Nashet.EconomicSimulation
     public class LinksManager : MonoBehaviour
     {
 
-        public Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, 
-                impassableBorder;
+        public Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, impassableBorder;
         public GameObject UnitPrefab, UnitPanelPrefab;
         public Transform WorldSpaceCanvas;
         public GameObject r3DProvinceTextPrefab, r3DCountryTextPrefab;
         public GameObject ArmiesSelectionWindowPrefab;
         public GameObject ArmiesHolder;
-        [SerializeField]
-        public Canvas CameraLayerCanvas;
+
+        [SerializeField]public Canvas CameraLayerCanvas;
 
         public Material waterMaterial;
 
         private static LinksManager thisObject;
         public Material ProvinceSelecionMaterial;
-        public Material FogOfWarMaterial;        
+        public Material FogOfWarMaterial;
+
+        [SerializeField] private GameObject[] objectsToInstantiateIn2DCanvas;
 
         // Use this for initialization
-        void Start()
+        private void Start()
         {
             thisObject = this;
             if (ArmiesSelectionWindow.Get == null)
@@ -31,7 +32,15 @@ namespace Nashet.EconomicSimulation
                 var window = Instantiate(ArmiesSelectionWindowPrefab, CameraLayerCanvas.transform);
                 //window.hideFlags();
             }
+
+            foreach (var item in objectsToInstantiateIn2DCanvas)
+            {
+                Instantiate(item, CameraLayerCanvas.transform);
+            }
         }
+
+
+
 
         public static LinksManager Get
         {
@@ -39,7 +48,7 @@ namespace Nashet.EconomicSimulation
         }
 
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
 
         }

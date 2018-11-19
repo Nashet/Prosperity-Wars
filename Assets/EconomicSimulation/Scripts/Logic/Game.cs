@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Nashet.MarchingSquares;
+﻿using Nashet.MarchingSquares;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Nashet.EconomicSimulation
@@ -19,8 +20,8 @@ namespace Nashet.EconomicSimulation
 
         public static bool readMapFormFile = false;
         private static MyTexture mapTexture;
-        
-        public static Country Player;
+
+        public static Country Player { get; set; }
 
         public static Province selectedProvince;
         public static Province previoslySelectedProvince;
@@ -85,7 +86,7 @@ namespace Nashet.EconomicSimulation
                 World.Get.graph.AddNode(node);
                 province.SetBorderMaterials();
             }
-            
+
             Country.setUnityAPI();
             //seaProvinces = null;
             // todo clear resources
@@ -108,19 +109,21 @@ namespace Nashet.EconomicSimulation
             return mapBorders;
         }
 
-        public static void GivePlayerControlOf(Country country)
+        public static void GivePlayerControlOf(Country newCountry)
         {
             //if (country != Country.NullCountry)
             {
                 surrended = false;
-                Player = country;
+                Player = newCountry;
                 MainCamera.politicsPanel.selectReform(null);
-                MainCamera.inventionsPanel.selectInvention(null);
+                //MainCamera.inventionsPanel.selectInvention(null);
+                Game.Player.events.RiseChangedCountry(new CountryEventArgs(newCountry));
 
                 // not necessary since it will change automatically on province selection
-                MainCamera.buildPanel.selectFactoryType(null);
+                //MainCamera.buildPanel.selectFactoryType(null);
 
-                MainCamera.refreshAllActive();
+                //MainCamera.refreshAllActive();
+                //UIEvents.RiseSomethingChangedInWorld(EventArgs.Empty, null);
             }
         }
 
@@ -220,7 +223,7 @@ namespace Nashet.EconomicSimulation
 
         private static void makeHelloMessage()
         {
-            Message.NewMessage("Tutorial", "Hi, this is VERY early demo of game-like economy simulator called 'Prosperity wars'" +
+            MessageSystem.Instance.NewMessage("Tutorial", "Hi, this is VERY early demo of game-like economy simulator called 'Prosperity wars'" +
                 "\n\nCurrently there is: "
                 + "\n\tpopulation agents \\ factories \\ countries \\ national banks"
                 + "\n\tbasic trade \\ production \\ consumption \n\tbasic warfare \n\tbasic inventions"

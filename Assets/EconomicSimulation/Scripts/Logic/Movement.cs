@@ -208,7 +208,7 @@ namespace Nashet.EconomicSimulation
             var separatists = getGoal() as Separatism.Goal;
             separatists.separatismTarget.onSeparatismWon(Country);
             if (!Country.isAI())//separatists.C
-                Message.NewMessage("", "Separatists won revolution - " + separatists.separatismTarget.FullName, "hmm", false, separatists.separatismTarget.Capital.Position);
+                MessageSystem.Instance.NewMessage("", "Separatists won revolution - " + separatists.separatismTarget.FullName, "hmm", false, separatists.separatismTarget.Capital.Position);
         }
         public void onRevolutionWon(bool setReform)
         {
@@ -224,7 +224,7 @@ namespace Nashet.EconomicSimulation
                 {
                     targetReformType.SetValue(getGoal());//to avoid recursion            
                     if (!Country.isAI())
-                        Message.NewMessage("Rebels won", "Now you have " + targetReformValue, "Ok", false, Game.Player.Capital.Position);
+                        MessageSystem.Instance.NewMessage("Rebels won", "Now you have " + targetReformValue, "Ok", false, Game.Player.Capital.Position);
                 }
 
             }
@@ -312,7 +312,7 @@ namespace Nashet.EconomicSimulation
         {
             //revolt
             if (Country == Game.Player && !Game.Player.isAI())
-                Message.NewMessage("Revolution is on", "People rebelled demanding " + targetReformValue + "\n\nTheir army is moving to our capital", "Ok", false, Game.Player.Capital.Position);
+                MessageSystem.Instance.NewMessage("Revolution is on", "People rebelled demanding " + targetReformValue + "\n\nTheir army is moving to our capital", "Ok", false, Game.Player.Capital.Position);
 
             Country.rebelTo(x => x.getPopUnit().getMovement() == this, this);
 

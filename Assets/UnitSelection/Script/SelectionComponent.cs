@@ -49,8 +49,7 @@ namespace Nashet.UnitSelection
             {
                 SendUnitTo();
             }
-            if (Input.GetKeyDown(KeyCode.Return)) // enter key
-                MainCamera.Get.closeToppestPanel();
+           
 
             Game.previoslySelectedProvince = Game.selectedProvince;
             // Highlight all objects within the selection box

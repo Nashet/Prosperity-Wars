@@ -1,27 +1,29 @@
-﻿using System.Text;
+﻿using Nashet.EconomicSimulation;
 using Nashet.UnityUIUtils;
+using System;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.UISystem
 {
-    public class InventionsPanel : DragPanel
+    internal class InventionsPanel : DragPanel
     {
         [SerializeField]
-        private InventionsPanelTable table;
+        protected InventionsPanelTable table;
 
         [SerializeField]
-        private Text descriptionText;
+        protected Text descriptionText;
 
         [SerializeField]
-        private Button inventButton;
+        protected Button inventButton;
 
-        private Invention selectedInvention;
+        protected Invention selectedInvention;
 
         // Use this for initialization
         private void Start()
         {
-            MainCamera.inventionsPanel = this;
+            //MainCamera.inventionsPanel = this;
             inventButton.interactable = false;
             GetComponent<RectTransform>().position = new Vector2(0f, -458f + Screen.height);
             Hide();
@@ -41,9 +43,24 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public void selectInvention(Invention newSelection)
+        protected void OnClickedOn(object sender, EventArgs e)
         {
-            selectedInvention = newSelection;
+            var isInventionArgs = e as InventionEventArgs;
+            if (isInventionArgs != null)
+            {
+                if (isInventionArgs.Invention == null)
+                {
+                    if (Instance.isActiveAndEnabled)
+                        Instance.Hide();
+                    else
+                        Instance.Show();
+                }
+                else
+                {
+                    Instance.selectedInvention = isInventionArgs.Invention;
+                    Instance.Show();
+                }
+            }
         }
 
         public override void Refresh()
@@ -80,6 +97,15 @@ namespace Nashet.EconomicSimulation
                 }
             }
             descriptionText.text = sb.ToString();
+        }
+
+        //todo Instance
+        protected static InventionsPanel Instance;
+        protected new void Awake()
+        {
+            base.Awake();
+            Instance = this;
+            UIEvents.ClickedOn += OnClickedOn;
         }
     }
 }
