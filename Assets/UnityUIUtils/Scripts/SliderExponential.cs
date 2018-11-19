@@ -1,5 +1,7 @@
 ﻿using System;
+#if UNITY_EDITOR 
 using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -41,7 +43,7 @@ namespace Nashet.UnityUIUtils
         {
             return getValueFunction(data);
         }
-
+#if UNITY_EDITOR
         [MenuItem("GameObject/UI/Exponential Slider", false, 10)]
         private static void CreateCustomGameObject(MenuCommand menuCommand)
         {            
@@ -57,5 +59,6 @@ namespace Nashet.UnityUIUtils
 
             var added = go.AddComponent<SliderExponential>();
         }
+#endif
     }
 }
