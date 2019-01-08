@@ -4,7 +4,7 @@
 There is an early browser demo of this game located [**here**](https://nashet.github.io/Prosperity-Wars/WEBGL/index.html)
 It is roughly 6MB in size, some devices are not supported.
 
-[Project now has patreon page](https://www.patreon.com/ProsperityWars) where you can help support development.
+Currently development is paused. May be some day I'll have time to implement it in better form, with better graphics and real business plan.
 
 There is also a standalone windows edition under [releases](https://github.com/Nashet/Prosperity-Wars/releases) which runs faster.
 
