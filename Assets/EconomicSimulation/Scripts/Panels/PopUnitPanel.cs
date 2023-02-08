@@ -38,6 +38,15 @@ namespace Nashet.EconomicSimulation
                 //sb.Append(pop);
                 Artisans isArtisan = pop as Artisans;
                 sb.Append("Population: ").Append(pop.population.Get());
+
+                var isWorker = pop as Workers;
+                if (isWorker!= null)
+                {
+                    sb.Append(", Unemployment: ").Append(isWorker.GetUnemployment());
+                    if (isWorker.unemployedButNotSeekingJob > 0)
+                        sb.Append(", NEET: ").Append(isWorker.unemployedButNotSeekingJob);
+                }
+
                 if (isArtisan != null)
                 {
                     sb.Append(", Producing: ");

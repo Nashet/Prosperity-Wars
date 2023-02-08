@@ -5,7 +5,8 @@ namespace Nashet.EconomicSimulation
 {
     public class Workers : GrainGetter
     {
-        protected int employed, unemployedButNotSeekingJob;
+        protected int employed;
+        public int unemployedButNotSeekingJob { get; protected set; }
 
         public Workers(PopUnit pop, int sizeOfNewPop, Province where, Culture culture, IWayOfLifeChange oldLife) : base(pop, sizeOfNewPop, PopType.Workers, where, culture, oldLife)
         { }
@@ -97,20 +98,23 @@ namespace Nashet.EconomicSimulation
         {
             employed += toHire;
         }
-
-        // todo add it somewhere
+        
         /// <summary>
         /// States that pops doesn't want a job due to social benefits getting, excluding that worker from labor market
         /// </summary>        
         public void SitOnSocialBenefits(int howMuch)
         {
             unemployedButNotSeekingJob += howMuch;
+            if (unemployedButNotSeekingJob > population.Get() / 3)
+            {
+                unemployedButNotSeekingJob = population.Get() / 3;
+            }
         }
 
         public void Fire()
         {
             employed = 0;
-            unemployedButNotSeekingJob = 0;
+            //unemployedButNotSeekingJob = 0;
         }
     }
 }

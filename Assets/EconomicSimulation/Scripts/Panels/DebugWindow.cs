@@ -1,4 +1,5 @@
 ﻿using Nashet.UnityUIUtils;
+using Nashet.Utils;
 using Nashet.ValueSpace;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +40,9 @@ namespace Nashet.EconomicSimulation
             FOWToggle.isOn = Game.DrawFogOfWar;
             richestAgents.GetComponent<ToolTipHandler>().SetTextDynamic(() => gett(World.AllAgents.OrderByDescending(x => x.Cash.Get()).Take(10)));//.ToString("\n")
             generalText.text = $"Resolution is {Screen.width}x{Screen.height}\n" +
-                $"isMobile is {SystemInfo.deviceType == DeviceType.Handheld}";
+                $"isMobile is {SystemInfo.deviceType == DeviceType.Handheld}"
+                + $"\nWorld needs fullfiled {World.AllPops.GetAverageProcent(x => x.needsFulfilled)}";
+
         }
 
         private string gett(IEnumerable<Agent> collection)

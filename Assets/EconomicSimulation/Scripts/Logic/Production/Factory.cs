@@ -722,17 +722,6 @@ namespace Nashet.EconomicSimulation
             else if (difference < -1 * maxHiringSpeed)
                 difference = -1 * maxHiringSpeed;
 
-            // simulates pop's slow movement from labor market to social benefits
-            if ((Country.unemploymentSubsidies.SubsizionSize.Get().isBiggerOrEqual(getSalary())
-                || Country.PovertyAid.PovertyAidSize.Get().isBiggerOrEqual(getSalary())
-                || !Country.UBI.IsMoreConservativeThan(UBI.Middle)) // 
-                    && Country.economy != Economy.PlannedEconomy
-                    //&& Country.Politics.LastTurnDefaultedSocialObligations.isZero()
-                    && Register.Account.PovertyAid.GetIncomeAccount(Country.FailedPayments).isZero()
-                    && Register.Account.UBISubsidies.GetIncomeAccount(Country.FailedPayments).isZero()
-                    && Register.Account.UnemploymentSubsidies.GetIncomeAccount(Country.FailedPayments).isZero())// should be workers statistics
-                difference = -1 * maxHiringSpeed;
-
             if (difference > 0)
             {
                 float inputFactor = getInputFactor2().get();

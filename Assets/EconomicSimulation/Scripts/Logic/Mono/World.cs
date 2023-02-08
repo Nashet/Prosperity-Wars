@@ -240,6 +240,7 @@ namespace Nashet.EconomicSimulation
                 howMuchCountries = 8;
             if (howMuchCountries > World.allLandProvinces.Count)
                 howMuchCountries = World.allLandProvinces.Count;
+           // howMuchCountries = 1;
             for (int i = 0; i < howMuchCountries; i++)
             {
                 //Game.updateStatus("Making countries.." + i);
@@ -255,7 +256,7 @@ namespace Nashet.EconomicSimulation
 
                 country.GiveMoneyFromNoWhere(100);
             }
-            Game.Player = allCountries[1]; // not wild Tribes, DONT touch that
+            Game.Player = allCountries.First(x => x != UncolonizedLand); // not wild Tribes, DONT touch that
             Game.Player.events.RiseChangedCountry(new CountryEventArgs(Game.Player));
 
             allCountries.Random().SetName("Zacharia");
