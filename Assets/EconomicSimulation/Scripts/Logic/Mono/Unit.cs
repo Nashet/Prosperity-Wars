@@ -163,10 +163,21 @@ namespace Nashet.EconomicSimulation
             Game.provincesToRedrawArmies.Clear();
         }
 
+        private Vector3[] GetVector3Nodes(Path path)
+        {
+            Vector3[] array = new Vector3[path.nodes.Count + 1];
+            for (int i = 0; i < path.nodes.Count; i++)
+            {
+                array[i + 1] = path.nodes[i].Province.Position;
+                array[i + 1].z = -2f;
+            }
+            return array;
+        }
+
         private void Move(Path path)
         {
             lineRenderer.positionCount = path.nodes.Count + 1;
-            lineRenderer.SetPositions(path.GetVector3Nodes());
+            lineRenderer.SetPositions(GetVector3Nodes(path));
             lineRenderer.SetPosition(0, Province.Position);//currentProvince.getPosition()
 
             this.transform.LookAt(path.nodes[0].Province.Position, Vector3.back);
@@ -181,7 +192,7 @@ namespace Nashet.EconomicSimulation
                                                      //    where.armies[0].unit.unitPanel.Show();
             enemyDirection.positionCount = 2;
             //todo must be fixed ssize
-            var linePositions = path.GetVector3Nodes();
+            var linePositions = GetVector3Nodes(path);
             linePositions[0] = Province.Position;
             linePositions[1] = Vector3.LerpUnclamped(linePositions[1], linePositions[0], enemyDirectionScale);
             enemyDirection.SetPositions(linePositions);

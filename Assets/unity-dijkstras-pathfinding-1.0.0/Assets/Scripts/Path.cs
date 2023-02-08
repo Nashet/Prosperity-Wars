@@ -69,18 +69,7 @@ public class Path
             }
             calculated.Add(node);
         }
-    }
-
-    public Vector3[] GetVector3Nodes()
-    {
-        Vector3[] array = new Vector3[nodes.Count+1];
-        for (int i = 0; i < nodes.Count; i++)
-        {
-            array[i+1] = nodes[i].Province.Position;
-            array[i + 1].z = -2f;
-        }
-        return array;
-    }
+    }   
 
     /// <summary>
     /// Returns a string that represents the current object.
