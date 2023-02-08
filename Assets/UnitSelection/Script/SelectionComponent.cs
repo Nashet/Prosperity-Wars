@@ -19,11 +19,8 @@ namespace Nashet.UnitSelection
         //public GameObject selectionCirclePrefab;
         private static Camera camera; // it's OK
         private int nextArmyToSelect;
-        private Vector3 oldMousePositionDrag; //todo combine with selectionFrameMousePositionStart
         private MainCamera cameraScript;
        
-        private byte buttonHoldCountercounter;
-
         private void Start()
         {
             camera = GetComponent<Camera>();
@@ -94,23 +91,10 @@ namespace Nashet.UnitSelection
         
         private void HandleMapScroll()
         {
-            if (Input.GetMouseButton(0))
-            {
-                buttonHoldCountercounter++;
-            }
-            else
-                buttonHoldCountercounter = 0;
-
-            var isDragging = buttonHoldCountercounter > 10;
-            if (Input.GetMouseButton(0) && isDragging)
-            {                
-                var positionChange = (oldMousePositionDrag - Input.mousePosition) * mapDragSpeed;
-                cameraScript.Move(positionChange.x, 0, positionChange.y);
-                //Debug.LogError(Input.mousePosition);
-            }
-
-            //Debug.LogError($"isDragging {isDragging}");
-            oldMousePositionDrag = Input.mousePosition;            
+            var joy = LinksManager.Get.scrolJoystic;
+            cameraScript.Move(joy.Horizontal * mapDragSpeed, 0, joy.Vertical * mapDragSpeed);
+            
+            return;                 
         }
 
         private void SendUnitTo()

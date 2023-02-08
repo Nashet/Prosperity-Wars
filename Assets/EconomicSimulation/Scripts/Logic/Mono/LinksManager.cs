@@ -5,7 +5,6 @@ namespace Nashet.EconomicSimulation
 {
     public class LinksManager : MonoBehaviour
     {
-
         public Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, impassableBorder;
         public GameObject UnitPrefab, UnitPanelPrefab;
         public Transform WorldSpaceCanvas;
@@ -20,6 +19,7 @@ namespace Nashet.EconomicSimulation
         private static LinksManager thisObject;
         public Material ProvinceSelecionMaterial;
         public Material FogOfWarMaterial;
+        public bl_Joystick scrolJoystic;
 
         [SerializeField] private GameObject[] objectsToInstantiateIn2DCanvas;
 
