@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nashet.EconomicSimulation
 {
@@ -221,8 +222,6 @@ namespace Nashet.EconomicSimulation
             Texture2D.Destroy(mapImage);
         }
 
-
-
         private static void makeHelloMessage()
         {
             MessageSystem.Instance.NewMessage("Tutorial", "Hi, this is VERY early demo of game-like economy simulator called 'Prosperity wars'" +
@@ -239,8 +238,46 @@ namespace Nashet.EconomicSimulation
                 + "\n'Enter' key to close top window, space - to pause \\ unpause, left alt - to add command or unit"
               //  + "\n\n\nI have now Patreon page where I post about that game development. Try red button below!"
                 + "\nAlso I would be thankful if you will share info about this project"
-                , "Ok", false);
+                , "Ok", false, OnClosed
+                );
             //, Game.Player.Capital.getPosition()
+        }
+
+        private static void OnClosed()
+        {
+            var resosolution = Screen.currentResolution;
+            if (resosolution.width < resosolution.height)
+                MessageSystem.Instance.NewMessage("(╯ ° □ °) ╯ (┻━┻)", "It looks like you are in portrait mode. Rotate it to album for better UI scale.", "Ok", false);
+
+            DirtyWayToFixTablesScale();
+        }
+
+        private static void DirtyWayToFixTablesScale()
+        {
+            MainCamera.populationPanel.Show();
+            MainCamera.politicsPanel.Show();
+            MainCamera.tradeWindow.Show();
+            MainCamera.factoryPanel.Show();
+            MainCamera.inventionsPanel.Show();
+            MainCamera.StatisticPanel.Show();           
+
+            var scaler = LinksManager.Get.UICanvas.GetComponent<CanvasScaler>();
+            scaler.enabled = true;
+           
+            MainCamera.populationPanel.Show();
+            MainCamera.politicsPanel.Show();
+            MainCamera.tradeWindow.Show();
+            MainCamera.productionWindow.Show();
+            MainCamera.inventionsPanel.Show();
+            MainCamera.StatisticPanel.Show();
+
+
+            MainCamera.populationPanel.Hide();
+            MainCamera.politicsPanel.Hide();
+            MainCamera.tradeWindow.Hide();
+            MainCamera.productionWindow.Hide();
+            MainCamera.inventionsPanel.Hide();
+            MainCamera.StatisticPanel.Hide();
         }
 
         protected override void ThreadFunction()

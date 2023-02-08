@@ -971,7 +971,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1445621004}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
@@ -1041,6 +1041,7 @@ MonoBehaviour:
   FogOfWarMaterial: {fileID: 2100000, guid: 2e32210884a66044b86f2a5a9884162c, type: 2}
   scrolJoystic: {fileID: 216346602}
   objectsToInstantiateIn2DCanvas: []
+  UICanvas: {fileID: 1445621007}
 --- !u!4 &1464641335
 Transform:
   m_ObjectHideFlags: 0
@@ -1339,7 +1340,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!223 &1984424213
 Canvas:
   m_ObjectHideFlags: 0
@@ -1462,7 +1463,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22406132, guid: 7973d81b61b491640b7a0d00c9de83d3, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 49.878
+      value: 49.87805
       objectReference: {fileID: 0}
     - target: {fileID: 22406132, guid: 7973d81b61b491640b7a0d00c9de83d3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1785,6 +1786,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: StatisticsPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 571350436899208359, guid: 2f92f7b8a652aff409c1cc11c0653349,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 571350436960648278, guid: 2f92f7b8a652aff409c1cc11c0653349,
         type: 3}
@@ -2439,6 +2445,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ProductionWindow
       objectReference: {fileID: 0}
+    - target: {fileID: 1047592335443763613, guid: 8b18b8cb25add164a9c2228fdef8ca54,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1047592335547280705, guid: 8b18b8cb25add164a9c2228fdef8ca54,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2867,6 +2878,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: TradeWindow
+      objectReference: {fileID: 0}
+    - target: {fileID: 1143912214211507714, guid: 086cacba0ea72a547b09e5858a20703c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1143912214211507725, guid: 086cacba0ea72a547b09e5858a20703c,
         type: 3}
@@ -3677,6 +3693,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: InventionsPanel
       objectReference: {fileID: 0}
+    - target: {fileID: 1724152523755295128, guid: ddec1bc8c3350d24e9b888a3544e2870,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1724152523755295129, guid: ddec1bc8c3350d24e9b888a3544e2870,
         type: 3}
       propertyPath: m_Pivot.x
@@ -4219,6 +4240,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: TopPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 3886505442788800308, guid: 2fe835cb1290d8344961e1be910b6983,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3886505442788800311, guid: 2fe835cb1290d8344961e1be910b6983,
         type: 3}
@@ -5881,6 +5907,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PopulationPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 4460283496608255582, guid: 5b26bfe06dbc4b84da0b3c0b41165ac7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4460283496608255583, guid: 5b26bfe06dbc4b84da0b3c0b41165ac7,
         type: 3}
@@ -7823,6 +7854,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: BottomPanel
       objectReference: {fileID: 0}
+    - target: {fileID: 7350796180744652961, guid: 8288ea6776e1f9f43bd9edfd6b137829,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7350796180744652990, guid: 8288ea6776e1f9f43bd9edfd6b137829,
         type: 3}
       propertyPath: m_Pivot.x
@@ -8990,6 +9026,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PoliticsPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848460973567765875, guid: 27ec0bcfc07d9a14a8b6e921131e92f2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7848460973631578397, guid: 27ec0bcfc07d9a14a8b6e921131e92f2,
         type: 3}

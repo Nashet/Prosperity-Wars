@@ -30,7 +30,7 @@ namespace Nashet.EconomicSimulation
         public static ProductionWindow productionWindow;
         public static FactoryPanel factoryPanel;
         public static GoodsPanel goodsPanel;
-        //public static InventionsPanel inventionsPanel;
+        public static InventionsPanel inventionsPanel;
         public static BuildPanel buildPanel;
         public static PoliticsPanel politicsPanel;
         public static FinancePanel financePanel;
