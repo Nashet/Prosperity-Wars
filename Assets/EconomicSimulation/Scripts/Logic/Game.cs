@@ -1,11 +1,10 @@
-﻿using Nashet.MarchingSquares;
+﻿using Assets.EconomicSimulation.Scripts.Logic.Map;
+using Nashet.MarchingSquares;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nashet.EconomicSimulation
 {
@@ -14,7 +13,7 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class Game : ThreadedJob
     {
-        public static bool devMode = false;
+        public static bool devMode = true;
         private static bool surrended = devMode;
         public static bool logInvestments = false;
         public static bool logMarket = false;
@@ -31,21 +30,45 @@ namespace Nashet.EconomicSimulation
         public static List<Province> playerVisibleProvinces = new List<Province>();
         public static bool isInSendArmyMode { get; private set; }
         public static Action<bool> OnIsInSendArmyModeChanged;
-
-        private static MapModes mapMode;
-
+    
         private static VoxelGrid<AbstractProvince> grid;
         private readonly Rect mapBorders;
 
         public static bool DrawFogOfWar { get; internal set; }
         public static bool IndustrialStart { get; internal set; }
         public static MapModes MapMode { get; internal set; }
+        private MapTextureGenerator map = new MapTextureGenerator();
 
         public Game(Texture2D mapImage)
         {
             DrawFogOfWar = true;
             if (mapImage == null)
-                generateMapImage();
+            {
+                int mapSize;
+                int width;
+                //#if UNITY_WEBGL
+                if (devMode)
+                {
+                    mapSize = 20000;
+                    width = 150 + Rand.Get.Next(60);
+                }
+                else
+                {
+                    //mapSize = 25000;
+                    //width = 170 + Random.Next(65);
+                    //mapSize = 30000;
+                    //width = 180 + Random.Next(65);
+                    mapSize = 40000;
+                    width = 250 + Rand.Get.Next(40);
+                }
+                // 140 is sqrt of 20000
+                //int width = 30 + Random.Next(12);   // 140 is sqrt of 20000
+                //#else
+                //        int mapSize = 40000;
+                //        int width = 200 + Random.Next(80);
+                //#endif
+                mapTexture = map.generateMapImage(mapSize, width);
+            }
             else
             {
                 //Texture2D mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;
@@ -155,72 +178,10 @@ namespace Nashet.EconomicSimulation
                 item.SetColorAccordingToMapMode();
         }
 
-
-
         public static bool isPlayerSurrended()
         {
             return surrended;
-        }
-
-        private static void generateMapImage()
-        {
-            int mapSize;
-            int width;
-            //#if UNITY_WEBGL
-            if (devMode)
-            {
-                mapSize = 20000;
-                width = 150 + Rand.Get.Next(60);
-            }
-            else
-            {
-                //mapSize = 25000;
-                //width = 170 + Random.Next(65);
-                //mapSize = 30000;
-                //width = 180 + Random.Next(65);
-                mapSize = 40000;
-                width = 250 + Rand.Get.Next(40);
-            }
-            // 140 is sqrt of 20000
-            //int width = 30 + Random.Next(12);   // 140 is sqrt of 20000
-            //#else
-            //        int mapSize = 40000;
-            //        int width = 200 + Random.Next(80);
-            //#endif
-            Texture2D mapImage = new Texture2D(width, mapSize / width);        // standard for webGL
-
-            Color emptySpaceColor = Color.black;//.setAlphaToZero();
-            mapImage.setColor(emptySpaceColor);
-
-            int amountOfProvince = mapImage.width * mapImage.height / 140 + Rand.Get.Next(5);
-            //amountOfProvince = 400 + Rand.random2.Next(100);
-            for (int i = 0; i < amountOfProvince; i++)
-                mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), ColorExtensions.getRandomColor());
-
-            int emptyPixels = 1;//non zero
-            Color currentColor = mapImage.GetPixel(0, 0);
-            int emergencyExit = 0;
-            while (emptyPixels != 0 && emergencyExit < 100)
-            {
-                emergencyExit++;
-                emptyPixels = 0;
-                for (int j = 0; j < mapImage.height; j++) // circle by province
-                    for (int i = 0; i < mapImage.width; i++)
-                    {
-                        currentColor = mapImage.GetPixel(i, j);
-                        if (currentColor == emptySpaceColor)
-                            emptyPixels++;
-                        else if (currentColor.a == 1f)
-                        {
-                            mapImage.drawRandomSpot(i, j, currentColor);
-                        }
-                    }
-                mapImage.setAlphaToMax();
-            }
-            mapImage.Apply();
-            mapTexture = new MyTexture(mapImage);
-            Texture2D.Destroy(mapImage);
-        }
+        }        
 
         private static void makeHelloMessage()
         {

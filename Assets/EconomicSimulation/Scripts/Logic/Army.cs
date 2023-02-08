@@ -682,7 +682,8 @@ namespace Nashet.EconomicSimulation
                 SetPathTo(destinationProvince);
             else //if (destinationProvince != )
             {
-                Path.Add(World.Get.graph.GetShortestPath(Path.nodes.Last().Province, destinationProvince));
+                Path.Add(World.Get.graph.GetShortestPath(Path.nodes.Last().Province.GameObject.GetComponent<Node>(),
+                    destinationProvince.GameObject.GetComponent<Node>()));
                 Game.provincesToRedrawArmies.Add(Province);
                 //                Province.RedrawLocalArmies();
             }
@@ -692,7 +693,8 @@ namespace Nashet.EconomicSimulation
             if (destinationProvince == null)
                 Path = null;
             else
-                Path = World.Get.graph.GetShortestPath(Province, destinationProvince, predicate);//,x => x.Country == owner || Diplomacy.IsInWar(x.Country, owner.Country) || x.Country == World.UncolonizedLand
+                Path = World.Get.graph.GetShortestPath(Province.GameObject.GetComponent<Node>(),
+                    destinationProvince.GameObject.GetComponent<Node>(), predicate);//,x => x.Country == owner || Diplomacy.IsInWar(x.Country, owner.Country) || x.Country == World.UncolonizedLand
             Game.provincesToRedrawArmies.Add(Province);
             //Province.RedrawLocalArmies();
         }

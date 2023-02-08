@@ -30,17 +30,6 @@ public class Graph : MonoBehaviour
     }
 
     /// <summary>
-	/// Gets the shortest path from the starting Node to the ending Node.
-	/// </summary>
-	/// <returns>The shortest path.</returns>
-	/// <param name="start">Start Node.</param>
-	/// <param name="end">End Node.</param>
-	public virtual Path GetShortestPath(Province start, Province end, Predicate<Province> predicate = null)
-    {
-        return GetShortestPath(start.GameObject.GetComponent<Node>(), end.GameObject.GetComponent<Node>(), predicate);
-    }
-
-    /// <summary>
     /// Gets the shortest path from the starting Node to the ending Node.
     /// </summary>
     /// <returns>The shortest path.</returns>
