@@ -1,6 +1,6 @@
 ﻿using Nashet.UnitSelection;
 using Nashet.UnityUIUtils;
-
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,6 +16,7 @@ namespace Nashet.EconomicSimulation
 
         [SerializeField]
         private RawImage flag;
+        private new Camera camera;
 
         public void SetFlag(Texture2D flag)
         {
@@ -32,6 +33,10 @@ namespace Nashet.EconomicSimulation
         //    transform.position = position;
         //}
 
+        private void Start()
+        {
+            camera = Camera.main;
+        }
         private void Update()
         {
             HandleSendUnitTo();
@@ -48,7 +53,7 @@ namespace Nashet.EconomicSimulation
 
         private void SendUnitTo()
         {
-            var collider = UnitSelection.Utils.getRayCastMeshNumber();
+            var collider = UnitSelection.Utils.getRayCastMeshNumber(camera);
             if (collider != null)
             {
                 Province sendToPovince = null;
@@ -74,7 +79,11 @@ namespace Nashet.EconomicSimulation
                     if (addPath)
                         item.AddToPath(sendToPovince);
                     else
-                        item.SetPathTo(sendToPovince);
+                    {
+                        Predicate<Province> predicate = item.Province.Country == Game.Player && sendToPovince.Country == Game.Player ?
+                            x => x.Country == Game.Player : null;
+                        item.SetPathTo(sendToPovince, predicate);
+                    }
                     Game.provincesToRedrawArmies.Add(item.Province);
                 }
                 //Unit.RedrawAll();

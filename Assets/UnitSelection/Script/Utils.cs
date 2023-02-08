@@ -22,7 +22,7 @@ namespace Nashet.UnitSelection
         }
 
         // remake it to return mesh collider, on which will be chosen object
-        public static Collider getRayCastMeshNumber()
+        public static Collider getRayCastMeshNumber(Camera camera)
         {
             RaycastHit hit;
 
@@ -31,7 +31,7 @@ namespace Nashet.UnitSelection
                 return null;// -3; //hovering over UI
             else
             {
-                if (!Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit))
+                if (!Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
                     return null;// -1;
             }
             return hit.collider;

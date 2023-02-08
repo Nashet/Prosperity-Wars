@@ -15,6 +15,12 @@ namespace Nashet.UnitSelection
         private bool isFrameSelecting = false;
         private Vector3 selectionFrameMousePositionStart;
         private ulong buttonHoldTicks;
+        private new Camera camera;
+
+        private void Start()
+        {
+            camera = Camera.main;
+        }
 
         //TODO need to get rid of Update()        
         private void Update()
@@ -38,7 +44,7 @@ namespace Nashet.UnitSelection
             {
                 if (!EventSystem.current.IsPointerOverGameObject())//!hovering over UI) 
                 {
-                    var collider = Utils.getRayCastMeshNumber();
+                    var collider = Utils.getRayCastMeshNumber(camera);
                     if (collider == null)
                     {
                         OnEntitySelected?.Invoke(null);
@@ -86,8 +92,7 @@ namespace Nashet.UnitSelection
         {
             if (!isFrameSelecting)
                 return false;
-
-            var camera = Camera.main;
+            
             var viewportBounds = Utils.GetViewportBounds(camera, selectionFrameMousePositionStart, Input.mousePosition);
             return viewportBounds.Contains(camera.WorldToViewportPoint(position));
         }

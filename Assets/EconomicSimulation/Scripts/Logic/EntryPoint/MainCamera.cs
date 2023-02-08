@@ -43,6 +43,7 @@ namespace Nashet.EconomicSimulation
 
 
         private Game game;
+        private new Camera camera;
         private static bool gameLoadingIsFinished;
 
         //[SerializeField]
@@ -68,6 +69,7 @@ namespace Nashet.EconomicSimulation
             //window.GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, 150f);
             tooltip = GetComponent<ToolTipHandler>();
             Screen.orientation = ScreenOrientation.LandscapeLeft;
+            camera = Camera.main;
         }
 
         public void Zoom(float zMove)
@@ -253,7 +255,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (Game.MapMode == Game.MapModes.PopulationChange)
                 {
-                    int meshNumber = Province.FindByCollider(UnitSelection.Utils.getRayCastMeshNumber());
+                    int meshNumber = Province.FindByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
                     var hoveredProvince = World.FindProvince(meshNumber);
                     if (hoveredProvince == null)// || hoveredProvince is Province
                         tooltip.Hide();
@@ -277,7 +279,7 @@ namespace Nashet.EconomicSimulation
                 }
                 else if (Game.MapMode == Game.MapModes.PopulationDensity)
                 {
-                    int meshNumber = Province.FindByCollider(UnitSelection.Utils.getRayCastMeshNumber());
+                    int meshNumber = Province.FindByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
                     var hoveredProvince = World.FindProvince(meshNumber);
                     if (hoveredProvince == null)
                         tooltip.Hide();
@@ -294,7 +296,7 @@ namespace Nashet.EconomicSimulation
                 }
                 else if (Game.MapMode == Game.MapModes.Prosperity) //prosperity wars
                 {
-                    int meshNumber = Province.FindByCollider(UnitSelection.Utils.getRayCastMeshNumber());
+                    int meshNumber = Province.FindByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
                     var hoveredProvince = World.FindProvince(meshNumber);
                     if (hoveredProvince == null)
                         tooltip.Hide();
