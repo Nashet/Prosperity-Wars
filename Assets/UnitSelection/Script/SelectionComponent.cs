@@ -13,14 +13,14 @@ namespace Nashet.UnitSelection
         [SerializeField] private KeyCode AdditionKey;
         [SerializeField] private float mapDragSpeed = 0.05f;
 
-        private bool isSelecting = false;
+        private bool isFrameSelecting = false;
         private Vector3 selectionFrameMousePositionStart;
 
         //public GameObject selectionCirclePrefab;
         private static Camera camera; // it's OK
         private int nextArmyToSelect;
         private MainCamera cameraScript;
-       
+
         private void Start()
         {
             camera = GetComponent<Camera>();
@@ -31,37 +31,12 @@ namespace Nashet.UnitSelection
         private DateTime last = new DateTime(1991, 12, 24);
         private void Update()
         {
-            //left mouse button
-            if (Input.GetMouseButtonUp(0) && !Game.isInSendArmyMode && (DateTime.Now - last).Seconds > 0.1f)// !ignoreIreviousIsInSendArmyModeState
-            {
-                if (!EventSystem.current.IsPointerOverGameObject())//!hovering over UI) 
-                {
-                    SelectUnitOrProvince();
-                }
-                //Disabled in prior to map scroling
-                if (isSelecting)
-                    EndFrameSelection();// If we let go of the left mouse button, end selection
-            }
-            else
-            {
-                //Disabled in prior to map scroling
-                // If we press the left mouse button, begin selection and remember the location of the mouse
-                if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && !Game.isInSendArmyMode)
-                {
-                    StartFrameSelection();
-                }
-            }
-
-            // MOUSE RIGHT BUTTON clicked or Left clicked after SendButon clicked
-            if (!Game.selectedArmies.IsEmpty() && (Input.GetMouseButtonUp(1) || Game.isInSendArmyMode && Input.GetMouseButtonUp(0)))
-            {
-                last = DateTime.Now;                
-                SendUnitTo();
-            }
-
+            var endedSelection = HandleFrameSelection();
+           // if (!endedSelection)
+                HandleUnitOrProvinceClick();
+            HandleSendUnitTo();
             HandleMapScroll();
 
-            Game.previoslySelectedProvince = Game.selectedProvince;
             // Highlight all objects within the selection box
             //if (isSelecting)
             //{
@@ -86,15 +61,96 @@ namespace Nashet.UnitSelection
             //        }
             //    }
             //}
-
+            Game.previoslySelectedProvince = Game.selectedProvince;
         }
-        
+
+        private void HandleSendUnitTo()
+        {
+            // MOUSE RIGHT BUTTON clicked or Left clicked after SendButon clicked
+            if (!Game.selectedArmies.IsEmpty() && (Input.GetMouseButtonUp(1) || Game.isInSendArmyMode && Input.GetMouseButtonUp(0)))
+            {
+                last = DateTime.Now;
+                SendUnitTo();
+            }
+        }
+
+        private void HandleUnitOrProvinceClick()
+        {
+            //left mouse button
+            if (Input.GetMouseButtonUp(0) && !Game.isInSendArmyMode && (DateTime.Now - last).Seconds > 0.1f)// !ignoreIreviousIsInSendArmyModeState
+            {
+                if (!EventSystem.current.IsPointerOverGameObject())//!hovering over UI) 
+                {
+                    var collider = getRayCastMeshNumber();
+                    if (collider != null)
+                    {
+                        int provinceNumber = Province.FindByCollider(collider);
+                        if (provinceNumber > 0)
+                        {
+                            if (!isFrameSelecting)
+                                MainCamera.selectProvince(provinceNumber);
+                            if (!Input.GetKey(AdditionKey)) // don't de select units if AdditionKey is pressed
+                                Game.selectedArmies.ToList().PerformAction(x => x.Deselect());
+                        }
+                        else
+                        {
+                            var unit = collider.transform.parent.GetComponent<Unit>();
+                            if (unit != null)
+                            {
+                                var army = unit.Province.AllStandingArmies().Where(x => x.getOwner() == Game.Player).Next(ref nextArmyToSelect);
+                                if (army != null)
+                                {
+                                    if (Input.GetKey(AdditionKey))
+                                    {
+                                        if (Game.selectedArmies.Contains(army))
+                                            army.Deselect();
+                                        else
+                                            army.Select();
+                                    }
+                                    else
+                                    {
+                                        if (Game.selectedArmies.Count > 0)
+                                        {
+                                            Game.selectedArmies.ToList().PerformAction(x => x.Deselect());
+                                        }
+                                        army.Select();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        MainCamera.selectProvince(-1);
+                        if (!Input.GetKey(AdditionKey))
+                            Game.selectedArmies.ToList().PerformAction(x => x.Deselect());
+                    }
+                }
+            }
+        }
+
+        private bool HandleFrameSelection()
+        {
+            // If we press the left mouse button, begin selection and remember the location of the mouse
+            if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && !Game.isInSendArmyMode && !isFrameSelecting)
+            {
+                StartFrameSelection();
+            }
+
+            if (Input.GetMouseButtonUp(0) && isFrameSelecting)
+            {
+                EndFrameSelection();// If we let go of the left mouse button, end selection
+                return true;
+            }
+            return false;
+        }
+
         private void HandleMapScroll()
         {
             var joy = LinksManager.Get.scrolJoystic;
             cameraScript.Move(joy.Horizontal * mapDragSpeed, 0, joy.Vertical * mapDragSpeed);
-            
-            return;                 
+
+            return;
         }
 
         private void SendUnitTo()
@@ -130,7 +186,7 @@ namespace Nashet.UnitSelection
         }
         private void StartFrameSelection()
         {
-            isSelecting = true;
+            isFrameSelecting = true;
             selectionFrameMousePositionStart = Input.mousePosition;
         }
 
@@ -154,58 +210,12 @@ namespace Nashet.UnitSelection
                 //    sb.AppendLine("-> " + selectedObject.gameObject.name);
                 //Debug.Log(sb.ToString());
             }
-            isSelecting = false;
+            isFrameSelecting = false;
         }
 
-        private void SelectUnitOrProvince()
-        {
-            var collider = getRayCastMeshNumber();
-            if (collider != null)
-            {
-                int provinceNumber = Province.FindByCollider(collider);
-                if (provinceNumber > 0)
-                {
-                    MainCamera.selectProvince(provinceNumber);
-                    if (!Input.GetKey(AdditionKey)) // don't de select units if shift is pressed
-                        Game.selectedArmies.ToList().PerformAction(x => x.Deselect());
-                }
-                else
-                {
-                    var unit = collider.transform.GetComponent<Unit>();
-                    if (unit != null)
-                    {
-                        var army = unit.Province.AllStandingArmies().Where(x => x.getOwner() == Game.Player).Next(ref nextArmyToSelect);
-                        if (army != null)
-                        {
-                            if (Input.GetKey(AdditionKey))
-                            {
-                                if (Game.selectedArmies.Contains(army))
-                                    army.Deselect();
-                                else
-                                    army.Select();
-                            }
-                            else
-                            {
-                                if (Game.selectedArmies.Count > 0)
-                                {
-                                    Game.selectedArmies.ToList().PerformAction(x => x.Deselect());
-                                }
-                                army.Select();
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                MainCamera.selectProvince(-1);
-                if (!Input.GetKey(AdditionKey))
-                    Game.selectedArmies.ToList().PerformAction(x => x.Deselect());
-            }
-        }
         public bool IsWithinSelectionBounds(Vector3 position)
         {
-            if (!isSelecting)
+            if (!isFrameSelecting)
                 return false;
 
             var camera = Camera.main;
@@ -215,7 +225,7 @@ namespace Nashet.UnitSelection
 
         private void OnGUI()
         {
-            if (isSelecting)
+            if (isFrameSelecting)
             {
                 // Create a rect from both mouse positions
                 var rect = Utils.GetScreenRect(selectionFrameMousePositionStart, Input.mousePosition);
@@ -235,7 +245,7 @@ namespace Nashet.UnitSelection
             //check touch. priorities on touches
             if (Input.touchCount > 0)
             {
-                return (Input.touches[0].phase == TouchPhase.Ended && EventSystem.current.IsPointerOverGameObject(Input.touches[0].fingerId));                    
+                return (Input.touches[0].phase == TouchPhase.Ended && EventSystem.current.IsPointerOverGameObject(Input.touches[0].fingerId));
             }
 
             //check mouse

@@ -1065,8 +1065,13 @@ namespace Nashet.EconomicSimulation
             {
                 MeshCollider meshCollider = collider as MeshCollider;
                 if (meshCollider == null || meshCollider.sharedMesh == null)
-                    return -2;
+                    return -2;               
+
                 Mesh mesh = meshCollider.sharedMesh;
+
+                if (mesh.name == "Quad")
+                    return -2;
+
                 int provinceNumber = Convert.ToInt32(mesh.name);
                 return provinceNumber;
             }

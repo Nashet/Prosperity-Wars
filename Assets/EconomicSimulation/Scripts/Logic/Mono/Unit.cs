@@ -11,12 +11,19 @@ namespace Nashet.EconomicSimulation
 {
     public class Unit : Hideable, IHasProvince//, IHasCountry//MonoBehaviour,
     {
-
         [SerializeField]
         private GameObject selectionPart;
 
         [SerializeField]
+        private LineRenderer enemyDirection;
+        [SerializeField]
+        private float enemyDirectionScale = 0.6f;
+
+        [SerializeField]
         private float unitPanelYOffset = -2f;
+
+        [SerializeField]
+        private MeshRenderer meshRenderer;
 
         //[SerializeField]
         private LineRenderer lineRenderer;
@@ -24,7 +31,6 @@ namespace Nashet.EconomicSimulation
         private GameObject unitPanelObject;
         public UnitPanel unitPanel;
         Animator m_Animator;
-
 
         private readonly static List<Unit> allUnits = new List<Unit>();
 
@@ -58,13 +64,12 @@ namespace Nashet.EconomicSimulation
             //unit.Country = army.getOwner().Country;
             unit.SetUnitShield(army.getOwner().Flag);
             unit.UpdateUnitShieldText(army.Province);
-
+            unit.enemyDirection.enabled = unit.Province.Country != Game.Player;
             return unit;
         }
 
         public void Select()
         {
-
             selectionPart.SetActive(true);
             ArmiesSelectionWindow.Get.Show();
         }
@@ -83,6 +88,8 @@ namespace Nashet.EconomicSimulation
             unitPanelObject.transform.position = panelPosition;
             unitPanel.SetFlag(flag);
             //UpdateUnitShieldText(army.Province);
+
+            meshRenderer.material = LinksManager.Get.defaultUnitSymbol;            
         }
 
         public static IEnumerable<Unit> AllUnits()
@@ -100,9 +107,6 @@ namespace Nashet.EconomicSimulation
         {
             return allUnits.Find(x => Int32.Parse(x.name) == meshNumber);
         }
-
-
-
 
         public override string ToString()
         {
@@ -164,16 +168,25 @@ namespace Nashet.EconomicSimulation
             lineRenderer.positionCount = path.nodes.Count + 1;
             lineRenderer.SetPositions(path.GetVector3Nodes());
             lineRenderer.SetPosition(0, Province.Position);//currentProvince.getPosition()
+
             this.transform.LookAt(path.nodes[0].Province.Position, Vector3.back);
             if (m_Animator.gameObject.activeInHierarchy)
                 m_Animator.SetFloat("Forward", 0.4f);//, 0.3f, Time.deltaTime
-                                                 //if (where.armies.Count > 1)
-                                                 //    for (int i = 0; i < where.armies.Count - 1; i++)
-                                                 //    {
-                                                 //        where.armies[i].unit.unitPanel.Hide();
-                                                 //    }
-                                                 //else
-                                                 //    where.armies[0].unit.unitPanel.Show();
+                                                     //if (where.armies.Count > 1)
+                                                     //    for (int i = 0; i < where.armies.Count - 1; i++)
+                                                     //    {
+                                                     //        where.armies[i].unit.unitPanel.Hide();
+                                                     //    }
+                                                     //else
+                                                     //    where.armies[0].unit.unitPanel.Show();
+            enemyDirection.positionCount = 2;
+            //todo must be fixed ssize
+            var linePositions = path.GetVector3Nodes();
+            linePositions[0] = Province.Position;
+            linePositions[1] = Vector3.LerpUnclamped(linePositions[1], linePositions[0], enemyDirectionScale);
+            enemyDirection.SetPositions(linePositions);
+       
+            enemyDirection.enabled = true;
 
         }
 
@@ -182,8 +195,10 @@ namespace Nashet.EconomicSimulation
             lineRenderer.positionCount = 0;
             if (m_Animator.gameObject.activeInHierarchy)
                 m_Animator.SetFloat("Forward", 0f);
-
+            this.transform.eulerAngles = new Vector3(270f, 0f, 0f);
             //SetUnitPanel(null);
+
+            enemyDirection.enabled = false;
         }
 
         private void OnDestroy()
