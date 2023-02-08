@@ -59,7 +59,7 @@ namespace Nashet.EconomicSimulation
 
             if (!Game.Player.IsAlive)
                 sb.Append(" (destroyed by enemies, but could rise again)");
-            sb.Append("    Month: ").Append(Date.Today);
+            sb.Append("    Year: ").Append(Date.Today);
 
             if (Game.Player.IsAlive)
                 sb.Append("   Population: ").Append(Game.Player.Provinces.getFamilyPopulation().ToString("N0"))

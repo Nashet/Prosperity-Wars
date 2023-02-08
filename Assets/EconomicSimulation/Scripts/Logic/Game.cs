@@ -247,7 +247,7 @@ namespace Nashet.EconomicSimulation
         {
             var resosolution = Screen.currentResolution;
             if (resosolution.width < resosolution.height)
-                MessageSystem.Instance.NewMessage("(╯ ° □ °) ╯ (┻━┻)", "It looks like you are in portrait mode. Rotate it to album for better UI scale.", "Ok", false);           
+                MessageSystem.Instance.NewMessage("(╯ ° □ °) ╯ (┻━┻)", "IT LOOKS LIKE YOU ARE IN PORTRAIT MODE. CLICK FULLSCREEN AND ROTATE IT TO ALBUM FOR BETTER UI SCALE.", "Ok", false);           
         }
 
         protected override void ThreadFunction()
