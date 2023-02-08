@@ -14,13 +14,15 @@ namespace Nashet.UnitSelection
         [SerializeField] private float mapDragSpeed = 0.05f;
 
         private bool isSelecting = false;
-        private Vector3 mousePosition1;
+        private Vector3 selectionFrameMousePositionStart;
 
         //public GameObject selectionCirclePrefab;
         private static Camera camera; // it's OK
         private int nextArmyToSelect;
-        private Vector3 oldMousePosition;
+        private Vector3 oldMousePositionDrag; //todo combine with selectionFrameMousePositionStart
         private MainCamera cameraScript;
+       
+        private byte buttonHoldCountercounter;
 
         private void Start()
         {
@@ -54,10 +56,9 @@ namespace Nashet.UnitSelection
             }
 
             // MOUSE RIGHT BUTTON clicked or Left clicked after SendButon clicked
-            if (!Game.selectedArmies.IsEmpty() && (Input.GetMouseButtonDown(1) || Game.isInSendArmyMode && Input.GetMouseButtonDown(0)))
+            if (!Game.selectedArmies.IsEmpty() && (Input.GetMouseButtonUp(1) || Game.isInSendArmyMode && Input.GetMouseButtonUp(0)))
             {
-                last = DateTime.Now;
-                Game.ChangeIsInSendArmyMode(false);
+                last = DateTime.Now;                
                 SendUnitTo();
             }
 
@@ -94,12 +95,22 @@ namespace Nashet.UnitSelection
         private void HandleMapScroll()
         {
             if (Input.GetMouseButton(0))
+            {
+                buttonHoldCountercounter++;
+            }
+            else
+                buttonHoldCountercounter = 0;
+
+            var isDragging = buttonHoldCountercounter > 10;
+            if (Input.GetMouseButton(0) && isDragging)
             {                
-                var positionChange = (oldMousePosition - Input.mousePosition) * mapDragSpeed;
+                var positionChange = (oldMousePositionDrag - Input.mousePosition) * mapDragSpeed;
                 cameraScript.Move(positionChange.x, 0, positionChange.y);
                 //Debug.LogError(Input.mousePosition);
             }
-            oldMousePosition = Input.mousePosition;
+
+            //Debug.LogError($"isDragging {isDragging}");
+            oldMousePositionDrag = Input.mousePosition;            
         }
 
         private void SendUnitTo()
@@ -130,17 +141,18 @@ namespace Nashet.UnitSelection
                     Game.provincesToRedrawArmies.Add(item.Province);
                 }
                 //Unit.RedrawAll();
+                Game.ChangeIsInSendArmyMode(false);
             }
         }
         private void StartFrameSelection()
         {
             isSelecting = true;
-            mousePosition1 = Input.mousePosition;
+            selectionFrameMousePositionStart = Input.mousePosition;
         }
 
         private void EndFrameSelection()
         {
-            if (mousePosition1 != Input.mousePosition)
+            if (selectionFrameMousePositionStart != Input.mousePosition)
             {
                 if (!Input.GetKey(AdditionKey))
                     Game.selectedArmies.ToList().PerformAction(x => x.Deselect());
@@ -213,7 +225,7 @@ namespace Nashet.UnitSelection
                 return false;
 
             var camera = Camera.main;
-            var viewportBounds = Utils.GetViewportBounds(camera, mousePosition1, Input.mousePosition);
+            var viewportBounds = Utils.GetViewportBounds(camera, selectionFrameMousePositionStart, Input.mousePosition);
             return viewportBounds.Contains(camera.WorldToViewportPoint(position));
         }
 
@@ -222,7 +234,7 @@ namespace Nashet.UnitSelection
             if (isSelecting)
             {
                 // Create a rect from both mouse positions
-                var rect = Utils.GetScreenRect(mousePosition1, Input.mousePosition);
+                var rect = Utils.GetScreenRect(selectionFrameMousePositionStart, Input.mousePosition);
                 Utils.DrawScreenRect(rect, new Color(0.8f, 0.8f, 0.95f, 0.25f));
                 Utils.DrawScreenRectBorder(rect, 2, new Color(0.8f, 0.8f, 0.95f));
 
@@ -233,12 +245,29 @@ namespace Nashet.UnitSelection
                 //Utils.DrawScreenRectBorder(new Rect(320, 32, 256, 128), 2, new Color(0.8f, 0.8f, 0.95f));
             }
         }
+
+        private static bool IsPointerOverGameObject()
+        {
+            //check touch. priorities on touches
+            if (Input.touchCount > 0)
+            {
+                return (Input.touches[0].phase == TouchPhase.Ended && EventSystem.current.IsPointerOverGameObject(Input.touches[0].fingerId));                    
+            }
+
+            //check mouse
+            if (EventSystem.current.IsPointerOverGameObject())
+                return true;
+
+            return false;
+        }
+
         // remake it to return mesh collider, on which will be chosen object
         public static Collider getRayCastMeshNumber()
         {
             RaycastHit hit;
 
-            if (EventSystem.current.IsPointerOverGameObject())
+            var isHovering = IsPointerOverGameObject();
+            if (isHovering)
                 return null;// -3; //hovering over UI
             else
             {
