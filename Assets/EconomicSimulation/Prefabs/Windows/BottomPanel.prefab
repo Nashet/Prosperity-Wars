@@ -1717,7 +1717,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -4, y: -4}
+  m_AnchoredPosition: {x: -3.9999695, y: -4}
   m_SizeDelta: {x: 0, y: 41}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &7350796180744652989
@@ -2653,6 +2653,7 @@ GameObject:
   - component: {fileID: 7350796181055035202}
   - component: {fileID: 7350796181055035205}
   - component: {fileID: 7350796181055035204}
+  - component: {fileID: 7618665442363024690}
   m_Layer: 5
   m_Name: ZoomOut
   m_TagString: Untagged
@@ -2824,6 +2825,35 @@ MonoBehaviour:
   key: 280
   addTextInTooltip: 1
   allowsKeyHolding: 1
+--- !u!114 &7618665442363024690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7350796181055035206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1ec6ecfc283b7140ac70982b7c4713b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  requiredClicks: 5
+  coolDownSeconds: 0.2
+  onEnacted:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7350796180744652991}
+        m_TargetAssemblyTypeName: Nashet.EconomicSimulation.BottomPanel, Assembly-CSharp
+        m_MethodName: OnDebugWindowOpen
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &7350796181142335368
 GameObject:
   m_ObjectHideFlags: 0
