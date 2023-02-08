@@ -59,7 +59,7 @@ namespace Nashet.EconomicSimulation
 
             Electronics = new Invention("Electronics", "Allows Electronics", new Value(1000f), Airplanes),
             Tobacco = new Invention("Tobacco", "Allows Tobacco", new Value(100f)),
-            Coal = new Invention("Coal", "Allows coal", new Value(100f), Metal),
+            //Coal = new Invention("Coal", "Allows coal", new Value(100f), Metal),
             Universities = new Invention("Universities", "Allows building of Universities", new Value(150f));
 
 

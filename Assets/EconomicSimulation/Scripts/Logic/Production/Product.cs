@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
@@ -87,15 +86,7 @@ namespace Nashet.EconomicSimulation
         //static initialization
         static Product()
         {
-            //// abstract products
-            //foreach (var markets in World.AllMarkets)
-            //{
-            //    foreach (var item in getAll().Where(x => !x.isAbstract()))
-            //        if (item != Gold)
-            //        {
-            //            markets.SetDefaultPrice(item, (float)item.defaultPrice.Get());
-            //        }
-            //}
+            
         }
 
         public IEnumerable<Invention> AllRequiredInventions
@@ -151,16 +142,7 @@ namespace Nashet.EconomicSimulation
         private Product(string name, float defaultPrice, Type productType, bool isStorable, params Invention[] requiredInventions) : this(name, defaultPrice, productType, requiredInventions)
         {
             _isStoreable = false;
-        }
-
-        ///// <summary>
-        ///// Constructor for abstract products
-        ///// </summary>
-        //private Product(string name, float defaultPrice, List<Product> substitutes, Type productType) : this(name, defaultPrice, productType)
-        //{
-        //    _isAbstract = true;
-        //    this.substitutes = substitutes;
-        //}
+        }        
 
         public static IEnumerable<Product> All()
         {
@@ -246,51 +228,13 @@ namespace Nashet.EconomicSimulation
         //        if (item.isConsumerProduct() && item.isInventedBy(country))
         //            yield return item;
         //}
-        ///// <summary>
-        ///// Gives elements in cheap-expensive order
-        ///// </summary>
-        ///// <returns></returns>
-        //public IEnumerable<Product> getSubstitutes()
-        //{
-        //    foreach (var item in substitutes)
-        //    {
-        //        yield return item;
-        //    }
-        //}
-
+        
         public static Product getRandomResource(bool ignoreGold)
         {
             if (ignoreGold)
                 return Wood;
             return allProducts.Where(x => x.isResource()).Random();
         }
-
-        //public static void sortSubstitutes(Market market)
-        //{
-        //    foreach (var item in All().Where(x => x.isAbstract()))
-        //    //if (item.isTradable())
-        //    // Abstract are always invented and not gold
-        //    {
-        //        item.substitutes.Sort(delegate (Product x, Product y)
-        //        {
-        //            //if (x == null && y == null) return 0;
-        //            //else 
-        //            //if (x.PartName == null) return -1;
-        //            //else if (y.PartName == null) return 1;
-        //            //else
-        //            return market.getCost(x).Get().CompareTo(market.getCost(y).Get());
-        //        });
-        //    }
-        //}
-
-        //public static int CostOrder(Product x, Product y)//, Market market
-        //{
-        //    //eats less memory
-        //    float sumX = (float)Country.market.getCost(x).Get();
-        //    float sumY = (float)Country.market.getCost(y).Get();
-        //    return sumX.CompareTo(sumY);
-        //    //return Country.market.getCost(x).get().CompareTo(Country.market.getCost(y).get());
-        //}
 
         /// <summary>
         /// Isn't Gold & Invested by anyone
@@ -300,11 +244,6 @@ namespace Nashet.EconomicSimulation
         {
             return this != Gold && IsInventedByAnyOne();
         }
-
-        //public bool isAbstract()
-        //{
-        //    return _isAbstract;
-        //}
 
         public bool isMilitary()
         {
@@ -326,21 +265,9 @@ namespace Nashet.EconomicSimulation
         {
             if (this == anotherProduct)
                 return true;
-            //if (anotherProduct.isAbstract() && anotherProduct.substitutes.Contains(this))
-            //    return true;
-            //else
-                return false;
+            return false;
         }
-
-        ///// <summary> Assuming product is abstract product</summary>
-        //public bool isSubstituteFor(Product product)
-        //{
-        //    if (product.substitutes.Contains(this))
-        //        return true;
-        //    else
-        //        return false;
-        //}
-
+        
         public bool isResource()
         {
             return _isResource;
@@ -350,8 +277,7 @@ namespace Nashet.EconomicSimulation
         {
             // including dead countries. Because dead country could organize production
             //of some freshly invented product
-            //if (isAbstract())
-            //    return true;
+         
             foreach (var country in World.AllExistingCountries())
                 if (country.Science.IsInvented(this))
                     return true;
@@ -390,30 +316,7 @@ namespace Nashet.EconomicSimulation
         public string ToStringWithoutSubstitutes()
         {
             return base.ToString();
-        }
-
-        public override string ToString()
-        {
-            //if (isAbstract())
-            //{
-            //    var sb = new StringBuilder(base.ToString());
-            //    sb.Append(" (");
-            //    bool firstLine = true;
-            //    foreach (var item in getSubstitutes())
-            //        if (item.IsInventedByAnyOne())
-            //        {
-            //            if (!firstLine)
-            //                sb.Append(" or ");
-            //            sb.Append(item);
-            //            firstLine = false;
-            //        }
-            //    sb.Append(")");
-            //    return sb.ToString();
-            //    //getSubstitutes().ToList().getString(" or ");
-            //}
-            //else
-                return base.ToString();
-        }
+        }      
 
         public Color getColor()
         {

@@ -112,7 +112,7 @@ namespace Nashet.ValueSpace
         /// </summary>
         public bool send(Producer whom, Storage what)
         {
-            Storage storage = getBiggestStorage(what.Product);
+            Storage storage = GetStorage(what.Product);
             if (storage.isZero())
                 return false;
             else
@@ -162,8 +162,10 @@ namespace Nashet.ValueSpace
 
         public bool has(Storage what)
         {
-            Storage foundStorage = getBiggestStorage(what.Product);
-            return (foundStorage.isBiggerOrEqual(what)) ? true : false;
+            if (collection.TryGetValue(what.Product, out var res))
+                return res.isBiggerOrEqual(what);
+            else
+                return false;
         }
 
         /// <summary>Returns False when some check not presented in here</summary>
@@ -184,21 +186,21 @@ namespace Nashet.ValueSpace
             return true;
         }
 
-        /// <summary>Returns null if any item from list are not available, otherwise returns what real have (converted to un-abstract products)</summary>
-        public List<Storage> hasAllOfConvertToBiggest(List<Storage> list)
-        {
-            var res = new List<Storage>();
-            foreach (var what in list)
-            {
-                //Storage foundStorage = getBiggestStorage(what.Product);
-                var foundStorage = convertToBiggestExistingStorage(what);
-                if (foundStorage.isNotZero())
-                    res.Add(foundStorage);
-                else
-                    return null;
-            }
-            return res;
-        }
+        ///// <summary>Returns null if any item from list are not available, otherwise returns what real have (converted to un-abstract products)</summary>
+        //public List<Storage> hasAllOfConvertToBiggest(List<Storage> list)
+        //{
+        //    var res = new List<Storage>();
+        //    foreach (var what in list)
+        //    {
+        //        //Storage foundStorage = getBiggestStorage(what.Product);
+        //        var foundStorage = convertToBiggestExistingStorage(what);
+        //        if (foundStorage.isNotZero())
+        //            res.Add(foundStorage);
+        //        else
+        //            return null;
+        //    }
+        //    return res;
+        //}
 
         public bool hasMoreThan(Storage item, Value limit)
         {
@@ -241,63 +243,17 @@ namespace Nashet.ValueSpace
         //        if (stor.isSameProduct(storageToFind))
         //            return stor;
         //    return null;
-        //}
-        /// <summary>Returns NULL if search is failed</summary>
-        //public Storage findSubstitute(Storage need)
-        //{
-        //    foreach (Storage storage in container)
-        //        if (storage.hasSubstitute(need))
-        //            return storage;
-        //    return null;
-        //}
-        /// <summary>Returns NULL if search is failed</summary>
-        //public Storage findSubstitute(Product need)
-        //{
-        //    foreach (Storage storage in container)
-        //        if (storage.isSubstituteProduct(need))
-        //            return storage;
-        //    return null;
-        //}
-        /// <summary>Returns NULL if search is failed</summary>
-        //public Storage findExistingSubstitute(Storage need)
-        //{
-        //    foreach (Storage storage in container)
-        //        if (storage.hasSubstitute(need))
-        //            return storage;
-        //    return null;
-        //}
+        //}      
 
         /// <summary>Return first found storage of what products  [or it's first substitute] Doesn't cares about substitutes
         /// Returns NEW empty storage if search is failed</summary>
-        public Storage GetFirstSubstituteStorage(Product what)
+        public Storage GetStorage(Product what)
         {
             Storage res;
             if (collection.TryGetValue(what, out res))
                 return res;
             else
                 return new Storage(what, 0f);
-
-            //if (what.isAbstract())
-            //{
-            //    foreach (var Product in what.getSubstitutes())
-            //    {
-            //        Storage found;
-            //        if (collection.TryGetValue(Product, out found))
-            //            return found;
-            //    }
-            //    //foreach (var item in collection)
-            //    //    if (item.Key.isSubstituteFor(what))
-            //    //        return item.Value;
-            //    return new Storage(what, 0f);
-            //}
-            //else
-            //{
-            //    Storage res;
-            //    if (collection.TryGetValue(what, out res))
-            //        return res;
-            //    else
-            //        return new Storage(what, 0f);
-            //}
         }
 
         public StorageSet Copy()
@@ -305,161 +261,65 @@ namespace Nashet.ValueSpace
             return new StorageSet(this);
         }
 
-        /// <summary>Gets storage if there is enough product of that type.
-        /// Returns NEW empty storage if search is failed
-        /// Read only!!</summary>
-        public Storage GetExistingStorage(Storage what)
-        {
-            Storage found;
-            if (collection.TryGetValue(what.Product, out found))
-                if (found.has(what))
-                    return new Storage(found);
-            //foreach (var storage in collection)
-            //    if (storage.Value.has(what))
-            //        return storage.Value;
-            //if not found
-            return new Storage(what.Product, 0f);
-        }
-
-        /// <summary>Gets biggest storage of that product type. Returns NEW empty storage if search is failed</summary>
-        public Storage getBiggestStorage(Product what)
-        {
-            return getStorage(what, CollectionExtensions.MaxBy, x => x.get());
-        }
-
-        /// <summary>Gets cheapest storage of that product type. Returns NEW empty storage if search is failed</summary>
-        public Storage getCheapestStorage(Product what, Market market)
-        {
-            return getStorage(what, CollectionExtensions.MinBy, x => (float)market.getCost(x.Product).Get());
-        }
-
-        /// <summary> Finds substitute for abstract need and returns new storage with product converted to non-abstract product
-        /// Returns copy of need if need was not abstract (make check)
-        /// If didn't find substitute returns copy of empty storage of need product</summary>
-
-        public Storage convertToBiggestStorage(Storage need)
-        {
-            return new Storage(getBiggestStorage(need.Product).Product, need);
-        }
-
-        /// <summary> Finds substitute for abstract need and returns new storage with product converted to non-abstract product
-        /// Returns copy of need if need was not abstract (make check)
-        /// If didn't find substitute OR there is no enough product returns copy of empty storage of need product</summary>
-
-        public Storage convertToBiggestExistingStorage(Storage need)
-        {
-            var substitute = getBiggestStorage(need.Product);
-            if (substitute.isBiggerOrEqual(need))
-                return new Storage(substitute.Product, need);
-            else
-                return new Storage(substitute.Product, 0f);
-        }
-
-        ///// <summary>
-        ///// Returns NULL if failed
-        ///// </summary>
-        //public Storage ConvertToRandomCheapestExistingSubstitute(Storage abstractProduct, Market market)
+        ///// <summary>Gets storage if there is enough product of that type.
+        ///// Returns NEW empty storage if search is failed
+        ///// Read only!!</summary>
+        //public Storage GetExistingStorage(Storage what)
         //{
-        //    Product randomCheapestProduct = null;
-        //    foreach (var item in abstractProduct.Product.getSubstitutes())
-        //    {
-        //        if (!item.isTradable())
-        //            continue;
-        //        if (market.HasAvailable(new Storage(item, abstractProduct)))
-        //        {
-        //            if (randomCheapestProduct == null)
-        //            {
-        //                randomCheapestProduct = item;
-        //            }
-        //            else
-        //            {
-        //                if (market.getCost(randomCheapestProduct).Get() == market.getCost(item).Get() && Rand.Get.Next(10) < 5)
-        //                {
-        //                    randomCheapestProduct = item;
-        //                    continue;
-        //                }
-        //                else
-        //                {
-        //                    break;
-        //                }
-        //            }
-        //        }
-        //    }
+        //    Storage found;
+        //    if (collection.TryGetValue(what.Product, out found))
+        //        if (found.has(what))
+        //            return new Storage(found);
+        //    //foreach (var storage in collection)
+        //    //    if (storage.Value.has(what))
+        //    //        return storage.Value;
+        //    //if not found
+        //    return new Storage(what.Product, 0f);
+        //}
 
-        //    if (randomCheapestProduct == null)
-        //        return null;
+        ///// <summary>Gets biggest storage of that product type. Returns NEW empty storage if search is failed</summary>
+        //public Storage getBiggestStorage(Product what)??
+        //{
+        //    return getStorage(what, CollectionExtensions.MaxBy, x => x.get());
+        //}
+
+        ///// <summary>Gets cheapest storage of that product type. Returns NEW empty storage if search is failed</summary>
+        //public Storage getCheapestStorage(Product what, Market market) ??
+        //{
+        //    return getStorage(what, CollectionExtensions.MinBy, x => (float)market.getCost(x.Product).Get());
+        //}
+
+        ///// <summary> Finds substitute for abstract need and returns new storage with product converted to non-abstract product
+        ///// Returns copy of need if need was not abstract (make check)
+        ///// If didn't find substitute returns copy of empty storage of need product</summary>
+
+        //public Storage convertToBiggestStorage(Storage need)??
+        //{
+        //    return new Storage(getBiggestStorage(need.Product).Product, need);
+        //}
+
+        ///// <summary> Finds substitute for abstract need and returns new storage with product converted to non-abstract product
+        ///// Returns copy of need if need was not abstract (make check)
+        ///// If didn't find substitute OR there is no enough product returns copy of empty storage of need product</summary>
+
+        //public Storage convertToBiggestExistingStorage(Storage need)??
+        //{
+        //    var substitute = getBiggestStorage(need.Product);
+        //    if (substitute.isBiggerOrEqual(need))
+        //        return new Storage(substitute.Product, need);
         //    else
-        //        return new Storage(randomCheapestProduct, abstractProduct);
-
-        //    // assuming substitutes are sorted in cheap-expensive order
-        //    //foreach (var substitute in abstractProduct.Product.getSubstitutes())
-        //    //    if (substitute.isTradable())
-        //    //    {
-        //    //        Storage newStor = new Storage(substitute, abstractProduct);
-        //    //        // check for availability
-        //    //        if (Country.market.sentToMarket.has(newStor))
-        //    //            return newStor;
-        //    //    }
-        //    //return null;
-        //}
-
-        ///// <summary>
-        ///// Returns NULL if failed
-        ///// </summary>
-        //public Storage ConvertToRandomCheapestStorageProduct(Storage abstractProduct, Market market)
-        //{
-        //    var randomCheapestProduct = abstractProduct.Product.getSubstitutes().Where(x => x.isTradable())
-        //    .FirstSameElements(x => (float)market.getCost(x).Get()).ToList().Random();
-
-        //    if (randomCheapestProduct == null)
-        //        return null;
-        //    else
-        //        return new Storage(randomCheapestProduct, abstractProduct);
-        //    //// assuming substitutes are sorted in cheap-expensive order
-        //    //foreach (var item in abstractProduct.Product.getSubstitutes())
-        //    //    if (item.isTradable())
-        //    //    {
-        //    //        return new Storage(item, abstractProduct);
-        //    //    }
-        //    //return null;
-        //}
-
-        ///// <summary> Assuming product is abstract product
-        ///// Returns total sum of all substitute products</summary>
-        //public Storage getTotal(Product product)
-        //{
-        //    Value res = new Value(0f);
-        //    foreach (var item in this)
-        //        if (item.Product.isSubstituteFor(product))
-        //        {
-        //            res.Add(item);
-        //        }
-        //    return new Storage(product, res);
-        //}
+        //        return new Storage(substitute.Product, 0f);
+        //}        
 
         /// <summary>Universal search for storages</summary>
         private Storage getStorage(Product what,
            Func<IEnumerable<Storage>, Func<Storage, float>, Storage> selectorMethod,
            Func<Storage, float> selector)
-        {
-            //if (what.isAbstract())
-            //{
-            //    List<Storage> res = new List<Storage>();
-            //    foreach (var storage in collection)
-            //        if (storage.Value.isSameProductType(what))// && !storage.isAbstractProduct())
-            //            res.Add(storage.Value);
-            //    var found = selectorMethod(res, selector);
-            //    if (found == null)
-            //        return new Storage(what, 0f);
-            //    return found;
-            //}
-            //else
-            {
+        {            
                 foreach (var storage in collection)
                     if (storage.Value.isExactlySameProduct(what))
                         return storage.Value;
                 return new Storage(what, 0f);
-            }
         }
 
         public List<Storage> ToList()
@@ -606,17 +466,7 @@ namespace Nashet.ValueSpace
                 result.Add(item.Value);
             return result;
         }
-
-        //public bool hasSubstitute(Storage need)
-        //{
-        //    foreach (var item in container)
-        //    {
-        //        if (item.hasSubstitute(need))
-        //            return true;
-        //    }
-        //    return false;
-        //}
-
+     
         //public PrimitiveStorageSet Copy()
         //{
         //    oldList.ForEach((item) =>

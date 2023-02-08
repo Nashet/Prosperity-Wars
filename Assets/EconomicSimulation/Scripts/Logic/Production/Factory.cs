@@ -1102,13 +1102,12 @@ namespace Nashet.EconomicSimulation
                 List<Storage> shoppingList = getHowMuchInputProductsReservesWants();
                 if (shoppingList.Count > 0)
                     if (Country.economy == Economy.PlannedEconomy)
-                    {
-                        var realNeed = Country.countryStorageSet.hasAllOfConvertToBiggest(shoppingList);
-                        if (realNeed != null)
+                    {                       
+                        if (Country.countryStorageSet.has(shoppingList))
                         {
                             //Country.countryStorageSet.send(this.getInputProductsReserve(), shoppingList);
-                            consumeFromCountryStorage(realNeed, Country);
-                            getInputProductsReserve().Add(realNeed);
+                            consumeFromCountryStorage(shoppingList, Country);
+                            getInputProductsReserve().Add(shoppingList);
                         }
                     }
                     else

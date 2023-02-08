@@ -7,22 +7,6 @@ namespace Nashet.Utils
     /// <summary>!! Broken. Assuming product is abstract product</summary>
     public static class ListStorageExtensions
     {
-        //public static Storage getStorageIncludingSubstitutes(this List<Storage> source, Product product)
-        //{
-        //    var res = new Value(0f);
-        //    foreach (var substitute in product.getSubstitutes())
-        //        if (substitute.isTradable())
-        //        {
-        //            // how find food & grain? broken
-        //            //var find = source.Find(x => x.is);
-        //            //if (find != null)
-        //            //var find = source.getStorage(substitute);
-        //            //if (find.isNotZero())
-        //            //  res.add(find);
-        //        }
-        //    return new Storage(product, res);
-        //}
-
         public static Storage getStorage(this List<Storage> list, Product product)
         {
             foreach (Storage stor in list)
@@ -30,19 +14,6 @@ namespace Nashet.Utils
                     return stor;
             return new Storage(product, 0f);
         }
-
-        //public static Storage GetFirstSubstituteStorage(this List<Storage> list, Product product)
-        //{
-        //    if (product.isAbstract())
-        //    {
-        //        foreach (Storage stor in list)
-        //            if (stor.isSameProductType(product))
-        //                return stor;
-        //    }
-        //    else
-        //        return list.Find(x => x.Product == product);
-        //    return new Storage(product, 0f);
-        //}
 
         public static List<Storage> Multiply(this List<Storage> list, Value value)
         {

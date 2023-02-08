@@ -378,7 +378,7 @@ namespace Nashet.EconomicSimulation
                 outCome.Add(province.Country.market.getCost(resourceInput));
             }
             return income.Subtract(outCome, false);
-        }        
+        }
 
         /// <summary>
         /// For artisans. Not including salary

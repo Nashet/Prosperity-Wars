@@ -7,6 +7,6 @@ namespace Nashet.ValueSpace
 {
     interface IStorageSet
     {
-        Storage GetFirstSubstituteStorage(Product what);
+        Storage GetStorage(Product what);
     }
 }

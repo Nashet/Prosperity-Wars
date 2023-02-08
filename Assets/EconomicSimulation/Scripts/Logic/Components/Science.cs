@@ -74,10 +74,7 @@ namespace Nashet.EconomicSimulation
 
         public bool IsInvented(Product product)
         {
-            //if (product.isAbstract())
-            //    return true;
-            //else
-                return product.AllRequiredInventions.All(x => IsInvented(x)); // returns true is requirements are empty
+            return product.AllRequiredInventions.All(x => IsInvented(x)); // returns true is requirements are empty
 
             //if (
             //    ((product == Product.Metal || product == Product.MetalOre || product == Product.ColdArms) && !IsInvented(Invention.Metal))

@@ -654,10 +654,7 @@ namespace Nashet.EconomicSimulation
                 if (storage.has(need))// don't need to buy on market
                 {
                     Storage realConsumption;
-                    if (need.isAbstractProduct())
-                        realConsumption = new Storage(storage.Product, need);
-                    else
-                        realConsumption = need;
+                    realConsumption = need;
                     consumeFromItself(realConsumption);
                     needsFulfilled.Set(Options.PopOneThird);
                 }
@@ -769,10 +766,7 @@ namespace Nashet.EconomicSimulation
                 if (storage.has(need))// don't need to buy on market
                 {
                     Storage realConsumption;
-                    if (need.isAbstractProduct())
-                        realConsumption = new Storage(storage.Product, need);
-                    else
-                        realConsumption = need;
+                    realConsumption = need;
 
                     consumeFromItself(realConsumption);
                     needsFulfilled.Set(1f / 3f);
@@ -796,14 +790,7 @@ namespace Nashet.EconomicSimulation
             foreach (var need in needs)
             {
                 if (Country.countryStorageSet.hasMoreThan(need, Options.CountryPopConsumptionLimitPE)
-                    || (Country.countryStorageSet.has(need) && !need.IsStorabe))
-                    if (need.isAbstractProduct())
-                    {
-                        var stor = Country.countryStorageSet.convertToBiggestStorage(need);
-                        consumeFromCountryStorage(stor, Country);
-                        consumed.Add(stor);
-                    }
-                    else
+                    || (Country.countryStorageSet.has(need) && !need.IsStorabe))                    
                     {
                         consumeFromCountryStorage(need, Country);
                         consumed.Add(need);

@@ -68,11 +68,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (owner.countryStorageSet.has(need))
                 {
-                    if (need.isAbstractProduct())
-                        // convertToBiggestStorageProduct here are duplicated in this.getConsumptionProcent() (getBiggestStorage())
-                        realConsumption = owner.countryStorageSet.convertToBiggestStorage(need);
-                    else
-                        realConsumption = need;
+                    realConsumption = need;
                     if (realConsumption.isNotZero())
                     {
                         owner.consumeFromCountryStorage(realConsumption, owner);
@@ -109,12 +105,12 @@ namespace Nashet.EconomicSimulation
         public Procent getConsumptionProcent(Product product, Country country)
         {
             // getBiggestStorage here are duplicated in this.consume() (convertToBiggestStorageProduct())
-            return new Procent(consumption.getBiggestStorage(product), getRealNeeds(country, product), false);
+            return new Procent(consumption.GetStorage(product), getRealNeeds(country, product), false);
         }
 
         public Value getConsumption(Product prod)
         {
-            return consumption.GetFirstSubstituteStorage(prod);
+            return consumption.GetStorage(prod);
         }
 
         public List<Storage> getRealNeeds(Country country)
