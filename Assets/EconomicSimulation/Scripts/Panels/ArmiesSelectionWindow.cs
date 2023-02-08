@@ -1,5 +1,6 @@
 ﻿using Nashet.UnityUIUtils;
 using Nashet.ValueSpace;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,13 @@ namespace Nashet.EconomicSimulation
     public class ArmiesSelectionWindow : DragPanel
     {
         [SerializeField]
-        private Text caption;
+        private Text caption, sendArmyButton;
 
         [SerializeField]
         private Button merge, split, mobilize;
+
+        [SerializeField]
+        private Animator animator;
 
         private static ArmiesSelectionWindow thisObject;
         public static ArmiesSelectionWindow Get
@@ -29,7 +33,13 @@ namespace Nashet.EconomicSimulation
             thisObject = this;
             Hide();
             GUIChanger.Apply(gameObject);
+            Game.OnIsInSendArmyModeChanged += IsInSendArmyModeChangedHandler;
         }
+
+        private void OnDestroy()
+        {
+            Game.OnIsInSendArmyModeChanged -= IsInSendArmyModeChangedHandler;
+        }       
 
         public override void Refresh()
         {
@@ -64,6 +74,7 @@ namespace Nashet.EconomicSimulation
             Game.provincesToRedrawArmies.Add(Game.selectedArmies[0].Province);
             MainCamera.militaryPanel.Refresh();
         }
+
         public void OnSplitClick()
         {
             Game.selectedArmies.First().balance(Procent._50Procent);
@@ -72,6 +83,7 @@ namespace Nashet.EconomicSimulation
             MainCamera.militaryPanel.Refresh();
             
         }
+
         public void OnDemobilizeClick()
         {
             foreach (var item in Game.selectedArmies.ToList())
@@ -79,6 +91,23 @@ namespace Nashet.EconomicSimulation
                 item.demobilize();
             }
             MainCamera.militaryPanel.Refresh();
+        }
+
+        public void SendArmyClickedHandler()
+        {
+            EntersendArmyMode();
+        }
+
+        private void EntersendArmyMode()
+        {
+            Game.ChangeIsInSendArmyMode(true);
+        }
+
+        private void IsInSendArmyModeChangedHandler(bool newState)
+        {
+            sendArmyButton.text = newState ? "Pick province":"Send";
+            //better use animator
+            //animator.SetTrigger("ChangeState");
         }
     }
 }
