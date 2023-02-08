@@ -1,8 +1,6 @@
 ﻿using Nashet.EconomicSimulation;
 using Nashet.Utils;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,72 +8,53 @@ namespace Nashet.UnitSelection
 {
     public class SelectionComponent : MonoBehaviour
     {
-        [SerializeField] private KeyCode AdditionKey;
-
         private bool isFrameSelecting = false;
         private Vector3 selectionFrameMousePositionStart;
 
         //public GameObject selectionCirclePrefab;
         private static Camera camera; // it's OK
         private int nextArmyToSelect;
+        private DateTime lastClickTime = new DateTime(1991, 12, 24);
+        private int holded;
 
         private void Start()
         {
             camera = GetComponent<Camera>();
         }
 
-        //TODO need to get rid of Update()
-        private DateTime last = new DateTime(1991, 12, 24);
+        //TODO need to get rid of Update()        
         private void Update()
         {
-            var endedSelection = HandleFrameSelection();
-            //if (Input.touchCount > 1)
-            //    return;
-            // if (!endedSelection)
             HandleUnitOrProvinceClick();
-            HandleSendUnitTo();
+            var endedSelection = HandleFrameSelection(); // breaks previous
+          
 
-            // Highlight all objects within the selection box
-            //if (isSelecting)
-            //{
-            //    foreach (var selectableObject in FindObjectsOfType<SelectableUnitComponent>())
-            //    {
-            //        if (IsWithinSelectionBounds(selectableObject.gameObject))
-            //        {
-            //            if (selectableObject.selectionCircle == null)
-            //            {
-            //                selectableObject.selectionCircle = Instantiate(selectionCirclePrefab);
-            //                selectableObject.selectionCircle.transform.SetParent(selectableObject.transform, false);
-            //                selectableObject.selectionCircle.transform.eulerAngles = new Vector3(90, 0, 0);
-            //            }
-            //        }
-            //        else
-            //        {
-            //            if (selectableObject.selectionCircle != null)
-            //            {
-            //                Destroy(selectableObject.selectionCircle.gameObject);
-            //                selectableObject.selectionCircle = null;
-            //            }
-            //        }
-            //    }
-            //}
+            if (Input.GetMouseButtonUp(1) || Input.GetMouseButtonUp(0))
+            {
+                lastClickTime = DateTime.Now;
+            }
+
+            if (Input.GetMouseButton(0))
+            {
+                holded++;
+            }
+            else
+            {
+                holded = 0;
+            }
+          
             Game.previoslySelectedProvince = Game.selectedProvince;
         }
 
-        private void HandleSendUnitTo()
+        public static Unit GetUnit(Collider collider)
         {
-            // MOUSE RIGHT BUTTON clicked or Left clicked after SendButon clicked
-            if (!Game.selectedArmies.IsEmpty() && (Input.GetMouseButtonUp(1) || Game.isInSendArmyMode && Input.GetMouseButtonUp(0)))
-            {
-                last = DateTime.Now;
-                SendUnitTo();
-            }
+            return collider.transform.parent.GetComponent<Unit>();
         }
 
         private void HandleUnitOrProvinceClick()
         {
             //left mouse button
-            if (Input.GetMouseButtonUp(0) && !Game.isInSendArmyMode && (DateTime.Now - last).Seconds > 0.1f)// !ignoreIreviousIsInSendArmyModeState
+            if (Input.GetMouseButtonUp(0) && !Game.isInSendArmyMode)// !ignoreIreviousIsInSendArmyModeState // && (DateTime.Now - lastClickTime).Seconds > 0.1f
             {
                 if (!EventSystem.current.IsPointerOverGameObject())//!hovering over UI) 
                 {
@@ -85,9 +64,9 @@ namespace Nashet.UnitSelection
                         int provinceNumber = Province.FindByCollider(collider);
                         if (provinceNumber > 0)
                         {
-                            if (!isFrameSelecting)
+                            //if (!isFrameSelecting)
                                 MainCamera.selectProvince(provinceNumber);
-                            if (!Input.GetKey(AdditionKey)) // don't de select units if AdditionKey is pressed
+                            if (!Input.GetKey(LinksManager.Get.AdditionKey)) // don't de select units if AdditionKey is pressed
                                 Game.selectedArmies.ToList().PerformAction(x => x.Deselect());
                         }
                         else
@@ -98,7 +77,7 @@ namespace Nashet.UnitSelection
                                 var army = unit.Province.AllStandingArmies().Where(x => x.getOwner() == Game.Player).Next(ref nextArmyToSelect);
                                 if (army != null)
                                 {
-                                    if (Input.GetKey(AdditionKey))
+                                    if (Input.GetKey(LinksManager.Get.AdditionKey))
                                     {
                                         if (Game.selectedArmies.Contains(army))
                                             army.Deselect();
@@ -120,7 +99,7 @@ namespace Nashet.UnitSelection
                     else
                     {
                         MainCamera.selectProvince(-1);
-                        if (!Input.GetKey(AdditionKey))
+                        if (!Input.GetKey(LinksManager.Get.AdditionKey))
                             Game.selectedArmies.ToList().PerformAction(x => x.Deselect());
                     }
                 }
@@ -130,9 +109,11 @@ namespace Nashet.UnitSelection
         private bool HandleFrameSelection()
         {
             // If we press the left mouse button, begin selection and remember the location of the mouse
-            if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && !Game.isInSendArmyMode && !isFrameSelecting)
+            if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject()
+                && !Game.isInSendArmyMode && !isFrameSelecting )// 
             {
-                StartFrameSelection();
+                if (holded > 4)
+                    StartFrameSelection(); // coun started only if holded some time
             }
 
             if (Input.GetMouseButtonUp(0) && isFrameSelecting)
@@ -143,46 +124,6 @@ namespace Nashet.UnitSelection
             return false;
         }
 
-        private Unit GetUnit(Collider collider)
-        {
-            return collider.transform.parent.GetComponent<Unit>();
-        }
-
-        private void SendUnitTo()
-        {
-            var collider = getRayCastMeshNumber();
-            if (collider != null)
-            {
-                Province sendToPovince = null;
-                int meshNumber = Province.FindByCollider(collider);
-                if (meshNumber > 0) // send armies to another province
-                    sendToPovince = World.FindProvince(meshNumber);
-                else // better do here sort of collider layer, hitting provinces only
-                {
-                    var unit = GetUnit(collider);
-                    if (unit != null)
-                    {
-                        sendToPovince = unit.Province;
-                    }
-                }
-
-                if (sendToPovince == null)
-                    return;
-
-                var addPath = Input.GetKey(AdditionKey);
-
-                foreach (var item in Game.selectedArmies)
-                {
-                    if (addPath)
-                        item.AddToPath(sendToPovince);
-                    else
-                        item.SetPathTo(sendToPovince);
-                    Game.provincesToRedrawArmies.Add(item.Province);
-                }
-                //Unit.RedrawAll();
-                Game.ChangeIsInSendArmyMode(false);
-            }
-        }
         private void StartFrameSelection()
         {
             isFrameSelecting = true;
@@ -193,7 +134,7 @@ namespace Nashet.UnitSelection
         {
             if (selectionFrameMousePositionStart != Input.mousePosition)
             {
-                if (!Input.GetKey(AdditionKey))
+                if (!Input.GetKey(LinksManager.Get.AdditionKey))
                     Game.selectedArmies.ToList().PerformAction(x => x.Deselect());
                 foreach (var selectableObject in Game.Player.AllArmies())
                 {

@@ -13,7 +13,8 @@ namespace Nashet.EconomicSimulation
         public GameObject ArmiesSelectionWindowPrefab;
         public GameObject ArmiesHolder;
 
-        [SerializeField]public Canvas CameraLayerCanvas;
+        [SerializeField] public Canvas CameraLayerCanvas;
+        [SerializeField] public KeyCode AdditionKey = KeyCode.LeftAlt;
 
         public Material waterMaterial;
 
