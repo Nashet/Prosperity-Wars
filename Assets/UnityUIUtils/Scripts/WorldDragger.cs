@@ -24,12 +24,9 @@ namespace Nashet.UnityUIUtils
         }
 
         private void HandleMapScroll(PointerEventData data)
-        {
-            var cameraScript = Camera.main.GetComponent<MainCamera>();
-            Debug.LogError(data.position);
+        {           
             var change = oldPosition - data.position;
-            var movement = new Vector3(change.x * scrollSpeed, 0, change.y * scrollSpeed);
-            cameraScript.Move(movement);
+            MainCamera.Get.Move(change.x * scrollSpeed, change.y * scrollSpeed);
             oldPosition = data.position;
         }
     }

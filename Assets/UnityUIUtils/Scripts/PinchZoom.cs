@@ -25,13 +25,13 @@ namespace Nashet.EconomicSimulation
                 // Zoom out
                 if (touchDelta > 0)
                 {
-                    MainCamera.Get.Move(0f, zoomSpeed * -1f, 0f);
+                    MainCamera.Get.Zoom(zoomSpeed * -1f);
                 }
 
                 //Zoom in
                 else if (touchDelta < 0)
                 {
-                    MainCamera.Get.Move(0f, zoomSpeed, 0f);
+                    MainCamera.Get.Zoom(zoomSpeed);
                 }
             }
         }
