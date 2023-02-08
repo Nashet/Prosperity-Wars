@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4436044905069597153
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4436044905069597155}
+  - component: {fileID: 4436044905069597154}
+  - component: {fileID: 4436044905069597164}
+  m_Layer: 0
+  m_Name: LinksManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4436044905069597155
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4436044905069597153}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4436044905069597154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4436044905069597153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 490f1e5339e75984388b7ef89bdc256c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultCountryBorderMaterial: {fileID: 2100000, guid: 52cae44ef289d54489ba5aa35d7f331b,
+    type: 2}
+  defaultProvinceBorderMaterial: {fileID: 2100000, guid: 646b0af1c88112846a59dc3db58564ce,
+    type: 2}
+  impassableBorder: {fileID: 2100000, guid: 31b82705b1a61f7418007b5e6341af2a, type: 2}
+  defaultUnitSymbol: {fileID: 2100000, guid: 48f088514fb2aff40be5a2b4e7e408cf, type: 2}
+  UnitPrefab: {fileID: 1103526154260046, guid: 276f0d334f0ce484486a922ed7928529, type: 3}
+  UnitPanelPrefab: {fileID: 1967660964868196, guid: e37c4dd3883e23a479e56012b25083c2,
+    type: 3}
+  WorldSpaceCanvas: {fileID: 0}
+  r3DProvinceTextPrefab: {fileID: 1000013302798520, guid: ef9997a1e03c0eb4bb7d2c1da0a6d3ca,
+    type: 3}
+  r3DCountryTextPrefab: {fileID: 1272796945191490, guid: 3f4c145e62280964ab3a83009f7ba554,
+    type: 3}
+  ArmiesSelectionWindowPrefab: {fileID: 1568875322144744, guid: ef3d22fe659f4894a8669d0b55ed9879,
+    type: 3}
+  ArmiesHolder: {fileID: 0}
+  CameraLayerCanvas: {fileID: 0}
+  waterMaterial: {fileID: 2100000, guid: 52b7d70b1de7c4ce09662b77c14d9fda, type: 2}
+  ProvinceSelecionMaterial: {fileID: 2100000, guid: c25b338ab39471d4582add0f324ced07,
+    type: 2}
+  FogOfWarMaterial: {fileID: 2100000, guid: 2e32210884a66044b86f2a5a9884162c, type: 2}
+  scrolJoystic: {fileID: 0}
+  objectsToInstantiateIn2DCanvas: []
+  UICanvas: {fileID: 0}
+--- !u!114 &4436044905069597164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4436044905069597153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69bebdb5744b8ab428a2364aa272d63a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rebels: {fileID: 2800000, guid: 2d8f59e4263299745aa70f08c6adea8b, type: 3}
