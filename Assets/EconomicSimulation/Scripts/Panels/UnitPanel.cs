@@ -1,8 +1,6 @@
 ﻿using Nashet.UnitSelection;
 using Nashet.UnityUIUtils;
-using Nashet.Utils;
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,7 +16,6 @@ namespace Nashet.EconomicSimulation
 
         [SerializeField]
         private RawImage flag;
-
 
         public void SetFlag(Texture2D flag)
         {
@@ -51,7 +48,7 @@ namespace Nashet.EconomicSimulation
 
         private void SendUnitTo()
         {
-            var collider = SelectionComponent.getRayCastMeshNumber();
+            var collider = UnitSelection.Utils.getRayCastMeshNumber();
             if (collider != null)
             {
                 Province sendToPovince = null;
@@ -60,7 +57,7 @@ namespace Nashet.EconomicSimulation
                     sendToPovince = World.FindProvince(meshNumber);
                 else // better do here sort of collider layer, hitting provinces only
                 {
-                    var unit = SelectionComponent.GetUnit(collider);
+                    var unit = MapClicksHandler.GetUnit(collider);
                     if (unit != null)
                     {
                         sendToPovince = unit.Province;

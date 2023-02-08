@@ -70,8 +70,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectionPart: {fileID: 1355780598687326}
   enemyDirection: {fileID: 4770313462152923290}
+  enemyDirectionScale: 0.6
   unitPanelYOffset: -2
   meshRenderer: {fileID: 1301453593749073984}
+  Collider: {fileID: 3157030708604484282}
   unitPanel: {fileID: 0}
 --- !u!1 &1355780598687326
 GameObject:

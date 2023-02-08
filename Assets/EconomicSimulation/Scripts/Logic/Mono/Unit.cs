@@ -23,6 +23,9 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private MeshRenderer meshRenderer;
 
+        [SerializeField]
+        public MeshCollider Collider;
+
         //[SerializeField]
         private LineRenderer lineRenderer;
 

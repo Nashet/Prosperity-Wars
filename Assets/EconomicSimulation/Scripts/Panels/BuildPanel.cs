@@ -88,7 +88,7 @@ namespace Nashet.EconomicSimulation
 
         public override void Refresh()
         {
-            if (Game.previoslySelectedProvince != Game.selectedProvince)
+            if (Game.previoslySelectedProvince != Game.selectedProvince) // its ok
                 selectFactoryType(null);
 
             table.Refresh();
