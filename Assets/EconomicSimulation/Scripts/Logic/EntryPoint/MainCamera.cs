@@ -74,7 +74,10 @@ namespace Nashet.EconomicSimulation
         }
         public void Move(float xMove, float zMove, float yMove)
         {
+            if (game == null)
+                return; // map isnt done yet
             var position = transform.position;
+           
             var mapBorders = game.getMapBorders();
 
 
