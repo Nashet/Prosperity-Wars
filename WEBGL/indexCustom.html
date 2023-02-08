@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Prosperity wars - agent based economy strategy game</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <script src="TemplateData/UnityProgress.js"></script>
+    <script src="Build/UnityLoader.js"></script>
+    <script>
+        var gameInstance = UnityLoader.instantiate("gameContainer", "Build/WEBGL.json", { onProgress: UnityProgress });
+    </script>
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-100468604-1', 'auto');
+        ga('send', 'pageview');
+
+    </script>
+</head>
+<body>
+    <div class="webgl-content">		
+        <div id="gameContainer" style="width: 1100px; height: 500px"></div>
+        <div class="footer" align="center">
+            <div class="webgl-logo"></div>
+            <div class="fullscreen" onclick="gameInstance.SetFullscreen(1)"></div>			
+            <div class="title"><span class="blink_text">Click for fullscreen here    =>    </span></div>
+			<div class="foot">Loading, please wait. Requires Javascripts enabled</div>			
+        </div>		
+		<div class="footer">
+			<div class="foot" align="center">Some mobile devices aren't supported. Desktop version could be found <a href="https://github.com/Nashet/Prosperity-Wars/releases" target="_blank">here</a> (faster and stabler)</div>			
+			<div class="foot" align="center">Follow <a href="https://twitter.com/Nashet18" target="_blank">Twitter</a>, support on <a href="https://www.patreon.com/ProsperityWars" target="_blank">Patreon</a></div>			
+		</div>		
+    </div>
+</body>
+</html>
