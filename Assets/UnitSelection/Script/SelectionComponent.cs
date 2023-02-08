@@ -11,7 +11,6 @@ namespace Nashet.UnitSelection
     public class SelectionComponent : MonoBehaviour
     {
         [SerializeField] private KeyCode AdditionKey;
-        [SerializeField] private float mapDragSpeed = 0.05f;
 
         private bool isFrameSelecting = false;
         private Vector3 selectionFrameMousePositionStart;
@@ -31,11 +30,12 @@ namespace Nashet.UnitSelection
         private DateTime last = new DateTime(1991, 12, 24);
         private void Update()
         {
+            if (Input.touchCount > 1)
+                return;
             var endedSelection = HandleFrameSelection();
-           // if (!endedSelection)
-                HandleUnitOrProvinceClick();
+            // if (!endedSelection)
+            HandleUnitOrProvinceClick();
             HandleSendUnitTo();
-            HandleMapScroll();
 
             // Highlight all objects within the selection box
             //if (isSelecting)
@@ -143,14 +143,6 @@ namespace Nashet.UnitSelection
                 return true;
             }
             return false;
-        }
-
-        private void HandleMapScroll()
-        {
-            var joy = LinksManager.Get.scrolJoystic;
-            cameraScript.Move(joy.Horizontal * mapDragSpeed, 0, joy.Vertical * mapDragSpeed);
-
-            return;
         }
 
         private void SendUnitTo()
