@@ -28,11 +28,7 @@ namespace Nashet.EconomicSimulation
         public static List<BattleResult> allBattles = new List<BattleResult>();
 
         //public static Market market;
-        /// <summary>
-        /// province connection graph
-        /// </summary>
-        public Graph graph;
-
+       
         public static event EventHandler DayPassed;
 
         /// <summary>

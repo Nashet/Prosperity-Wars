@@ -4,6 +4,7 @@ using Nashet.MarchingSquares;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using QPathFinder;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +38,7 @@ namespace Nashet.EconomicSimulation
         , true);
 
         public static readonly Predicate<Province> All = x => true;
-
+        public Node Node { get; internal set; }
         private Province here { get { return this; } }
 
         public Color ProvinceColor { get; protected set; }
@@ -1089,14 +1090,9 @@ namespace Nashet.EconomicSimulation
             MeshCollider groundMeshCollider = GameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
             groundMeshCollider.sharedMesh = MeshFilter.mesh;
 
-
-
             meshRenderer.material.shader = Shader.Find("Standard");// Province");
 
             meshRenderer.material.color = ProvinceColor;
-
-            //var graph = World.Get.GetComponent<AstarPath>();
-
 
             // setting neighbors
             //making meshes for border
@@ -1110,10 +1106,6 @@ namespace Nashet.EconomicSimulation
                     //this.getTerrain() == TerrainTypes.Plains || neighbor.terrain == TerrainTypes.Plains)
                     {
                         neighbors.Add(neighbor);
-                        //var newNode = new Pathfinding.PointNode(AstarPath.active);
-                        //newNode.gameObject = txtMeshGl;
-                        //graph.data.pointGraph.AddNode(newNode, (Pathfinding.Int3)neighbor.getPosition());
-
                     }
 
                     GameObject borderObject = new GameObject("Border with " + neighbor);
@@ -1138,8 +1130,8 @@ namespace Nashet.EconomicSimulation
                     bordersMeshes.Add(neighbor, meshRenderer);
                 }
             }
-            var node = GameObject.AddComponent<Node>();
         }
+
         public IEnumerable<Army> AllStandingArmies()
         {
             foreach (var item in standingArmies)

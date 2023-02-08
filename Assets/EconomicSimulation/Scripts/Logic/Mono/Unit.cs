@@ -1,12 +1,10 @@
-﻿using Nashet.EconomicSimulation;
-using Nashet.UnityUIUtils;
-using Nashet.Utils;
+﻿using Nashet.UnityUIUtils;
+using QPathFinder;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
+
 namespace Nashet.EconomicSimulation
 {
     public class Unit : Hideable, IHasProvince//, IHasCountry//MonoBehaviour,
@@ -162,25 +160,25 @@ namespace Nashet.EconomicSimulation
             }
             Game.provincesToRedrawArmies.Clear();
         }
-
-        private Vector3[] GetVector3Nodes(Path path)
+       
+        private Vector3[] GetVector3Nodes(List<Node> path)
         {
-            Vector3[] array = new Vector3[path.nodes.Count + 1];
-            for (int i = 0; i < path.nodes.Count; i++)
+            Vector3[] array = new Vector3[path.Count + 1];
+            for (int i = 0; i < path.Count; i++)
             {
-                array[i + 1] = path.nodes[i].Province.Position;
+                array[i + 1] = path[i].Province.Position;
                 array[i + 1].z = -2f;
             }
             return array;
         }
 
-        private void Move(Path path)
+        private void Move(List<Node> nodes)
         {
-            lineRenderer.positionCount = path.nodes.Count + 1;
-            lineRenderer.SetPositions(GetVector3Nodes(path));
+            lineRenderer.positionCount = nodes.Count + 1;
+            lineRenderer.SetPositions(GetVector3Nodes(nodes));
             lineRenderer.SetPosition(0, Province.Position);//currentProvince.getPosition()
 
-            this.transform.LookAt(path.nodes[0].Province.Position, Vector3.back);
+            this.transform.LookAt(nodes[0].Province.Position, Vector3.back);
             if (m_Animator.gameObject.activeInHierarchy)
                 m_Animator.SetFloat("Forward", 0.4f);//, 0.3f, Time.deltaTime
                                                      //if (where.armies.Count > 1)
@@ -192,7 +190,7 @@ namespace Nashet.EconomicSimulation
                                                      //    where.armies[0].unit.unitPanel.Show();
             enemyDirection.positionCount = 2;
             //todo must be fixed ssize
-            var linePositions = GetVector3Nodes(path);
+            var linePositions = GetVector3Nodes(nodes);
             linePositions[0] = Province.Position;
             linePositions[1] = Vector3.LerpUnclamped(linePositions[1], linePositions[0], enemyDirectionScale);
             enemyDirection.SetPositions(linePositions);
