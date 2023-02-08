@@ -31,11 +31,12 @@ namespace Nashet.EconomicSimulation
        
         public static event EventHandler DayPassed;
 
-        /// <summary>
-        /// Little bugged - returns RANDOM badboy, not biggest
-        /// </summary>        
+              
         private static Date DateOfIsThereBadboyCountry = new Date(Date.Never);
 
+        /// <summary>
+        /// Little bugged - returns RANDOM badboy, not biggest ???
+        /// </summary>  
         private static Country Badboy;
 
         private static World thisObject;

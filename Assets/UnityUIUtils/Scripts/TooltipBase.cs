@@ -115,8 +115,6 @@ namespace Nashet.UnityUIUtils
             canvas = transform.parent.GetComponent<CanvasGroup>();
             transform.parent.gameObject.SetActive(false);
             thatObjectLink = this;
-
-
         }
 
         public bool isInside()
@@ -251,7 +249,6 @@ namespace Nashet.UnityUIUtils
                 HideTooltipVisibility();
                 ticksSkipped = 0;
             }
-
         }
     }
 }

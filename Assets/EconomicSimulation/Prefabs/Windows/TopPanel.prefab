@@ -184,9 +184,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3886505441508818579}
   - component: {fileID: 3886505441508818588}
+  - component: {fileID: 3886505441508818591}
   - component: {fileID: 3886505441508818589}
   - component: {fileID: 3886505441508818578}
-  - component: {fileID: 3886505441508818591}
   - component: {fileID: 3886505441508818590}
   m_Layer: 5
   m_Name: Play
@@ -224,6 +224,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3886505441508818576}
   m_CullTransparentMesh: 1
+--- !u!114 &3886505441508818591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3886505441508818576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99f87c8e4381dd140816922f1be162f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: 'Click to play\pause
+
+    Time goes faster if give control to AI'
+  isDynamic: 0
 --- !u!114 &3886505441508818589
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -310,22 +326,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &3886505441508818591
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3886505441508818576}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99f87c8e4381dd140816922f1be162f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  text: 'Click to play\pause
-
-    Time goes faster if give control to AI'
-  isDynamic: 0
 --- !u!114 &3886505441508818590
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -432,10 +432,9 @@ GameObject:
   - component: {fileID: 3886505441637450440}
   - component: {fileID: 3886505441637450485}
   - component: {fileID: 3886505441637450442}
-  - component: {fileID: 3886505441637450443}
   - component: {fileID: 3886505441637450484}
+  - component: {fileID: 3886505441637450443}
   - component: {fileID: 3886505441637450487}
-  - component: {fileID: 3886505441637450486}
   m_Layer: 5
   m_Name: Step
   m_TagString: Untagged
@@ -502,6 +501,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3886505441637450484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3886505441637450441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99f87c8e4381dd140816922f1be162f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: Plays turns one by one
+  isDynamic: 0
 --- !u!114 &3886505441637450443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -558,20 +571,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &3886505441637450484
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3886505441637450441}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99f87c8e4381dd140816922f1be162f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  text: Plays turns one by one
-  isDynamic: 0
 --- !u!114 &3886505441637450487
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -585,21 +584,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: 304
-  addTextInTooltip: 1
-  allowsKeyHolding: 0
---- !u!114 &3886505441637450486
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3886505441637450441}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1d4d66bc658c1c4d8de81820cc53bb1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  key: 310
   addTextInTooltip: 1
   allowsKeyHolding: 0
 --- !u!1 &3886505441645078775

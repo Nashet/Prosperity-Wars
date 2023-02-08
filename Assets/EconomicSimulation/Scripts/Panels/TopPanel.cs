@@ -79,8 +79,10 @@ namespace Nashet.EconomicSimulation
                 if (Game.Player.FailedPayments.Income.isNotZero())
                 {
                     buttonSelector.Select(financeButton.gameObject);
+//#if !UNITY_WEBGL //allegebly causes out of memory exceptions in webgl
                     financeButton.GetComponent<ToolTipHandler>().RemoveTextStartingWith("\nCan't");
                     financeButton.GetComponent<ToolTipHandler>().AddText("\nCan't pay for:" + Game.Player.FailedPayments.GetIncomeText());
+//#endif
                 }
                 else
                 {

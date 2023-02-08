@@ -6,7 +6,6 @@ namespace Nashet.UnityUIUtils
 {
 
     [RequireComponent(typeof(Button))]
-    [RequireComponent(typeof(ToolTipHandler))]
     public class HotKey : MonoBehaviour
     {
         [SerializeField]
@@ -28,7 +27,8 @@ namespace Nashet.UnityUIUtils
             if (addTextInTooltip)
             {
                 var tooltip = GetComponent<ToolTipHandler>();
-                tooltip.AddText("\nHotkey is " + key + " button");
+                if (tooltip != null)
+                    tooltip.AddText("\nHotkey is " + key + " button");
             }
             var duplicateKey = AllHotKeys.Find(x => x.key == this.key);
             if (duplicateKey != null)
