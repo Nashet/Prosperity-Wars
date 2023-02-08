@@ -92,7 +92,7 @@ namespace Nashet.UnitSelection
                         }
                         else
                         {
-                            var unit = collider.transform.parent.GetComponent<Unit>();
+                            var unit = GetUnit(collider);
                             if (unit != null)
                             {
                                 var army = unit.Province.AllStandingArmies().Where(x => x.getOwner() == Game.Player).Next(ref nextArmyToSelect);
@@ -143,6 +143,11 @@ namespace Nashet.UnitSelection
             return false;
         }
 
+        private Unit GetUnit(Collider collider)
+        {
+            return collider.transform.parent.GetComponent<Unit>();
+        }
+
         private void SendUnitTo()
         {
             var collider = getRayCastMeshNumber();
@@ -154,12 +159,16 @@ namespace Nashet.UnitSelection
                     sendToPovince = World.FindProvince(meshNumber);
                 else // better do here sort of collider layer, hitting provinces only
                 {
-                    var unit = collider.transform.GetComponent<Unit>();
+                    var unit = GetUnit(collider);
                     if (unit != null)
                     {
                         sendToPovince = unit.Province;
                     }
                 }
+
+                if (sendToPovince == null)
+                    return;
+
                 var addPath = Input.GetKey(AdditionKey);
 
                 foreach (var item in Game.selectedArmies)
