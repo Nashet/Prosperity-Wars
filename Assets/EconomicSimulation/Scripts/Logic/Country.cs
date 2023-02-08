@@ -329,7 +329,7 @@ namespace Nashet.EconomicSimulation
             {
                 Vector3 capitalTextPosition = newCapital.Position;
                 capitalTextPosition.y += 2f;
-                capitalTextPosition.z -= 5f;
+                //capitalTextPosition.z -= 5f;
                 meshCapitalText.transform.position = capitalTextPosition;
             }
             capital = newCapital;
