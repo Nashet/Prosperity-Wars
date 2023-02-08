@@ -15,7 +15,7 @@ namespace Nashet.EconomicSimulation
         private void HandleMapScroll()
         {
             var joy = LinksManager.Get.scrolJoystic;
-            MainCamera.Get.Move(joy.Horizontal * mapDragSpeed, 0, joy.Vertical * mapDragSpeed);
+            MainCamera.Get.Move(joy.Horizontal * mapDragSpeed, joy.Vertical * mapDragSpeed);
 
             return;
         }

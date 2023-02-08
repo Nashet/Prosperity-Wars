@@ -69,11 +69,17 @@ namespace Nashet.EconomicSimulation
             Screen.orientation = ScreenOrientation.LandscapeLeft;
         }
 
-        public void Move(Vector3 move)
+        public void Zoom(float zMove)
         {
-            Move(move.x, move.y, move.z);
+            var position = transform.position;
+            zMove = zMove * yCameraSpeed;
+            if (position.z + zMove > -40f
+                || position.z + zMove < -500f)
+                zMove = 0f;
+            transform.Translate(0f, 0f, zMove, Space.World);
         }
-        public void Move(float xMove, float zMove, float yMove)
+
+        public void Move(float xMove, float yMove)
         {
             if (game == null)
                 return; // map isnt done yet
@@ -89,19 +95,15 @@ namespace Nashet.EconomicSimulation
             if (yMove * xzCameraSpeed + position.y < mapBorders.y
                 || yMove * xzCameraSpeed + position.y > mapBorders.height)
                 yMove = 0;
-
-            zMove = zMove * yCameraSpeed;
-            if (position.z + zMove > -40f
-                || position.z + zMove < -500f)
-                zMove = 0f;
-            transform.Translate(xMove * xzCameraSpeed, yMove * xzCameraSpeed, zMove, Space.World);
+            
+            transform.Translate(xMove * xzCameraSpeed, yMove * xzCameraSpeed, 0f, Space.World);
         }
 
         private void FixedUpdate()
         {
             if (gameLoadingIsFinished)
             {
-                Move(0f, Input.GetAxis("Mouse ScrollWheel"), 0f);
+                Zoom(Input.GetAxis("Mouse ScrollWheel"));
             }
         }
 
