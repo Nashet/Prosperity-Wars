@@ -66,6 +66,7 @@ namespace Nashet.EconomicSimulation
             //var window = Instantiate(LinksManager.Get.MapOptionsPrefab, LinksManager.Get.CameraLayerCanvas.transform);
             //window.GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, 150f);
             tooltip = GetComponent<ToolTipHandler>();
+            Screen.orientation = ScreenOrientation.LandscapeLeft;
         }
 
         public void Move(Vector3 move)
