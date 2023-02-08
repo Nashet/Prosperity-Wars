@@ -220,7 +220,7 @@ namespace Nashet.EconomicSimulation
             else
             {
                 FailedPayments.RecordIncomeFromNowhere(account, howMuch);
-                if (showMessageAboutNegativeValue)
+                if (showMessageAboutNegativeValue && Game.devMode)
                     Debug.Log(this + " doesn't have " + howMuch + " to pay in Agent.payWithoutRecord2 " + whom
                         + " has " + getMoneyAvailable());
                 //PayAllAvailableMoneyWithoutRecord(whom);
@@ -246,7 +246,7 @@ namespace Nashet.EconomicSimulation
             }
             else
             {
-                if (showMessageAboutNegativeValue)
+                if (showMessageAboutNegativeValue && Game.devMode)
                     Debug.Log(this + " doesn't have " + howMuch + " to pay in Agent.payWithoutRecord " + whom
                         + " has " + getMoneyAvailable());
                 //PayWithoutRecord(whom, getMoneyAvailable());
