@@ -318,7 +318,8 @@ namespace QPathFinder
                             QPathFinder.Logger.LogInfo("Path found between " + fromNodeID + " and " + toNodeID + ":" + str , true );
                         }
                     }
-
+                    
+                    finalPath.RemoveAt(0);
                     return finalPath;
                 }
     

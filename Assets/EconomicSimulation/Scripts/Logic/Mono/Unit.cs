@@ -140,7 +140,7 @@ namespace Nashet.EconomicSimulation
                 {
                     army.unit.Province = province;
                     army.unit.transform.position = province.Position;// here it says that unit is destroyed
-                    if (army.Path == null)
+                    if (army.Path == null || army.Path.Count == 0)
                     {
                         army.unit.Stop();
                     }
