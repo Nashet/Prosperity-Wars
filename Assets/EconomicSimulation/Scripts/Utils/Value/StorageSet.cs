@@ -360,14 +360,32 @@ namespace Nashet.ValueSpace
         /// </summary>
         public Storage ConvertToRandomCheapestExistingSubstitute(Storage abstractProduct, Market market)
         {
-            var randomCheapestProduct = abstractProduct.Product.getSubstitutes().Where(x =>
+            Product randomCheapestProduct = null;
+            foreach (var item in abstractProduct.Product.getSubstitutes())
             {
-                if (!x.isTradable()) // skip uninvented
-                    return false;
-                // take available products
-                return market.HasAvailable(new Storage(x, abstractProduct));
-            })
-            .FirstSameElements(x => (float)market.getCost(x).Get()).ToList().Random();
+                if (!item.isTradable())
+                    continue;
+                if (market.HasAvailable(new Storage(item, abstractProduct)))
+                {
+                    if (randomCheapestProduct == null)
+                    {
+                        randomCheapestProduct = item;
+                    }
+                    else
+                    {
+                        if (market.getCost(randomCheapestProduct).Get() == market.getCost(item).Get() && Rand.Get.Next(10) < 5)
+                        {
+                            randomCheapestProduct = item;
+                            continue;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
             if (randomCheapestProduct == null)
                 return null;
             else
