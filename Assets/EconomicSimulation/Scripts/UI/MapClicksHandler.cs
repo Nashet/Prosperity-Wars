@@ -1,9 +1,9 @@
-﻿using Nashet.EconomicSimulation;
+﻿using Nashet.UnitSelection;
 using Nashet.Utils;
 using System.Linq;
 using UnityEngine;
 
-namespace Nashet.UnitSelection
+namespace Nashet.EconomicSimulation
 {
     public class MapClicksHandler : MonoBehaviour
     {

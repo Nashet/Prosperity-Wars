@@ -1,5 +1,4 @@
-﻿using Nashet.EconomicSimulation;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
