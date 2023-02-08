@@ -68,6 +68,10 @@ namespace Nashet.EconomicSimulation
             tooltip = GetComponent<ToolTipHandler>();
         }
 
+        public void Move(Vector3 move)
+        {
+            Move(move.x, move.y, move.z);
+        }
         public void Move(float xMove, float zMove, float yMove)
         {
             var position = transform.position;
