@@ -37,7 +37,7 @@ namespace Nashet.EconomicSimulation
         public override void Show()
         {
             if (selectedProduct == null)
-                selectProduct(Product.Fish);
+                selectProduct(Product.Wood);
             base.Show();
         }
 
@@ -80,7 +80,7 @@ namespace Nashet.EconomicSimulation
 
         public void selectProduct(Product product)
         {
-            if (!product.isAbstract() && product.IsStorable && product != Product.Gold)
+            if (product.IsStorable && product != Product.Gold)//!product.isAbstract() && 
             {
                 selectedProduct = product;
                 slBuyIfLessThan.exponentialValue = Game.Player.getBuyIfLessLimits(selectedProduct).get();

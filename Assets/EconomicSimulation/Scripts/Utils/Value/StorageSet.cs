@@ -355,105 +355,105 @@ namespace Nashet.ValueSpace
                 return new Storage(substitute.Product, 0f);
         }
 
-        /// <summary>
-        /// Returns NULL if failed
-        /// </summary>
-        public Storage ConvertToRandomCheapestExistingSubstitute(Storage abstractProduct, Market market)
-        {
-            Product randomCheapestProduct = null;
-            foreach (var item in abstractProduct.Product.getSubstitutes())
-            {
-                if (!item.isTradable())
-                    continue;
-                if (market.HasAvailable(new Storage(item, abstractProduct)))
-                {
-                    if (randomCheapestProduct == null)
-                    {
-                        randomCheapestProduct = item;
-                    }
-                    else
-                    {
-                        if (market.getCost(randomCheapestProduct).Get() == market.getCost(item).Get() && Rand.Get.Next(10) < 5)
-                        {
-                            randomCheapestProduct = item;
-                            continue;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
+        ///// <summary>
+        ///// Returns NULL if failed
+        ///// </summary>
+        //public Storage ConvertToRandomCheapestExistingSubstitute(Storage abstractProduct, Market market)
+        //{
+        //    Product randomCheapestProduct = null;
+        //    foreach (var item in abstractProduct.Product.getSubstitutes())
+        //    {
+        //        if (!item.isTradable())
+        //            continue;
+        //        if (market.HasAvailable(new Storage(item, abstractProduct)))
+        //        {
+        //            if (randomCheapestProduct == null)
+        //            {
+        //                randomCheapestProduct = item;
+        //            }
+        //            else
+        //            {
+        //                if (market.getCost(randomCheapestProduct).Get() == market.getCost(item).Get() && Rand.Get.Next(10) < 5)
+        //                {
+        //                    randomCheapestProduct = item;
+        //                    continue;
+        //                }
+        //                else
+        //                {
+        //                    break;
+        //                }
+        //            }
+        //        }
+        //    }
 
-            if (randomCheapestProduct == null)
-                return null;
-            else
-                return new Storage(randomCheapestProduct, abstractProduct);
+        //    if (randomCheapestProduct == null)
+        //        return null;
+        //    else
+        //        return new Storage(randomCheapestProduct, abstractProduct);
 
-            // assuming substitutes are sorted in cheap-expensive order
-            //foreach (var substitute in abstractProduct.Product.getSubstitutes())
-            //    if (substitute.isTradable())
-            //    {
-            //        Storage newStor = new Storage(substitute, abstractProduct);
-            //        // check for availability
-            //        if (Country.market.sentToMarket.has(newStor))
-            //            return newStor;
-            //    }
-            //return null;
-        }
+        //    // assuming substitutes are sorted in cheap-expensive order
+        //    //foreach (var substitute in abstractProduct.Product.getSubstitutes())
+        //    //    if (substitute.isTradable())
+        //    //    {
+        //    //        Storage newStor = new Storage(substitute, abstractProduct);
+        //    //        // check for availability
+        //    //        if (Country.market.sentToMarket.has(newStor))
+        //    //            return newStor;
+        //    //    }
+        //    //return null;
+        //}
 
-        /// <summary>
-        /// Returns NULL if failed
-        /// </summary>
-        public Storage ConvertToRandomCheapestStorageProduct(Storage abstractProduct, Market market)
-        {
-            var randomCheapestProduct = abstractProduct.Product.getSubstitutes().Where(x => x.isTradable())
-            .FirstSameElements(x => (float)market.getCost(x).Get()).ToList().Random();
+        ///// <summary>
+        ///// Returns NULL if failed
+        ///// </summary>
+        //public Storage ConvertToRandomCheapestStorageProduct(Storage abstractProduct, Market market)
+        //{
+        //    var randomCheapestProduct = abstractProduct.Product.getSubstitutes().Where(x => x.isTradable())
+        //    .FirstSameElements(x => (float)market.getCost(x).Get()).ToList().Random();
 
-            if (randomCheapestProduct == null)
-                return null;
-            else
-                return new Storage(randomCheapestProduct, abstractProduct);
-            //// assuming substitutes are sorted in cheap-expensive order
-            //foreach (var item in abstractProduct.Product.getSubstitutes())
-            //    if (item.isTradable())
-            //    {
-            //        return new Storage(item, abstractProduct);
-            //    }
-            //return null;
-        }
+        //    if (randomCheapestProduct == null)
+        //        return null;
+        //    else
+        //        return new Storage(randomCheapestProduct, abstractProduct);
+        //    //// assuming substitutes are sorted in cheap-expensive order
+        //    //foreach (var item in abstractProduct.Product.getSubstitutes())
+        //    //    if (item.isTradable())
+        //    //    {
+        //    //        return new Storage(item, abstractProduct);
+        //    //    }
+        //    //return null;
+        //}
 
-        /// <summary> Assuming product is abstract product
-        /// Returns total sum of all substitute products</summary>
-        public Storage getTotal(Product product)
-        {
-            Value res = new Value(0f);
-            foreach (var item in this)
-                if (item.Product.isSubstituteFor(product))
-                {
-                    res.Add(item);
-                }
-            return new Storage(product, res);
-        }
+        ///// <summary> Assuming product is abstract product
+        ///// Returns total sum of all substitute products</summary>
+        //public Storage getTotal(Product product)
+        //{
+        //    Value res = new Value(0f);
+        //    foreach (var item in this)
+        //        if (item.Product.isSubstituteFor(product))
+        //        {
+        //            res.Add(item);
+        //        }
+        //    return new Storage(product, res);
+        //}
 
         /// <summary>Universal search for storages</summary>
         private Storage getStorage(Product what,
            Func<IEnumerable<Storage>, Func<Storage, float>, Storage> selectorMethod,
            Func<Storage, float> selector)
         {
-            if (what.isAbstract())
-            {
-                List<Storage> res = new List<Storage>();
-                foreach (var storage in collection)
-                    if (storage.Value.isSameProductType(what))// && !storage.isAbstractProduct())
-                        res.Add(storage.Value);
-                var found = selectorMethod(res, selector);
-                if (found == null)
-                    return new Storage(what, 0f);
-                return found;
-            }
-            else
+            //if (what.isAbstract())
+            //{
+            //    List<Storage> res = new List<Storage>();
+            //    foreach (var storage in collection)
+            //        if (storage.Value.isSameProductType(what))// && !storage.isAbstractProduct())
+            //            res.Add(storage.Value);
+            //    var found = selectorMethod(res, selector);
+            //    if (found == null)
+            //        return new Storage(what, 0f);
+            //    return found;
+            //}
+            //else
             {
                 foreach (var storage in collection)
                     if (storage.Value.isExactlySameProduct(what))

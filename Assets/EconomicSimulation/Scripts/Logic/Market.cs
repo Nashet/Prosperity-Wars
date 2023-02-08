@@ -115,13 +115,13 @@ namespace Nashet.EconomicSimulation
                 return new MoneyView((decimal)prices.getCheapestStorage(product, this).get());
         }
 
-        /// <summary>
-        /// Just transfers it to StorageSet.convertToCheapestStorageProduct(Storage)
-        /// </summary>
-        public Storage GetRandomCheapestSubstitute(Storage need)
-        {
-            return prices.ConvertToRandomCheapestStorageProduct(need, this);
-        }
+        ///// <summary>
+        ///// Just transfers it to StorageSet.convertToCheapestStorageProduct(Storage)
+        ///// </summary>
+        //public Storage GetRandomCheapestSubstitute(Storage need)
+        //{
+        //    return prices.ConvertToRandomCheapestStorageProduct(need, this);
+        //}
 
         //todo change it to 1 run by every products, not run for every product
         private Storage recalculateProductForConsumers(Product product, Func<Consumer, IEnumerable<Storage>> selector)
@@ -293,18 +293,18 @@ namespace Nashet.EconomicSimulation
 
         public bool isAvailable(Product product)
         {
-            if (product.isAbstract())
-            {
-                foreach (var substitute in product.getSubstitutes())
-                    if (substitute.isTradable()) //it would be faster to. skip it Or not
-                    {
-                        var DSB = getDemandSupplyBalance(substitute, false);
-                        if (DSB != Options.MarketInfiniteDSB && DSB < Options.MarketEqualityDSB)
-                            return true;
-                    }
-                return false;
-            }
-            else
+            //if (product.isAbstract())
+            //{
+            //    foreach (var substitute in product.getSubstitutes())
+            //        if (substitute.isTradable()) //it would be faster to. skip it Or not
+            //        {
+            //            var DSB = getDemandSupplyBalance(substitute, false);
+            //            if (DSB != Options.MarketInfiniteDSB && DSB < Options.MarketEqualityDSB)
+            //                return true;
+            //        }
+            //    return false;
+            //}
+            //else
             {
                 var DSB = getDemandSupplyBalance(product, false);
                 if (DSB != Options.MarketInfiniteDSB && DSB < Options.MarketEqualityDSB)

@@ -89,15 +89,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public bool CanAfford(Storage need)
         {
-            Storage realNeed;
-            if (need.isAbstractProduct())
-                //realNeed = new Storage(Country.market.getCheapestSubstitute(need).Product, need);
-                realNeed = Country.market.GetRandomCheapestSubstitute(need);
-            else
-                realNeed = need;
-
-            return CanPay(Country.market.getCost(realNeed));
-            //return realNeed.IsEqual(HowMuchCanAfford(realNeed));
+            return CanPay(Country.market.getCost(need));            
         }
 
         public bool CanAfford(StorageSet need)

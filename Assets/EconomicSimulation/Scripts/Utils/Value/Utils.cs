@@ -17,18 +17,19 @@ namespace Nashet.ValueSpace
             else
                 return found;
         }
-        /// <summary> Assuming product is abstract product
-        /// Returns total sum of all substitute products</summary>
-        public static Storage getTotal(this IEnumerable<Storage> numerable, Product product)
-        {
-            Value res = new Value(0f);
-            foreach (var item in numerable)
-                if (item.Product.isSubstituteFor(product))
-                {
-                    res.Add(item);
-                }
-            return new Storage(product, res);
-        }
+
+        ///// <summary> Assuming product is abstract product
+        ///// Returns total sum of all substitute products</summary>
+        //public static Storage getTotal(this IEnumerable<Storage> numerable, Product product)
+        //{
+        //    Value res = new Value(0f);
+        //    foreach (var item in numerable)
+        //        if (item.Product.isSubstituteFor(product))
+        //        {
+        //            res.Add(item);
+        //        }
+        //    return new Storage(product, res);
+        //}
 
     }
 }

@@ -94,15 +94,15 @@ namespace Nashet.EconomicSimulation
             {
                 Market market = Market.GetCheapestMarket(need);
                 Storage sale;
-                if (need.Product.isAbstract())
-                {
-                    sale = market.prices.ConvertToRandomCheapestExistingSubstitute(need, Country.market);
-                    if (sale == null)//no substitution available on market
-                        return new Storage(need.Product);
-                    else if (sale.isZero())
-                        return sale;
-                }
-                else
+                //if (need.Product.isAbstract())
+                //{
+                //    sale = market.prices.ConvertToRandomCheapestExistingSubstitute(need, Country.market);
+                //    if (sale == null)//no substitution available on market
+                //        return new Storage(need.Product);
+                //    else if (sale.isZero())
+                //        return sale;
+                //}
+                //else
                     sale = need;
 
                 Storage howMuchCanConsume;

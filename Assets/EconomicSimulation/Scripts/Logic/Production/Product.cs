@@ -23,11 +23,11 @@ namespace Nashet.EconomicSimulation
 
         public readonly MoneyView defaultPrice;
         protected readonly bool _isResource;
-        protected readonly bool _isAbstract;
+        //protected readonly bool _isAbstract;
         protected readonly bool _isMilitary;
         protected readonly bool _isIndustrial;
         protected readonly bool _isConsumerProduct;
-        protected readonly List<Product> substitutes;
+       // protected readonly List<Product> substitutes;
         protected readonly Color color;
         protected bool _isStoreable = true;
 
@@ -37,18 +37,18 @@ namespace Nashet.EconomicSimulation
             //Fish, Grain, Cattle, Wood, Lumber, Furniture, Gold, Metal, MetalOre,
             //Cotton, Clothes, Stone, Cement, Fruit, Liquor, ColdArms, Ammunition, Firearms, Artillery,
             //Oil, MotorFuel, Cars, Tanks, Airplanes, Rubber, Machinery,
-            Fish = new Product("Fish", 0.04f, Color.cyan, Type.consumerProduct),
+           // Fish = new Product("Fish", 0.04f, Color.cyan, Type.consumerProduct),
             Grain = new Product("Grain", 0.04f, new Color(0.57f, 0.75f, 0.2f), Type.industrial),//greenish
             Cattle = new Product("Cattle", 0.04f, Type.military),
 
-            Fruit = new Product("Fruit", 1f, new Color(1f, 0.33f, 0.33f), Type.consumerProduct),//pinkish
+            //Fruit = new Product("Fruit", 1f, new Color(1f, 0.33f, 0.33f), Type.consumerProduct),//pinkish
             Liquor = new Product("Liquor", 3f, Type.consumerProduct),
 
             Wood = new Product("Wood", 2.7f, new Color(0.5f, 0.25f, 0f), Type.industrial), // brown
             Lumber = new Product("Lumber", 8f, Type.industrial),
             Furniture = new Product("Furniture", 7f, Type.consumerProduct),
 
-            Cotton = new Product("Cotton", 1f, Color.white, Type.consumerProduct),
+            //Cotton = new Product("Cotton", 1f, Color.white, Type.consumerProduct),
             Clothes = new Product("Clothes", 6f, Type.consumerProduct),
 
             Stone = new Product("Stone", 1f, new Color(0.82f, 0.62f, 0.82f), Type.industrial),
@@ -69,17 +69,17 @@ namespace Nashet.EconomicSimulation
             Cars = new Product("Cars", 15f, Type.military, Invention.CombustionEngine),
             Tanks = new Product("Tanks", 20f, Type.military, Invention.Tanks),
             Airplanes = new Product("Airplanes", 20f, Type.military, Invention.Airplanes),
-            Coal = new Product("Coal", 1f, Color.black, Type.industrial, Invention.Coal),
+            //Coal = new Product("Coal", 1f, Color.black, Type.industrial, Invention.Coal),
             Tobacco = new Product("Tobacco", 1f, Color.green, Type.consumerProduct, Invention.Tobacco),
             Electronics = new Product("Electronics", 1f, Type.consumerProduct, Invention.Electronics),
             Gold = new Product("Gold", 4f, Color.yellow, Type.industrial),
             Education = new Product("Education", 4f, Type.consumerProduct, false, Invention.Universities);
 
-        public static readonly Product //Food, Sugar, Fibers, Fuel;
-            Food = new Product("Food", 0.04f, new List<Product> { Fish, Grain, Cattle, Fruit }, Type.consumerProduct),
-            Sugar = new Product("Sugar", 0.04f, new List<Product> { Grain, Fruit }, Type.consumerProduct),
-            Fibers = new Product("Fibers", 0.04f, new List<Product> { Cattle, Cotton }, Type.consumerProduct),
-            Fuel = new Product("Fuel", 0.04f, new List<Product> { Wood, Coal, Oil }, Type.industrial);
+        //public static readonly Product //Food, Sugar, Fibers, Fuel;
+        //    Food = new Product("Food", 0.04f, new List<Product> { Fish, Grain, Cattle, Fruit }, Type.consumerProduct),
+        //    Sugar = new Product("Sugar", 0.04f, new List<Product> { Grain, Fruit }, Type.consumerProduct),
+        //    Fibers = new Product("Fibers", 0.04f, new List<Product> { Cattle, Cotton }, Type.consumerProduct),
+        //    Fuel = new Product("Fuel", 0.04f, new List<Product> { Wood, Coal, Oil }, Type.industrial);
 
         public static void init()
         { }
@@ -153,14 +153,14 @@ namespace Nashet.EconomicSimulation
             _isStoreable = false;
         }
 
-        /// <summary>
-        /// Constructor for abstract products
-        /// </summary>
-        private Product(string name, float defaultPrice, List<Product> substitutes, Type productType) : this(name, defaultPrice, productType)
-        {
-            _isAbstract = true;
-            this.substitutes = substitutes;
-        }
+        ///// <summary>
+        ///// Constructor for abstract products
+        ///// </summary>
+        //private Product(string name, float defaultPrice, List<Product> substitutes, Type productType) : this(name, defaultPrice, productType)
+        //{
+        //    _isAbstract = true;
+        //    this.substitutes = substitutes;
+        //}
 
         public static IEnumerable<Product> All()
         {
@@ -170,7 +170,7 @@ namespace Nashet.EconomicSimulation
         public static IEnumerable<Product> AllNonAbstract()
         {
             foreach (var item in allProducts)
-                if (!item.isAbstract())
+                //if (!item.isAbstract())
                     yield return item;
         }
 
@@ -246,17 +246,17 @@ namespace Nashet.EconomicSimulation
         //        if (item.isConsumerProduct() && item.isInventedBy(country))
         //            yield return item;
         //}
-        /// <summary>
-        /// Gives elements in cheap-expensive order
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<Product> getSubstitutes()
-        {
-            foreach (var item in substitutes)
-            {
-                yield return item;
-            }
-        }
+        ///// <summary>
+        ///// Gives elements in cheap-expensive order
+        ///// </summary>
+        ///// <returns></returns>
+        //public IEnumerable<Product> getSubstitutes()
+        //{
+        //    foreach (var item in substitutes)
+        //    {
+        //        yield return item;
+        //    }
+        //}
 
         public static Product getRandomResource(bool ignoreGold)
         {
@@ -265,23 +265,23 @@ namespace Nashet.EconomicSimulation
             return allProducts.Where(x => x.isResource()).Random();
         }
 
-        public static void sortSubstitutes(Market market)
-        {
-            foreach (var item in All().Where(x => x.isAbstract()))
-            //if (item.isTradable())
-            // Abstract are always invented and not gold
-            {
-                item.substitutes.Sort(delegate (Product x, Product y)
-                {
-                    //if (x == null && y == null) return 0;
-                    //else 
-                    //if (x.PartName == null) return -1;
-                    //else if (y.PartName == null) return 1;
-                    //else
-                    return market.getCost(x).Get().CompareTo(market.getCost(y).Get());
-                });
-            }
-        }
+        //public static void sortSubstitutes(Market market)
+        //{
+        //    foreach (var item in All().Where(x => x.isAbstract()))
+        //    //if (item.isTradable())
+        //    // Abstract are always invented and not gold
+        //    {
+        //        item.substitutes.Sort(delegate (Product x, Product y)
+        //        {
+        //            //if (x == null && y == null) return 0;
+        //            //else 
+        //            //if (x.PartName == null) return -1;
+        //            //else if (y.PartName == null) return 1;
+        //            //else
+        //            return market.getCost(x).Get().CompareTo(market.getCost(y).Get());
+        //        });
+        //    }
+        //}
 
         //public static int CostOrder(Product x, Product y)//, Market market
         //{
@@ -301,10 +301,10 @@ namespace Nashet.EconomicSimulation
             return this != Gold && IsInventedByAnyOne();
         }
 
-        public bool isAbstract()
-        {
-            return _isAbstract;
-        }
+        //public bool isAbstract()
+        //{
+        //    return _isAbstract;
+        //}
 
         public bool isMilitary()
         {
@@ -326,20 +326,20 @@ namespace Nashet.EconomicSimulation
         {
             if (this == anotherProduct)
                 return true;
-            if (anotherProduct.isAbstract() && anotherProduct.substitutes.Contains(this))
-                return true;
-            else
+            //if (anotherProduct.isAbstract() && anotherProduct.substitutes.Contains(this))
+            //    return true;
+            //else
                 return false;
         }
 
-        /// <summary> Assuming product is abstract product</summary>
-        public bool isSubstituteFor(Product product)
-        {
-            if (product.substitutes.Contains(this))
-                return true;
-            else
-                return false;
-        }
+        ///// <summary> Assuming product is abstract product</summary>
+        //public bool isSubstituteFor(Product product)
+        //{
+        //    if (product.substitutes.Contains(this))
+        //        return true;
+        //    else
+        //        return false;
+        //}
 
         public bool isResource()
         {
@@ -350,8 +350,8 @@ namespace Nashet.EconomicSimulation
         {
             // including dead countries. Because dead country could organize production
             //of some freshly invented product
-            if (isAbstract())
-                return true;
+            //if (isAbstract())
+            //    return true;
             foreach (var country in World.AllExistingCountries())
                 if (country.Science.IsInvented(this))
                     return true;
@@ -394,24 +394,24 @@ namespace Nashet.EconomicSimulation
 
         public override string ToString()
         {
-            if (isAbstract())
-            {
-                var sb = new StringBuilder(base.ToString());
-                sb.Append(" (");
-                bool firstLine = true;
-                foreach (var item in getSubstitutes())
-                    if (item.IsInventedByAnyOne())
-                    {
-                        if (!firstLine)
-                            sb.Append(" or ");
-                        sb.Append(item);
-                        firstLine = false;
-                    }
-                sb.Append(")");
-                return sb.ToString();
-                //getSubstitutes().ToList().getString(" or ");
-            }
-            else
+            //if (isAbstract())
+            //{
+            //    var sb = new StringBuilder(base.ToString());
+            //    sb.Append(" (");
+            //    bool firstLine = true;
+            //    foreach (var item in getSubstitutes())
+            //        if (item.IsInventedByAnyOne())
+            //        {
+            //            if (!firstLine)
+            //                sb.Append(" or ");
+            //            sb.Append(item);
+            //            firstLine = false;
+            //        }
+            //    sb.Append(")");
+            //    return sb.ToString();
+            //    //getSubstitutes().ToList().getString(" or ");
+            //}
+            //else
                 return base.ToString();
         }
 

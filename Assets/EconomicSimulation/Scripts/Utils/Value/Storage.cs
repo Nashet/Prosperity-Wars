@@ -257,7 +257,7 @@ namespace Nashet.ValueSpace
         //}
         public bool isAbstractProduct()
         {
-            return Product.isAbstract();
+            return false;// Product.isAbstract();
         }
 
         //[System.Obsolete("Method is deprecated, need product specified")]

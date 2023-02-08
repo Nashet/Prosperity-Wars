@@ -510,7 +510,7 @@ namespace Nashet.EconomicSimulation
         public void setResource(Product inres)
         {
             resource = inres;
-            if (resource == Product.Stone || resource == Product.Gold || resource == Product.MetalOre || resource == Product.Coal)
+            if (resource == Product.Stone || resource == Product.Gold || resource == Product.MetalOre)
                 Terrain = TerrainTypes.Mountains;
             else
                 Terrain = TerrainTypes.Plains;
