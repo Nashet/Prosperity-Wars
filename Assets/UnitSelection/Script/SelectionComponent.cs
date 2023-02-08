@@ -39,17 +39,17 @@ namespace Nashet.UnitSelection
                     SelectUnitOrProvince();
                 }
                 //Disabled in prior to map scroling
-                //if (isSelecting)
-                //    EndFrameSelection();// If we let go of the left mouse button, end selection
+                if (isSelecting)
+                    EndFrameSelection();// If we let go of the left mouse button, end selection
             }
             else
             {
                 //Disabled in prior to map scroling
                 // If we press the left mouse button, begin selection and remember the location of the mouse
-                //if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && !Game.isInSendArmyMode)
-                //{
-                //    StartFrameSelection();
-                //}
+                if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && !Game.isInSendArmyMode)
+                {
+                    StartFrameSelection();
+                }
             }
 
             // MOUSE RIGHT BUTTON clicked or Left clicked after SendButon clicked

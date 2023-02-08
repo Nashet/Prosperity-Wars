@@ -236,8 +236,8 @@ namespace Nashet.EconomicSimulation
                 + "\n\nYou play as " + Player.FullName + " You can try to growth economy or conquer the world."
                 + "\n\nOr, You can give control to AI and watch it"
                 + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
-                + "\n'Enter' key to close top window, space - to pause \\ unpause, left alt - to add command"
-                + "\n\n\nI have now Patreon page where I post about that game development. Try red button below!"
+                + "\n'Enter' key to close top window, space - to pause \\ unpause, left alt - to add command or unit"
+              //  + "\n\n\nI have now Patreon page where I post about that game development. Try red button below!"
                 + "\nAlso I would be thankful if you will share info about this project"
                 , "Ok", false);
             //, Game.Player.Capital.getPosition()
