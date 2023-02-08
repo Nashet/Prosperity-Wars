@@ -23,6 +23,7 @@ namespace Nashet.EconomicSimulation
         public bl_Joystick scrolJoystic;
 
         [SerializeField] private GameObject[] objectsToInstantiateIn2DCanvas;
+        public Canvas UICanvas;
 
         // Use this for initialization
         private void Start()
