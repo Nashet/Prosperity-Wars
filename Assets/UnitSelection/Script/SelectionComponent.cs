@@ -15,8 +15,7 @@ namespace Nashet.UnitSelection
 
         //public GameObject selectionCirclePrefab;
         private static Camera camera; // it's OK
-        [SerializeField]
-        private KeyCode AdditionKey;
+        [SerializeField] private KeyCode AdditionKey;
         private int nextArmyToSelect;
 
         private void Start()
@@ -24,32 +23,38 @@ namespace Nashet.UnitSelection
             camera = GetComponent<Camera>();
         }
 
+        //TODO need to get rid of Update()
+        private DateTime last = new DateTime(1991, 12, 24);
         private void Update()
         {
-            if (Input.GetMouseButtonUp(0))
+            //left mouse button
+            if (Input.GetMouseButtonUp(0) && !Game.isInSendArmyMode && (DateTime.Now - last).Seconds > 0.1f)// !ignoreIreviousIsInSendArmyModeState
             {
                 if (!EventSystem.current.IsPointerOverGameObject())//!hovering over UI) 
                 {
                     SelectUnitOrProvince();
                 }
-                if (isSelecting)
-                    EndFrameSelection();// If we let go of the left mouse button, end selection
+                //Disabled in prior to map scroling
+                //if (isSelecting)
+                //    EndFrameSelection();// If we let go of the left mouse button, end selection
             }
             else
             {
+                //Disabled in prior to map scroling
                 // If we press the left mouse button, begin selection and remember the location of the mouse
-                if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
-                {
-                    StartFrameSelection();
-                }
+                //if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && !Game.isInSendArmyMode)
+                //{
+                //    StartFrameSelection();
+                //}
             }
 
-            // MOUSE RIGHT BUTTON clicked
-            if (!Game.selectedArmies.IsEmpty() && Input.GetMouseButtonDown(1))
+            // MOUSE RIGHT BUTTON clicked or Left clicked after SendButon clicked
+            if (!Game.selectedArmies.IsEmpty() && (Input.GetMouseButtonDown(1) || Game.isInSendArmyMode && Input.GetMouseButtonDown(0)))
             {
+                last = DateTime.Now;
+                Game.ChangeIsInSendArmyMode(false);
                 SendUnitTo();
             }
-           
 
             Game.previoslySelectedProvince = Game.selectedProvince;
             // Highlight all objects within the selection box
@@ -76,6 +81,7 @@ namespace Nashet.UnitSelection
             //        }
             //    }
             //}
+
         }
         private void SendUnitTo()
         {

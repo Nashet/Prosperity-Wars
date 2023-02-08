@@ -28,6 +28,8 @@ namespace Nashet.EconomicSimulation
         public static List<Province> provincesToRedrawArmies = new List<Province>();
         public static List<Army> selectedArmies = new List<Army>();
         public static List<Province> playerVisibleProvinces = new List<Province>();
+        public static bool isInSendArmyMode { get; private set; }
+        public static Action<bool> OnIsInSendArmyModeChanged;
 
         private static MapModes mapMode;
 
@@ -244,6 +246,14 @@ namespace Nashet.EconomicSimulation
         protected override void ThreadFunction()
         {
             InitializeNonUnityData();
+        }
+
+        public static void ChangeIsInSendArmyMode(bool state)
+        {
+            if (state == isInSendArmyMode)
+                return;
+            isInSendArmyMode = state;
+            OnIsInSendArmyModeChanged.Invoke(state);
         }
     }
 }
