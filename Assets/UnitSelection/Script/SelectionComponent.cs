@@ -18,21 +18,19 @@ namespace Nashet.UnitSelection
         //public GameObject selectionCirclePrefab;
         private static Camera camera; // it's OK
         private int nextArmyToSelect;
-        private MainCamera cameraScript;
 
         private void Start()
         {
             camera = GetComponent<Camera>();
-            cameraScript = camera.GetComponent<MainCamera>();
         }
 
         //TODO need to get rid of Update()
         private DateTime last = new DateTime(1991, 12, 24);
         private void Update()
         {
-            if (Input.touchCount > 1)
-                return;
             var endedSelection = HandleFrameSelection();
+            //if (Input.touchCount > 1)
+            //    return;
             // if (!endedSelection)
             HandleUnitOrProvinceClick();
             HandleSendUnitTo();

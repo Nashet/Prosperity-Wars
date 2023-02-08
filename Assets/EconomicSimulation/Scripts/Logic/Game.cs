@@ -247,37 +247,7 @@ namespace Nashet.EconomicSimulation
         {
             var resosolution = Screen.currentResolution;
             if (resosolution.width < resosolution.height)
-                MessageSystem.Instance.NewMessage("(╯ ° □ °) ╯ (┻━┻)", "It looks like you are in portrait mode. Rotate it to album for better UI scale.", "Ok", false);
-
-            DirtyWayToFixTablesScale();
-        }
-
-        private static void DirtyWayToFixTablesScale()
-        {
-            MainCamera.populationPanel.Show();
-            MainCamera.politicsPanel.Show();
-            MainCamera.tradeWindow.Show();
-            MainCamera.productionWindow.Show();
-            MainCamera.inventionsPanel.Show();
-            MainCamera.StatisticPanel.Show();           
-
-            var scaler = LinksManager.Get.UICanvas.GetComponent<CanvasScaler>();
-            scaler.enabled = true;
-           
-            MainCamera.populationPanel.Show();
-            MainCamera.politicsPanel.Show();
-            MainCamera.tradeWindow.Show();
-            MainCamera.productionWindow.Show();
-            MainCamera.inventionsPanel.Show();
-            MainCamera.StatisticPanel.Show();
-
-
-            MainCamera.populationPanel.Hide();
-            MainCamera.politicsPanel.Hide();
-            MainCamera.tradeWindow.Hide();
-            MainCamera.productionWindow.Hide();
-            MainCamera.inventionsPanel.Hide();
-            MainCamera.StatisticPanel.Hide();
+                MessageSystem.Instance.NewMessage("(╯ ° □ °) ╯ (┻━┻)", "It looks like you are in portrait mode. Rotate it to album for better UI scale.", "Ok", false);           
         }
 
         protected override void ThreadFunction()
