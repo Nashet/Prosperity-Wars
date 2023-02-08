@@ -1,5 +1,4 @@
 ﻿using Nashet.UnityUIUtils;
-using Nashet.Utils;
 using Nashet.ValueSpace;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +13,6 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class DebugWindow : DragPanel
     {
-
         public static bool Exist { get; private set; }
 
         [SerializeField]
@@ -22,6 +20,9 @@ namespace Nashet.EconomicSimulation
 
         [SerializeField]
         private Text richestAgents;
+
+        [SerializeField]
+        private Text generalText;
 
         public override void Refresh()
         {
@@ -37,6 +38,8 @@ namespace Nashet.EconomicSimulation
             logMarketFailsToggle.isOn = Game.logMarket;
             FOWToggle.isOn = Game.DrawFogOfWar;
             richestAgents.GetComponent<ToolTipHandler>().SetTextDynamic(() => gett(World.AllAgents.OrderByDescending(x => x.Cash.Get()).Take(10)));//.ToString("\n")
+            generalText.text = $"Resolution is {Screen.width}x{Screen.height}\n" +
+                $"isMobile is {SystemInfo.deviceType == DeviceType.Handheld}";
         }
 
         private string gett(IEnumerable<Agent> collection)
