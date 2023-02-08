@@ -10,17 +10,22 @@ namespace Nashet.UnitSelection
 {
     public class SelectionComponent : MonoBehaviour
     {
+        [SerializeField] private KeyCode AdditionKey;
+        [SerializeField] private float mapDragSpeed = 0.05f;
+
         private bool isSelecting = false;
         private Vector3 mousePosition1;
 
         //public GameObject selectionCirclePrefab;
         private static Camera camera; // it's OK
-        [SerializeField] private KeyCode AdditionKey;
         private int nextArmyToSelect;
+        private Vector3 oldMousePosition;
+        private MainCamera cameraScript;
 
         private void Start()
         {
             camera = GetComponent<Camera>();
+            cameraScript = camera.GetComponent<MainCamera>();
         }
 
         //TODO need to get rid of Update()
@@ -56,6 +61,8 @@ namespace Nashet.UnitSelection
                 SendUnitTo();
             }
 
+            HandleMapScroll();
+
             Game.previoslySelectedProvince = Game.selectedProvince;
             // Highlight all objects within the selection box
             //if (isSelecting)
@@ -83,6 +90,18 @@ namespace Nashet.UnitSelection
             //}
 
         }
+        
+        private void HandleMapScroll()
+        {
+            if (Input.GetMouseButton(0))
+            {                
+                var positionChange = (oldMousePosition - Input.mousePosition) * mapDragSpeed;
+                cameraScript.Move(positionChange.x, 0, positionChange.y);
+                //Debug.LogError(Input.mousePosition);
+            }
+            oldMousePosition = Input.mousePosition;
+        }
+
         private void SendUnitTo()
         {
             var collider = getRayCastMeshNumber();
