@@ -1453,7 +1453,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1472,8 +1472,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Notes for generating map from a file:\r\n\n - should be in png format\r\n
-    - each province is coded with unique color\r\n - not exactly compatible with
+  m_Text: "Notes for generating map from a file:\r\n\n - each province is coded with
+    unique color\r\n - should be in png format\r\n - not exactly compatible with
     Vic 2 map format\r\n - don't use antialiasing\r\n - size 200x200 pixels (average
     lags), 800x600 - huge lags, more - wouldn't work\r\n - province will count as
     sea if province color is green + blue >= 400 && red < 96"
