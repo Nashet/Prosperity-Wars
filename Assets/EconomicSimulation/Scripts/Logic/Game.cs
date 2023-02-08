@@ -66,7 +66,7 @@ namespace Nashet.EconomicSimulation
 
             //Game.updateStatus("Making grid..");
             grid = new VoxelGrid<AbstractProvince>(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture, World.AllAbstractProvinces);
-
+            
             if (!devMode)
                 makeHelloMessage();
             updateStatus("Finishing generation..");
@@ -236,7 +236,7 @@ namespace Nashet.EconomicSimulation
                 + "\n\nOr, You can give control to AI and watch it"
                 + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
                 + "\n'Enter' key to close top window, space - to pause \\ unpause, left alt - to add command or unit"
-              //  + "\n\n\nI have now Patreon page where I post about that game development. Try red button below!"
+                //  + "\n\n\nI have now Patreon page where I post about that game development. Try red button below!"
                 + "\nAlso I would be thankful if you will share info about this project"
                 , "Ok", false, OnClosed
                 );
@@ -257,7 +257,7 @@ namespace Nashet.EconomicSimulation
             MainCamera.populationPanel.Show();
             MainCamera.politicsPanel.Show();
             MainCamera.tradeWindow.Show();
-            MainCamera.factoryPanel.Show();
+            MainCamera.productionWindow.Show();
             MainCamera.inventionsPanel.Show();
             MainCamera.StatisticPanel.Show();           
 

@@ -25,7 +25,8 @@ namespace Nashet.UISystem
         {
             MainCamera.inventionsPanel = this;
             inventButton.interactable = false;
-            GetComponent<RectTransform>().position = new Vector2(0f, -458f + Screen.height);
+            //GetComponent<RectTransform>().position = new Vector2(0f, -458f + Screen.height);
+            GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, 45);
             Hide();
         }
 
