@@ -71,13 +71,6 @@
       "dependencies": {},
       "url": "https://staging-packages.unity.com"
     },
-    "com.unity.incrementalcompiler": {
-      "version": "0.0.40",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://staging-packages.unity.com"
-    },
     "com.unity.nuget.newtonsoft-json": {
       "version": "3.0.2",
       "depth": 2,
