@@ -68,11 +68,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (owner.countryStorageSet.has(need))
                 {
-                    if (need.isAbstractProduct())
-                        // convertToBiggestStorageProduct here are duplicated in this.getConsumptionProcent() (getBiggestStorage())
-                        realConsumption = owner.countryStorageSet.convertToBiggestStorage(need);
-                    else
-                        realConsumption = need;
+                    realConsumption = need;
                     if (realConsumption.isNotZero())
                     {
                         owner.consumeFromCountryStorage(realConsumption, owner);
@@ -86,7 +82,7 @@ namespace Nashet.EconomicSimulation
                 }
             }
 
-            float moraleChange = getConsumptionProcent(Product.Food, owner).get() - morale.get();
+            float moraleChange = getConsumptionProcent(Product.Grain, owner).get() - morale.get();
             moraleChange = Mathf.Clamp(moraleChange, Options.ArmyMaxMoralChangePerTic * -1f, Options.ArmyMaxMoralChangePerTic);
             if (morale.get() + moraleChange < 0)
                 morale.Set(0f);
@@ -109,12 +105,12 @@ namespace Nashet.EconomicSimulation
         public Procent getConsumptionProcent(Product product, Country country)
         {
             // getBiggestStorage here are duplicated in this.consume() (convertToBiggestStorageProduct())
-            return new Procent(consumption.getBiggestStorage(product), getRealNeeds(country, product), false);
+            return new Procent(consumption.GetStorage(product), getRealNeeds(country, product), false);
         }
 
         public Value getConsumption(Product prod)
         {
-            return consumption.GetFirstSubstituteStorage(prod);
+            return consumption.GetStorage(prod);
         }
 
         public List<Storage> getRealNeeds(Country country)

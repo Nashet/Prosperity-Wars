@@ -329,7 +329,7 @@ namespace Nashet.EconomicSimulation
             {
                 Vector3 capitalTextPosition = newCapital.Position;
                 capitalTextPosition.y += 2f;
-                capitalTextPosition.z -= 5f;
+                //capitalTextPosition.z -= 5f;
                 meshCapitalText.transform.position = capitalTextPosition;
             }
             capital = newCapital;
@@ -383,8 +383,8 @@ namespace Nashet.EconomicSimulation
             // could it give uninvented factory?
             if (propositionFactory != null)
             {
-                var buildNeeds = countryStorageSet.hasAllOfConvertToBiggest(propositionFactory.GetBuildNeeds());
-                if (buildNeeds != null)
+                var buildNeeds = propositionFactory.GetBuildNeeds();
+                if (countryStorageSet.has(buildNeeds))                
                 {
                     var newFactory = province.BuildFactory(this, propositionFactory, Country.market.getCost(buildNeeds));
                     consumeFromCountryStorage(buildNeeds, this);
@@ -408,7 +408,7 @@ namespace Nashet.EconomicSimulation
                     if (proposition != null)
                         if (proposition.canBuildNewFactory(province, this) || province.CanUpgradeFactory(proposition, this))
                         {
-                            var found = countryStorageSet.GetFirstSubstituteStorage(item);
+                            var found = countryStorageSet.GetStorage(item);
                             if (minFound == null || found.isSmallerThan(minFound))
                                 minFound = found;
                         }
@@ -707,7 +707,7 @@ namespace Nashet.EconomicSimulation
                     }
                     else
                     {
-                        var takenFromStorage = new Storage(countryStorageSet.used.GetFirstSubstituteStorage(product));
+                        var takenFromStorage = new Storage(countryStorageSet.used.GetStorage(product));
 
                         if (takenFromStorage.isZero())
                         {
@@ -720,7 +720,7 @@ namespace Nashet.EconomicSimulation
                             maxLimit = takenFromStorage.Multiply(Options.CountrySaveProductsDaysMaximum);
                         }
                     }
-                    var howMuchHave = countryStorageSet.GetFirstSubstituteStorage(product);
+                    var howMuchHave = countryStorageSet.GetStorage(product);
                     if (howMuchHave.isBiggerThan(maxLimit))
                     {
                         var howMuchToSell = howMuchHave.Copy().subtract(maxLimit);
@@ -753,11 +753,11 @@ namespace Nashet.EconomicSimulation
                     desiredMinimum = getBuyIfLessLimits(product);
                 else
                 {
-                    desiredMinimum = new Storage(countryStorageSet.used.GetFirstSubstituteStorage(product));
+                    desiredMinimum = new Storage(countryStorageSet.used.GetStorage(product));
                     if (desiredMinimum.isZero())
                         desiredMinimum.Add(Options.CountryMinStorage);
                 }
-                var toBuy = desiredMinimum.Copy().subtract(countryStorageSet.GetFirstSubstituteStorage(product), false);
+                var toBuy = desiredMinimum.Copy().subtract(countryStorageSet.GetStorage(product), false);
                 if (toBuy.isBiggerThan(Value.Zero))
                     buyNeeds(toBuy);//go buying
             }
@@ -765,7 +765,7 @@ namespace Nashet.EconomicSimulation
             //foreach (var currentStorage in countryStorageSet)
             foreach (var product in Product.AllNonAbstractTradableInPEOrder(this))
             {
-                var takenFromStorage = new Storage(countryStorageSet.used.GetFirstSubstituteStorage(product));
+                var takenFromStorage = new Storage(countryStorageSet.used.GetStorage(product));
                 Storage desiredMinimum;
                 if (usePlayerTradeSettings)
                     desiredMinimum = getBuyIfLessLimits(product);
@@ -776,7 +776,7 @@ namespace Nashet.EconomicSimulation
                     else
                         desiredMinimum = takenFromStorage.Copy().Multiply(Options.CountryBuyProductsForXDays);
                 }
-                var toBuy = desiredMinimum.Copy().subtract(countryStorageSet.GetFirstSubstituteStorage(product), false);
+                var toBuy = desiredMinimum.Copy().subtract(countryStorageSet.GetStorage(product), false);
                 if (toBuy.isBiggerThan(Value.Zero)) // have less than desiredMinimum
                     buyNeeds(toBuy);//go buying
                 else    // no need to buy anything
@@ -791,7 +791,7 @@ namespace Nashet.EconomicSimulation
                         else
                             desiredMaximum = takenFromStorage.Copy().Multiply(Options.CountrySaveProductsDaysMaximum);
                     }
-                    var toSell = countryStorageSet.GetFirstSubstituteStorage(product).Copy().subtract(desiredMaximum, false);
+                    var toSell = countryStorageSet.GetStorage(product).Copy().subtract(desiredMaximum, false);
                     if (toSell.isBiggerThan(Value.Zero))   // have more than desiredMaximum
                     {
                         if (toSell.isNotZero())

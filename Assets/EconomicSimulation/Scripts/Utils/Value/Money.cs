@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Nashet.ValueSpace
 {
-    public class Money : MoneyView, ICopyable<Money>
+    public class Money : MoneyView, ICopyable<Money>, IComparable
     {
         public Money(decimal value, bool showMessageAboutNegativeValue = true) : base(value, showMessageAboutNegativeValue)
         { }
@@ -107,6 +107,12 @@ namespace Nashet.ValueSpace
         public void SetZero()
         {
             data = 0;
+        }
+
+        public int CompareTo(object obj)
+        {
+            var another = obj as Money;
+            return this.data.CompareTo(another.data);
         }
     }
 }

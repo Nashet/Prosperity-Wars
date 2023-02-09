@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace Nashet.UISystem
 {
-    internal class InventionsPanel : DragPanel
+    public class InventionsPanel : DragPanel
     {
         [SerializeField]
         protected InventionsPanelTable table;
@@ -23,9 +23,10 @@ namespace Nashet.UISystem
         // Use this for initialization
         private void Start()
         {
-            //MainCamera.inventionsPanel = this;
+            MainCamera.inventionsPanel = this;
             inventButton.interactable = false;
-            GetComponent<RectTransform>().position = new Vector2(0f, -458f + Screen.height);
+            //GetComponent<RectTransform>().position = new Vector2(0f, -458f + Screen.height);
+            GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, 45);
             Hide();
         }
 

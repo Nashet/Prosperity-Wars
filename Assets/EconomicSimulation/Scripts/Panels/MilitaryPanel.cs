@@ -74,6 +74,7 @@ namespace Nashet.EconomicSimulation
             //if (Game.Player.homeArmy.getSize() == 0)
             //  Game.Player.homeArmy = new Army(Game.Player);
             Game.Player.mobilize(Game.Player.AllProvinces);
+            MainCamera.Get.FocusOnProvince(Game.Player.Capital, false);
             //onArmyLimitChanged(0f);
             //MainCamera.tradeWindow.refresh();
             refresh(false);

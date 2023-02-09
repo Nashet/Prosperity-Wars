@@ -179,6 +179,7 @@ namespace Nashet.UnityUIUtils
         {
             GameObject newButton = buttonObjectPool.GetObject();
             newButton.transform.SetParent(gameObject.transform, true);
+            newButton.transform.localScale = Vector3.one;
             SimpleCell sampleButton = newButton.GetComponent<SimpleCell>();
             sampleButton.Setup(text, @object);
             if (dynamicTooltip != null)

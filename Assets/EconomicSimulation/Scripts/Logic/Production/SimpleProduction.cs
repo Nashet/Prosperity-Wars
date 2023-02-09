@@ -82,14 +82,7 @@ namespace Nashet.EconomicSimulation
             //consume Input Resources
             if (!type.isResourceGathering())
                 foreach (Storage next in getRealAllNeeds())
-                    if (next.isAbstractProduct())
-                    {
-                        var substitute = getInputProductsReserve().convertToBiggestStorage(next);
-                        if (substitute.isNotZero())
-                            getInputProductsReserve().Subtract(substitute, false); // could be zero reserves if isJustHiredPeople()
-                    }
-                    else
-                        getInputProductsReserve().Subtract(next, false);
+                   getInputProductsReserve().Subtract(next, false);
         }
 
         public abstract Procent getInputFactor();
@@ -122,7 +115,7 @@ namespace Nashet.EconomicSimulation
             // check if we have enough resources
             foreach (Storage resource in reallyNeedResources)
             {
-                Storage haveResource = getInputProductsReserve().getBiggestStorage(resource.Product);
+                Storage haveResource = getInputProductsReserve().GetStorage(resource.Product);
                 //if (!getInputProductsReserve().has(resource))
                 if (haveResource.isSmallerThan(resource))
                 {
@@ -154,7 +147,7 @@ namespace Nashet.EconomicSimulation
             // searching lowest factor
             foreach (Storage need in reallyNeedResources)
             {
-                Value denominator = type.resourceInput.GetFirstSubstituteStorage(need.Product).Copy().Multiply(multiplier);
+                Value denominator = type.resourceInput.GetStorage(need.Product).Copy().Multiply(multiplier);
                 if (denominator.isNotZero())
                 {
                     var newfactor = new Procent(need, denominator);
@@ -180,7 +173,7 @@ namespace Nashet.EconomicSimulation
             {
                 Storage howMuchWantToBuy = new Storage(next);
                 howMuchWantToBuy.Multiply(multiplier);
-                Storage howMuchHave = getInputProductsReserve().getBiggestStorage(next.Product);
+                Storage howMuchHave = getInputProductsReserve().GetStorage(next.Product);
                 if (howMuchWantToBuy.isBiggerThan(howMuchHave))
                 {
                     howMuchWantToBuy.subtract(howMuchHave);
@@ -243,7 +236,7 @@ namespace Nashet.EconomicSimulation
         protected float getLocalEffectiveDemand(Product product, Procent multiplier)
         {
             // need to know how much i Consumed inside my needs
-            Storage need = type.resourceInput.GetFirstSubstituteStorage(product).Copy();
+            Storage need = type.resourceInput.GetStorage(product).Copy();
             if (need.isZero())
                 return 0f;
             else

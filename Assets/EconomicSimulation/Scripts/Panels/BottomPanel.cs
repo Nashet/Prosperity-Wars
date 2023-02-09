@@ -14,15 +14,17 @@ namespace Nashet.EconomicSimulation
         protected Text generalText;
 
         [SerializeField]
-        protected GameObject debugWindowPrefab;        
+        protected GameObject debugWindowPrefab;
+        private MainCamera cameraScript;
 
         // Use this for initialization
         new private void Awake() // used to position other windows
         {
             base.Awake();
             MainCamera.bottomPanel = this;
-            generalText.text = "Prosperity Wars v0.20.9+";      
+            generalText.text = "Prosperity Wars v0.20.10";      
             Hide();
+            cameraScript = Camera.main.GetComponent<MainCamera>(); ;
         }
 
         public override void Refresh()
@@ -57,39 +59,33 @@ namespace Nashet.EconomicSimulation
         }
 
         public void OnScrollLeft()
-        {
-            var cameraScript = Camera.main.GetComponent<MainCamera>();
-            cameraScript.Move(-1f, 0f, 0f);
+        {            
+            cameraScript.Move(-1f, 0f);
         }
 
         public void OnScrollRight()
         {
-            var cameraScript = Camera.main.GetComponent<MainCamera>();
-            cameraScript.Move(1f, 0f, 0f);
+            cameraScript.Move(1f, 0f);
         }
 
         public void OnScrollUp()
         {
-            var cameraScript = Camera.main.GetComponent<MainCamera>();
-            cameraScript.Move(0f, 0f, 1f);
+            cameraScript.Move(0f, 1f);
         }
 
         public void OnScrollDown()
         {
-            var cameraScript = Camera.main.GetComponent<MainCamera>();
-            cameraScript.Move(0f, 0f, -1f);
+            cameraScript.Move(0f, -1f);
         }
 
         public void OnScaleIn()
         {
-            var cameraScript = Camera.main.GetComponent<MainCamera>();
-            cameraScript.Move(0f, -0.1f, 0f);
+            cameraScript.Zoom(-0.1f);
         }
 
         public void OnScaleOut()
         {
-            var cameraScript = Camera.main.GetComponent<MainCamera>();
-            cameraScript.Move(0f, 0.1f, 0f);
+            cameraScript.Zoom(0.1f);
         }
 
         public void OnTest()

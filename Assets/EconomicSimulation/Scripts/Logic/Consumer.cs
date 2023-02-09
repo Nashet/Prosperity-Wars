@@ -93,36 +93,25 @@ namespace Nashet.EconomicSimulation
             if (need.isNotZero())
             {
                 Market market = Market.GetCheapestMarket(need);
-                Storage sale;
-                if (need.Product.isAbstract())
-                {
-                    sale = market.prices.ConvertToRandomCheapestExistingSubstitute(need, Country.market);
-                    if (sale == null)//no substitution available on market
-                        return new Storage(need.Product);
-                    else if (sale.isZero())
-                        return sale;
-                }
-                else
-                    sale = need;
-
+               
                 Storage howMuchCanConsume;
-                MoneyView price = Country.market.getCost(sale.Product);
+                MoneyView price = Country.market.getCost(need.Product);
                 MoneyView cost;
 
-                if (market.HasAvailable(sale))
+                if (market.HasAvailable(need))
                 {
-                    cost = Country.market.getCost(sale);
+                    cost = Country.market.getCost(need);
 
                     if (this.CanPay(cost))
                     {
-                        this.Buy_utility(market, cost, sale);
-                        return sale;
+                        this.Buy_utility(market, cost, need);
+                        return need;
                     }
                     else
                     {
                         float val = (float)(this.getMoneyAvailable().Get() / price.Get());
-                        howMuchCanConsume = new Storage(sale.Product, val);
-                        howMuchCanConsume.Subtract(0.001f, false); // to fix precision bug
+                        howMuchCanConsume = new Storage(need.Product, val);
+                        howMuchCanConsume.Subtract(0.001f, false); // todo fix precision bug
                         if (howMuchCanConsume.isZero())
                             return howMuchCanConsume;
                         else
@@ -136,7 +125,7 @@ namespace Nashet.EconomicSimulation
                 else
                 {
                     // assuming available < buying
-                    Storage howMuchAvailable = new Storage(market.HowMuchAvailable(sale));
+                    Storage howMuchAvailable = new Storage(market.HowMuchAvailable(need));
                     if (howMuchAvailable.isNotZero())
                     {
                         cost = Country.market.getCost(howMuchAvailable);
@@ -186,13 +175,13 @@ namespace Nashet.EconomicSimulation
 
                 // check if consumeOnThisIteration is not bigger than stillHaveToBuy
                 if (!stillHaveToBuy.has(consumeOnThisIteration))
-                    consumeOnThisIteration = stillHaveToBuy.getBiggestStorage(what.Product);
+                    consumeOnThisIteration = stillHaveToBuy.GetStorage(what.Product);
 
                 var reallyBought = Buy(consumeOnThisIteration, null);
 
                 stillHaveToBuy.Subtract(reallyBought);
 
-                if (stillHaveToBuy.getBiggestStorage(what.Product).isNotZero())
+                if (stillHaveToBuy.GetStorage(what.Product).isNotZero())
                     buyingIsFinished = false;
             }
             return buyingIsFinished;

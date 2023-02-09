@@ -1,4 +1,5 @@
 ﻿using Nashet.EconomicSimulation;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -55,10 +56,10 @@ namespace Nashet.UnityUIUtils
                 Queue.Push(new Message(caption, message, closeText, focus));
         }
 
-        public void NewMessage(string caption, string message, string closeText, bool isDefeatingAttackersMessage)
+        public void NewMessage(string caption, string message, string closeText, bool isDefeatingAttackersMessage, Action onClosed = null)
         {
             if (!isDefeatingAttackersMessage || showDefeatingAttackersMessages)
-                Queue.Push(new Message(caption, message, closeText));
+                Queue.Push(new Message(caption, message, closeText, onClosed));
         }
 
         protected void Update()

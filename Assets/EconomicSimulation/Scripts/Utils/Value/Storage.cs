@@ -250,26 +250,7 @@ namespace Nashet.ValueSpace
         {
             return Product == anotherProduct;
         }
-
-        //public bool isSubstituteProduct(Product product)
-        //{
-        //    return this.Product.isSubstituteFor(product);
-        //}
-        public bool isAbstractProduct()
-        {
-            return Product.isAbstract();
-        }
-
-        //[System.Obsolete("Method is deprecated, need product specified")]
-        //override public Value multipleOutside(float invalue, bool showMessageAboutOperationFails = true)
-        //{
-        //    throw new DontUseThatMethod();
-        //}
-        //[System.Obsolete("Method is deprecated, need product specified")]
-        //override public Value multipleOutside(Value invalue, bool showMessageAboutNegativeValue = true)
-        //{
-        //    throw new DontUseThatMethod();
-        //}
+        
         public Storage subtract(Storage storage, bool showMessageAboutNegativeValue = true)
         {
             //if (!this.isSameProductType(storage.Product))
@@ -291,7 +272,6 @@ namespace Nashet.ValueSpace
 
         public void OnClicked()
         {
-            if (!isAbstractProduct())
                 MainCamera.tradeWindow.selectProduct((this).Product);
         }
 

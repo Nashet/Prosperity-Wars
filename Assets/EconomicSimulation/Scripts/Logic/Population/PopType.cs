@@ -33,14 +33,14 @@ namespace Nashet.EconomicSimulation
 
         static PopType() // can't be private
         {
-            var militaryNeeds = new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.Cattle, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.MotorFuel, 0.6f) };
-            var tribemenLifeNeeds = new List<Storage> { new Storage(Product.Food, 1) };
-            var tribemenEveryDayNeeds = new List<Storage> { new Storage(Product.Food, 2) };
-            var tribemenLuxuryNeeds = new List<Storage> { new Storage(Product.Food, 3) };
+            var militaryNeeds = new List<Storage> { new Storage(Product.Grain, 0.2f), new Storage(Product.Cattle, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.MotorFuel, 0.6f) };
+            var tribemenLifeNeeds = new List<Storage> { new Storage(Product.Grain, 1) };
+            var tribemenEveryDayNeeds = new List<Storage> { new Storage(Product.Grain, 2) };
+            var tribemenLuxuryNeeds = new List<Storage> { new Storage(Product.Grain, 3) };
             Tribesmen = new PopType("Tribesmen", new Storage(Product.Cattle, 1.0f), 2f,
                 militaryNeeds, tribemenLifeNeeds, tribemenEveryDayNeeds, tribemenLuxuryNeeds);
             //***************************************next type***************************
-            var aristocratsLifeNeeds = new List<Storage> { new Storage(Product.Food, 1) };
+            var aristocratsLifeNeeds = new List<Storage> { new Storage(Product.Grain, 1) };
             var aristocratsEveryDayNeeds = new List<Storage> {
             new Storage(Product.ColdArms, 1f),
             new Storage(Product.Clothes, 1f),
@@ -50,19 +50,19 @@ namespace Nashet.EconomicSimulation
             new Storage(Product.Education, 1f)
             };
             var aristocratsLuxuryNeeds = new List<Storage> {
-            new Storage(Product.Fruit, 1),
+            //new Storage(Product.Fruit, 1),
             new Storage(Product.Cars, 1f),
             new Storage(Product.MotorFuel, 1f),
             new Storage(Product.Airplanes, 1f) };
             Aristocrats = new PopType("Aristocrats", null, 4f,
                 militaryNeeds, aristocratsLifeNeeds, aristocratsEveryDayNeeds, aristocratsLuxuryNeeds);
             //***************************************next type***************************
-            var capitalistsLifeNeeds = new List<Storage> { new Storage(Product.Food, 1) };
+            var capitalistsLifeNeeds = new List<Storage> { new Storage(Product.Grain, 1) };
             var capitalistsEveryDayNeeds = new List<Storage> {
             new Storage(Product.Clothes, 1f),
             new Storage(Product.Furniture, 1f),
             new Storage(Product.Tobacco, 2f),
-            new Storage(Product.Fruit, 1f),
+           // new Storage(Product.Fruit, 1f),
             new Storage(Product.Education, 1f)};
 
             var capitalistsLuxuryNeeds = new List<Storage> {
@@ -76,9 +76,9 @@ namespace Nashet.EconomicSimulation
                 militaryNeeds, capitalistsLifeNeeds, capitalistsEveryDayNeeds, capitalistsLuxuryNeeds);
             //***************************************next type***************************
             {
-                var artisansLifeNeeds = new List<Storage> { new Storage(Product.Food, 1) };
+                var artisansLifeNeeds = new List<Storage> { new Storage(Product.Grain, 1) };
                 var artisansEveryDayNeeds = new List<Storage> {
-            new Storage(Product.Fish, 1f),
+            //new Storage(Product.Fish, 1f),
             new Storage(Product.Clothes, 1f),
             new Storage(Product.Furniture, 1f),
             new Storage(Product.Metal, 1f),
@@ -94,7 +94,7 @@ namespace Nashet.EconomicSimulation
                     militaryNeeds, artisansLifeNeeds, artisansEveryDayNeeds, artisansLuxuryNeeds);
             }
             //***************************************next type***************************
-            var farmersLifeNeeds = new List<Storage> { new Storage(Product.Food, 1) };
+            var farmersLifeNeeds = new List<Storage> { new Storage(Product.Grain, 1) };
             var farmersEveryDayNeeds = new List<Storage> {
            //everyDayNeeds.Set(new Storage(Product.Fruit, 1),
             new Storage(Product.Stone, 1f),
@@ -102,7 +102,7 @@ namespace Nashet.EconomicSimulation
             //everyDayNeeds.set(new Storage(Product.Wool, 1),
             new Storage(Product.Lumber, 1f),
             new Storage(Product.Cars, 0.5f),
-            new Storage(Product.Fish, 1f),
+            //new Storage(Product.Fish, 1f),
             new Storage(Product.MotorFuel, 0.5f)};
             var farmersLuxuryNeeds = new List<Storage> {
             new Storage(Product.Clothes, 1),
@@ -115,7 +115,7 @@ namespace Nashet.EconomicSimulation
             Farmers = new PopType("Farmers", new Storage(Product.Grain, 1.5f), 1f,
                 militaryNeeds, farmersLifeNeeds, farmersEveryDayNeeds, farmersLuxuryNeeds);
             //***************************************next type***************************
-            var workersLifeNeeds = new List<Storage> { new Storage(Product.Food, 1) };
+            var workersLifeNeeds = new List<Storage> { new Storage(Product.Grain, 1) };
             var workersEveryDayNeeds = new List<Storage> {
             new Storage(Product.Clothes, 1f),
             new Storage(Product.Liquor, 2f),
@@ -132,9 +132,9 @@ namespace Nashet.EconomicSimulation
             Workers = new PopType("Workers", null, 1f,
                 militaryNeeds, workersLifeNeeds, workersEveryDayNeeds, workersLuxuryNeeds);
             //***************************************next type***************************
-            var soldiersLifeNeeds = new List<Storage> { new Storage(Product.Food, 2) };
+            var soldiersLifeNeeds = new List<Storage> { new Storage(Product.Grain, 2) };
             var soldiersEveryDayNeeds = new List<Storage> {
-            new Storage(Product.Fruit, 2),
+           //new Storage(Product.Fruit, 2),
             new Storage(Product.Liquor, 5),
             new Storage(Product.Clothes, 4),
             new Storage(Product.Furniture, 2)

@@ -34,7 +34,9 @@ namespace Nashet.URLOpener
 #endif
         }
 
-        [DllImport("__Internal")]
-        private static extern void OpenWindow(string url);
+        //[DllImport("__Internal")]
+        private static  void OpenWindow(string url)//extern
+        {
+        }
     }
 }

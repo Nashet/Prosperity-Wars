@@ -58,11 +58,11 @@ namespace Nashet.EconomicSimulation
             new ProductionType("Forestry", new Storage(Product.Wood, 2f), false);
             GoldMine = new ProductionType("Gold pit", new Storage(Product.Gold, 2f * Options.goldToCoinsConvert), true);
             MetalDigging = new ProductionType("Metal pit", new Storage(Product.MetalOre, 2f), true);
-            new ProductionType("Coal pit", new Storage(Product.Coal, 6f), true);
-            new ProductionType("Cotton farm", new Storage(Product.Cotton, 2f), false);
+            //new ProductionType("Coal pit", new Storage(Product.Coal, 6f), true);
+            //new ProductionType("Cotton farm", new Storage(Product.Cotton, 2f), false);
             new ProductionType("Quarry", new Storage(Product.Stone, 2f), true);
-            Orchard = new ProductionType("Orchard", new Storage(Product.Fruit, 2f), false);
-            new ProductionType("Fishery", new Storage(Product.Fish, 2f), false);
+            //Orchard = new ProductionType("Orchard", new Storage(Product.Fruit, 2f), false);
+            //new ProductionType("Fishery", new Storage(Product.Fish, 2f), false);
             new ProductionType("Tobacco farm", new Storage(Product.Tobacco, 2f), false);
 
             new ProductionType("Oil rig", new Storage(Product.Oil, 2f), true);
@@ -81,12 +81,12 @@ namespace Nashet.EconomicSimulation
             new ProductionType("Sawmill", new Storage(Product.Lumber, 4f), resourceInput, Invention.Manufactures);
 
             resourceInput = new StorageSet();
-            resourceInput.Set(new Storage(Product.Fuel, 0.5f));
+            resourceInput.Set(new Storage(Product.Wood, 0.5f));
             resourceInput.Set(new Storage(Product.MetalOre, 2f));
             MetalSmelter = new ProductionType("Metal smelter", new Storage(Product.Metal, 8f), resourceInput, Invention.Manufactures);
 
             resourceInput = new StorageSet();
-            resourceInput.Set(new Storage(Product.Fibers, 1f));
+            resourceInput.Set(new Storage(Product.Cattle, 1f));
             WeaverFactory = new ProductionType("Weaver factory", new Storage(Product.Clothes, 4f), resourceInput, Invention.JohnKayFlyingshuttle);
 
             //resourceInput = new StorageSet();
@@ -95,7 +95,7 @@ namespace Nashet.EconomicSimulation
             //new ProductionType("Cement factory", new Storage(Product.Cement, 4f), resourceInput);
 
             resourceInput = new StorageSet();
-            resourceInput.Set(new Storage(Product.Sugar, 1f));
+            resourceInput.Set(new Storage(Product.Grain, 1f));
             new ProductionType("Distillery", new Storage(Product.Liquor, 4f), resourceInput, Invention.Manufactures);
 
             resourceInput = new StorageSet();

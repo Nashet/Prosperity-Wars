@@ -1,22 +1,30 @@
-﻿using Nashet.EconomicSimulation;
-using Nashet.UnityUIUtils;
-using Nashet.Utils;
+﻿using Nashet.UnityUIUtils;
+using QPathFinder;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
+
 namespace Nashet.EconomicSimulation
 {
     public class Unit : Hideable, IHasProvince//, IHasCountry//MonoBehaviour,
     {
-
         [SerializeField]
         private GameObject selectionPart;
 
         [SerializeField]
+        private LineRenderer enemyDirection;
+        [SerializeField]
+        private float enemyDirectionScale = 0.6f;
+
+        [SerializeField]
         private float unitPanelYOffset = -2f;
+
+        [SerializeField]
+        private MeshRenderer meshRenderer;
+
+        [SerializeField]
+        public MeshCollider Collider;
 
         //[SerializeField]
         private LineRenderer lineRenderer;
@@ -24,7 +32,6 @@ namespace Nashet.EconomicSimulation
         private GameObject unitPanelObject;
         public UnitPanel unitPanel;
         Animator m_Animator;
-
 
         private readonly static List<Unit> allUnits = new List<Unit>();
 
@@ -58,13 +65,12 @@ namespace Nashet.EconomicSimulation
             //unit.Country = army.getOwner().Country;
             unit.SetUnitShield(army.getOwner().Flag);
             unit.UpdateUnitShieldText(army.Province);
-
+            unit.enemyDirection.enabled = unit.Province.Country != Game.Player;
             return unit;
         }
 
         public void Select()
         {
-
             selectionPart.SetActive(true);
             ArmiesSelectionWindow.Get.Show();
         }
@@ -83,6 +89,8 @@ namespace Nashet.EconomicSimulation
             unitPanelObject.transform.position = panelPosition;
             unitPanel.SetFlag(flag);
             //UpdateUnitShieldText(army.Province);
+
+            meshRenderer.material = LinksManager.Get.defaultUnitSymbol;            
         }
 
         public static IEnumerable<Unit> AllUnits()
@@ -100,9 +108,6 @@ namespace Nashet.EconomicSimulation
         {
             return allUnits.Find(x => Int32.Parse(x.name) == meshNumber);
         }
-
-
-
 
         public override string ToString()
         {
@@ -135,7 +140,7 @@ namespace Nashet.EconomicSimulation
                 {
                     army.unit.Province = province;
                     army.unit.transform.position = province.Position;// here it says that unit is destroyed
-                    if (army.Path == null)
+                    if (army.Path == null || army.Path.Count == 0)
                     {
                         army.unit.Stop();
                     }
@@ -158,22 +163,42 @@ namespace Nashet.EconomicSimulation
             }
             Game.provincesToRedrawArmies.Clear();
         }
-
-        private void Move(Path path)
+       
+        private Vector3[] GetVector3Nodes(List<Node> path)
         {
-            lineRenderer.positionCount = path.nodes.Count + 1;
-            lineRenderer.SetPositions(path.GetVector3Nodes());
+            Vector3[] array = new Vector3[path.Count + 1];
+            for (int i = 0; i < path.Count; i++)
+            {
+                array[i + 1] = path[i].Province.Position;
+                array[i + 1].z = -2f;
+            }
+            return array;
+        }
+
+        private void Move(List<Node> nodes)
+        {
+            lineRenderer.positionCount = nodes.Count + 1;
+            lineRenderer.SetPositions(GetVector3Nodes(nodes));
             lineRenderer.SetPosition(0, Province.Position);//currentProvince.getPosition()
-            this.transform.LookAt(path.nodes[0].Province.Position, Vector3.back);
+
+            this.transform.LookAt(nodes[0].Province.Position, Vector3.back);
             if (m_Animator.gameObject.activeInHierarchy)
                 m_Animator.SetFloat("Forward", 0.4f);//, 0.3f, Time.deltaTime
-                                                 //if (where.armies.Count > 1)
-                                                 //    for (int i = 0; i < where.armies.Count - 1; i++)
-                                                 //    {
-                                                 //        where.armies[i].unit.unitPanel.Hide();
-                                                 //    }
-                                                 //else
-                                                 //    where.armies[0].unit.unitPanel.Show();
+                                                     //if (where.armies.Count > 1)
+                                                     //    for (int i = 0; i < where.armies.Count - 1; i++)
+                                                     //    {
+                                                     //        where.armies[i].unit.unitPanel.Hide();
+                                                     //    }
+                                                     //else
+                                                     //    where.armies[0].unit.unitPanel.Show();
+            enemyDirection.positionCount = 2;
+            //todo must be fixed ssize
+            var linePositions = GetVector3Nodes(nodes);
+            linePositions[0] = Province.Position;
+            linePositions[1] = Vector3.LerpUnclamped(linePositions[1], linePositions[0], enemyDirectionScale);
+            enemyDirection.SetPositions(linePositions);
+       
+            enemyDirection.enabled = true;
 
         }
 
@@ -182,8 +207,10 @@ namespace Nashet.EconomicSimulation
             lineRenderer.positionCount = 0;
             if (m_Animator.gameObject.activeInHierarchy)
                 m_Animator.SetFloat("Forward", 0f);
-
+            this.transform.eulerAngles = new Vector3(270f, 0f, 0f);
             //SetUnitPanel(null);
+
+            enemyDirection.enabled = false;
         }
 
         private void OnDestroy()

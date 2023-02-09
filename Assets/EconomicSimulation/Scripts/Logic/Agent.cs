@@ -89,15 +89,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public bool CanAfford(Storage need)
         {
-            Storage realNeed;
-            if (need.isAbstractProduct())
-                //realNeed = new Storage(Country.market.getCheapestSubstitute(need).Product, need);
-                realNeed = Country.market.GetRandomCheapestSubstitute(need);
-            else
-                realNeed = need;
-
-            return CanPay(Country.market.getCost(realNeed));
-            //return realNeed.IsEqual(HowMuchCanAfford(realNeed));
+            return CanPay(Country.market.getCost(need));            
         }
 
         public bool CanAfford(StorageSet need)
@@ -220,7 +212,7 @@ namespace Nashet.EconomicSimulation
             else
             {
                 FailedPayments.RecordIncomeFromNowhere(account, howMuch);
-                if (showMessageAboutNegativeValue)
+                if (showMessageAboutNegativeValue && Game.devMode)
                     Debug.Log(this + " doesn't have " + howMuch + " to pay in Agent.payWithoutRecord2 " + whom
                         + " has " + getMoneyAvailable());
                 //PayAllAvailableMoneyWithoutRecord(whom);
@@ -246,7 +238,7 @@ namespace Nashet.EconomicSimulation
             }
             else
             {
-                if (showMessageAboutNegativeValue)
+                if (showMessageAboutNegativeValue && Game.devMode)
                     Debug.Log(this + " doesn't have " + howMuch + " to pay in Agent.payWithoutRecord " + whom
                         + " has " + getMoneyAvailable());
                 //PayWithoutRecord(whom, getMoneyAvailable());

@@ -722,17 +722,6 @@ namespace Nashet.EconomicSimulation
             else if (difference < -1 * maxHiringSpeed)
                 difference = -1 * maxHiringSpeed;
 
-            // simulates pop's slow movement from labor market to social benefits
-            if ((Country.unemploymentSubsidies.SubsizionSize.Get().isBiggerOrEqual(getSalary())
-                || Country.PovertyAid.PovertyAidSize.Get().isBiggerOrEqual(getSalary())
-                || !Country.UBI.IsMoreConservativeThan(UBI.Middle)) // 
-                    && Country.economy != Economy.PlannedEconomy
-                    //&& Country.Politics.LastTurnDefaultedSocialObligations.isZero()
-                    && Register.Account.PovertyAid.GetIncomeAccount(Country.FailedPayments).isZero()
-                    && Register.Account.UBISubsidies.GetIncomeAccount(Country.FailedPayments).isZero()
-                    && Register.Account.UnemploymentSubsidies.GetIncomeAccount(Country.FailedPayments).isZero())// should be workers statistics
-                difference = -1 * maxHiringSpeed;
-
             if (difference > 0)
             {
                 float inputFactor = getInputFactor2().get();
@@ -1102,13 +1091,12 @@ namespace Nashet.EconomicSimulation
                 List<Storage> shoppingList = getHowMuchInputProductsReservesWants();
                 if (shoppingList.Count > 0)
                     if (Country.economy == Economy.PlannedEconomy)
-                    {
-                        var realNeed = Country.countryStorageSet.hasAllOfConvertToBiggest(shoppingList);
-                        if (realNeed != null)
+                    {                       
+                        if (Country.countryStorageSet.has(shoppingList))
                         {
                             //Country.countryStorageSet.send(this.getInputProductsReserve(), shoppingList);
-                            consumeFromCountryStorage(realNeed, Country);
-                            getInputProductsReserve().Add(realNeed);
+                            consumeFromCountryStorage(shoppingList, Country);
+                            getInputProductsReserve().Add(shoppingList);
                         }
                     }
                     else

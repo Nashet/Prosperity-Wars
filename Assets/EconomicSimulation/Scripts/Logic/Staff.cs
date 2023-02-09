@@ -203,6 +203,12 @@ namespace Nashet.EconomicSimulation
                 yield return army;
         }
 
+        public IEnumerable<Collider> AllArmiesColliders()
+        {
+            foreach (var army in allArmies)
+                yield return army.unit.Collider;
+        }
+
         public IEnumerable<Corps> getAllCorps()
         {
             foreach (var army in allArmies)

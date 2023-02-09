@@ -3,6 +3,7 @@ using Nashet.UnitSelection;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -30,7 +31,7 @@ namespace Nashet.EconomicSimulation
         public static ProductionWindow productionWindow;
         public static FactoryPanel factoryPanel;
         public static GoodsPanel goodsPanel;
-        //public static InventionsPanel inventionsPanel;
+        public static InventionsPanel inventionsPanel;
         public static BuildPanel buildPanel;
         public static PoliticsPanel politicsPanel;
         public static FinancePanel financePanel;
@@ -42,6 +43,7 @@ namespace Nashet.EconomicSimulation
 
 
         private Game game;
+        private new Camera camera;
         private static bool gameLoadingIsFinished;
 
         //[SerializeField]
@@ -66,11 +68,26 @@ namespace Nashet.EconomicSimulation
             //var window = Instantiate(LinksManager.Get.MapOptionsPrefab, LinksManager.Get.CameraLayerCanvas.transform);
             //window.GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, 150f);
             tooltip = GetComponent<ToolTipHandler>();
+            Screen.orientation = ScreenOrientation.LandscapeLeft;
+            camera = Camera.main;
         }
 
-        public void Move(float xMove, float zMove, float yMove)
+        public void Zoom(float zMove)
         {
             var position = transform.position;
+            zMove = zMove * yCameraSpeed;
+            if (position.z + zMove > -40f
+                || position.z + zMove < -500f)
+                zMove = 0f;
+            transform.Translate(0f, 0f, zMove, Space.World);
+        }
+
+        public void Move(float xMove, float yMove)
+        {
+            if (game == null)
+                return; // map isnt done yet
+            var position = transform.position;
+           
             var mapBorders = game.getMapBorders();
 
 
@@ -81,19 +98,15 @@ namespace Nashet.EconomicSimulation
             if (yMove * xzCameraSpeed + position.y < mapBorders.y
                 || yMove * xzCameraSpeed + position.y > mapBorders.height)
                 yMove = 0;
-
-            zMove = zMove * yCameraSpeed;
-            if (position.z + zMove > -40f
-                || position.z + zMove < -500f)
-                zMove = 0f;
-            transform.Translate(xMove * xzCameraSpeed, yMove * xzCameraSpeed, zMove, Space.World);
+            
+            transform.Translate(xMove * xzCameraSpeed, yMove * xzCameraSpeed, 0f, Space.World);
         }
 
         private void FixedUpdate()
         {
             if (gameLoadingIsFinished)
             {
-                Move(0f, Input.GetAxis("Mouse ScrollWheel"), 0f);
+                Zoom(Input.GetAxis("Mouse ScrollWheel"));
             }
         }
 
@@ -116,7 +129,9 @@ namespace Nashet.EconomicSimulation
             topPanel.Show();
             bottomPanel.Show();
             gameLoadingIsFinished = true;
+            SelectionComponent.ArmiesGetter = (int arg) => Game.Player.AllArmiesColliders();
         }
+
         // Update is called once per frame
         private void Update()
         {
@@ -240,7 +255,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (Game.MapMode == Game.MapModes.PopulationChange)
                 {
-                    int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
+                    int meshNumber = Province.FindByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
                     var hoveredProvince = World.FindProvince(meshNumber);
                     if (hoveredProvince == null)// || hoveredProvince is Province
                         tooltip.Hide();
@@ -264,7 +279,7 @@ namespace Nashet.EconomicSimulation
                 }
                 else if (Game.MapMode == Game.MapModes.PopulationDensity)
                 {
-                    int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
+                    int meshNumber = Province.FindByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
                     var hoveredProvince = World.FindProvince(meshNumber);
                     if (hoveredProvince == null)
                         tooltip.Hide();
@@ -281,7 +296,7 @@ namespace Nashet.EconomicSimulation
                 }
                 else if (Game.MapMode == Game.MapModes.Prosperity) //prosperity wars
                 {
-                    int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
+                    int meshNumber = Province.FindByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
                     var hoveredProvince = World.FindProvince(meshNumber);
                     if (hoveredProvince == null)
                         tooltip.Hide();

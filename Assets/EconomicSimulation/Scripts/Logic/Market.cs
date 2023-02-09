@@ -112,16 +112,8 @@ namespace Nashet.EconomicSimulation
                 return new MoneyView(1);// cost of 1 gold
             }
             else
-                return new MoneyView((decimal)prices.getCheapestStorage(product, this).get());
-        }
-
-        /// <summary>
-        /// Just transfers it to StorageSet.convertToCheapestStorageProduct(Storage)
-        /// </summary>
-        public Storage GetRandomCheapestSubstitute(Storage need)
-        {
-            return prices.ConvertToRandomCheapestStorageProduct(need, this);
-        }
+                return new MoneyView((decimal)prices.GetStorage(product).get());
+        }        
 
         //todo change it to 1 run by every products, not run for every product
         private Storage recalculateProductForConsumers(Product product, Func<Consumer, IEnumerable<Storage>> selector)
@@ -212,7 +204,7 @@ namespace Nashet.EconomicSimulation
                     }
                 dateOfgetBought.set(Date.Today);
             }
-            return bought.GetFirstSubstituteStorage(product);
+            return bought.GetStorage(product);
         }
 
         public Storage getTotalConsumption(Product product, bool takeThisTurnData)
@@ -232,7 +224,7 @@ namespace Nashet.EconomicSimulation
                     }
                 dateOfgetTotalConsumption.set(Date.Today);
             }
-            return totalConsumption.GetFirstSubstituteStorage(product);
+            return totalConsumption.GetStorage(product);
         }
 
         /// <summary>
@@ -256,7 +248,7 @@ namespace Nashet.EconomicSimulation
                     }
                 dateOfgetSupplyOnMarket.set(Date.Today);
             }
-            return supplyOnMarket.GetFirstSubstituteStorage(product);
+            return supplyOnMarket.GetStorage(product);
         }
 
         /// <summary>
@@ -281,7 +273,7 @@ namespace Nashet.EconomicSimulation
                 dateOfgetTotalProduction.set(Date.Today);
             }
 
-            return totalProduction.GetFirstSubstituteStorage(product);
+            return totalProduction.GetStorage(product);
         }
 
         //public void ForceDSBRecalculation()
@@ -293,25 +285,11 @@ namespace Nashet.EconomicSimulation
 
         public bool isAvailable(Product product)
         {
-            if (product.isAbstract())
-            {
-                foreach (var substitute in product.getSubstitutes())
-                    if (substitute.isTradable()) //it would be faster to. skip it Or not
-                    {
-                        var DSB = getDemandSupplyBalance(substitute, false);
-                        if (DSB != Options.MarketInfiniteDSB && DSB < Options.MarketEqualityDSB)
-                            return true;
-                    }
-                return false;
-            }
+            var DSB = getDemandSupplyBalance(product, false);
+            if (DSB != Options.MarketInfiniteDSB && DSB < Options.MarketEqualityDSB)
+                return true;
             else
-            {
-                var DSB = getDemandSupplyBalance(product, false);
-                if (DSB != Options.MarketInfiniteDSB && DSB < Options.MarketEqualityDSB)
-                    return true;
-                else
-                    return false;
-            }
+                return false;           
         }
 
 
@@ -371,7 +349,7 @@ namespace Nashet.EconomicSimulation
         public Storage HowMuchAvailable(Storage need)
         {
             //float BuyingAmountAvailable = 0;
-            return receivedGoods.getBiggestStorage(need.Product);
+            return receivedGoods.GetStorage(need.Product);
 
             //BuyingAmountAvailable = need.get() / DSB;
 
@@ -595,7 +573,7 @@ namespace Nashet.EconomicSimulation
             if (product == null)
                 return 0f;
             else
-                return DSBbuffer.GetFirstSubstituteStorage(product).get();
+                return DSBbuffer.GetStorage(product).get();
         }
 
         /// <summary>

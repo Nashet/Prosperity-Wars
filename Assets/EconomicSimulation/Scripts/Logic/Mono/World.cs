@@ -28,18 +28,15 @@ namespace Nashet.EconomicSimulation
         public static List<BattleResult> allBattles = new List<BattleResult>();
 
         //public static Market market;
-        /// <summary>
-        /// province connection graph
-        /// </summary>
-        public Graph graph;
-
+       
         public static event EventHandler DayPassed;
 
-        /// <summary>
-        /// Little bugged - returns RANDOM badboy, not biggest
-        /// </summary>        
+              
         private static Date DateOfIsThereBadboyCountry = new Date(Date.Never);
 
+        /// <summary>
+        /// Little bugged - returns RANDOM badboy, not biggest ???
+        /// </summary>  
         private static Country Badboy;
 
         private static World thisObject;
@@ -243,6 +240,7 @@ namespace Nashet.EconomicSimulation
                 howMuchCountries = 8;
             if (howMuchCountries > World.allLandProvinces.Count)
                 howMuchCountries = World.allLandProvinces.Count;
+           // howMuchCountries = 1;
             for (int i = 0; i < howMuchCountries; i++)
             {
                 //Game.updateStatus("Making countries.." + i);
@@ -258,7 +256,8 @@ namespace Nashet.EconomicSimulation
 
                 country.GiveMoneyFromNoWhere(100);
             }
-            Game.Player = allCountries[1]; // not wild Tribes, DONT touch that
+            Game.Player = allCountries.First(x => x != UncolonizedLand); // not wild Tribes, DONT touch that
+            Game.Player.events.RiseChangedCountry(new CountryEventArgs(Game.Player));
 
             allCountries.Random().SetName("Zacharia");
             //foreach (var pro in allProvinces)
@@ -450,9 +449,9 @@ namespace Nashet.EconomicSimulation
             //Country.allCountries[0].Capital.setResource(Product.Wood;
             //Country.allCountries[1].Capital.setResource(Product.Wood);// player
 
-            if (allCountries.Count > 2) allCountries[2].Capital.setResource(Product.Fruit);
+            //if (allCountries.Count > 2) allCountries[2].Capital.setResource(Product.Fruit);
             if (allCountries.Count > 3) allCountries[3].Capital.setResource(Product.Gold);
-            if (allCountries.Count > 4) allCountries[4].Capital.setResource(Product.Cotton);
+            //if (allCountries.Count > 4) allCountries[4].Capital.setResource(Product.Cotton);
             if (allCountries.Count > 5) allCountries[5].Capital.setResource(Product.Stone);
             if (allCountries.Count > 6) allCountries[6].Capital.setResource(Product.MetalOre);
             if (allCountries.Count > 7) allCountries[7].Capital.setResource(Product.Wood);
@@ -587,7 +586,7 @@ namespace Nashet.EconomicSimulation
                 }
             }
             PopType.sortNeeds(Market.TemporalSingleMarket);//getAllExistingCountries().Random().market
-            Product.sortSubstitutes(Market.TemporalSingleMarket);//getAllExistingCountries().Random().market
+            //Product.sortSubstitutes(Market.TemporalSingleMarket);//getAllExistingCountries().Random().market
         }
 
         public static void simulate()

@@ -5,23 +5,26 @@ namespace Nashet.EconomicSimulation
 {
     public class LinksManager : MonoBehaviour
     {
-
         public Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, impassableBorder;
+        public Material defaultUnitSymbol;
         public GameObject UnitPrefab, UnitPanelPrefab;
         public Transform WorldSpaceCanvas;
         public GameObject r3DProvinceTextPrefab, r3DCountryTextPrefab;
         public GameObject ArmiesSelectionWindowPrefab;
         public GameObject ArmiesHolder;
 
-        [SerializeField]public Canvas CameraLayerCanvas;
+        [SerializeField] public Canvas CameraLayerCanvas;
+        [SerializeField] public KeyCode AdditionKey = KeyCode.LeftAlt;
 
         public Material waterMaterial;
 
         private static LinksManager thisObject;
         public Material ProvinceSelecionMaterial;
         public Material FogOfWarMaterial;
+        public bl_Joystick scrolJoystic;
 
         [SerializeField] private GameObject[] objectsToInstantiateIn2DCanvas;
+        public Canvas UICanvas;
 
         // Use this for initialization
         private void Start()

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Nashet.UnityUIUtils
@@ -8,17 +9,19 @@ namespace Nashet.UnityUIUtils
         protected readonly string caption, text, closeText;
         protected Vector2 focus;
         protected bool hasFocus;
+        public Action onClosed;
 
         public bool HasFocus
         {
             get { return hasFocus; }
         }        
 
-        internal Message(string caption, string message, string closeText)
+        internal Message(string caption, string message, string closeText, Action onClosed = null)
         {
             this.caption = caption;
             text = message;
-            this.closeText = closeText;            
+            this.closeText = closeText;
+            this.onClosed = onClosed;
         }
 
         internal Message(string caption, string message, string closeText, Vector2 focus) : this(caption, message, closeText)

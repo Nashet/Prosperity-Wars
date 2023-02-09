@@ -1,5 +1,4 @@
 ﻿
-using Nashet.UISystem;
 using Nashet.Utils;
 using System;
 
@@ -35,7 +34,7 @@ namespace Nashet.EconomicSimulation
         //    ClickedOnInventions?.Invoke(this, e);
         //}
 
-        public event EventHandler PlayerChangedCountry;
+        public static event EventHandler PlayerChangedCountry;
         public virtual void RiseChangedCountry(CountryEventArgs e)
         {
             PlayerChangedCountry?.Invoke(this, e);

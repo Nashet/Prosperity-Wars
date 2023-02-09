@@ -36,13 +36,13 @@ public class TradeTests
 
         var factory = new Factory(province, null, ProductionType.Orchard, new MoneyView(20));
 
-        factory.SendToMarket(new Storage(Product.Fruit, 10f));
+        factory.SendToMarket(new Storage(Product.Grain, 10f));
 
         var buyer = new MockAristocrats(1000, null, province);
 
         buyer.Cash = new Money(1000000);
 
-        buyer.Buy(new Storage(Product.Fruit, 10f), null);
+        buyer.Buy(new Storage(Product.Grain, 10f), null);
 
         //force DSB recalculation
         World.AllMarkets.PerformAction(x => x.getDemandSupplyBalance(null, true));
@@ -72,7 +72,7 @@ public class TradeTests
         var factory = new Factory(firstProvince, null, ProductionType.Orchard, new MoneyView(20));
         //c.open(null, false);
         //c.produce();
-        factory.SendToMarket(new Storage(Product.Fruit, 10f));
+        factory.SendToMarket(new Storage(Product.Grain, 10f));
 
         var buyer = new MockAristocrats(1000, null, secondProvince);
 
@@ -80,7 +80,7 @@ public class TradeTests
 
         buyer.Cash = new Money(1000000);
 
-        buyer.Buy(new Storage(Product.Fruit, 10f), null);
+        buyer.Buy(new Storage(Product.Grain, 10f), null);
 
         //force DSB recalculation
         World.AllMarkets.PerformAction(x => x.getDemandSupplyBalance(null, true));

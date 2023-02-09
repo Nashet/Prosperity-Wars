@@ -128,8 +128,8 @@ namespace Nashet.UISystem
 
         public void onGoToClick()
         {
-            //if (selectedCountry != World.UncolonizedLand)
-            //mainCamera.FocusOnProvince(selectedCountry.Capital, true);
+            if (_selectedCountry != World.UncolonizedLand)
+                MainCamera.Get.FocusOnProvince(_selectedCountry.Capital, true);
         }
 
         public void onRegainControlClick()

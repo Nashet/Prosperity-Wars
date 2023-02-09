@@ -160,18 +160,6 @@ namespace Nashet.EconomicSimulation
             return res;
         }
 
-        /// <summary> Assuming product is abstract product</summary>
-        public ReadOnlyValue getProducedTotalIncludingSubstitutes(Product product)
-        {
-            var res = new Value(0f);
-            foreach (var item in product.getSubstitutes())
-                if (item.isTradable())
-                {
-                    res.Add(producedTotal[item]);
-                }
-            return new Storage(product, res);
-        }
-
         /// <summary>
         /// new value
         /// </summary>

@@ -4,6 +4,7 @@ using Nashet.MarchingSquares;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using QPathFinder;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +38,7 @@ namespace Nashet.EconomicSimulation
         , true);
 
         public static readonly Predicate<Province> All = x => true;
-
+        public Node Node { get; internal set; }
         private Province here { get { return this; } }
 
         public Color ProvinceColor { get; protected set; }
@@ -433,7 +434,7 @@ namespace Nashet.EconomicSimulation
             FireAllWorkers();
 
             // List<PopUnit> workforceList = this.GetAllPopulation(PopType.Workers).ToList();
-            int unemplyedWorkForce = AllPops.Where(x => x.Type == PopType.Workers).Sum(x => x.population.Get());
+            int unemplyedWorkForce = AllWorkers.Sum(x => x.population.Get() - x.unemployedButNotSeekingJob);
 
             if (unemplyedWorkForce > 0)
             {
@@ -470,7 +471,7 @@ namespace Nashet.EconomicSimulation
                             if (toHire > factoryWants)
                                 toHire = factoryWants;
 
-                            hiredInThatGroup += factory.hireWorkers(toHire, AllPops.Where(x => x.Type == PopType.Workers));
+                            hiredInThatGroup += factory.hireWorkers(toHire, AllWorkers);
 
                             //if (popsLeft <= 0) break;
                             // don't do breaks to clear old workforce records
@@ -483,21 +484,45 @@ namespace Nashet.EconomicSimulation
                     unemplyedWorkForce -= hiredInThatGroup;
                 }
 
-                // now if there are benefits, put all unemployed workers on social benefits
-                if (Country.unemploymentSubsidies != UnemploymentSubsidies.None 
-                    || Country.PovertyAid != PovertyAid.None
-                    || !Country.UBI.IsMoreConservativeThan(UBI.Middle)
-                   && Country.economy != Economy.PlannedEconomy
-                   //&& Country.Politics.LastTurnDefaultedSocialObligations.isZero())
-                   && Register.Account.PovertyAid.GetIncomeAccount(Country.FailedPayments).isZero()
-                   && Register.Account.UBISubsidies.GetIncomeAccount(Country.FailedPayments).isZero()
-                   && Register.Account.UnemploymentSubsidies.GetIncomeAccount(Country.FailedPayments).isZero())
-                    foreach (var worker in AllWorkers)
+                // now if there are benefits, put unemployed workers on social benefits
+                var biggestSalary = allFactories.Max(x => x.getSalary());
+
+                if (Country.economy != Economy.PlannedEconomy && biggestSalary != null)
+                {
+                    var socialMoney = Register.Account.UnemploymentSubsidies.GetIncomeAccount(Country.FailedPayments).isZero() ? 0m : Country.unemploymentSubsidies.SubsizionSize.Get().Get();
+                    if (Register.Account.PovertyAid.GetIncomeAccount(Country.FailedPayments).isZero())
                     {
-                        // sit on benefits:                    
-                        if (!worker.LastTurnDidntGetPromisedSocialBenefits)
-                            worker.SitOnSocialBenefits(worker.GetSeekingJobInt());
+                        socialMoney += Country.PovertyAid.PovertyAidSize.Get().Get();
                     }
+
+                    if (Register.Account.UBISubsidies.GetIncomeAccount(Country.FailedPayments).isZero())
+                    {
+                        socialMoney += Country.UBI.UBISize.Get().Get();
+                    }
+
+                    if (socialMoney >= biggestSalary.Get())
+
+                    // should be more workers statistics?
+                    {
+                        foreach (var worker in AllWorkers)
+                        {
+                            // sit on benefits:                    
+                            if (!worker.LastTurnDidntGetPromisedSocialBenefits)
+                                worker.SitOnSocialBenefits(worker.GetSeekingJobInt());
+                        }
+                    }
+                }
+               
+                foreach (var worker in AllWorkers)
+                {
+                    var wage = Register.Account.Wage.GetIncomeAccount(worker.Register);
+                    var unemp = Register.Account.UnemploymentSubsidies.GetIncomeAccount(worker.Register);
+                    var aid = Register.Account.PovertyAid.GetIncomeAccount(worker.Register);
+                    var ubi = Register.Account.UBISubsidies.GetIncomeAccount(worker.Register);
+                    var dropSubs = wage.Get() > unemp.Get() + aid.Get() + ubi.Get();
+                    if (dropSubs)
+                        worker.SitOnSocialBenefits((int)(worker.unemployedButNotSeekingJob * -1f));
+                }                            
             }
         }
 
@@ -509,7 +534,7 @@ namespace Nashet.EconomicSimulation
         public void setResource(Product inres)
         {
             resource = inres;
-            if (resource == Product.Stone || resource == Product.Gold || resource == Product.MetalOre || resource == Product.Coal)
+            if (resource == Product.Stone || resource == Product.Gold || resource == Product.MetalOre)
                 Terrain = TerrainTypes.Mountains;
             else
                 Terrain = TerrainTypes.Plains;
@@ -1065,8 +1090,13 @@ namespace Nashet.EconomicSimulation
             {
                 MeshCollider meshCollider = collider as MeshCollider;
                 if (meshCollider == null || meshCollider.sharedMesh == null)
-                    return -2;
+                    return -2;               
+
                 Mesh mesh = meshCollider.sharedMesh;
+
+                if (mesh.name == "Quad")
+                    return -2;
+
                 int provinceNumber = Convert.ToInt32(mesh.name);
                 return provinceNumber;
             }
@@ -1084,14 +1114,9 @@ namespace Nashet.EconomicSimulation
             MeshCollider groundMeshCollider = GameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
             groundMeshCollider.sharedMesh = MeshFilter.mesh;
 
-
-
             meshRenderer.material.shader = Shader.Find("Standard");// Province");
 
             meshRenderer.material.color = ProvinceColor;
-
-            //var graph = World.Get.GetComponent<AstarPath>();
-
 
             // setting neighbors
             //making meshes for border
@@ -1105,10 +1130,6 @@ namespace Nashet.EconomicSimulation
                     //this.getTerrain() == TerrainTypes.Plains || neighbor.terrain == TerrainTypes.Plains)
                     {
                         neighbors.Add(neighbor);
-                        //var newNode = new Pathfinding.PointNode(AstarPath.active);
-                        //newNode.gameObject = txtMeshGl;
-                        //graph.data.pointGraph.AddNode(newNode, (Pathfinding.Int3)neighbor.getPosition());
-
                     }
 
                     GameObject borderObject = new GameObject("Border with " + neighbor);
@@ -1133,8 +1154,8 @@ namespace Nashet.EconomicSimulation
                     bordersMeshes.Add(neighbor, meshRenderer);
                 }
             }
-            var node = GameObject.AddComponent<Node>();
         }
+
         public IEnumerable<Army> AllStandingArmies()
         {
             foreach (var item in standingArmies)

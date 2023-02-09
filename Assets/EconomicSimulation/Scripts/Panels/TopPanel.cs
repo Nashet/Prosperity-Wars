@@ -1,6 +1,7 @@
 ﻿using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using System;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -22,23 +23,32 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private World world;
 
+        [SerializeField]
+        private RawImage flag;
+
+        private bool isSetFlagTexture;
+        private bool firstUpdate = true;
+        protected ISelector buttonSelector;
+
         // Use this for initialization
         new private void Awake()
         {
             base.Awake();
             MainCamera.topPanel = this;
             buttonSelector = new ColorSelector(Color.red); //UISelector.AddTo(this, LinksManager.Get.UISelectedMaterial,);
+            UIEvents.PlayerChangedCountry += PlayerChangedCountryHandler;
         }
-
-        private bool firstUpdate = true;
-
-        protected ISelector buttonSelector;
 
         private void Update()
         {
             if (firstUpdate)
                 btnPlay.image.color = GUIChanger.DisabledButtonColor;
-            firstUpdate = false;            
+            if (!isSetFlagTexture && Game.Player != null && Game.Player.Flag != null)
+            {
+                isSetFlagTexture = true;
+                SetFlag(Game.Player.Flag);
+            }
+            firstUpdate = false;
         }
 
         public override void Refresh()
@@ -49,7 +59,7 @@ namespace Nashet.EconomicSimulation
 
             if (!Game.Player.IsAlive)
                 sb.Append(" (destroyed by enemies, but could rise again)");
-            sb.Append("    Month: ").Append(Date.Today);
+            sb.Append("    Year: ").Append(Date.Today);
 
             if (Game.Player.IsAlive)
                 sb.Append("   Population: ").Append(Game.Player.Provinces.getFamilyPopulation().ToString("N0"))
@@ -69,8 +79,10 @@ namespace Nashet.EconomicSimulation
                 if (Game.Player.FailedPayments.Income.isNotZero())
                 {
                     buttonSelector.Select(financeButton.gameObject);
+//#if !UNITY_WEBGL //allegebly causes out of memory exceptions in webgl
                     financeButton.GetComponent<ToolTipHandler>().RemoveTextStartingWith("\nCan't");
                     financeButton.GetComponent<ToolTipHandler>().AddText("\nCan't pay for:" + Game.Player.FailedPayments.GetIncomeText());
+//#endif
                 }
                 else
                 {
@@ -79,6 +91,20 @@ namespace Nashet.EconomicSimulation
                 }
 
             generalText.text = sb.ToString();
+        }
+
+        private void PlayerChangedCountryHandler(object sender, EventArgs e)
+        {
+            var isCountryArguments = e as CountryEventArgs;
+            if (isCountryArguments != null)
+            {
+                SetFlag(isCountryArguments.NewCountry.Flag);
+            }
+        }
+
+        private void SetFlag(Texture2D newFlag)
+        {
+            flag.texture = newFlag;
         }
 
         public void onTradeClick()
@@ -105,10 +131,10 @@ namespace Nashet.EconomicSimulation
         public void onInventionsClick()
         {
             Game.Player.events.RiseClickedOn(new InventionEventArgs(null));
-        //    if (MainCamera.inventionsPanel.isActiveAndEnabled)
-        //        MainCamera.inventionsPanel.Hide();
-        //    else
-        //        MainCamera.inventionsPanel.Show();
+            //    if (MainCamera.inventionsPanel.isActiveAndEnabled)
+            //        MainCamera.inventionsPanel.Hide();
+            //    else
+            //        MainCamera.inventionsPanel.Show();
         }
 
         public void onEnterprisesClick()

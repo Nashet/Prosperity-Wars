@@ -28,6 +28,8 @@ namespace Nashet.UnityUIUtils
 
         protected static bool firstLaunch = true;
 
+        protected Action onClosed;
+
         ///<summary>How much shifts window if there is more than 1 window</summary>
         protected Vector3 offset = new Vector2(-10f, 30f);
 
@@ -44,6 +46,7 @@ namespace Nashet.UnityUIUtils
             message.text = mess.GetText();
             closeText.text = mess.GetClosetext();
             messageSource = mess;
+            onClosed = mess.onClosed;
 
             dragPanel = GetComponent<DragPanel>();
             dragPanel.Hidden += OnHidden;
@@ -82,6 +85,7 @@ namespace Nashet.UnityUIUtils
             howMuchPausedWindowsOpen--;
             //previousWindowLastPosition = transform.localPosition;
             Destroy(gameObject);
+            onClosed?.Invoke();
         }
 
         internal void OnShowMessagesChanged(bool value)
