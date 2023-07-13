@@ -48,7 +48,7 @@ namespace Nashet.EconomicSimulation
         private readonly List<Army> standingArmies = new List<Army>(); // military units
         //private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
         protected readonly List<Province> neighbors = new List<Province>();
-        private readonly List<Country> cores = new List<Country>();
+        private readonly HashSet<Country> cores = new HashSet<Country>();
 
         private Product resource;
 
@@ -126,7 +126,7 @@ namespace Nashet.EconomicSimulation
         public void simulate()
         {
             if (Rand.Get.Next(Options.ProvinceChanceToGetCore) == 1)
-                if (neighbors.Any(x => x.isCoreFor(Country)) && !cores.Contains(Country) && getMajorCulture() == Country.Culture)
+                if (!cores.Contains(Country) && neighbors.Any(x => x.isCoreFor(Country)) && getMajorCulture() == Country.Culture)
                     cores.Add(Country);
             // modifiers.LastOrDefault()
             //foreach (var item in modifiers)
@@ -160,11 +160,15 @@ namespace Nashet.EconomicSimulation
                 return "none";
             else
                 if (cores.Count == 1)
-                return cores[0].ShortName;
+                return cores.ElementAt(0).ShortName;
             else
             {
                 StringBuilder sb = new StringBuilder();
-                cores.ForEach(x => sb.Append(x.ShortName).Append("; "));
+                foreach (var x in cores)
+                {
+                    sb.Append(x.ShortName).Append("; ");
+                }
+               
                 return sb.ToString();
             }
         }
