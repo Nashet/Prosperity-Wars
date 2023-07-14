@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.leopotam.ecslite": {
+      "version": "https://github.com/Leopotam/ecslite.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "957b3bb310ec49ab87d3e964f737a7c7e969f282"
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
