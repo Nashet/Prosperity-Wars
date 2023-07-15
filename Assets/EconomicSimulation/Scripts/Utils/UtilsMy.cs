@@ -810,13 +810,16 @@ namespace Nashet.Utils
     {
         private readonly int width, height;
         private readonly Color[] map;
+        public Texture2D Texture { get; private set; }
 
         public MyTexture(Texture2D image)
         {
             width = image.width;
             height = image.height;
             map = image.GetPixels();
-        }
+            Texture = image;
+
+		}
 
         public int getWidth()
         {

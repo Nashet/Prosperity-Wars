@@ -12,9 +12,9 @@ namespace Nashet.EconomicSimulation
         public SeaProvince(string name, int ID, Color colorID) : base(name, ID, colorID)
         {
         }
-        public override void setUnityAPI(MeshStructure meshStructure, Dictionary<AbstractProvince, MeshStructure> neighborBorders)
+        public override void createMeshAndBorders(MeshStructure meshStructure, Dictionary<string, MeshStructure> neighborBorders)
         {
-            base.setUnityAPI(meshStructure, neighborBorders);
+            base.createMeshAndBorders(meshStructure, neighborBorders);
             meshRenderer.material = LinksManager.Get.waterMaterial;
             GameObject.AddComponent<UnityStandardAssets.Water.WaterBasic>();
             Debug.LogError("Im not happening");

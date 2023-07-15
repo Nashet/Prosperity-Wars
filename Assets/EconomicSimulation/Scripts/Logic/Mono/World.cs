@@ -351,7 +351,8 @@ namespace Nashet.EconomicSimulation
                 foreach (var color in uniqueColors)
                 {
                     var deleteWaterProvince = Rand.Get.Next(lakechance) == 1 || borderColors.Contains(color);
-                    allLandProvinces.Add(new Province(nameGenerator.generateProvinceName(), counter, color, Product.getRandomResource(false),
+                    if (!deleteWaterProvince)
+                        allLandProvinces.Add(new Province(nameGenerator.generateProvinceName(), counter, color, Product.getRandomResource(false),
 							deleteWaterProvince));
                     //else
                     //    allSeaProvinces.Add(new SeaProvince("", counter, item.Key));

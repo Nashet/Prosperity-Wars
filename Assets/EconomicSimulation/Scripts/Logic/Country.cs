@@ -211,7 +211,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public static void setUnityAPI()
+        public static void setMeshesAndMaterials()
         {
             foreach (var country in World.AllExistingCountries())
             {

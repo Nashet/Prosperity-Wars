@@ -1142,11 +1142,11 @@ namespace Nashet.EconomicSimulation
         {
             public Country oldOwner { get; set; }
         }
-        public override void setUnityAPI(MeshStructure meshStructure, Dictionary<AbstractProvince, MeshStructure> neighborBorders)
+        public override void createMeshAndBorders(MeshStructure meshStructure, Dictionary<string, MeshStructure> neighborBorders)
         {
-            if (!IsForDeletion)
+            //if (!IsForDeletion)
             {
-                base.setUnityAPI(meshStructure, neighborBorders);
+                base.createMeshAndBorders(meshStructure, neighborBorders);
                 MeshCollider groundMeshCollider = GameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
                 groundMeshCollider.sharedMesh = MeshFilter.mesh;
 
@@ -1160,7 +1160,7 @@ namespace Nashet.EconomicSimulation
             foreach (var border in neighborBorders)
             {
                 //each color is one neighbor (non repeating)
-                var neighbor = border.Key as Province;
+                var neighbor = World.AllProvinces.Where(x=>x.ColorID.ToString() == border.Key).FirstOrDefault();
                 if (neighbor != null)
                 {
                     if (neighbor.IsForDeletion)
@@ -1171,9 +1171,9 @@ namespace Nashet.EconomicSimulation
                         neighbors.Add(neighbor, false);
                     }
 
-                    if (!IsForDeletion)
+                    //if (!IsForDeletion)
                     {
-                        GameObject borderObject = new GameObject("Border with " + neighbor + $"Im coasta {IsCoastal}");
+                        GameObject borderObject = new GameObject($"Border with {neighbor}");
 
                         //Add Components
                         MeshFilter = borderObject.AddComponent<MeshFilter>();
@@ -1190,11 +1190,11 @@ namespace Nashet.EconomicSimulation
                         borderMesh.RecalculateNormals();
                         borderMesh.RecalculateBounds();
                         meshRenderer.material = LinksManager.Get.defaultProvinceBorderMaterial;
-                        borderMesh.name = "Border with " + neighbor;
+                        borderMesh.name = "Border with " + neighbor; //todo delete it?
 
                         bordersMeshes.Add(neighbor, meshRenderer);
                     }
-                }
+				}
             }
         }
 

@@ -122,7 +122,7 @@ namespace Nashet.EconomicSimulation
         }
         private void OnGameLoaded()
         {
-            Game.setUnityAPI();
+            Game.setUnityMeshes();
 
             FocusOnProvince(Game.Player.Capital, false);
             loadingPanel.Hide();
