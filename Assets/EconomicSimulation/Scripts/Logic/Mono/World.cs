@@ -248,7 +248,7 @@ namespace Nashet.EconomicSimulation
                 Culture culture = new Culture(cultureNameGenerator.generateCultureName(), ColorExtensions.getRandomColor());
                 allCultures.Add(culture);
 
-                Province province = AllProvinces.Where(x => x.Country == UncolonizedLand).Random();
+                Province province = AllProvinces.Where(x => x.Country == UncolonizedLand && !x.IsForDeletion).Random();
 
                 Country country = new Country(countryNameGenerator.generateCountryName(), culture, culture.getColor(), province, 100f);
                 allCountries.Add(country);
@@ -344,16 +344,15 @@ namespace Nashet.EconomicSimulation
             ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
             if (!useProvinceColors)
             {
-                var uniqueColors = mapTexture.AllUniqueColors2();
+                var uniqueColors = mapTexture.AllUniqueColors3();
+                var borderColors = mapTexture.GetColorsFromBorder();
                 int counter = 0;
-                int lakechance = 20;//
-                foreach (var item in uniqueColors)
+                int lakechance = 20;//todo fix
+                foreach (var color in uniqueColors)
                 {
-                    if (!item.Value && Rand.Get.Next(lakechance) != 0)
-                    {
-                        allLandProvinces.Add(new Province(nameGenerator.generateProvinceName(), counter, item.Key, Product.getRandomResource(false)));
-
-                    }
+                    var deleteWaterProvince = Rand.Get.Next(lakechance) == 1 || borderColors.Contains(color);
+                    allLandProvinces.Add(new Province(nameGenerator.generateProvinceName(), counter, color, Product.getRandomResource(false),
+							deleteWaterProvince));
                     //else
                     //    allSeaProvinces.Add(new SeaProvince("", counter, item.Key));
                     counter++;
@@ -369,7 +368,7 @@ namespace Nashet.EconomicSimulation
                     if (!(color.g + color.b >= 200f / 255f + 200f / 255f && color.r < 96f / 255f))
                         //if (color.g + color.b + color.r > 492f / 255f)
 
-                        allLandProvinces.Add(new Province(nameGenerator.generateProvinceName(), counter, color, Product.getRandomResource(false)));
+                        allLandProvinces.Add(new Province(nameGenerator.generateProvinceName(), counter, color, Product.getRandomResource(false), false));
                 }
             }
         }

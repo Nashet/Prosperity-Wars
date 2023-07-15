@@ -50,6 +50,7 @@ MonoBehaviour:
   defaultProvinceBorderMaterial: {fileID: 2100000, guid: 646b0af1c88112846a59dc3db58564ce,
     type: 2}
   impassableBorder: {fileID: 2100000, guid: 31b82705b1a61f7418007b5e6341af2a, type: 2}
+  riverBorder: {fileID: 2100000, guid: 52b7d70b1de7c4ce09662b77c14d9fda, type: 2}
   defaultUnitSymbol: {fileID: 2100000, guid: 48f088514fb2aff40be5a2b4e7e408cf, type: 2}
   UnitPrefab: {fileID: 1103526154260046, guid: 276f0d334f0ce484486a922ed7928529, type: 3}
   UnitPanelPrefab: {fileID: 1967660964868196, guid: e37c4dd3883e23a479e56012b25083c2,
@@ -63,6 +64,7 @@ MonoBehaviour:
     type: 3}
   ArmiesHolder: {fileID: 0}
   CameraLayerCanvas: {fileID: 0}
+  AdditionKey: 308
   waterMaterial: {fileID: 2100000, guid: 52b7d70b1de7c4ce09662b77c14d9fda, type: 2}
   ProvinceSelecionMaterial: {fileID: 2100000, guid: c25b338ab39471d4582add0f324ced07,
     type: 2}

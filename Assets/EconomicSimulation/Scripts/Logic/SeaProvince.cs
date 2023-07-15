@@ -17,7 +17,7 @@ namespace Nashet.EconomicSimulation
             base.setUnityAPI(meshStructure, neighborBorders);
             meshRenderer.material = LinksManager.Get.waterMaterial;
             GameObject.AddComponent<UnityStandardAssets.Water.WaterBasic>();
-
+            Debug.LogError("Im not happening");
         }
     }
 }

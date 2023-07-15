@@ -222,11 +222,11 @@ namespace Nashet.EconomicSimulation
 
                 country.borderMaterial = new Material(LinksManager.Get.defaultCountryBorderMaterial) { color = country.NationalColor.getNegative() };
                 //item.ownedProvinces[0].setBorderMaterial(Game.defaultProvinceBorderMaterial);
-                foreach (var province in country.AllProvinces)
-                {
-                    province.SetBorderMaterials();
-                }
-                country.Provinces.AllProvinces.PerformAction(x => x.OnSecedeGraphic(x.Country));
+                //foreach (var province in country.AllProvinces)
+                //{
+                //    province.SetBorderMaterials();
+                //}
+                //country.Provinces.AllProvinces.PerformAction(x => x.OnSecedeGraphic(x.Country));
                 country.Flag = Nashet.Flag.Generate(128, 128);
             }
             World.UncolonizedLand.Provinces.AllProvinces.PerformAction(x => x.OnSecedeGraphic(World.UncolonizedLand));

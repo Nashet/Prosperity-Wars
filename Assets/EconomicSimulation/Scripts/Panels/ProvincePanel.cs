@@ -132,7 +132,7 @@ namespace Nashet.EconomicSimulation
 
         public override void Refresh()
         {
-            var sb = new StringBuilder("Province name: ").Append(Game.selectedProvince);
+            var sb = new StringBuilder("Province name: ").Append(Game.selectedProvince).Append($", isCoastal {Game.selectedProvince.IsCoastal}");
             if (Game.devMode)
             {
                 sb.Append("\nID: ").Append(Game.selectedProvince.ID);

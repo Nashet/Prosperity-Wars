@@ -47,7 +47,7 @@ namespace Nashet.EconomicSimulation
         private readonly List<Factory> allFactories = new List<Factory>();
         private readonly List<Army> standingArmies = new List<Army>(); // military units
         //private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
-        protected readonly List<Province> neighbors = new List<Province>();
+        protected readonly Dictionary<Province, bool> neighbors = new Dictionary<Province, bool>();
         private readonly List<Country> cores = new List<Country>();
 
         private Product resource;
@@ -58,55 +58,89 @@ namespace Nashet.EconomicSimulation
 
         private readonly Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
         public TerrainTypes Terrain { get; protected set; }
+        public bool IsForDeletion { get; private set; }
+		public bool IsCoastal { get; private set; }
 
 
-        private readonly Dictionary<TemporaryModifier, Date> modifiers = new Dictionary<TemporaryModifier, Date>();
+		private readonly Dictionary<TemporaryModifier, Date> modifiers = new Dictionary<TemporaryModifier, Date>();
 
-        public Province(string name, int ID, Color colorID, Product resource) : base(name, ID, colorID)
+        public Province(string name, int ID, Color colorID, Product resource, bool isForDeletion) : base(name, ID, colorID)
         {
             country = World.UncolonizedLand;
             ProvinceColor = country.NationalColor.getAlmostSameColor();
             setResource(resource);
             fertileSoil = 5000;
-
+            IsForDeletion = isForDeletion;
         }
 
-        public Province(AbstractProvince p, Product product) : this(p.ShortName, p.ID, p.ColorID, product)
+        public Province(AbstractProvince p, Product product, bool isForDeletion) : this(p.ShortName, p.ID, p.ColorID, product,isForDeletion)
         {
 
         }
-
-        public void SetBorderMaterials()
-        {
-            foreach (var border in bordersMeshes)
-            {
-                if (border.Key.isNeighbor(this))
-                {
-                    if (Country == border.Key.Country) // same country
+        
+		public void SetBorderMaterials()
+		{
+			foreach (var border in bordersMeshes)
+			{
+				if (border.Key.isNeighbor(this))
+				{
+                    if (border.Key.isRiverNeighbor(this))
                     {
-                        border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
-                        border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
-                    }
+						border.Value.material = LinksManager.Get.riverBorder;
+					}
                     else
                     {
-                        if (Country == World.UncolonizedLand)
-                            border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
+                        if (Country == border.Key.Country) // same country
+                        {
+                            border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;                          
+                        }
                         else
-                            border.Value.material = Country.getBorderMaterial();
-
-                        if (border.Key.Country == World.UncolonizedLand)
-                            border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
-                        else
-                            border.Key.bordersMeshes[this].material = border.Key.Country.getBorderMaterial();
+                        {
+                            if (Country == World.UncolonizedLand)
+                                border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
+                            else
+                                border.Value.material = Country.getBorderMaterial();
+                        }
                     }
-                }
-                else
-                {
-                    border.Value.material = LinksManager.Get.impassableBorder;
-                    border.Key.bordersMeshes[this].material = LinksManager.Get.impassableBorder;
-                }
-            }
+				}
+				else
+				{
+					border.Value.material = LinksManager.Get.impassableBorder;					
+				}
+			}
 
+		}
+
+
+        public void UpdateBorderMaterials()
+        {
+			foreach (var border in bordersMeshes)
+			{
+				if (border.Key.isNeighbor(this))
+				{
+                    if (border.Key.isRiverNeighbor(this))
+                    {
+                        continue;
+                    }
+						if (Country == border.Key.Country) // same country
+						{
+							border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
+							border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
+						}
+						else
+						{
+							if (Country == World.UncolonizedLand)
+								border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
+							else
+								border.Value.material = Country.getBorderMaterial();
+
+                            if (border.Key.Country == World.UncolonizedLand)
+                                border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
+                            else
+                                border.Key.bordersMeshes[this].material = border.Key.Country.getBorderMaterial();
+                        }					
+				}				
+			}
         }
 
         /// <summary>
@@ -126,7 +160,7 @@ namespace Nashet.EconomicSimulation
         public void simulate()
         {
             if (Rand.Get.Next(Options.ProvinceChanceToGetCore) == 1)
-                if (neighbors.Any(x => x.isCoreFor(Country)) && !cores.Contains(Country) && getMajorCulture() == Country.Culture)
+                if (neighbors.Any(x => x.Key.isCoreFor(Country)) && !cores.Contains(Country) && getMajorCulture() == Country.Culture)
                     cores.Add(Country);
             // modifiers.LastOrDefault()
             //foreach (var item in modifiers)
@@ -234,7 +268,7 @@ namespace Nashet.EconomicSimulation
             ProvinceColor = taker.NationalColor.getAlmostSameColor();
             if (meshRenderer != null)
                 meshRenderer.material.color = getColorAccordingToMapMode();
-            SetBorderMaterials();
+			UpdateBorderMaterials();
         }
 
         public int howFarFromCapital()
@@ -254,7 +288,7 @@ namespace Nashet.EconomicSimulation
 
         public IEnumerable<Province> AllNeighbors()
         {
-            foreach (var item in neighbors)
+            foreach (var item in neighbors.Keys)
                 yield return item;
         }
 
@@ -1110,13 +1144,16 @@ namespace Nashet.EconomicSimulation
         }
         public override void setUnityAPI(MeshStructure meshStructure, Dictionary<AbstractProvince, MeshStructure> neighborBorders)
         {
-            base.setUnityAPI(meshStructure, neighborBorders);
-            MeshCollider groundMeshCollider = GameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
-            groundMeshCollider.sharedMesh = MeshFilter.mesh;
+            if (!IsForDeletion)
+            {
+                base.setUnityAPI(meshStructure, neighborBorders);
+                MeshCollider groundMeshCollider = GameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
+                groundMeshCollider.sharedMesh = MeshFilter.mesh;
 
-            meshRenderer.material.shader = Shader.Find("Standard");// Province");
+                meshRenderer.material.shader = Shader.Find("Standard");// Province");
 
-            meshRenderer.material.color = ProvinceColor;
+                meshRenderer.material.color = ProvinceColor;
+            }
 
             // setting neighbors
             //making meshes for border
@@ -1126,32 +1163,37 @@ namespace Nashet.EconomicSimulation
                 var neighbor = border.Key as Province;
                 if (neighbor != null)
                 {
+                    if (neighbor.IsForDeletion)
+                        this.IsCoastal = true;
                     if (!(Terrain == TerrainTypes.Mountains && neighbor.Terrain == TerrainTypes.Mountains))
                     //this.getTerrain() == TerrainTypes.Plains || neighbor.terrain == TerrainTypes.Plains)
                     {
-                        neighbors.Add(neighbor);
+                        neighbors.Add(neighbor, false);
                     }
 
-                    GameObject borderObject = new GameObject("Border with " + neighbor);
+                    if (!IsForDeletion)
+                    {
+                        GameObject borderObject = new GameObject("Border with " + neighbor + $"Im coasta {IsCoastal}");
 
-                    //Add Components
-                    MeshFilter = borderObject.AddComponent<MeshFilter>();
-                    MeshRenderer meshRenderer = borderObject.AddComponent<MeshRenderer>();
+                        //Add Components
+                        MeshFilter = borderObject.AddComponent<MeshFilter>();
+                        MeshRenderer meshRenderer = borderObject.AddComponent<MeshRenderer>();
 
-                    borderObject.transform.parent = GameObject.transform;
+                        borderObject.transform.parent = GameObject.transform;
 
-                    Mesh borderMesh = MeshFilter.mesh;
-                    borderMesh.Clear();
+                        Mesh borderMesh = MeshFilter.mesh;
+                        borderMesh.Clear();
 
-                    borderMesh.vertices = border.Value.getVertices().ToArray();
-                    borderMesh.triangles = border.Value.getTriangles().ToArray();
-                    borderMesh.uv = border.Value.getUVmap().ToArray();
-                    borderMesh.RecalculateNormals();
-                    borderMesh.RecalculateBounds();
-                    meshRenderer.material = LinksManager.Get.defaultProvinceBorderMaterial;
-                    borderMesh.name = "Border with " + neighbor;
+                        borderMesh.vertices = border.Value.getVertices().ToArray();
+                        borderMesh.triangles = border.Value.getTriangles().ToArray();
+                        borderMesh.uv = border.Value.getUVmap().ToArray();
+                        borderMesh.RecalculateNormals();
+                        borderMesh.RecalculateBounds();
+                        meshRenderer.material = LinksManager.Get.defaultProvinceBorderMaterial;
+                        borderMesh.name = "Border with " + neighbor;
 
-                    bordersMeshes.Add(neighbor, meshRenderer);
+                        bordersMeshes.Add(neighbor, meshRenderer);
+                    }
                 }
             }
         }
@@ -1173,8 +1215,23 @@ namespace Nashet.EconomicSimulation
             standingArmies.Remove(army);
         }
         public bool isNeighbor(Province province)
-        {
-            return neighbors.Contains(province);
+        {            
+            return neighbors.ContainsKey(province);
         }
-    }
+
+        internal void AddRiverBorder(Province riverNext)
+        {
+            neighbors[riverNext] = true;
+		}
+		internal bool isRiverNeighbor(Province riverNext)
+		{
+            neighbors.TryGetValue(riverNext, out var isRiver);  
+            return isRiver;
+		}
+
+		internal void Delete()
+		{
+            GameObject.Destroy(GameObject);
+		}
+	}
 }

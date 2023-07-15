@@ -856,66 +856,77 @@ namespace Nashet.Utils
             return res;
         }
         
-        public Dictionary<Color, bool> AllUniqueColors2()
-        {
-            // true means is a sea
-            var res = new Dictionary<Color, bool>();
+        public HashSet<Color> GetColorsFromBorder()
+        {            
+            var res = new HashSet<Color>();
             Color nextColor = map[0];
+
             for (int y = 0; y < height; y++)
             {
                 if (nextColor != map[y * width]
-                   && !res.ContainsKey(nextColor))
+                   && !res.Contains(nextColor))
                 {
 
-                    res.Add(nextColor, true);
+                    res.Add(nextColor);
                 }
                 nextColor = map[y * width];
             }
+
             for (int y = 0; y < height; y++)
             {
                 if (nextColor != map[width - 1 + y * width]
-                   && !res.ContainsKey(nextColor))
+                   && !res.Contains(nextColor))
                 {
 
-                    res.Add(nextColor, true);
+                    res.Add(nextColor);
                 }
                 nextColor = map[width - 1 + y * width];
             }
+
             for (int x = 0; x < width; x++)
             {
                 if (nextColor != map[x]
-                   && !res.ContainsKey(nextColor))
+                   && !res.Contains(nextColor))
                 {
 
-                    res.Add(nextColor, true);
+                    res.Add(nextColor);
                 }
                 nextColor = map[x];
             }
+
             for (int x = 0; x < width; x++)
             {
                 if (nextColor != map[x + (height - 1) * width]
-                   && !res.ContainsKey(nextColor))
+                   && !res.Contains(nextColor))
                 {
 
-                    res.Add(nextColor, true);
+                    res.Add(nextColor);
                 }
                 nextColor = map[x + (height - 1) * width];
             }
 
 
-            for (int y = 1; y < height - 1; y++)
-                for (int x = 1; x < width - 1; x++)
-                {
-                    if (nextColor != map[x + y * width]
-                        && !res.ContainsKey(nextColor))
-                    {
-
-                        res.Add(nextColor, false);
-                    }
-                    nextColor = map[x + y * width];
-
-                }
             return res;
         }
-    }
+
+		public List<Color> AllUniqueColors3()
+		{
+			// true means is a sea
+			var res = new List<Color>();
+			Color nextColor = map[0];			
+
+			for (int y = 1; y < height - 1; y++)
+				for (int x = 1; x < width - 1; x++)
+				{
+					if (nextColor != map[x + y * width]
+						&& !res.Contains(nextColor))
+					{
+
+						res.Add(nextColor);
+					}
+					nextColor = map[x + y * width];
+				}
+			return res;
+		}
+	}
 }
