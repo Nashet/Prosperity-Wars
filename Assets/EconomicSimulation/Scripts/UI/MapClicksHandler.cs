@@ -29,13 +29,13 @@ namespace Nashet.EconomicSimulation
                 return;
 
             if (selected == null)
-                MainCamera.selectProvince(-1);
+                MainCamera.selectProvince(null);
             else
             {
-                int provinceNumber = Province.FindByCollider(selected.SingleSelection);
-                if (provinceNumber > 0)
+                int? provinceId = Province.GetIdByCollider(selected.SingleSelection);
+                if (provinceId.HasValue)
                 {
-                    MainCamera.selectProvince(provinceNumber);
+                    MainCamera.selectProvince(provinceId);
                     if (!Input.GetKey(LinksManager.Get.AdditionKey)) // don't de select units if AdditionKey is pressed
                     {
                         Game.selectedArmies.ToList().PerformAction(x => x.Deselect());

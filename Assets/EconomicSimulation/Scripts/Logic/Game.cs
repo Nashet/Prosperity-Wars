@@ -15,7 +15,7 @@ namespace Nashet.EconomicSimulation
 	/// </summary>
 	public class Game : ThreadedJob
     {
-        public static bool devMode = false;//false;
+        public static bool devMode = true;//false;
         private static bool surrended = devMode;
         public static bool logInvestments = false;
         public static bool logMarket = false;
@@ -102,7 +102,7 @@ namespace Nashet.EconomicSimulation
 
 			foreach (var province in World.AllProvinces)
             {
-                var mesh = grid.getMesh(province.ColorID, out var borders);
+                var mesh = grid.getMesh(province.ID, out var borders);
 
 				
 				province.createMeshAndBorders(mesh, borders);

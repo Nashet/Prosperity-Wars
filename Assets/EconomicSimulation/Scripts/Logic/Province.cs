@@ -1118,31 +1118,31 @@ namespace Nashet.EconomicSimulation
                 return Factory.conditionsUpgrade.isAllTrue(byWhom, factory);
         }
 
-        public static int FindByCollider(Collider collider)
+        public static int? GetIdByCollider(Collider collider)
         {
             if (collider != null)
             {
                 MeshCollider meshCollider = collider as MeshCollider;
                 if (meshCollider == null || meshCollider.sharedMesh == null)
-                    return -2;               
+                    return null;               
 
                 Mesh mesh = meshCollider.sharedMesh;
 
                 if (mesh.name == "Quad")
-                    return -2;
+                    return null;
 
                 int provinceNumber = Convert.ToInt32(mesh.name);
                 return provinceNumber;
             }
             else
-                return -1;
+                return null;
         }
         public static event EventHandler<OwnerChangedEventArgs> OwnerChanged;
         public class OwnerChangedEventArgs : EventArgs
         {
             public Country oldOwner { get; set; }
         }
-        public override void createMeshAndBorders(MeshStructure meshStructure, Dictionary<Color, MeshStructure> neighborBorders)
+        public override void createMeshAndBorders(MeshStructure meshStructure, Dictionary<int, MeshStructure> neighborBorders)
         {
             //if (!IsForDeletion)
             {

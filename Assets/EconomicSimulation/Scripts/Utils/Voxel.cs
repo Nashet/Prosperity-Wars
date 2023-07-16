@@ -6,11 +6,11 @@ namespace Nashet.MarchingSquares
     [Serializable]
     public class Voxel
     {
-        private Color state;
+        private int state;
 
         private Vector2 position, xEdgePosition, yEdgePosition;
 
-        public Voxel(int x, int y, float size, Color state)
+        public Voxel(int x, int y, float size, int state)
         {
             position.x = (x + 0.5f) * size;
             position.y = (y + 0.5f) * size;
@@ -22,7 +22,7 @@ namespace Nashet.MarchingSquares
             this.state = state;
         }
 
-        public Color getState()
+        public int getState()
         {
             return state;
         }

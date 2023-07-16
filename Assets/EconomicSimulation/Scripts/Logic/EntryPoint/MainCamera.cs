@@ -255,10 +255,12 @@ namespace Nashet.EconomicSimulation
             {
                 if (Game.MapMode == Game.MapModes.PopulationChange)
                 {
-                    int meshNumber = Province.FindByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
+                    int? meshNumber = Province.GetIdByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
                     var hoveredProvince = World.FindProvince(meshNumber);
                     if (hoveredProvince == null)// || hoveredProvince is Province
+                    {
                         tooltip.Hide();
+                    }
                     else
                     {
                         if (Game.selectedProvince == null)
@@ -279,7 +281,7 @@ namespace Nashet.EconomicSimulation
                 }
                 else if (Game.MapMode == Game.MapModes.PopulationDensity)
                 {
-                    int meshNumber = Province.FindByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
+                    int? meshNumber = Province.GetIdByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
                     var hoveredProvince = World.FindProvince(meshNumber);
                     if (hoveredProvince == null)
                         tooltip.Hide();
@@ -296,7 +298,7 @@ namespace Nashet.EconomicSimulation
                 }
                 else if (Game.MapMode == Game.MapModes.Prosperity) //prosperity wars
                 {
-                    int meshNumber = Province.FindByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
+                    int? meshNumber = Province.GetIdByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
                     var hoveredProvince = World.FindProvince(meshNumber);
                     if (hoveredProvince == null)
                         tooltip.Hide();
@@ -316,9 +318,9 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public static void selectProvince(int number)
+        public static void selectProvince(int? Id)
         {
-            if (number < 0 || World.FindProvince(number) == Game.selectedProvince)// same province clicked, hide selection
+            if (!Id.HasValue || World.FindProvince(Id.Value) == Game.selectedProvince)// same province clicked, hide selection
             {
                 var lastSelected = Game.selectedProvince;
                 Game.selectedProvince = null;
@@ -341,7 +343,7 @@ namespace Nashet.EconomicSimulation
                     provinceSelector.Deselect(Game.selectedProvince.GameObject);
                 }
                 // freshly selected province
-                Game.selectedProvince = World.FindProvince(number);
+                Game.selectedProvince = World.FindProvince(Id.Value);
                 provinceSelector.Select(Game.selectedProvince.GameObject);
                 //Game.selectedProvince.setBorderMaterial(LinksManager.Get.selectedProvinceBorderMaterial);
                 provincePanel.Show();

@@ -14,7 +14,7 @@ namespace Nashet.EconomicSimulation
     public class World : MonoBehaviour//, IPopulated
     {
         protected static readonly List<Province> allLandProvinces = new List<Province>();
-		public static readonly Dictionary<Color, Province> ProvincesByColor = new Dictionary<Color, Province>();
+		public static readonly Dictionary<int, Province> ProvincesByColor = new Dictionary<int, Province>();
 		protected static readonly List<SeaProvince> allSeaProvinces = new List<SeaProvince>();
 
         protected static readonly List<Country> allCountries = new List<Country>();
@@ -192,14 +192,13 @@ namespace Nashet.EconomicSimulation
             return allMoney;
         }
 
-        public static Province FindProvince(int number)
+        public static Province FindProvince(int? number)
         {
-            foreach (var pro in allLandProvinces)
-                if (pro.ID == number)
-                {
-                    return pro;
-                }
-            return null;
+            if (!number.HasValue) 
+                return null;
+            
+            ProvincesByColor.TryGetValue(number.Value, out var province); 
+            return province;
         }
 
         public void ResumeSimulation()
@@ -354,11 +353,11 @@ namespace Nashet.EconomicSimulation
                     var deleteWaterProvince = Rand.Get.Next(lakechance) == 1 || borderColors.Contains(color);
                     if (!deleteWaterProvince)
                     {
-                        var province = new Province(nameGenerator.generateProvinceName(), counter, color, Product.getRandomResource(false),
+                        var province = new Province(nameGenerator.generateProvinceName(), color.ToInt(), color, Product.getRandomResource(false),
                             deleteWaterProvince);
 
 						allLandProvinces.Add(province);
-                        ProvincesByColor.Add(province.ColorID, province);
+                        ProvincesByColor.Add(province.ID, province);
                         //else
                         //    allSeaProvinces.Add(new SeaProvince("", counter, item.Key));
                         counter++;

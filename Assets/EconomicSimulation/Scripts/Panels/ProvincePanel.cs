@@ -132,7 +132,7 @@ namespace Nashet.EconomicSimulation
 
         public override void Refresh()
         {
-            var sb = new StringBuilder("Province name: ").Append(Game.selectedProvince).Append($", isCoastal {Game.selectedProvince.IsCoastal}");
+            var sb = new StringBuilder("Province name: ").Append(Game.selectedProvince).Append($", isCoastal {Game.selectedProvince.IsCoastal}, terrain - {Game.selectedProvince.Terrain} ");
             if (Game.devMode)
             {
                 sb.Append("\nID: ").Append(Game.selectedProvince.ID);
@@ -182,7 +182,7 @@ namespace Nashet.EconomicSimulation
         public override void Hide()
         {
             base.Hide();
-            MainCamera.selectProvince(-1);
+            MainCamera.selectProvince(null);
         }
     }
 }

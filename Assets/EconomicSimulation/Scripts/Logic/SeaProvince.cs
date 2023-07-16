@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
         public SeaProvince(string name, int ID, Color colorID) : base(name, ID, colorID)
         {
         }
-        public override void createMeshAndBorders(MeshStructure meshStructure, Dictionary<Color, MeshStructure> neighborBorders)
+        public override void createMeshAndBorders(MeshStructure meshStructure, Dictionary<int, MeshStructure> neighborBorders)
         {
             base.createMeshAndBorders(meshStructure, neighborBorders);
             meshRenderer.material = LinksManager.Get.waterMaterial;
