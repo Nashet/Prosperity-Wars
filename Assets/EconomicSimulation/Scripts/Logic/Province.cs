@@ -64,7 +64,7 @@ namespace Nashet.EconomicSimulation
 
 		private readonly Dictionary<TemporaryModifier, Date> modifiers = new Dictionary<TemporaryModifier, Date>();
 
-        public Province(string name, int ID, Color colorID, Product resource, bool isForDeletion) : base(name, ID, colorID)
+        public Province(string name, int ID, Product resource, bool isForDeletion) : base(name, ID)
         {
             country = World.UncolonizedLand;
             ProvinceColor = country.NationalColor.getAlmostSameColor();
@@ -73,7 +73,7 @@ namespace Nashet.EconomicSimulation
             IsForDeletion = isForDeletion;
         }
 
-        public Province(AbstractProvince p, Product product, bool isForDeletion) : this(p.ShortName, p.ID, p.ColorID, product,isForDeletion)
+        public Province(AbstractProvince p, Product product, bool isForDeletion) : this(p.ShortName, p.ID, product,isForDeletion)
         {
 
         }
@@ -1160,7 +1160,7 @@ namespace Nashet.EconomicSimulation
             foreach (var border in neighborBorders)
             {
                 //each color is one neighbor (non repeating)
-                World.ProvincesByColor.TryGetValue(border.Key, out var neighbor); 
+                World.ProvincesById.TryGetValue(border.Key, out var neighbor); 
 				//var neighbor = World.ProvincesByColor[border.Key];
                 if (neighbor != null)
                 {

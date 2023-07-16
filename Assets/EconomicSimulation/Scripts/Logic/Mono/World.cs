@@ -14,7 +14,7 @@ namespace Nashet.EconomicSimulation
     public class World : MonoBehaviour//, IPopulated
     {
         protected static readonly List<Province> allLandProvinces = new List<Province>();
-		public static readonly Dictionary<int, Province> ProvincesByColor = new Dictionary<int, Province>();
+		public static readonly Dictionary<int, Province> ProvincesById = new Dictionary<int, Province>();
 		protected static readonly List<SeaProvince> allSeaProvinces = new List<SeaProvince>();
 
         protected static readonly List<Country> allCountries = new List<Country>();
@@ -197,7 +197,7 @@ namespace Nashet.EconomicSimulation
             if (!number.HasValue) 
                 return null;
             
-            ProvincesByColor.TryGetValue(number.Value, out var province); 
+            ProvincesById.TryGetValue(number.Value, out var province); 
             return province;
         }
 
@@ -219,14 +219,6 @@ namespace Nashet.EconomicSimulation
         public void MakeOneStepSimulation()
         {
             haveToStepSimulation = true;
-        }
-
-        public static bool isProvinceCreated(Color color)
-        {
-            foreach (Province anyProvince in allLandProvinces)
-                if (anyProvince.ColorID == color)
-                    return true;
-            return false;
         }
 
         public static void CreateCountries()
@@ -353,11 +345,11 @@ namespace Nashet.EconomicSimulation
                     var deleteWaterProvince = Rand.Get.Next(lakechance) == 1 || borderColors.Contains(color);
                     if (!deleteWaterProvince)
                     {
-                        var province = new Province(nameGenerator.generateProvinceName(), color.ToInt(), color, Product.getRandomResource(false),
+                        var province = new Province(nameGenerator.generateProvinceName(), color.ToInt(), Product.getRandomResource(false),
                             deleteWaterProvince);
 
 						allLandProvinces.Add(province);
-                        ProvincesByColor.Add(province.ID, province);
+                        ProvincesById.Add(province.ID, province);
                         //else
                         //    allSeaProvinces.Add(new SeaProvince("", counter, item.Key));
                         counter++;
@@ -372,10 +364,14 @@ namespace Nashet.EconomicSimulation
                 {
                     var color = uniqueColors[counter];
                     if (!(color.g + color.b >= 200f / 255f + 200f / 255f && color.r < 96f / 255f))
-                        //if (color.g + color.b + color.r > 492f / 255f)
+                    //if (color.g + color.b + color.r > 492f / 255f)
+                    {
+                        var province = new Province(nameGenerator.generateProvinceName(), counter, Product.getRandomResource(false), false);
 
-                        allLandProvinces.Add(new Province(nameGenerator.generateProvinceName(), counter, color, Product.getRandomResource(false), false));
-                }
+						allLandProvinces.Add(province);
+                        ProvincesById.Add(province.ID, province);
+                    }
+				}
             }
         }
 

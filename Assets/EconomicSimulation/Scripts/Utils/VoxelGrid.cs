@@ -3,12 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Nashet.MarchingSquares
-{	
-	public interface IColorID
-    {
-        Color ColorID { get;}
-    }
-
+{
     [SelectionBase]
     public class VoxelGrid
     {
@@ -50,7 +45,7 @@ namespace Nashet.MarchingSquares
             }
         }
 
-        public MeshStructure getMesh(int analysingProvince, out Dictionary<int, MeshStructure> borders)
+		public MeshStructure getMesh(int analysingProvince, out Dictionary<int, MeshStructure> borders)
         {
             mesh = new MeshStructure();
             bordersMeshes = new Dictionary<int, MeshStructure>();
