@@ -1142,7 +1142,7 @@ namespace Nashet.EconomicSimulation
         {
             public Country oldOwner { get; set; }
         }
-        public override void createMeshAndBorders(MeshStructure meshStructure, Dictionary<string, MeshStructure> neighborBorders)
+        public override void createMeshAndBorders(MeshStructure meshStructure, Dictionary<Color, MeshStructure> neighborBorders)
         {
             //if (!IsForDeletion)
             {
@@ -1160,7 +1160,8 @@ namespace Nashet.EconomicSimulation
             foreach (var border in neighborBorders)
             {
                 //each color is one neighbor (non repeating)
-                var neighbor = World.AllProvinces.Where(x=>x.ColorID.ToString() == border.Key).FirstOrDefault();
+                World.ProvincesByColor.TryGetValue(border.Key, out var neighbor); 
+				//var neighbor = World.ProvincesByColor[border.Key];
                 if (neighbor != null)
                 {
                     if (neighbor.IsForDeletion)

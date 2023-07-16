@@ -20,8 +20,7 @@ namespace Nashet.MarchingSquares
         private readonly float voxelSize, gridSize;
 
         private MeshStructure mesh;
-        private Dictionary<string, MeshStructure> bordersMeshes;
-        public readonly HashSet<string> allIds = new HashSet<string>();
+        private Dictionary<Color, MeshStructure> bordersMeshes;
 
         private Voxel dummyX, dummyY, dummyT;
         
@@ -43,29 +42,28 @@ namespace Nashet.MarchingSquares
             {
                 for (int x = 0; x < width; x++)
                 {
-                    var Id = texture.GetPixel(x, y).ToString();
-					allIds.Add(Id);
+                    var Id = texture.GetPixel(x, y);
 					CreateVoxel(i, x, y, Id);
                     i++;
                 }
             }
         }
 
-        public MeshStructure getMesh(string analysingProvince, out Dictionary<string, MeshStructure> borders)
+        public MeshStructure getMesh(Color analysingProvince, out Dictionary<Color, MeshStructure> borders)
         {
             mesh = new MeshStructure();
-            bordersMeshes = new Dictionary<string, MeshStructure>();
+            bordersMeshes = new Dictionary<Color, MeshStructure>();
             Triangulate(analysingProvince);
             borders = bordersMeshes;
 			return mesh;
         }
 
-        private void CreateVoxel(int i, int x, int y, string state)
+        private void CreateVoxel(int i, int x, int y, Color state)
         {
             voxels[i] = new Voxel(x, y, voxelSize, state);
         }
 
-        private void Triangulate(string analysingProvince)
+        private void Triangulate(Color analysingProvince)
         {
             //mesh.Clear();
 
@@ -83,7 +81,7 @@ namespace Nashet.MarchingSquares
             //mesh.triangles = triangles.ToArray();
         }
 
-        private void TriangulateCellRows(string analysingProvince)
+        private void TriangulateCellRows(Color analysingProvince)
         {
             //int cells = resolution - 1;
             for (int i = 0, y = 0; y < height - 1; y++)
@@ -109,7 +107,7 @@ namespace Nashet.MarchingSquares
             }
 		}
 
-        private void TriangulateGapCell(int i, string analysingProvince)
+        private void TriangulateGapCell(int i, Color analysingProvince)
         {
             Voxel dummySwap = dummyT;
             dummySwap.BecomeXDummyOf(xNeighbor.voxels[i + 1], gridSize);
@@ -118,7 +116,7 @@ namespace Nashet.MarchingSquares
             TriangulateCell(voxels[i], dummyT, voxels[i + width], dummyX, analysingProvince);
         }
 
-        private void TriangulateGapRow(string analysingProvince)
+        private void TriangulateGapRow(Color analysingProvince)
         {
             dummyY.BecomeYDummyOf(yNeighbor.voxels[0], gridSize);
             //int cells = width - 1;
@@ -146,7 +144,7 @@ namespace Nashet.MarchingSquares
             return !(a.getState() == b.getState() && a.getState() == c.getState() && a.getState() == d.getState());
         }
 
-        private void findBorderMeshAndAdd(string province, Vector2 a, Vector2 b)
+        private void findBorderMeshAndAdd(Color province, Vector2 a, Vector2 b)
         {            
             if (province != null)            
             {
@@ -160,7 +158,7 @@ namespace Nashet.MarchingSquares
             }
         }
 
-        private void TriangulateCell(Voxel a, Voxel b, Voxel c, Voxel d, string analyzingState)
+        private void TriangulateCell(Voxel a, Voxel b, Voxel c, Voxel d, Color analyzingState)
         {
             //bool isBorder = isBorderCell(a, b, c, d);
             int cellType = 0;
@@ -393,10 +391,5 @@ namespace Nashet.MarchingSquares
         {
             return d.getState() == b.getState() && d.getState() != c.getState() && b.getState() != a.getState() && c.getState() != a.getState();
         }
-
-        //public Dictionary<string, MeshStructure> getBordersForLastMesh()
-        //{
-        //    return bordersMeshes;
-        //}
     }
 }

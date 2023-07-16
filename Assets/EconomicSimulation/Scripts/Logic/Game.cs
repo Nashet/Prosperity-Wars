@@ -15,7 +15,7 @@ namespace Nashet.EconomicSimulation
 	/// </summary>
 	public class Game : ThreadedJob
     {
-        public static bool devMode = true;//false;
+        public static bool devMode = false;//false;
         private static bool surrended = devMode;
         public static bool logInvestments = false;
         public static bool logMarket = false;
@@ -55,21 +55,12 @@ namespace Nashet.EconomicSimulation
                     width = 150 + Rand.Get.Next(60);
                 }
                 else
-                {
-                    //mapSize = 25000;
-                    //width = 170 + Random.Next(65);
-                    //mapSize = 30000;
-                    //width = 180 + Random.Next(65);
+                {                   
                     mapSize = 40000;
                     width = 250 + Rand.Get.Next(40);
                 }
-                // 140 is sqrt of 20000
-                //int width = 30 + Random.Next(12);   // 140 is sqrt of 20000
-                //#else
-                //        int mapSize = 40000;
-                //        int width = 200 + Random.Next(80);
-                //#endif
-                mapTexture = map.generateMapImage(mapSize, width);
+				
+				mapTexture = map.generateMapImage(mapSize, width);
             }
             else
             {
@@ -109,8 +100,9 @@ namespace Nashet.EconomicSimulation
 
             foreach (var province in World.AllProvinces)
             {
-                var mesh = grid.getMesh(province.ColorID.ToString(), out var borders);
+                var mesh = grid.getMesh(province.ColorID, out var borders);
 
+				
 				province.createMeshAndBorders(mesh, borders);
 			}
 
@@ -126,6 +118,7 @@ namespace Nashet.EconomicSimulation
 
 			Country.setMeshesAndMaterials();
 
+            //todo put it in some other file. World?
 			AddRivers();
 
 			SetPatchFinding();
@@ -186,31 +179,24 @@ namespace Nashet.EconomicSimulation
 				//.Where(x => x.IsCoastal)
 				if (riverStart2 == null) 
                     continue;
-				MakeRiver(riverStart, riverStart2);
+				AddRiverBorder(riverStart, riverStart2);
 			}
 		}
 
-		private static void MakeRiver(Province beach1, Province beach2)
+		private static void AddRiverBorder(Province beach1, Province beach2)
 		{
             if (beach1.Terrain == Province.TerrainTypes.Mountains && beach2.Terrain == Province.TerrainTypes.Mountains)
             {
-                Debug.LogError($"----river stoped because of mountain");
+                Debug.Log($"----river stoped because of mountain");
 				return; 
             }
 
 			var chanceToContinue = Rand.Get.Next(25);
             if (chanceToContinue == 1)
 			{
-                Debug.LogError($"----river stoped because its long enough");
+                Debug.Log($"----river stoped because its long enough");
 				return;
 			};
-
-            //var beach3 = beach1.AllNeighbors().Where(x => x.isNeighbor(beach2) && !x.isRiverNeighbor(beach1) && !x.isRiverNeighbor(beach2)).Random();
-            //if (beach3 == null)
-            //{
-            //    Debug.LogError($"river stoped because didnt found beach3");
-            //    return;
-            //}
 
             Province beach3 = null;
 
@@ -248,32 +234,27 @@ namespace Nashet.EconomicSimulation
                 }
 			}
 
-
-
-			Debug.LogError($"{beach1}, {beach2}");
+			Debug.Log($"{beach1}, {beach2}");
             beach1.AddRiverBorder( beach2);
 			beach2.AddRiverBorder(beach1);
-			//beach1.UpdateBorderMaterials(true, beach2);
-			//beach2.UpdateBorderMaterials(true, beach1);
 
 			var chance = Rand.Get.Next(2);
 
 			if (beach3 == null)
 			{
-				Debug.LogError($"----river stoped because cant find beach3");
+				Debug.Log($"----river stoped because cant find beach3");
 				return;
 			};
 
 			if (chance == 1 && !beach3.isRiverNeighbor(beach1))
             {
-                MakeRiver(beach3, beach1);
+                AddRiverBorder(beach3, beach1);
             }
             else
             {
-                MakeRiver(beach3, beach2);
-            }		
-            		
-		}
+                AddRiverBorder(beach3, beach2);
+            }
+        }
 
 		public Rect getMapBorders()
         {

@@ -14,7 +14,8 @@ namespace Nashet.EconomicSimulation
     public class World : MonoBehaviour//, IPopulated
     {
         protected static readonly List<Province> allLandProvinces = new List<Province>();
-        protected static readonly List<SeaProvince> allSeaProvinces = new List<SeaProvince>();
+		public static readonly Dictionary<Color, Province> ProvincesByColor = new Dictionary<Color, Province>();
+		protected static readonly List<SeaProvince> allSeaProvinces = new List<SeaProvince>();
 
         protected static readonly List<Country> allCountries = new List<Country>();
         protected static readonly List<Culture> allCultures = new List<Culture>();
@@ -352,11 +353,16 @@ namespace Nashet.EconomicSimulation
                 {
                     var deleteWaterProvince = Rand.Get.Next(lakechance) == 1 || borderColors.Contains(color);
                     if (!deleteWaterProvince)
-                        allLandProvinces.Add(new Province(nameGenerator.generateProvinceName(), counter, color, Product.getRandomResource(false),
-							deleteWaterProvince));
-                    //else
-                    //    allSeaProvinces.Add(new SeaProvince("", counter, item.Key));
-                    counter++;
+                    {
+                        var province = new Province(nameGenerator.generateProvinceName(), counter, color, Product.getRandomResource(false),
+                            deleteWaterProvince);
+
+						allLandProvinces.Add(province);
+                        ProvincesByColor.Add(province.ColorID, province);
+                        //else
+                        //    allSeaProvinces.Add(new SeaProvince("", counter, item.Key));
+                        counter++;
+                    }
                 }
             }
             else

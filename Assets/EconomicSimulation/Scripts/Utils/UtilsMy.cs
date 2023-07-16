@@ -818,7 +818,6 @@ namespace Nashet.Utils
             height = image.height;
             map = image.GetPixels();
             Texture = image;
-
 		}
 
         public int getWidth()
@@ -860,14 +859,13 @@ namespace Nashet.Utils
         }
         
         public HashSet<Color> GetColorsFromBorder()
-        {            
+        {
             var res = new HashSet<Color>();
             Color nextColor = map[0];
 
             for (int y = 0; y < height; y++)
             {
-                if (nextColor != map[y * width]
-                   && !res.Contains(nextColor))
+                if (nextColor != map[y * width])
                 {
 
                     res.Add(nextColor);
@@ -877,8 +875,7 @@ namespace Nashet.Utils
 
             for (int y = 0; y < height; y++)
             {
-                if (nextColor != map[width - 1 + y * width]
-                   && !res.Contains(nextColor))
+                if (nextColor != map[width - 1 + y * width])
                 {
 
                     res.Add(nextColor);
@@ -888,8 +885,7 @@ namespace Nashet.Utils
 
             for (int x = 0; x < width; x++)
             {
-                if (nextColor != map[x]
-                   && !res.Contains(nextColor))
+                if (nextColor != map[x])
                 {
 
                     res.Add(nextColor);
@@ -899,8 +895,7 @@ namespace Nashet.Utils
 
             for (int x = 0; x < width; x++)
             {
-                if (nextColor != map[x + (height - 1) * width]
-                   && !res.Contains(nextColor))
+                if (nextColor != map[x + (height - 1) * width])
                 {
 
                     res.Add(nextColor);
@@ -912,19 +907,16 @@ namespace Nashet.Utils
             return res;
         }
 
-		public List<Color> AllUniqueColors3()
-		{
-			// true means is a sea
-			var res = new List<Color>();
+		public HashSet<Color> AllUniqueColors3()
+		{			
+			var res = new HashSet<Color>();
 			Color nextColor = map[0];			
 
 			for (int y = 1; y < height - 1; y++)
 				for (int x = 1; x < width - 1; x++)
 				{
-					if (nextColor != map[x + y * width]
-						&& !res.Contains(nextColor))
+					if (nextColor != map[x + y * width])
 					{
-
 						res.Add(nextColor);
 					}
 					nextColor = map[x + y * width];

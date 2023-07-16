@@ -64,7 +64,7 @@ namespace Nashet.EconomicSimulation
                              //#endif
                              //group.RecalculateBounds();
         }
-        public virtual void createMeshAndBorders(MeshStructure meshStructure, Dictionary<string, MeshStructure> neighborBorders)
+        public virtual void createMeshAndBorders(MeshStructure meshStructure, Dictionary<Color, MeshStructure> neighborBorders)
         {
             //this.meshStructure = meshStructure;
 
