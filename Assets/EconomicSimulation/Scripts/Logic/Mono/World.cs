@@ -366,7 +366,7 @@ namespace Nashet.EconomicSimulation
                     if (!(color.g + color.b >= 200f / 255f + 200f / 255f && color.r < 96f / 255f))
                     //if (color.g + color.b + color.r > 492f / 255f)
                     {
-                        var province = new Province(nameGenerator.generateProvinceName(), counter, Product.getRandomResource(false), false);
+                        var province = new Province(nameGenerator.generateProvinceName(), color.ToInt(), Product.getRandomResource(false), false);
 
 						allLandProvinces.Add(province);
                         ProvincesById.Add(province.ID, province);
