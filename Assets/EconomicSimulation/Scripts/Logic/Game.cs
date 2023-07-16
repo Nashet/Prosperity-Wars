@@ -78,8 +78,7 @@ namespace Nashet.EconomicSimulation
 
 			grid = new VoxelGrid(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture.Texture);
 
-            if (!devMode)
-                makeHelloMessage();
+           
             updateStatus("Finishing generation..");
         }
 
@@ -95,10 +94,13 @@ namespace Nashet.EconomicSimulation
 
 			m.Initialize(null);
 
-            //World.getAllExistingCountries().PerformAction(x => x.market.Initialize(x));  // should go after countries creation  
-            // has to be separate circle
+			if (!devMode)
+				makeHelloMessage();
 
-            foreach (var province in World.AllProvinces)
+			//World.getAllExistingCountries().PerformAction(x => x.market.Initialize(x));  // should go after countries creation  
+			// has to be separate circle
+
+			foreach (var province in World.AllProvinces)
             {
                 var mesh = grid.getMesh(province.ColorID, out var borders);
 
