@@ -170,7 +170,7 @@ namespace Nashet.EconomicSimulation
 
 		private static void AddRivers()
 		{
-			for (int i = 0; i < 17; i++)
+			for (int i = 0; i < Options.MaxRiversAmount; i++)
 			{
 				var riverStart = World.AllProvinces.Where(x => !x.AllNeighbors().Any(y => y.isRiverNeighbor(x))).Random();
 				//x.IsCoastal && 
@@ -193,7 +193,7 @@ namespace Nashet.EconomicSimulation
 				return; 
             }
 
-			var chanceToContinue = Rand.Get.Next(25);
+			var chanceToContinue = Rand.Get.Next(Options.RiverLenght);
             if (chanceToContinue == 1)
 			{
                 Debug.Log($"----river stoped because its long enough");
