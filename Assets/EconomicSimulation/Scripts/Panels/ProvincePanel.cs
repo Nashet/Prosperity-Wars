@@ -132,12 +132,13 @@ namespace Nashet.EconomicSimulation
 
         public override void Refresh()
         {
-            var sb = new StringBuilder("Province name: ").Append(Game.selectedProvince).Append($", isCoastal {Game.selectedProvince.IsCoastal}, terrain - {Game.selectedProvince.Terrain} ");
+            var sb = new StringBuilder("Province name: ").Append(Game.selectedProvince);
             if (Game.devMode)
             {
                 sb.Append("\nID: ").Append(Game.selectedProvince.ID);
                 sb.Append("\nNeighbors: ").Append(Game.selectedProvince.AllNeighbors().ToString(", "));
-            }
+                sb.Append($", isCoastal {Game.selectedProvince.IsCoastal}, terrain - {Game.selectedProvince.Terrain} ");
+			}
             sb.Append("\nPopulation (with families): ").Append(Game.selectedProvince.getFamilyPopulation());
 
             sb.Append("\nAverage loyalty: ").Append(Game.selectedProvince.AllPops.GetAverageProcent(x => x.loyalty));
