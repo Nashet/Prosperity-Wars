@@ -184,7 +184,8 @@ namespace Nashet.EconomicSimulation
             }
             //province.secedeTo(this, false);
             Provinces.TakeProvince(province, false);
-        }
+			province.OnSecedeGraphic(this);
+		}
 
         public Province BestCapitalCandidate()
         {
@@ -202,8 +203,9 @@ namespace Nashet.EconomicSimulation
                 if (item.isCoreFor(this))
                 {
                     Provinces.TakeProvince(item, false);
-                    //item.secedeTo(this, false);
-                }
+					item.OnSecedeGraphic(this);
+					//item.secedeTo(this, false);
+				}
             ressurect(BestCapitalCandidate(), government);
             foreach (var item in oldCountry.Science.AllInvented()) // copying inventions
             {
@@ -229,8 +231,8 @@ namespace Nashet.EconomicSimulation
                 //country.Provinces.AllProvinces.PerformAction(x => x.OnSecedeGraphic(x.Country));
                 country.Flag = Nashet.Flag.Generate(128, 128);
             }
-            World.UncolonizedLand.Provinces.AllProvinces.PerformAction(x => x.OnSecedeGraphic(World.UncolonizedLand));
-        }
+            World.AllProvinces.PerformAction(x => x.OnSecedeGraphic(x.Country));
+		}
 
         public void setPrefix()
         {
@@ -277,7 +279,7 @@ namespace Nashet.EconomicSimulation
                     item.ownership.TransferAll(this, item.Country);
 
             if (IsHuman)
-                MessageSystem.Instance.NewMessage("Disaster!!", "It looks like we lost our last province\n\nMaybe we would rise again?", "Okay", false, capital.Position);
+                MessageSystem.Instance.NewMessage("Disaster!!", "It looks like we lost our last province\n\nMaybe we would rise again?", "Okay", false, capital.provinceMesh.Position);
             IsAlive = false;
 
             SetStatisticToZero();
@@ -301,7 +303,7 @@ namespace Nashet.EconomicSimulation
             Transform txtMeshTransform = GameObject.Instantiate(LinksManager.Get.r3DCountryTextPrefab).transform;
             txtMeshTransform.SetParent(province.GameObject.transform, false);
 
-            Vector3 capitalTextPosition = province.Position;
+            Vector3 capitalTextPosition = province.provinceMesh.Position;
             capitalTextPosition.y += 2f;
             //capitalTextPosition.z -= 5f;
             txtMeshTransform.position = capitalTextPosition;
@@ -327,7 +329,7 @@ namespace Nashet.EconomicSimulation
                 setCapitalTextMesh(newCapital);
             else
             {
-                Vector3 capitalTextPosition = newCapital.Position;
+                Vector3 capitalTextPosition = newCapital.provinceMesh.Position;
                 capitalTextPosition.y += 2f;
                 //capitalTextPosition.z -= 5f;
                 meshCapitalText.transform.position = capitalTextPosition;
@@ -1091,8 +1093,9 @@ namespace Nashet.EconomicSimulation
             foreach (var item in Provinces.AllProvinces.ToList())
             {
                 country.Provinces.TakeProvince(item, false);
-                //item.secedeTo(country, false);
-            }
+				item.OnSecedeGraphic(country);
+				//item.secedeTo(country, false);
+			}
         }
 
         public void Nationilize(Factory factory)

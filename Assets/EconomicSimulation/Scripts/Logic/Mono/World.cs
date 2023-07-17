@@ -16,7 +16,7 @@ namespace Nashet.EconomicSimulation
     {
         protected static readonly List<Province> allLandProvinces = new List<Province>();
 		public static readonly Dictionary<int, Province> ProvincesById = new Dictionary<int, Province>();
-		protected static readonly List<SeaProvince> allSeaProvinces = new List<SeaProvince>();
+		//protected static readonly List<SeaProvince> allSeaProvinces = new List<SeaProvince>();
 
         protected static readonly List<Country> allCountries = new List<Country>();
         protected static readonly List<Culture> allCultures = new List<Culture>();
@@ -98,21 +98,7 @@ namespace Nashet.EconomicSimulation
                 yield return Market.TemporalSingleMarket;
             }
         }
-
-        public static IEnumerable<AbstractProvince> AllAbstractProvinces
-        {
-            get
-            {
-                foreach (var item in AllProvinces)
-                {
-                    yield return item;
-                }
-                foreach (var item in AllSeaProvinces)
-                {
-                    yield return item;
-                }
-            }
-        }
+      
         /// <summary>
         /// Land provinces only
         /// </summary>
@@ -126,16 +112,16 @@ namespace Nashet.EconomicSimulation
                 }
             }
         }
-        public static IEnumerable<SeaProvince> AllSeaProvinces
-        {
-            get
-            {
-                foreach (var item in allSeaProvinces)
-                {
-                    yield return item;
-                }
-            }
-        }
+        //public static IEnumerable<SeaProvince> AllSeaProvinces
+        //{
+        //    get
+        //    {
+        //        foreach (var item in allSeaProvinces)
+        //        {
+        //            yield return item;
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Gives list of allowed IInvestable with pre-calculated Margin in Value. Doesn't check if it's invented

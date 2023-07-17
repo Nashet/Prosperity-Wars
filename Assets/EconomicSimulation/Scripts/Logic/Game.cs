@@ -106,8 +106,15 @@ namespace Nashet.EconomicSimulation
             {
                 var mesh = grid.getMesh(province.ID, out var borders);
 
-				
-				province.createMeshAndBorders(mesh, borders);
+
+
+				//if (!IsForDeletion)
+				{
+                    province.provinceMesh = new AbstractProvince(province.ID);
+					province.provinceMesh.createMeshes(mesh, borders, province.ProvinceColor);
+
+				}
+				province.createBorders(mesh, borders);
 				//World.AllSeaProvinces.PerformAction(x =>
 			}
 
@@ -144,10 +151,10 @@ namespace Nashet.EconomicSimulation
 			{
 				//var node = province.GameObject.GetComponent<Node>();
 				//node.Set(province, province.AllNeighbors());
-				var node = new Node(province.Position);
+				var node = new Node(province.provinceMesh.Position);
 				PathFinder.instance.graphData.nodes.Add(node);
 				province.Node = node;
-				province.SetBorderMaterials();
+				province.provinceMesh.SetBorderMaterials(province); //WTF
 				node.Province = province;
 			}
 

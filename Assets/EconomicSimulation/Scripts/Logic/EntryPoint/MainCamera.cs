@@ -209,12 +209,12 @@ namespace Nashet.EconomicSimulation
                 if (Game.DrawFogOfWar && Game.MapMode == Game.MapModes.Political)
                 {
                     World.AllProvinces.PerformAction(
-                        x => x.SetColor(x.ProvinceColor * fogOfWarDensity)
+                        x => x.provinceMesh.SetColor(x.ProvinceColor * fogOfWarDensity)
                         //x => fogOfWar.Select(x.GameObject)
                         );
                     Game.playerVisibleProvinces.PerformAction(x =>
                     //fogOfWar.Deselect(x.GameObject)
-                    x.SetColor(x.ProvinceColor)
+                    x.provinceMesh.SetColor(x.ProvinceColor)
                     );
                 }
 
@@ -246,7 +246,7 @@ namespace Nashet.EconomicSimulation
             {
                 World.AllProvinces.PerformAction(x =>
                 //fogOfWar.Deselect(x.GameObject)
-                x.SetColor(x.ProvinceColor)
+                x.provinceMesh.SetColor(x.ProvinceColor)
                 );
             }
         }
@@ -263,7 +263,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (Game.MapMode == Game.MapModes.PopulationChange)
                 {
-                    int? meshNumber = Province.GetIdByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
+                    int? meshNumber = AbstractProvince.GetIdByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
                     var hoveredProvince = World.FindProvince(meshNumber);
                     if (hoveredProvince == null)// || hoveredProvince is Province
                     {
@@ -289,7 +289,7 @@ namespace Nashet.EconomicSimulation
                 }
                 else if (Game.MapMode == Game.MapModes.PopulationDensity)
                 {
-                    int? meshNumber = Province.GetIdByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
+                    int? meshNumber = AbstractProvince.GetIdByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
                     var hoveredProvince = World.FindProvince(meshNumber);
                     if (hoveredProvince == null)
                         tooltip.Hide();
@@ -306,7 +306,7 @@ namespace Nashet.EconomicSimulation
                 }
                 else if (Game.MapMode == Game.MapModes.Prosperity) //prosperity wars
                 {
-                    int? meshNumber = Province.GetIdByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
+                    int? meshNumber = AbstractProvince.GetIdByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
                     var hoveredProvince = World.FindProvince(meshNumber);
                     if (hoveredProvince == null)
                         tooltip.Hide();
@@ -378,7 +378,7 @@ namespace Nashet.EconomicSimulation
 
         public void FocusOnProvince(Province province, bool select)
         {
-            gameObject.transform.position = new Vector3(province.Position.x, province.Position.y, focusHeight);
+            gameObject.transform.position = new Vector3(province.provinceMesh.Position.x, province.provinceMesh.Position.y, focusHeight);
             if (select)
                 selectProvince(province.ID);
         }
