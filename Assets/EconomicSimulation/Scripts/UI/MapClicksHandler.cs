@@ -32,7 +32,7 @@ namespace Nashet.EconomicSimulation
                 MainCamera.selectProvince(null);
             else
             {
-                int? provinceId = AbstractProvince.GetIdByCollider(selected.SingleSelection);
+                int? provinceId = ProvinceMesh.GetIdByCollider(selected.SingleSelection);
                 if (provinceId.HasValue)
                 {
                     MainCamera.selectProvince(provinceId);

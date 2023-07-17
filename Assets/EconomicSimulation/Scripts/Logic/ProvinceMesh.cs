@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Nashet.EconomicSimulation
 {
 	// put text placing separatly in file
-    public class AbstractProvince 
+    public class ProvinceMesh 
     {
         /// <summary> false means sea province </summary>
         //public bool IsLandProvince { get; protected set; }
@@ -24,7 +24,7 @@ namespace Nashet.EconomicSimulation
 		private readonly Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
 
 
-		public AbstractProvince(int ID)
+		public ProvinceMesh(int ID)
         {
             this.ID = ID;            
         }

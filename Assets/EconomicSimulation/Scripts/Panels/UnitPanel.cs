@@ -57,7 +57,7 @@ namespace Nashet.EconomicSimulation
             if (collider != null)
             {
                 Province sendToPovince = null;
-                int? meshNumber = AbstractProvince.GetIdByCollider(collider);
+                int? meshNumber = ProvinceMesh.GetIdByCollider(collider);
                 if (meshNumber.HasValue) // send armies to another province
                     sendToPovince = World.FindProvince(meshNumber.Value);
                 else // better do here sort of collider layer, hitting provinces only

@@ -64,7 +64,7 @@ namespace Nashet.EconomicSimulation
 
 		private readonly Dictionary<TemporaryModifier, Date> modifiers = new Dictionary<TemporaryModifier, Date>();
 
-        public AbstractProvince provinceMesh;
+        public ProvinceMesh provinceMesh;
 		internal int ID;
 
 		public Province(string name, int ID, Product resource, bool isForDeletion) : base(name)

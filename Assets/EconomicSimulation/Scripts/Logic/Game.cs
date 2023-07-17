@@ -110,7 +110,7 @@ namespace Nashet.EconomicSimulation
 
 				//if (!IsForDeletion)
 				{
-                    province.provinceMesh = new AbstractProvince(province.ID);
+                    province.provinceMesh = new ProvinceMesh(province.ID);
 					province.provinceMesh.createMeshes(mesh, borders, province.ProvinceColor);
 
 				}
