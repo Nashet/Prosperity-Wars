@@ -110,86 +110,94 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        private void LoadGame()
+        private void NonUnityLoading()
         {
             Application.runInBackground = true;
             game = new Game(MapOptions.MapImage);
 #if UNITY_WEBGL
-            game.InitializeNonUnityData(); // non multi-threading
+            game.InitializeNonUnityData(); // non multi-threading version
 #else
             game.Start(); //initialize is here
 #endif
         }
-        private void OnGameLoaded()
-        {
-            Game.setUnityMeshes();
+        private void UnityThreadLoading()
+		{
+			Game.setUnityMeshes();
+		}
 
-            FocusOnProvince(Game.Player.Capital, false);
-            loadingPanel.Hide();
-            topPanel.Show();
-            bottomPanel.Show();
-            gameLoadingIsFinished = true;
-            SelectionComponent.ArmiesGetter = (int arg) => Game.Player.AllArmiesColliders();
-        }
+		private void SetUI()
+		{
+			FocusOnProvince(Game.Player.Capital, false);
+			loadingPanel.Hide();
+			topPanel.Show();
+			bottomPanel.Show();
+			gameLoadingIsFinished = true;
+			SelectionComponent.ArmiesGetter = (int arg) => Game.Player.AllArmiesColliders();
+		}
 
-        // Update is called once per frame
-        private void Update()
+		// Update is called once per frame
+		private void Update()
         {
             if (!MapOptions.MadeChoise && !Game.devMode)
                 return;
+
             //starts loading thread
-            if (game == null)// && Input.GetKeyUp(KeyCode.Backspace))
+            if (game == null)
             {
-                LoadGame();
+                NonUnityLoading();
             }
             else
 #if UNITY_WEBGL
-            if (!gameLoadingIsFinished)  // non multi-threading
+            if (!gameLoadingIsFinished)  // non multi-threading version
 #else
-            if (game.IsDone && !gameLoadingIsFinished)
+            if (game.IsDone && !gameLoadingIsFinished) //multi-threading version
 #endif
-            {
-                OnGameLoaded();
-            }
+			{
+                UnityThreadLoading();
+				SetUI();
+			}
 #if !UNITY_WEBGL
-                else // multi-threading
-                    loadingPanel.updateStatus(game.getStatus());
+                //else // multi-threading
+                //    loadingPanel.updateStatus(game.getStatus()); //loads too quickly to show that
 #endif
             if (gameLoadingIsFinished)
-            {
-                UpdateMapTooltip();
+			{
+				EveryTickWork();
+			}
+		}
 
-                if (World.Get.IsRunning && !MessagePanel.IsOpenAny())
-                {
-                    if (Game.isPlayerSurrended() || !Game.Player.IsAlive || Time.time - previousFrameTime >= simulationSpeedLimit)
-                    {
-                        World.simulate();
-                        //Unit.RedrawAll();
+		private void EveryTickWork()
+		{
+			UpdateMapTooltip();
 
-                        previousFrameTime = Time.time;
-                        //refreshAllActive();
-                        UIEvents.RiseSomethingVisibleToPlayerChangedInWorld(EventArgs.Empty, this);
-                    }
-                }
+			if (World.Get.IsRunning && !MessagePanel.IsOpenAny())
+			{
+				if (Game.isPlayerSurrended() || !Game.Player.IsAlive || Time.time - previousFrameTime >= simulationSpeedLimit)
+				{
+					World.simulate();
+					//Unit.RedrawAll();
 
-                if (Game.provincesToRedrawArmies.Count > 0)
-                {
-                    Unit.RedrawAll();
-                }
+					previousFrameTime = Time.time;
+					//refreshAllActive();
+					UIEvents.RiseSomethingVisibleToPlayerChangedInWorld(EventArgs.Empty, this);
+				}
+			}
 
-                if (Input.GetKeyDown(KeyCode.Return)) // enter key
-                    CloseToppestPanel();
+			if (Game.provincesToRedrawArmies.Count > 0)
+			{
+				Unit.RedrawAll();
+			}
 
-                DrawFogOfWar();
+			if (Input.GetKeyDown(KeyCode.Return)) // enter key
+				CloseToppestPanel();
 
-                //if (Message.HasUnshownMessages())
-                //    MessagePanel.Instance.ShowMessageBox(LinksManager.Get.CameraLayerCanvas, this);
+			DrawFogOfWar();
 
-            }
+			//if (Message.HasUnshownMessages())
+			//    MessagePanel.Instance.ShowMessageBox(LinksManager.Get.CameraLayerCanvas, this);
+		}
 
-        }
-
-        protected void DrawFogOfWar()
+		protected void DrawFogOfWar()
         {
             if (Game.devMode == false)
             {

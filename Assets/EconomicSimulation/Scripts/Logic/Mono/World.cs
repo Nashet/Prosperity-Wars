@@ -249,8 +249,6 @@ namespace Nashet.EconomicSimulation
                 country.GiveMoneyFromNoWhere(100);
             }
             Game.Player = allCountries.First(x => x != UncolonizedLand); // not wild Tribes, DONT touch that
-            Game.Player.events.RiseChangedCountry(new CountryEventArgs(Game.Player));
-
             allCountries.Random().SetName("Zacharia");
             //foreach (var pro in allProvinces)
             //    if (pro.Country == null)

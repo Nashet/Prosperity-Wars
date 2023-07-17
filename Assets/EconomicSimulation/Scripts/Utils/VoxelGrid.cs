@@ -20,7 +20,7 @@ namespace Nashet.MarchingSquares
 
         private Voxel dummyX, dummyY, dummyT;
         
-        public VoxelGrid(int width, int height, float size, Texture2D texture)
+        public VoxelGrid(int width, int height, float size, MyTexture texture)
         {
             this.width = width;
             this.height = height;

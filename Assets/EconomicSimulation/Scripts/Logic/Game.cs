@@ -42,45 +42,53 @@ namespace Nashet.EconomicSimulation
         private MapTextureGenerator map = new MapTextureGenerator();
 
         public Game(Texture2D mapImage)
-        {
-            DrawFogOfWar = true;
-            if (mapImage == null)
-            {
-                int mapSize;
-                int width;
-                //#if UNITY_WEBGL
-                if (devMode)
-                {
-                    mapSize = 20000;
-                    width = 150 + Rand.Get.Next(60);
-                }
-                else
-                {                   
-                    mapSize = 40000;
-                    width = 250 + Rand.Get.Next(40);
-                }
-				
-				mapTexture = map.generateMapImage(mapSize, width);
-            }
-            else
-            {
-                //Texture2D mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;
-                mapTexture = new MyTexture(mapImage);
-            }
+		{
+			DrawFogOfWar = true;
+			PprepareTexture(mapImage); // only can run in unity thread
 
-            mapBorders = new Rect(0f, 0f, mapTexture.getWidth() * Options.cellMultiplier, mapTexture.getHeight() * Options.cellMultiplier);
-        }
-		
+			mapBorders = new Rect(0f, 0f, mapTexture.getWidth() * Options.cellMultiplier, mapTexture.getHeight() * Options.cellMultiplier);
+		}
+
+		private void PprepareTexture(Texture2D mapImage)
+		{
+			if (mapImage == null)
+			{
+				int mapSize;
+				int width;
+				//#if UNITY_WEBGL
+				if (devMode)
+				{
+					mapSize = 20000;
+					width = 150 + Rand.Get.Next(60);
+				}
+				else
+				{
+					mapSize = 40000;
+					width = 250 + Rand.Get.Next(40);
+				}
+				//mapSize = 160000;
+				//width = 420;
+				mapTexture = map.generateMapImage(mapSize, width);
+			}
+			else
+			{
+				//Texture2D mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;
+				mapTexture = new MyTexture(mapImage);
+			}
+		}
+
 		public void InitializeNonUnityData()
         {
-            //Game.updateStatus("Making grid..");        
+            updateStatus("Crating map mesh data..");
 
-
-			grid = new VoxelGrid(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture.Texture);
-
+			grid = new VoxelGrid(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture);
            
-            updateStatus("Finishing generation..");
-        }
+            updateStatus("Creating economic data..");
+			var m = new Market();
+			World.Create(mapTexture);
+			m.Initialize(null);
+			updateStatus("Finishing with non-unity loading..");
+		}
 
         /// <summary>
         /// Separate method to call Unity API. WOULDN'T WORK IN MULTYTHREADING!
@@ -88,13 +96,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public static void setUnityMeshes()
 		{
-            var m = new Market();
-			World.Create(mapTexture);
-
-
-			m.Initialize(null);
-
-			if (!devMode)
+            if (!devMode)
 				makeHelloMessage();
 
 			//World.getAllExistingCountries().PerformAction(x => x.market.Initialize(x));  // should go after countries creation  
@@ -106,17 +108,12 @@ namespace Nashet.EconomicSimulation
 
 				
 				province.createMeshAndBorders(mesh, borders);
+				//World.AllSeaProvinces.PerformAction(x =>
 			}
 
 			// create provinces
 			// create borders
 			// set rivers
-
-			//World.AllSeaProvinces.PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
-
-			//foreach (var item in World.AllProvinces.Where(x => x.IsForDeletion))
-			//    item.Delete();
-
 
 			Country.setMeshesAndMaterials();
 
@@ -341,6 +338,7 @@ namespace Nashet.EconomicSimulation
 
         protected override void ThreadFunction()
         {
+            //Thread.Sleep(1000);    
             InitializeNonUnityData();
         }
 
