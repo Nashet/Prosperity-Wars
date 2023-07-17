@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Nashet.Utils;
 using UnityEngine;
 
 namespace Nashet.MarchingSquares
@@ -67,13 +66,8 @@ namespace Nashet.MarchingSquares
             float borderWidth = 0.4f;
             float borderWidth2 = -0.4f;
 
-            AddBorderQuad(
-    (Vector3)a,
-    MeshExtensions.makeArrow(a, b, borderWidth),
-    (Vector3)b,
-    MeshExtensions.makeArrow(b, a, borderWidth2),
-    true
-    );
+            AddBorderQuad((Vector3)a, makeArrow(a, b, borderWidth), (Vector3)b,
+                makeArrow(b, a, borderWidth2), true);
         }
 
         public void AddBorderQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, bool addUV)
@@ -145,5 +139,28 @@ namespace Nashet.MarchingSquares
             triangles.Add(vertexIndex + 3);
             triangles.Add(vertexIndex + 4);
         }
-    }
+
+		public static Vector3 makeArrow(Vector3 arrowStart, Vector3 arrowEnd, float arrowBaseWidth) // true - water
+		{
+			//Vector3 directionPoint, leftBasePoint, rightBasePoint;
+			Vector3 leftBasePoint;
+			// Vector3[] result = new Vector3[3];
+
+			//if (value > 0f)
+			Vector3 arrowDirection = arrowEnd - arrowStart;
+			//else
+			//    arrowDirection = a.getTotalVertex() - b.getTotalVertex();
+
+			leftBasePoint = Vector3.Cross(arrowDirection, Vector3.forward);
+			leftBasePoint.Normalize();
+			leftBasePoint = leftBasePoint * arrowBaseWidth;
+
+			//rightBasePoint = leftBasePoint * -1f;
+			//rightBasePoint += arrowStart;
+			leftBasePoint += arrowStart;
+			//directionPoint = arrowStart + (arrowDirection.normalized * value * 250f * arrowMuliplier);
+
+			return leftBasePoint;
+		}
+	}
 }
