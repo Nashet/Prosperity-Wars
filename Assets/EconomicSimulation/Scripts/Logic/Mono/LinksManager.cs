@@ -5,7 +5,8 @@ namespace Nashet.EconomicSimulation
     {
         public Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, impassableBorder, riverBorder;
         public Material defaultUnitSymbol;
-        public GameObject UnitPrefab, UnitPanelPrefab;
+		public Material shoreMaterial;
+		public GameObject UnitPrefab, UnitPanelPrefab;
         public Transform WorldSpaceCanvas;
         public GameObject r3DProvinceTextPrefab, r3DCountryTextPrefab;
         public GameObject ArmiesSelectionWindowPrefab;

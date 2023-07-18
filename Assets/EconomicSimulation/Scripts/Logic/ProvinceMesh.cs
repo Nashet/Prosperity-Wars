@@ -19,15 +19,10 @@ namespace Nashet.MapMeshes
 		private readonly Dictionary<int, MeshRenderer> bordersMeshes = new Dictionary<int, MeshRenderer>();
 
 
-		public ProvinceMesh(int ID)
+		public ProvinceMesh(int ID, MeshStructure meshStructure, Dictionary<int, MeshStructure> neighborBorders, Color provinceColor, Transform parent, Material defaultBorderMaterial)
         {
-            this.ID = ID;            
-        }
-
-        public virtual void createMeshes(MeshStructure meshStructure, Dictionary<int, MeshStructure> neighborBorders, Color provinceColor, Transform parent)
-        {
-            //this.meshStructure = meshStructure;
-
+            this.ID = ID;
+        
             //spawn object
             GameObject = new GameObject(string.Format("{0}", ID));
 
@@ -85,7 +80,7 @@ namespace Nashet.MapMeshes
 						borderMesh.uv = border.Value.getUVmap().ToArray();
 						borderMesh.RecalculateNormals();
 						borderMesh.RecalculateBounds();
-						//meshRenderer.material = LinksManager.Get.defaultProvinceBorderMaterial;
+						meshRenderer.material = defaultBorderMaterial;
 						borderMesh.name = "Border with " + neighbor; //todo delete it?
 
 						bordersMeshes.Add(neighbor, meshRenderer);
