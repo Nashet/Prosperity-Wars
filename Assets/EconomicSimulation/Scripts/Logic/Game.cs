@@ -112,6 +112,7 @@ namespace Nashet.EconomicSimulation
 				{
                     province.provinceMesh = new ProvinceMesh(province.ID);
 					province.provinceMesh.createMeshes(mesh, borders, province.ProvinceColor);
+					MapTextLabel.CreateMapTextLabel(province.GameObject, province.ToString(), Color.black, province.provinceMesh.Position);
 
 				}
 				province.createBorders(mesh, borders);

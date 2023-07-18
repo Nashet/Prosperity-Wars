@@ -296,37 +296,16 @@ namespace Nashet.EconomicSimulation
                 return false;
             else
                 return true;
-        }
-
-        public void setCapitalTextMesh(Province province)
-        {
-            Transform txtMeshTransform = GameObject.Instantiate(LinksManager.Get.r3DCountryTextPrefab).transform;
-            txtMeshTransform.SetParent(province.GameObject.transform, false);
-
-            Vector3 capitalTextPosition = province.provinceMesh.Position;
-            capitalTextPosition.y += 2f;
-            //capitalTextPosition.z -= 5f;
-            txtMeshTransform.position = capitalTextPosition;
-
-            meshCapitalText = txtMeshTransform.GetComponent<TextMesh>();
-            meshCapitalText.text = FullName;
-            // meshCapitalText.fontSize *= 2;
-            if (this == Game.Player)
-            {
-                meshCapitalText.color = Color.blue;
-                meshCapitalText.fontSize += 10;
-            }
-            else
-            {
-                meshCapitalText.color = Color.cyan; // Set the text's color to red
-                                                    //messhCapitalText.fontSize += messhCapitalText.fontSize / 3;
-            }
-        }
+        }        
 
         public void MoveCapitalTo(Province newCapital)
         {
             if (meshCapitalText == null)
-                setCapitalTextMesh(newCapital);
+            {
+				meshCapitalText = MapTextLabel.setCapitalTextMesh(newCapital.GameObject, newCapital.provinceMesh.Position,
+                    FullName, this == Game.Player ? Color.blue : Color.cyan, 32);
+				
+			}
             else
             {
                 Vector3 capitalTextPosition = newCapital.provinceMesh.Position;

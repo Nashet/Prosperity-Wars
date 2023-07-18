@@ -39,9 +39,10 @@ namespace Nashet.EconomicSimulation
 
         public static readonly Predicate<Province> All = x => true;
         public Node Node { get; internal set; }
-        private Province here { get { return this; } }
-
-        public Color ProvinceColor { get; protected set; }// maybe remove
+        
+		/// <summary> false means sea province </summary>
+		//public bool IsLandProvince { get; protected set; }
+		public Color ProvinceColor { get; protected set; }//todo maybe remove
 
         private readonly List<PopUnit> allPopUnits = new List<PopUnit>();
         private readonly List<Factory> allFactories = new List<Factory>();

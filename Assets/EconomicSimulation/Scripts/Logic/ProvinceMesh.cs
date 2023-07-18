@@ -5,13 +5,8 @@ using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
-	// put text placing separatly in file
-    public class ProvinceMesh 
-    {
-        /// <summary> false means sea province </summary>
-        //public bool IsLandProvince { get; protected set; }
-
-        protected GameObject txtMeshGl;
+	public class ProvinceMesh 
+    {   
         public int ID { get; protected set; }
        
         public GameObject GameObject { get; protected set; }
@@ -27,35 +22,6 @@ namespace Nashet.EconomicSimulation
 		public ProvinceMesh(int ID)
         {
             this.ID = ID;            
-        }
-        public void setLabel()
-        {
-            LODGroup group = GameObject.AddComponent<LODGroup>();
-
-            // Add 4 LOD levels
-            LOD[] lods = new LOD[1];
-            txtMeshGl = GameObject.Instantiate(LinksManager.Get.r3DProvinceTextPrefab);
-            Transform txtMeshTransform = txtMeshGl.transform;
-            txtMeshTransform.SetParent(GameObject.transform, false);
-            Renderer[] renderers = new Renderer[1];
-            renderers[0] = txtMeshTransform.GetComponent<Renderer>();
-            lods[0] = new LOD(0.25F, renderers);
-
-            var position = Position;
-            position.z -= 0.003f;
-            txtMeshTransform.position = position;
-
-            TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
-
-            txtMesh.text = ToString();
-            txtMesh.color = Color.black;
-
-            //renderers[0].material.shader = Shader.Find("3DText");
-
-
-            group.SetLODs(lods);
-            //#if UNITY_WEBGL
-            group.size = 20; 
         }
 
         public virtual void createMeshes(MeshStructure meshStructure, Dictionary<int, MeshStructure> neighborBorders, Color provinceColor)
@@ -83,7 +49,7 @@ namespace Nashet.EconomicSimulation
             landMesh.name = ID.ToString();
 
             Position = setProvinceCenter(meshStructure);
-            setLabel();
+			
 
 			MeshCollider groundMeshCollider = GameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
 			groundMeshCollider.sharedMesh = MeshFilter.mesh;
