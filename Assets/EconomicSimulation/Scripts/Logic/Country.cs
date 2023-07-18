@@ -213,7 +213,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public static void setMeshesAndMaterials()
+        public static void setMaterial()
         {
             foreach (var country in World.AllExistingCountries())
             {
@@ -229,7 +229,7 @@ namespace Nashet.EconomicSimulation
                 //    province.SetBorderMaterials();
                 //}
                 //country.Provinces.AllProvinces.PerformAction(x => x.OnSecedeGraphic(x.Country));
-                country.Flag = Nashet.Flag.Generate(128, 128);
+                country.Flag = FlagGeneration.Generate(128, 128);
             }
             World.AllProvinces.PerformAction(x => x.OnSecedeGraphic(x.Country));
 		}
@@ -296,7 +296,7 @@ namespace Nashet.EconomicSimulation
                 return false;
             else
                 return true;
-        }        
+        }
 
         public void MoveCapitalTo(Province newCapital)
         {

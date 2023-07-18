@@ -36,7 +36,7 @@ namespace Nashet.EconomicSimulation
             Country.Politics.RegisterMovement(this);
             targetReformType = reform;
             targetReformValue = goal;
-            Flag = Nashet.Flag.Rebels;
+            Flag = LinksManager.Get.rebelsFlag;
         }
 
         public static void join(PopUnit pop)

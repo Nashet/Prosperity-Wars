@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4436044905069597155}
   - component: {fileID: 4436044905069597154}
-  - component: {fileID: 4436044905069597164}
   m_Layer: 0
   m_Name: LinksManager
   m_TagString: Untagged
@@ -70,18 +69,6 @@ MonoBehaviour:
     type: 2}
   FogOfWarMaterial: {fileID: 2100000, guid: 2e32210884a66044b86f2a5a9884162c, type: 2}
   scrolJoystic: {fileID: 0}
+  rebelsFlag: {fileID: 2800000, guid: 2d8f59e4263299745aa70f08c6adea8b, type: 3}
   objectsToInstantiateIn2DCanvas: []
   UICanvas: {fileID: 0}
---- !u!114 &4436044905069597164
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4436044905069597153}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69bebdb5744b8ab428a2364aa272d63a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rebels: {fileID: 2800000, guid: 2d8f59e4263299745aa70f08c6adea8b, type: 3}

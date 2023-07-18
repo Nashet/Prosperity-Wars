@@ -123,7 +123,7 @@ namespace Nashet.EconomicSimulation
 			// create borders
 			// set rivers
 
-			Country.setMeshesAndMaterials();
+			Country.setMaterial();
 
             //todo put it in some other file. World?
 			AddRivers();
