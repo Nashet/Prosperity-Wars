@@ -1,4 +1,5 @@
-﻿using Nashet.UISystem;
+﻿using Nashet.MapMeshes;
+using Nashet.UISystem;
 using Nashet.UnitSelection;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
@@ -337,7 +338,7 @@ namespace Nashet.EconomicSimulation
                 {
                     //lastSelected.setBorderMaterial(LinksManager.Get.defaultProvinceBorderMaterial);
                     //lastSelected.setBorderMaterials(true);
-                    provinceSelector.Deselect(lastSelected.GameObject);
+                    provinceSelector.Deselect(lastSelected.provinceMesh.GameObject);
                 }
                 if (provincePanel.isActiveAndEnabled)
                     provincePanel.Hide();
@@ -348,11 +349,11 @@ namespace Nashet.EconomicSimulation
                 {
                     //Game.selectedProvince.setBorderMaterial(LinksManager.Get.defaultProvinceBorderMaterial);
                     //Game.selectedProvince.setBorderMaterials(true);
-                    provinceSelector.Deselect(Game.selectedProvince.GameObject);
+                    provinceSelector.Deselect(Game.selectedProvince.provinceMesh.GameObject);
                 }
                 // freshly selected province
                 Game.selectedProvince = World.FindProvince(Id.Value);
-                provinceSelector.Select(Game.selectedProvince.GameObject);
+                provinceSelector.Select(Game.selectedProvince.provinceMesh.GameObject);
                 //Game.selectedProvince.setBorderMaterial(LinksManager.Get.selectedProvinceBorderMaterial);
                 provincePanel.Show();
                 if (Game.MapMode == Game.MapModes.Cores) //core map mode

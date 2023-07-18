@@ -1,5 +1,6 @@
 ﻿using Nashet.Conditions;
 using Nashet.EconomicSimulation.Reforms;
+using Nashet.MapMeshes;
 using Nashet.MarchingSquares;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
@@ -49,7 +50,8 @@ namespace Nashet.EconomicSimulation
         private readonly List<Army> standingArmies = new List<Army>(); // military units
         //private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
         protected readonly Dictionary<Province, bool> neighbors = new Dictionary<Province, bool>();
-        private readonly List<Country> cores = new List<Country>();
+		protected readonly HashSet<Province> physicalNeighbors = new HashSet<Province>();
+	    private readonly List<Country> cores = new List<Country>();
 
         private Product resource;
 
@@ -207,10 +209,73 @@ namespace Nashet.EconomicSimulation
         {            
             ProvinceColor = taker.NationalColor.getAlmostSameColor();
             provinceMesh.OnSecedeGraphic(getColorAccordingToMapMode());
-			provinceMesh.UpdateBorderMaterials(this);
+			UpdateBorderMaterials();
         }
 
-        public int howFarFromCapital()
+		public void UpdateBorderMaterials()
+		{
+			foreach (var neighbor in AllNeighbors())
+			{				
+					if (neighbor.isRiverNeighbor(this))
+					{
+						continue;
+					}
+					if (this.Country == neighbor.Country) //is border between provinces inside a country
+					{						
+                        this.provinceMesh.SetBorderMaterial(neighbor.ID, LinksManager.Get.defaultProvinceBorderMaterial);
+                        neighbor.provinceMesh.SetBorderMaterial(this.ID, LinksManager.Get.defaultProvinceBorderMaterial);
+					}
+					else
+					{
+                        //todo inmproove
+						if (this.Country == World.UncolonizedLand)
+							neighbor.provinceMesh.SetBorderMaterial(this.ID, LinksManager.Get.defaultProvinceBorderMaterial);
+						else
+							neighbor.provinceMesh.SetBorderMaterial(this.ID, this.Country.getBorderMaterial());
+
+						if (neighbor.Country == World.UncolonizedLand)
+						    this.provinceMesh.SetBorderMaterial(neighbor.ID, LinksManager.Get.defaultProvinceBorderMaterial);
+						else
+						    this.provinceMesh.SetBorderMaterial(neighbor.ID, neighbor.Country.getBorderMaterial());
+					}				
+			}
+		}
+
+		public void SetBorderMaterials()
+		{
+			foreach (var neighbor in physicalNeighbors)
+			{
+				if (neighbor == null) // some provinces are deleted
+                    continue;
+				if (neighbor.isNeighbor(this)) //meaning if it has a passage
+				{
+					if (neighbor.isRiverNeighbor(this))
+					{
+                        this.provinceMesh.SetBorderMaterial(neighbor.ID, LinksManager.Get.riverBorder);
+					}
+					else
+					{
+						if (this.Country == neighbor.Country) // same country
+						{
+							this.provinceMesh.SetBorderMaterial(neighbor.ID, LinksManager.Get.defaultProvinceBorderMaterial);
+						}
+						else
+						{
+							if (this.Country == World.UncolonizedLand)
+								this.provinceMesh.SetBorderMaterial(neighbor.ID, LinksManager.Get.defaultProvinceBorderMaterial);
+							else
+								this.provinceMesh.SetBorderMaterial(neighbor.ID, this.Country.getBorderMaterial());
+						}
+					}
+				}
+				else
+				{
+					this.provinceMesh.SetBorderMaterial(neighbor.ID, LinksManager.Get.impassableBorder);
+				}
+			}
+		}
+
+		public int howFarFromCapital()
         {
             return 0;
         }
@@ -1034,8 +1099,6 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public GameObject GameObject => provinceMesh.GameObject;
-
 		public string getWayOfLifeString(PopUnit pop)
         {
             if (pop.Country == Country)
@@ -1062,7 +1125,7 @@ namespace Nashet.EconomicSimulation
         {
             public Country oldOwner { get; set; }
         }
-        public void createBorders(MeshStructure meshStructure, Dictionary<int, MeshStructure> neighborBorders)
+        public void SetNeighbors(MeshStructure meshStructure, Dictionary<int, MeshStructure> neighborBorders)
         {
             // setting neighbors            
             foreach (var border in neighborBorders)
@@ -1079,7 +1142,8 @@ namespace Nashet.EconomicSimulation
                         neighbors.Add(neighbor, false);
                     }                    
 				}
-            }
+                physicalNeighbors.Add(neighbor);
+			}
         }
 
         public IEnumerable<Army> AllStandingArmies()

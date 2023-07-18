@@ -1,4 +1,5 @@
 ﻿using Assets.EconomicSimulation.Scripts.Logic.Map;
+using Nashet.MapMeshes;
 using Nashet.MarchingSquares;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
@@ -68,7 +69,9 @@ namespace Nashet.EconomicSimulation
 				}
 				//mapSize = 160000;
 				//width = 420;
-				mapTexture = map.generateMapImage(mapSize, width);
+				int amountOfProvince = mapSize / 140 + Rand.Get.Next(5);
+               // amountOfProvince = 136;
+				mapTexture = map.generateMapImage(width, mapSize / width, amountOfProvince);
 			}
 			else
 			{
@@ -104,30 +107,30 @@ namespace Nashet.EconomicSimulation
 
 			foreach (var province in World.AllProvinces)
             {
-                var mesh = grid.getMesh(province.ID, out var borders);
-
-
+                var mesh = grid.getMesh(province.ID, out var borderMeshes);
 
 				//if (!IsForDeletion)
 				{
                     province.provinceMesh = new ProvinceMesh(province.ID);
-					province.provinceMesh.createMeshes(mesh, borders, province.ProvinceColor);
-					MapTextLabel.CreateMapTextLabel(province.GameObject, province.ToString(), Color.black, province.provinceMesh.Position);
+					province.provinceMesh.createMeshes(mesh, borderMeshes, province.ProvinceColor, World.Get.transform);
+					MapTextLabel.CreateMapTextLabel(province.provinceMesh.GameObject, province.ToString(), Color.black, province.provinceMesh.Position);
 
 				}
-				province.createBorders(mesh, borders);
+				province.SetNeighbors(mesh, borderMeshes);
+
+				
 				//World.AllSeaProvinces.PerformAction(x =>
-			}
+			}           
 
-			// create provinces
-			// create borders
-			// set rivers
-
-			Country.setMaterial();
+			
+            Country.setMaterial();
 
             //todo put it in some other file. World?
 			AddRivers();
-
+            foreach (var province in World.AllProvinces)
+            {
+                province.SetBorderMaterials();
+            }
 			SetPatchFinding();
 
 			// Annex all countries to P)layer
@@ -155,7 +158,6 @@ namespace Nashet.EconomicSimulation
 				var node = new Node(province.provinceMesh.Position);
 				PathFinder.instance.graphData.nodes.Add(node);
 				province.Node = node;
-				province.provinceMesh.SetBorderMaterials(province); //WTF
 				node.Province = province;
 			}
 

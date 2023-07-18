@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using Nashet.EconomicSimulation;
+using UnityEngine;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.MapMeshes
 {
 	public class MapTextLabel
 	{		

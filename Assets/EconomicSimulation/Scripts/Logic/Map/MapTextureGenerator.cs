@@ -5,16 +5,14 @@ namespace Assets.EconomicSimulation.Scripts.Logic.Map
 {
     public class MapTextureGenerator
     {
-        public MyTexture generateMapImage(int mapSize, int width)
+        public MyTexture generateMapImage(int width, int heght, int amountOfProvince)
         {
-            Texture2D mapImage = new Texture2D(width, mapSize / width);        // standard for webGL
+            Texture2D mapImage = new Texture2D(width, heght);        // standard for webGL
 
             Color emptySpaceColor = Color.black;//.setAlphaToZero();
             mapImage.setColor(emptySpaceColor);
-
-            int amountOfProvince = mapImage.width * mapImage.height / 140 + Rand.Get.Next(5);
-            //amountOfProvince = 400 + Rand.random2.Next(100);
-            for (int i = 0; i < amountOfProvince; i++)
+           
+			for (int i = 0; i < amountOfProvince; i++)
                 mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), ColorExtensions.getRandomColor());
 
             int emptyPixels = 1;//non zero

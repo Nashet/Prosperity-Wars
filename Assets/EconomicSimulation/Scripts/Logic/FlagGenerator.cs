@@ -2,10 +2,10 @@
 using System;
 using UnityEngine;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.FlagGeneration
 {
 	enum StripesDirection { horizontal, vertical }
-	public class FlagGeneration
+	public class FlagGenerator
 	{
 		public static Texture2D Generate(int textureWidth, int textureHeight)
 		{

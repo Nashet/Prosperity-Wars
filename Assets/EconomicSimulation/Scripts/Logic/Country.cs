@@ -3,10 +3,12 @@ using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using Nashet.FlagGeneration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Nashet.MapMeshes;
 
 namespace Nashet.EconomicSimulation
 {
@@ -229,7 +231,7 @@ namespace Nashet.EconomicSimulation
                 //    province.SetBorderMaterials();
                 //}
                 //country.Provinces.AllProvinces.PerformAction(x => x.OnSecedeGraphic(x.Country));
-                country.Flag = FlagGeneration.Generate(128, 128);
+                country.Flag = FlagGenerator.Generate(128, 128);
             }
             World.AllProvinces.PerformAction(x => x.OnSecedeGraphic(x.Country));
 		}
@@ -302,7 +304,7 @@ namespace Nashet.EconomicSimulation
         {
             if (meshCapitalText == null)
             {
-				meshCapitalText = MapTextLabel.setCapitalTextMesh(newCapital.GameObject, newCapital.provinceMesh.Position,
+				meshCapitalText = MapTextLabel.setCapitalTextMesh(newCapital.provinceMesh.GameObject, newCapital.provinceMesh.Position,
                     FullName, this == Game.Player ? Color.blue : Color.cyan, 32);
 				
 			}

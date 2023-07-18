@@ -50,7 +50,7 @@ namespace Nashet.Utils
         public static int ToInt(this Color color)
         { 
         // Pack the color components into a single 32-bit integer
-        int packedColor = ((int)(color.r * 255.0f) << 24) | ((int)(color.g * 255.0f) << 16) | ((int)(color.b * 255.0f) << 8) | (int)(color.a * 255.0f);
+            int packedColor = ((int)(color.r * 255.0f) << 24) | ((int)(color.g * 255.0f) << 16) | ((int)(color.b * 255.0f) << 8) | (int)(color.a * 255.0f);
             return packedColor;
         }
 
