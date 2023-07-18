@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Nashet.Utils;
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace Nashet.Utils
+namespace Nashet.MarchingSquares
 {
 	public class MyTexture
     {

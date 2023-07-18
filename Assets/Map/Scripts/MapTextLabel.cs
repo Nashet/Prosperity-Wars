@@ -1,19 +1,17 @@
-﻿using Nashet.EconomicSimulation;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Nashet.MapMeshes
 {
 	public class MapTextLabel
 	{		
-		public static void CreateMapTextLabel(GameObject GameObject, string text, Color color, Vector3 _position)
+		public static GameObject CreateMapTextLabel(GameObject GameObject, string text, Color color, Vector3 _position)
 		{
-			LODGroup group = GameObject.AddComponent<LODGroup>();
-
 			// Add 4 LOD levels
 			LOD[] lods = new LOD[1];
-			var txtMeshGl = GameObject.Instantiate(LinksManager.Get.r3DProvinceTextPrefab);
+			var txtMeshGl = GameObject.Instantiate(GameObject);
+			LODGroup group = txtMeshGl.GetComponent<LODGroup>();
 			Transform txtMeshTransform = txtMeshGl.transform;
-			txtMeshTransform.SetParent(GameObject.transform, false);
+			
 			Renderer[] renderers = new Renderer[1];
 			renderers[0] = txtMeshTransform.GetComponent<Renderer>();
 			lods[0] = new LOD(0.25F, renderers);
@@ -27,18 +25,14 @@ namespace Nashet.MapMeshes
 			txtMesh.text = text;
 			txtMesh.color = color;
 
-			//renderers[0].material.shader = Shader.Find("3DText");
-
-
 			group.SetLODs(lods);
-			//#if UNITY_WEBGL
 			group.size = 20;
+			return txtMeshGl;
 		}
 
-		public static TextMesh setCapitalTextMesh(GameObject gameObject, Vector3 position, string text, Color color, int fontSize)
+		public static TextMesh setCapitalTextMesh(GameObject prefab, Vector3 position, string text, Color color, int fontSize)
 		{
-			Transform txtMeshTransform = GameObject.Instantiate(LinksManager.Get.r3DCountryTextPrefab).transform;
-			txtMeshTransform.SetParent(gameObject.transform, false);
+			Transform txtMeshTransform = GameObject.Instantiate(prefab).transform;			
 
 			Vector3 capitalTextPosition = position;
 			capitalTextPosition.y += 2f;
@@ -47,7 +41,6 @@ namespace Nashet.MapMeshes
 
 			var meshCapitalText = txtMeshTransform.GetComponent<TextMesh>();
 			meshCapitalText.text = text;
-			// meshCapitalText.fontSize *= 2;
 			
 			meshCapitalText.color = color;
 			meshCapitalText.fontSize = fontSize;

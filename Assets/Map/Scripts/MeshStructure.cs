@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Nashet.MarchingSquares
+namespace Nashet.MeshData
 {
     public class MeshStructure
     {

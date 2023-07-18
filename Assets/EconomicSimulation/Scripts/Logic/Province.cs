@@ -1,7 +1,7 @@
 ﻿using Nashet.Conditions;
 using Nashet.EconomicSimulation.Reforms;
 using Nashet.MapMeshes;
-using Nashet.MarchingSquares;
+using Nashet.MeshData;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;

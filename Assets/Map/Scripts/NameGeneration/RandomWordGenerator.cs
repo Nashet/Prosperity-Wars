@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-//using System.Web;
-
-namespace RandWord.Models
+namespace Nashet.NameGeneration
 {
     public class RandomWordGenerator
     {

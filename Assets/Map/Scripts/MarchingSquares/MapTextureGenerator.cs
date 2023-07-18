@@ -1,9 +1,9 @@
 ﻿using Nashet.Utils;
 using UnityEngine;
 
-namespace Assets.EconomicSimulation.Scripts.Logic.Map
-{
-    public class MapTextureGenerator
+namespace Nashet.MarchingSquares
+{ 
+	public class MapTextureGenerator
     {
         public MyTexture generateMapImage(int width, int heght, int amountOfProvince)
         {

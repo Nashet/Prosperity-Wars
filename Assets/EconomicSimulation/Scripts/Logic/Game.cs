@@ -1,5 +1,4 @@
-﻿using Assets.EconomicSimulation.Scripts.Logic.Map;
-using Nashet.MapMeshes;
+﻿using Nashet.MapMeshes;
 using Nashet.MarchingSquares;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
@@ -113,8 +112,9 @@ namespace Nashet.EconomicSimulation
 				{
                     province.provinceMesh = new ProvinceMesh(province.ID, mesh, borderMeshes, province.ProvinceColor, World.Get.transform,
 												LinksManager.Get.shoreMaterial);
-
-					MapTextLabel.CreateMapTextLabel(province.provinceMesh.GameObject, province.ToString(), Color.black, province.provinceMesh.Position);
+						
+					var label = MapTextLabel.CreateMapTextLabel(LinksManager.Get.r3DProvinceTextPrefab, province.ToString(), Color.black, province.provinceMesh.Position);
+					label.transform.SetParent(province.provinceMesh.GameObject.transform, false);
 
 				}
 				province.SetNeighbors(mesh, borderMeshes);
