@@ -324,7 +324,8 @@ namespace Nashet.EconomicSimulation
                 var uniqueColors = mapTexture.AllUniqueColors3();
                 var borderColors = mapTexture.GetColorsFromBorder();
                 int counter = 0;
-                int lakechance = 20;//todo fix
+                int lakechance = Options.LakeCreationChance;
+
                 foreach (var color in uniqueColors)
                 {
                     var deleteWaterProvince = Rand.Get.Next(lakechance) == 1 || borderColors.Contains(color);

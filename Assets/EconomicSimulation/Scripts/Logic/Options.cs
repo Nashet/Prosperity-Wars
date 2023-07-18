@@ -201,8 +201,10 @@ namespace Nashet.EconomicSimulation
 
         public static readonly int ArmyTimeToOccupy = 12;
 
-        public static int MaxRiversAmount = 17;
-        public static int RiverLenght => 25;
+        public static int MaxRiversAmount => 17;
+		internal static int LakeCreationChance => 20;
+
+		public static int RiverLenght => 25;
 
 
 		//public static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);
