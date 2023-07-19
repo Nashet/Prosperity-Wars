@@ -9,7 +9,7 @@ namespace Nashet.MapMeshes
 			// Add 4 LOD levels
 			LOD[] lods = new LOD[1];
 			var txtMeshGl = GameObject.Instantiate(GameObject);
-			LODGroup group = txtMeshGl.GetComponent<LODGroup>();
+			LODGroup group = txtMeshGl.AddComponent<LODGroup>();
 			Transform txtMeshTransform = txtMeshGl.transform;
 			
 			Renderer[] renderers = new Renderer[1];

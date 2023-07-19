@@ -28,7 +28,7 @@ namespace Nashet.NameGeneration
                 if (Rand.Get.Next(5) == 1 || length == 2)
                     sb.Append(consonants.GetRandom());
             }
-            return UtilsMy.FirstLetterToUpper(sb.ToString());
+            return NameHelper.FirstLetterToUpper(sb.ToString());
             //return Game.threadDangerSB.ToString();
         }
 
@@ -156,7 +156,7 @@ namespace Nashet.NameGeneration
                 result.Append(generateWord(Rand.Get.Next(3, 5)));
             result.Append(postfix.GetRandom());
 
-            return UtilsMy.FirstLetterToUpper(result.ToString());
+            return NameHelper.FirstLetterToUpper(result.ToString());
         }
     }
 }

@@ -3,6 +3,19 @@ using System.Text;
 
 namespace Nashet.NameGeneration
 {
+    public static class NameHelper
+    {
+		public static string FirstLetterToUpper(string str)
+		{
+			if (str == null)
+				return null;
+
+			if (str.Length > 1)
+				return char.ToUpper(str[0]) + str.Substring(1);
+
+			return str.ToUpper();
+		}
+	}
 	public class CultureNameGenerator
     {
         private static ChanceBox<string> prefix;
@@ -46,10 +59,10 @@ namespace Nashet.NameGeneration
             result.Append(prefix.GetRandom());
 
             //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Rand.random2.Next(3) + 1, true)));
-            result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Rand.Get.Next(3, 5))));
+            result.Append(NameHelper.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Rand.Get.Next(3, 5))));
             result.Append(postfix.GetRandom());
 
             return (result.ToString());
         }
-    }
+	}
 }

@@ -922,7 +922,7 @@ namespace Nashet.EconomicSimulation
         {
             var list = AllPops.Where(x => x.Type == type).ToList();
             if (list.Count == 0)
-                if (Rand.Chance(Options.PopMigrationToUnknowAreaChance))
+                if (RandomCall.Chance(Options.PopMigrationToUnknowAreaChance))
                     return Procent.HundredProcent.Copy();
                 else
                     return Procent.ZeroProcent.Copy();

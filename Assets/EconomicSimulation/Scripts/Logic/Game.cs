@@ -39,7 +39,7 @@ namespace Nashet.EconomicSimulation
         public static bool DrawFogOfWar { get; internal set; }
         public static bool IndustrialStart { get; internal set; }
         public static MapModes MapMode { get; internal set; }
-        private MapTextureGenerator map = new MapTextureGenerator();
+        private MapTextureGenerator mapGenerator = new MapTextureGenerator();
 
         public Game(Texture2D mapImage)
 		{
@@ -70,7 +70,7 @@ namespace Nashet.EconomicSimulation
 				//width = 420;
 				int amountOfProvince = mapSize / 140 + Rand.Get.Next(5);
                // amountOfProvince = 136;
-				mapTexture = map.generateMapImage(width, mapSize / width, amountOfProvince);
+				mapTexture = mapGenerator.generateMapImage(width, mapSize / width, amountOfProvince);
 			}
 			else
 			{

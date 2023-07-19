@@ -352,11 +352,11 @@ namespace Nashet.EconomicSimulation
             lastTurnDidntGetPromisedSocialBenefits = didntGetPromisedSocialBenefits;
             didntGetPromisedSocialBenefits = false;
 
-            // sets in ConsumeNeeds now
-            //if (type != PopType.Aristocrats)
-            //    storage.SetZero();  // may mess with aristocrats
+			// sets in ConsumeNeeds now
+			//if (type != PopType.Aristocrats)
+			//    storage.SetZero();  // may mess with aristocrats
 
-            Rand.Call(() => education.Subtract(0.001f, false), Options.PopEducationRegressChance);
+			RandomCall.Call(() => education.Subtract(0.001f, false), Options.PopEducationRegressChance);
         }
 
         public int getMobilized()
@@ -1404,7 +1404,7 @@ namespace Nashet.EconomicSimulation
         public void LearnByWork()
         {
             //if (Rand.Chance(education) || education.isZero()
-            if (Rand.Chance(Options.PopLearnByWorkingChance)
+            if (RandomCall.Chance(Options.PopLearnByWorkingChance)
                 && education.isSmallerThan(Options.PopLearnByWorkingLimit)
                 && GetEmployedOnProcessingEnterprise().get() > 0.9f)
                 education.Add(0.001f);

@@ -63,7 +63,7 @@ namespace Nashet.NameGeneration
             result.Append(prefix.GetRandom());
 
             //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Rand.random2.Next(3) + 1, true)));
-            result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Rand.Get.Next(3, 5))));
+            result.Append(NameHelper.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Rand.Get.Next(3, 5))));
             result.Append(postfix.GetRandom());
 
             return (result.ToString());

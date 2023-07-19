@@ -726,20 +726,20 @@ namespace Nashet.EconomicSimulation
                         // pop.Country.TakeIncomeTax(pop, pop.moneyIncomethisTurn, pop.Type.isPoorStrata());//pop.payTaxes();
                         pop.calcLoyalty();
 
-                        if (Rand.Chance(Options.PopPopulationChangeChance))
+                        if (RandomCall.Chance(Options.PopPopulationChangeChance))
                             pop.Growth();
 
-                        if (Rand.Chance(Options.PopPopulationChangeChance))
+                        if (RandomCall.Chance(Options.PopPopulationChangeChance))
                             pop.Promote();
 
                         if (pop.needsFulfilled.isSmallerOrEqual(Options.PopNeedsEscapingLimit))
-                            if (Rand.Chance(Options.PopPopulationChangeChance))
+                            if (RandomCall.Chance(Options.PopPopulationChangeChance))
                                 pop.ChangeLife(pop.GetAllPossibleDemotions().Where(x => x.Value.isBiggerThan(pop.needsFulfilled, Options.PopNeedsEscapingBarrier)).MaxBy(x => x.Value.get()).Key, Options.PopDemotingSpeed);
 
-                        if (Rand.Chance(Options.PopPopulationChangeChance))
+                        if (RandomCall.Chance(Options.PopPopulationChangeChance))
                             pop.ChangeLife(pop.GetAllPossibleMigrations().Where(x => x.Value.isBiggerThan(pop.needsFulfilled, Options.PopNeedsEscapingBarrier)).MaxBy(x => x.Value.get()).Key, Options.PopMigrationSpeed);
 
-                        if (Rand.Chance(Options.PopPopulationChangeChance))
+                        if (RandomCall.Chance(Options.PopPopulationChangeChance))
                             pop.Assimilate();
                     }
                 }

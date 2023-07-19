@@ -3,21 +3,10 @@ using Nashet.ValueSpace;
 
 namespace Nashet.Utils
 {
-    public class Rand : Random
+    public class RandomCall : Random
     {
         //public static readonly UnityEngine.Random random = new UnityEngine.Random();
-        public static readonly Random Get = new Random();
-
-        //public static bool Chance(int chance)
-        //{
-        //    return random2.Next(chance) == 0;
-        //}
-        public static float getFloat(float minValue, float maxValue)
-        {
-            //float m = (maxValue - minValue) ;
-
-            return (float)(Get.NextDouble()) * (maxValue - minValue) + minValue;
-        }
+        public static readonly Random Get = new Random();        
 
         /// <summary>
         /// Higher procent - higher chance
@@ -31,16 +20,7 @@ namespace Nashet.Utils
             return Get.Next(Procent.Precision) < chance.RawUIntValue;
         }
 
-        public static bool Call(Action action, int chance)
-        {
-            if (UnityEngine.Random.Range(0, chance) == 0)
-            {
-                action();
-                return true;
-            }
-            else
-                return false;
-        }
+       
 
         public static bool Call(Action action, ReadOnlyValue chance)
         {
