@@ -32,7 +32,7 @@ namespace Nashet.NameGeneration
             //return Game.threadDangerSB.ToString();
         }
 
-        public ProvinceNameGenerator()
+        static ProvinceNameGenerator()
         {
             postfix = new ChanceBox<string>();
             postfix.Add("burg", 2.2f);

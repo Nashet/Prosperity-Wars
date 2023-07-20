@@ -1,4 +1,4 @@
-﻿using Nashet.EconomicSimulation;
+﻿using Nashet.GameplayController;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -7,8 +7,9 @@ namespace Nashet.UnityUIUtils
     public class WorldDragger : MonoBehaviour, IDragHandler
     {
         [SerializeField] private float scrollSpeed = 10f;
+		[SerializeField] private CameraController cameraController;
 
-        private RectTransform canvasRectTransform;
+		private RectTransform canvasRectTransform;
         private Vector2 oldPosition;
 
         private void Awake()
@@ -26,7 +27,7 @@ namespace Nashet.UnityUIUtils
         private void HandleMapScroll(PointerEventData data)
         {           
             var change = oldPosition - data.position;
-            MainCamera.Get.Move(change.x * scrollSpeed, change.y * scrollSpeed);
+			cameraController.Move(change.x * scrollSpeed, change.y * scrollSpeed);
             oldPosition = data.position;
         }
     }

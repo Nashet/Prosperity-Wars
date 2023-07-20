@@ -1,27 +1,23 @@
-﻿using Nashet.MapMeshes;
+﻿using Nashet.GameplayView;
+using Nashet.MapMeshes;
 using Nashet.UISystem;
 using Nashet.UnitSelection;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Nashet.EconomicSimulation
 {
-    public class MainCamera : MonoBehaviour
+
+	public class MainCamera : MonoBehaviour
     {
-        [SerializeField]
-        private float xzCameraSpeed = 2f;
-
-        [SerializeField]
-        private float yCameraSpeed = -55f;
-
         [SerializeField] protected float fogOfWarDensity;
+        [SerializeField] private CameraView cameraView;
 
-        private float focusHeight;
+		private float focusHeight;
 
         public static TopPanel topPanel;
         public static ProvincePanel provincePanel;
@@ -45,7 +41,7 @@ namespace Nashet.EconomicSimulation
 
         private Game game;
         private new Camera camera;
-        private static bool gameLoadingIsFinished;
+        public static bool gameLoadingIsFinished; //todo refactor
 
         //[SerializeField]
         /// <summary>Limits simulation speed (in seconds)</summary>
@@ -71,52 +67,15 @@ namespace Nashet.EconomicSimulation
             tooltip = GetComponent<ToolTipHandler>();
             Screen.orientation = ScreenOrientation.LandscapeLeft;
             camera = Camera.main;
-        }
-
-        public void Zoom(float zMove)
-        {
-            var position = transform.position;
-            zMove = zMove * yCameraSpeed;
-            if (position.z + zMove > -40f
-                || position.z + zMove < -500f)
-                zMove = 0f;
-            transform.Translate(0f, 0f, zMove, Space.World);
-        }
-
-        public void Move(float xMove, float yMove)
-        {
-            if (game == null)
-                return; // map isnt done yet
-            var position = transform.position;
-           
-            var mapBorders = game.getMapBorders();
-
-
-            if (xMove * xzCameraSpeed + position.x < mapBorders.x
-                || xMove * xzCameraSpeed + position.x > mapBorders.width)
-                xMove = 0;
-
-            if (yMove * xzCameraSpeed + position.y < mapBorders.y
-                || yMove * xzCameraSpeed + position.y > mapBorders.height)
-                yMove = 0;
-            
-            transform.Translate(xMove * xzCameraSpeed, yMove * xzCameraSpeed, 0f, Space.World);
-        }
-
-        private void FixedUpdate()
-        {
-            if (gameLoadingIsFinished)
-            {
-                Zoom(Input.GetAxis("Mouse ScrollWheel"));
-            }
-        }
+        }   
 
         private void NonUnityLoading()
         {
             Application.runInBackground = true;
             game = new Game(MapOptions.MapImage);
+			
 #if UNITY_WEBGL
-            game.InitializeNonUnityData(); // non multi-threading version
+			game.InitializeNonUnityData(); // non multi-threading version
 #else
             game.Start(); //initialize is here
 #endif
@@ -134,6 +93,7 @@ namespace Nashet.EconomicSimulation
 			bottomPanel.Show();
 			gameLoadingIsFinished = true;
 			SelectionComponent.ArmiesGetter = (int arg) => Game.Player.AllArmiesColliders();
+			cameraView.Set(game.getMapBorders());
 		}
 
 		// Update is called once per frame
