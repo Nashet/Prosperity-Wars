@@ -16,5 +16,7 @@ namespace Nashet.GameplayController
 		{
 			cameraView.Zoom(v);
 		}
+
+		internal void FocusOnPoint(Vector3 point) => cameraView.FocusOnPoint(point);
 	}
 }

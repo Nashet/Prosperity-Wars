@@ -16,6 +16,12 @@ namespace Nashet.GameplayView
 
 		[SerializeField]
 		private bool allowed;
+		private float focusHeight;
+
+		private void Start()
+		{
+			focusHeight = transform.position.z;
+		}
 
 		public void Zoom(float zMove)
 		{
@@ -32,6 +38,13 @@ namespace Nashet.GameplayView
 			this.mapBorders = mapBorders;
 			allowed = true;
 		}
+
+		//public void FocusOnProvince(Province province, bool select)
+		//{
+		//	gameObject.transform.position = new Vector3(province.provinceMesh.Position.x, province.provinceMesh.Position.y, focusHeight);
+		//	if (select)
+		//		selectProvince(province.ID);
+		//}
 
 		public void Move(float xMove, float yMove)
 		{
@@ -57,6 +70,11 @@ namespace Nashet.GameplayView
 				return; // map isnt done yet
 
 			Zoom(Input.GetAxis("Mouse ScrollWheel"));
+		}
+
+		public void FocusOnPoint(Vector3 point)
+		{
+			gameObject.transform.position = new Vector3(point.x, point.y, focusHeight);
 		}
 	}
 }
