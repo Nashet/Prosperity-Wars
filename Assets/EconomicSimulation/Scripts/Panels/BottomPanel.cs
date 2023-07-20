@@ -22,7 +22,7 @@ namespace Nashet.EconomicSimulation
         {
             base.Awake();
             MainCamera.bottomPanel = this;
-            generalText.text = "Prosperity Wars v0.20.10";      
+            generalText.text = "Prosperity Wars v0.20.11";      
             Hide();
             cameraScript = Camera.main.GetComponent<MainCamera>(); ;
         }
