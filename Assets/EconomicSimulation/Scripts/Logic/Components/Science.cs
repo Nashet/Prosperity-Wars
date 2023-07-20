@@ -1,4 +1,6 @@
-﻿using Nashet.Conditions;
+﻿using Leopotam.EcsLite;
+using Nashet.Conditions;
+using Nashet.EconomicSimulation.ECS;
 using Nashet.EconomicSimulation.Reforms;
 using Nashet.Utils;
 using Nashet.ValueSpace;
@@ -8,10 +10,10 @@ using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
-    /// <summary>
-    /// Represents ability to invent Inventions
-    /// </summary>
-    public class Science : Component<IInventor>
+	/// <summary>
+	/// Represents ability to invent Inventions
+	/// </summary>
+	public class Science : Component<IInventor>
     {
         public static readonly ModifiersList modSciencePoints = new ModifiersList(new List<Condition>
         {
@@ -28,11 +30,35 @@ namespace Nashet.EconomicSimulation
         new Modifier(x=>(x as Country).Provinces.AllPops.GetAverageProcent(y=>y.Education).RawUIntValue, "Education", 1f / Procent.Precision, false)
     });
         protected readonly Dictionary<Invention, bool> inventions = new Dictionary<Invention, bool>();
-        public float Points { get; protected set; }
+		public float Points
+		{
+			get
+			{
+                country.Unpack(ECSRunner.EcsWorld, out int unpackedEntity);								
+				ref ScienceComponent science = ref pool.Get(unpackedEntity);
+				return science.Points;
+			}
+		}
 
-        public Science(IInventor owner) : base(owner)
+		private EcsPackedEntity country;
+		private EcsPool<ScienceComponent> pool;
+
+		public Science(IInventor owner, EcsPackedEntity country) : base(owner)
         {
-            foreach (var each in Invention.All)
+            this.country = country;
+
+            if (owner != World.UncolonizedLand)
+            {
+                pool = ECSRunner.EcsWorld.GetPool<ScienceComponent>();
+
+                country.Unpack(ECSRunner.EcsWorld, out int unpackedEntity);
+                pool.Add(unpackedEntity);
+
+                ref var science = ref pool.Get(unpackedEntity);
+                science.country = owner as Country;
+
+            }
+			foreach (var each in Invention.All)
                 inventions.Add(each, false);
         }
 
@@ -58,12 +84,15 @@ namespace Nashet.EconomicSimulation
         }
 
         public void Invent(Invention type)
-        {
-            inventions[type] = true;
-            Points -= type.Cost.get();
-            if (Points < 0f)
-                Points = 0f;
-        }
+        {						
+            country.Unpack(ECSRunner.EcsWorld, out int entity);
+			
+			ref ScienceComponent science = ref pool.Get(entity);
+			science.Points -= type.Cost.get();
+            if (science.Points < 0f)
+				science.Points = 0f;
+			inventions[type] = true;
+		}
 
         public bool IsInvented(Invention type)
         {
@@ -122,10 +151,5 @@ namespace Nashet.EconomicSimulation
             else
                 return true;
         }
-
-        public void AddPoints(float points)
-        {
-            Points += points;
-        }
-    }
+    }	
 }

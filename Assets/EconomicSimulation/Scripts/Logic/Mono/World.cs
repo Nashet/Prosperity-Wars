@@ -1,4 +1,5 @@
-﻿using Nashet.EconomicSimulation.Reforms;
+﻿using Nashet.EconomicSimulation.ECS;
+using Nashet.EconomicSimulation.Reforms;
 using Nashet.Utils;
 using Nashet.ValueSpace;
 using System;
@@ -14,7 +15,8 @@ namespace Nashet.EconomicSimulation
     public class World : MonoBehaviour//, IPopulated
     {
         protected static readonly List<Province> allLandProvinces = new List<Province>();
-        protected static readonly List<SeaProvince> allSeaProvinces = new List<SeaProvince>();
+		public static readonly Dictionary<int, Province> ProvincesById = new Dictionary<int, Province>();
+		protected static readonly List<SeaProvince> allSeaProvinces = new List<SeaProvince>();
 
         protected static readonly List<Country> allCountries = new List<Country>();
         protected static readonly List<Culture> allCultures = new List<Culture>();
@@ -191,14 +193,13 @@ namespace Nashet.EconomicSimulation
             return allMoney;
         }
 
-        public static Province FindProvince(int number)
+        public static Province FindProvince(int? number)
         {
-            foreach (var pro in allLandProvinces)
-                if (pro.ID == number)
-                {
-                    return pro;
-                }
-            return null;
+            if (!number.HasValue) 
+                return null;
+            
+            ProvincesById.TryGetValue(number.Value, out var province); 
+            return province;
         }
 
         public void ResumeSimulation()
@@ -221,14 +222,6 @@ namespace Nashet.EconomicSimulation
             haveToStepSimulation = true;
         }
 
-        public static bool isProvinceCreated(Color color)
-        {
-            foreach (Province anyProvince in allLandProvinces)
-                if (anyProvince.ColorID == color)
-                    return true;
-            return false;
-        }
-
         public static void CreateCountries()
         {
             var countryNameGenerator = new CountryNameGenerator();
@@ -248,7 +241,7 @@ namespace Nashet.EconomicSimulation
                 Culture culture = new Culture(cultureNameGenerator.generateCultureName(), ColorExtensions.getRandomColor());
                 allCultures.Add(culture);
 
-                Province province = AllProvinces.Where(x => x.Country == UncolonizedLand).Random();
+                Province province = AllProvinces.Where(x => x.Country == UncolonizedLand && !x.IsForDeletion).Random();
 
                 Country country = new Country(countryNameGenerator.generateCountryName(), culture, culture.getColor(), province, 100f);
                 allCountries.Add(country);
@@ -257,8 +250,6 @@ namespace Nashet.EconomicSimulation
                 country.GiveMoneyFromNoWhere(100);
             }
             Game.Player = allCountries.First(x => x != UncolonizedLand); // not wild Tribes, DONT touch that
-            Game.Player.events.RiseChangedCountry(new CountryEventArgs(Game.Player));
-
             allCountries.Random().SetName("Zacharia");
             //foreach (var pro in allProvinces)
             //    if (pro.Country == null)
@@ -344,19 +335,24 @@ namespace Nashet.EconomicSimulation
             ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
             if (!useProvinceColors)
             {
-                var uniqueColors = mapTexture.AllUniqueColors2();
+                var uniqueColors = mapTexture.AllUniqueColors3();
+                var borderColors = mapTexture.GetColorsFromBorder();
                 int counter = 0;
-                int lakechance = 20;//
-                foreach (var item in uniqueColors)
+                int lakechance = 20;//todo fix
+                foreach (var color in uniqueColors)
                 {
-                    if (!item.Value && Rand.Get.Next(lakechance) != 0)
+                    var deleteWaterProvince = Rand.Get.Next(lakechance) == 1 || borderColors.Contains(color);
+                    if (!deleteWaterProvince)
                     {
-                        allLandProvinces.Add(new Province(nameGenerator.generateProvinceName(), counter, item.Key, Product.getRandomResource(false)));
+                        var province = new Province(nameGenerator.generateProvinceName(), color.ToInt(), Product.getRandomResource(false),
+                            deleteWaterProvince);
 
+						allLandProvinces.Add(province);
+                        ProvincesById.Add(province.ID, province);
+                        //else
+                        //    allSeaProvinces.Add(new SeaProvince("", counter, item.Key));
+                        counter++;
                     }
-                    //else
-                    //    allSeaProvinces.Add(new SeaProvince("", counter, item.Key));
-                    counter++;
                 }
             }
             else
@@ -367,10 +363,14 @@ namespace Nashet.EconomicSimulation
                 {
                     var color = uniqueColors[counter];
                     if (!(color.g + color.b >= 200f / 255f + 200f / 255f && color.r < 96f / 255f))
-                        //if (color.g + color.b + color.r > 492f / 255f)
+                    //if (color.g + color.b + color.r > 492f / 255f)
+                    {
+                        var province = new Province(nameGenerator.generateProvinceName(), color.ToInt(), Product.getRandomResource(false), false);
 
-                        allLandProvinces.Add(new Province(nameGenerator.generateProvinceName(), counter, color, Product.getRandomResource(false)));
-                }
+						allLandProvinces.Add(province);
+                        ProvincesById.Add(province.ID, province);
+                    }
+				}
             }
         }
 
@@ -614,7 +614,14 @@ namespace Nashet.EconomicSimulation
             // and sets statistics to zero. Should go after price calculation
             prepareForNewTick();
 
-            // big PRODUCE circle
+            //ECS TIME!!!!!!!!!!!!!!!!!!!!!!!!!
+            ECSRunner.RunManually();
+			///////////////////////////////////
+
+			// big PRODUCE circle
+			//foreach(var producer in AllProducers)
+			//	producer.produce();
+
             foreach (Country country in World.AllExistingCountries())
                 foreach (Province province in country.AllProvinces)
                     foreach (var producer in province.AllProducers)
@@ -782,7 +789,7 @@ namespace Nashet.EconomicSimulation
                     }
 
                     PopUnit.PopListToAddToGeneralList.Clear();
-                    province.simulate();
+                    
                     province.BalanceEmployableWorkForce();
                 }
                 country.simulate();

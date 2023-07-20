@@ -1,9 +1,6 @@
-﻿using Nashet.Utils;
-using Nashet.ValueSpace;
-using System;
+﻿using Nashet.ValueSpace;
 using System.Collections.Generic;
-using UnityEngine;
-using System.Linq;
+
 
 namespace Nashet.EconomicSimulation
 {
@@ -20,18 +17,11 @@ namespace Nashet.EconomicSimulation
         public Storage storage;
 
         /// <summary>How much sent to market, Some other amount could be consumedTotal or stored for future </summary>
-        //private Storage sentToMarket;
-        //public Storage SentToMarket { get { return sentToMarket; } }
         private Dictionary<Market, Storage> sentToMarket = new Dictionary<Market, Storage>();
 
 
         private readonly Province province;
-        /// <summary> /// Return in pieces  /// </summary>
-        //public abstract float getLocalEffectiveDemand(Product product);
-
-        /// <summary>
-        /// Just adds statistics
-        /// </summary>
+        
         public abstract void produce();
 
         protected Producer(Province province) : base(province.Country)
@@ -57,9 +47,6 @@ namespace Nashet.EconomicSimulation
             if (sentToMarket != null)
                 sentToMarket.Clear();
         }
-
-
-
 
         /// <summary>
         /// Do checks outside. Currently sends only to 1 market

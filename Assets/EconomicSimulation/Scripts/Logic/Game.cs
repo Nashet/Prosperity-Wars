@@ -5,16 +5,17 @@ using Nashet.Utils;
 using QPathFinder;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Nashet.EconomicSimulation
-{
-    /// <summary>
-    /// That's a game manager
-    /// </summary>
-    public class Game : ThreadedJob
+{    
+	/// <summary>
+	/// That's a game manager
+	/// </summary>
+	public class Game : ThreadedJob
     {
-        public static bool devMode = false;
+        public static bool devMode = true;//false;
         private static bool surrended = devMode;
         public static bool logInvestments = false;
         public static bool logMarket = false;
@@ -32,7 +33,7 @@ namespace Nashet.EconomicSimulation
         public static bool isInSendArmyMode { get; private set; }
         public static Action<bool> OnIsInSendArmyModeChanged;
     
-        private static VoxelGrid<AbstractProvince> grid;
+        private static VoxelGrid grid;
         private readonly Rect mapBorders;
 
         public static bool DrawFogOfWar { get; internal set; }
@@ -41,112 +42,220 @@ namespace Nashet.EconomicSimulation
         private MapTextureGenerator map = new MapTextureGenerator();
 
         public Game(Texture2D mapImage)
+		{
+			DrawFogOfWar = true;
+			PprepareTexture(mapImage); // only can run in unity thread
+
+			mapBorders = new Rect(0f, 0f, mapTexture.getWidth() * Options.cellMultiplier, mapTexture.getHeight() * Options.cellMultiplier);
+		}
+
+		private void PprepareTexture(Texture2D mapImage)
+		{
+			if (mapImage == null)
+			{
+				int mapSize;
+				int width;
+				//#if UNITY_WEBGL
+				if (devMode)
+				{
+					mapSize = 20000;
+					width = 150 + Rand.Get.Next(60);
+				}
+				else
+				{
+					mapSize = 40000;
+					width = 250 + Rand.Get.Next(40);
+				}
+				//mapSize = 160000;
+				//width = 420;
+				mapTexture = map.generateMapImage(mapSize, width);
+			}
+			else
+			{
+				//Texture2D mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;
+				mapTexture = new MyTexture(mapImage);
+			}
+		}
+
+		public void InitializeNonUnityData()
         {
-            DrawFogOfWar = true;
-            if (mapImage == null)
-            {
-                int mapSize;
-                int width;
-                //#if UNITY_WEBGL
-                if (devMode)
-                {
-                    mapSize = 20000;
-                    width = 150 + Rand.Get.Next(60);
-                }
-                else
-                {
-                    //mapSize = 25000;
-                    //width = 170 + Random.Next(65);
-                    //mapSize = 30000;
-                    //width = 180 + Random.Next(65);
-                    mapSize = 40000;
-                    width = 250 + Rand.Get.Next(40);
-                }
-                // 140 is sqrt of 20000
-                //int width = 30 + Random.Next(12);   // 140 is sqrt of 20000
-                //#else
-                //        int mapSize = 40000;
-                //        int width = 200 + Random.Next(80);
-                //#endif
-                mapTexture = map.generateMapImage(mapSize, width);
-            }
-            else
-            {
-                //Texture2D mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;
-                mapTexture = new MyTexture(mapImage);
-            }
+            updateStatus("Crating map mesh data..");
 
-            mapBorders = new Rect(0f, 0f, mapTexture.getWidth() * Options.cellMultiplier, mapTexture.getHeight() * Options.cellMultiplier);
-        }
-
-        public void InitializeNonUnityData()
-        {
-            var m = new Market();
-            World.Create(mapTexture);
-
-
-            m.Initialize(null);
-            //World.getAllExistingCountries().PerformAction(x => x.market.Initialize(x));  // should go after countries creation          
-
-            //Game.updateStatus("Making grid..");
-            grid = new VoxelGrid<AbstractProvince>(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture, World.AllAbstractProvinces);
-            
-            if (!devMode)
-                makeHelloMessage();
-            updateStatus("Finishing generation..");
-        }
+			grid = new VoxelGrid(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture);
+           
+            updateStatus("Creating economic data..");
+			var m = new Market();
+			World.Create(mapTexture);
+			m.Initialize(null);
+			updateStatus("Finishing with non-unity loading..");
+		}
 
         /// <summary>
         /// Separate method to call Unity API. WOULDN'T WORK IN MULTYTHREADING!
         /// Called after initialization of non-Unity data
         /// </summary>
-        public static void setUnityAPI()
-        {
-            // has to be separate circle
-            World.AllProvinces.PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
-            World.AllSeaProvinces.PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
+        public static void setUnityMeshes()
+		{
+            if (!devMode)
+				makeHelloMessage();
 
-            foreach (var province in World.AllProvinces)
+			//World.getAllExistingCountries().PerformAction(x => x.market.Initialize(x));  // should go after countries creation  
+			// has to be separate circle
+
+			foreach (var province in World.AllProvinces)
             {
-                //var node = province.GameObject.GetComponent<Node>();
-                //node.Set(province, province.AllNeighbors());
-                var node = new Node(province.Position);
-                PathFinder.instance.graphData.nodes.Add(node);
-                province.Node = node;
-                province.SetBorderMaterials();
-                node.Province = province;
+                var mesh = grid.getMesh(province.ID, out var borders);
+
+				
+				province.createMeshAndBorders(mesh, borders);
+				//World.AllSeaProvinces.PerformAction(x =>
+			}
+
+			// create provinces
+			// create borders
+			// set rivers
+
+			Country.setMeshesAndMaterials();
+
+            //todo put it in some other file. World?
+			AddRivers();
+
+			SetPatchFinding();
+
+			// Annex all countries to P)layer
+			//foreach (var item in World.getAllExistingCountries().Where(x => x != Game.Player))
+			//{
+			//    item.annexTo(Game.Player);
+			//}
+			//Quaternion.Ro(90f, Vector3.right);
+			//World.Get.transform.Rotate(Vector3.right* 90f);
+			//World.Get.transform.rotation.SetAxisAngle(Vector3.right, 90f);
+			//del.x = 90f;
+			//World.Get.transform.rotation = del;
+
+			// todo clear resources
+			grid = null;
+			mapTexture = null;
+		}
+
+		private static void SetPatchFinding()
+		{
+			foreach (var province in World.AllProvinces)
+			{
+				//var node = province.GameObject.GetComponent<Node>();
+				//node.Set(province, province.AllNeighbors());
+				var node = new Node(province.Position);
+				PathFinder.instance.graphData.nodes.Add(node);
+				province.Node = node;
+				province.SetBorderMaterials();
+				node.Province = province;
+			}
+
+			PathFinder.instance.graphData.ReGenerateIDs();
+
+			foreach (var province in World.AllProvinces)
+			{
+				foreach (var item in province.AllNeighbors())
+				{
+					if (PathFinder.instance.graphData.paths.Exists(x => x.IDOfA == province.Node.autoGeneratedID && x.IDOfB == item.Node.autoGeneratedID))
+						continue;
+					PathFinder.instance.graphData.paths.Add(
+						new Path(item.Node.autoGeneratedID, province.Node.autoGeneratedID));
+				}
+			}
+		}
+
+		private static void AddRivers()
+		{
+			for (int i = 0; i < Options.MaxRiversAmount; i++)
+			{
+				var riverStart = World.AllProvinces.Where(x => !x.AllNeighbors().Any(y => y.isRiverNeighbor(x))).Random();
+				//x.IsCoastal && 
+				//x.Terrain == Province.TerrainTypes.Mountains &&
+				if (riverStart == null)
+                    continue;
+				var riverStart2 = riverStart.AllNeighbors().Random();
+				//.Where(x => x.IsCoastal)
+				if (riverStart2 == null) 
+                    continue;
+				AddRiverBorder(riverStart, riverStart2);
+			}
+		}
+
+		private static void AddRiverBorder(Province beach1, Province beach2)
+		{
+            if (beach1.Terrain == Province.TerrainTypes.Mountains && beach2.Terrain == Province.TerrainTypes.Mountains)
+            {
+                Debug.Log($"----river stoped because of mountain");
+				return; 
             }
 
-            PathFinder.instance.graphData.ReGenerateIDs();
+			var chanceToContinue = Rand.Get.Next(Options.RiverLenght);
+            if (chanceToContinue == 1)
+			{
+                Debug.Log($"----river stoped because its long enough");
+				return;
+			};
 
-            foreach (var province in World.AllProvinces)
+            Province beach3 = null;
+
+			var potentialBeaches = beach1.AllNeighbors().Where(x => x.isNeighbor(beach2)).ToList();
             {
-                foreach (var item in province.AllNeighbors())
+
+                if (potentialBeaches.Count == 1)
                 {
-                    if (PathFinder.instance.graphData.paths.Exists(x => x.IDOfA == province.Node.autoGeneratedID && x.IDOfB == item.Node.autoGeneratedID))
-                        continue;
-                    PathFinder.instance.graphData.paths.Add(
-                        new Path(item.Node.autoGeneratedID, province.Node.autoGeneratedID));
-                }  
+					beach3 = potentialBeaches.ElementAt(0);
+					if (beach3.isRiverNeighbor(beach1) || beach3.isRiverNeighbor(beach2))
+					{
+                        beach3 = null;
+					}
+				}
+
+                if (potentialBeaches.Count == 2)
+                {
+                    var chooseBeach = Rand.Get.Next(2);
+                    if (chooseBeach == 0)
+                    {
+                        beach3 = potentialBeaches.ElementAt(0);
+                        if (beach3.isRiverNeighbor(beach1) || beach3.isRiverNeighbor(beach2))
+                        {
+                            beach3 = potentialBeaches.ElementAt(1);
+                        }
+                    }
+                    if (chooseBeach == 1)
+                    {
+                        beach3 = potentialBeaches.ElementAt(1);
+                        if (beach3.isRiverNeighbor(beach1) || beach3.isRiverNeighbor(beach2))
+                        {
+                            beach3 = potentialBeaches.ElementAt(0);
+                        }
+                    }
+                }
+			}
+
+			Debug.Log($"{beach1}, {beach2}");
+            beach1.AddRiverBorder( beach2);
+			beach2.AddRiverBorder(beach1);
+
+			var chance = Rand.Get.Next(2);
+
+			if (beach3 == null)
+			{
+				Debug.Log($"----river stoped because cant find beach3");
+				return;
+			};
+
+			if (chance == 1 && !beach3.isRiverNeighbor(beach1))
+            {
+                AddRiverBorder(beach3, beach1);
             }
-            Country.setUnityAPI();
-            //seaProvinces = null;
-            // todo clear resources
-            grid = null;
-            mapTexture = null;
-            // Annex all countries to P)layer
-            //foreach (var item in World.getAllExistingCountries().Where(x => x != Game.Player))
-            //{
-            //    item.annexTo(Game.Player);
-            //}
-            //Quaternion.Ro(90f, Vector3.right);
-            //World.Get.transform.Rotate(Vector3.right* 90f);
-            //World.Get.transform.rotation.SetAxisAngle(Vector3.right, 90f);
-            //del.x = 90f;
-            //World.Get.transform.rotation = del;
+            else
+            {
+                AddRiverBorder(beach3, beach2);
+            }
         }
 
-        public Rect getMapBorders()
+		public Rect getMapBorders()
         {
             return mapBorders;
         }
@@ -229,6 +338,7 @@ namespace Nashet.EconomicSimulation
 
         protected override void ThreadFunction()
         {
+            //Thread.Sleep(1000);    
             InitializeNonUnityData();
         }
 

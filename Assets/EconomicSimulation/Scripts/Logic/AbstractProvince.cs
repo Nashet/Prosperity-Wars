@@ -7,15 +7,14 @@ using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
-    public abstract class AbstractProvince : Name, IColorID
+    public abstract class AbstractProvince : Name
     {
         /// <summary> false means sea province </summary>
         //public bool IsLandProvince { get; protected set; }
 
         protected GameObject txtMeshGl;
         public int ID { get; protected set; }
-
-        public Color ColorID { get; protected set; }
+       
         public GameObject GameObject { get; protected set; }
         public MeshFilter MeshFilter { get; protected set; }
 
@@ -26,10 +25,9 @@ namespace Nashet.EconomicSimulation
 
         
 
-        protected AbstractProvince(string name, int ID, Color colorID) : base(name)
+        protected AbstractProvince(string name, int ID) : base(name)
         {
-            this.ID = ID;
-            this.ColorID = colorID;
+            this.ID = ID;            
         }
         public void setLabel()
         {
@@ -64,7 +62,7 @@ namespace Nashet.EconomicSimulation
                              //#endif
                              //group.RecalculateBounds();
         }
-        public virtual void setUnityAPI(MeshStructure meshStructure, Dictionary<AbstractProvince, MeshStructure> neighborBorders)
+        public virtual void createMeshAndBorders(MeshStructure meshStructure, Dictionary<int, MeshStructure> neighborBorders)
         {
             //this.meshStructure = meshStructure;
 

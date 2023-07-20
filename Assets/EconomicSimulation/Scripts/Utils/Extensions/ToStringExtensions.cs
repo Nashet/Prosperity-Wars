@@ -310,9 +310,9 @@ namespace Nashet.Utils
                 }
                 isFirstRow = false;
                 if (item.Value == null)
-                    sb.Append(item.Key).Append(" (permanent)");
+                    sb.Append(item.Key).Append(", permanent");
                 else
-                    sb.Append(item.Key).Append(" expires in ").Append(item.Value.getYearsUntill()).Append(" years");
+                    sb.Append(item.Key).Append(", expires in ").Append(item.Value.getYearsUntill()).Append(" years");
             }
             return sb.ToString();
         }

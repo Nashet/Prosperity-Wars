@@ -18,7 +18,7 @@ namespace Nashet.EconomicSimulation
         public static readonly int CountryTimeToForgetBattle = 40;
         public static readonly float defaultSciencePointMultiplier = 1.1f;//0.00001f;
         public static readonly Procent GovernmentTakesShareOfGoldOutput = new Procent(0.5f);
-        public static readonly int ProvinceChanceToGetCore = 70;
+        public static readonly int ProvinceChanceToGetCore = 2;
         public static readonly Value CountryMinStorage = new Value(5f);
         public static readonly Value CountryMaxStorage = new Value(50f);
         public static readonly Value CountryBuyProductsForXDays = new Value(20f);
@@ -201,7 +201,10 @@ namespace Nashet.EconomicSimulation
 
         public static readonly int ArmyTimeToOccupy = 12;
 
+        public static int MaxRiversAmount = 17;
+        public static int RiverLenght => 25;
 
-        //public static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);
-    }
+
+		//public static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);
+	}
 }

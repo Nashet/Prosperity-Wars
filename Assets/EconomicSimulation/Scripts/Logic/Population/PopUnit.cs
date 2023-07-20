@@ -1,4 +1,5 @@
-﻿using Nashet.Conditions;
+﻿using Leopotam.EcsLite;
+using Nashet.Conditions;
 using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
@@ -69,10 +70,10 @@ namespace Nashet.EconomicSimulation
         //private KeyValuePair<IEscapeTarget, int> lastEscaped = new KeyValuePair<IEscapeTarget, int>();
 
         //if add new fields make sure it's implemented in second constructor and in merge()
+        protected EcsPackedEntity packedEntity;
 
 
-
-        static PopUnit()
+		static PopUnit()
         {
             //makeModifiers();
             modifierStarvation = new Modifier(x => (x as PopUnit).needsFulfilled.get() < 0.20f, "Starvation", -0.3f, false);

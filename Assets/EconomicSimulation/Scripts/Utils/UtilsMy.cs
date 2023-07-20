@@ -810,13 +810,15 @@ namespace Nashet.Utils
     {
         private readonly int width, height;
         private readonly Color[] map;
+       //public Texture2D Texture { get; private set; }
 
         public MyTexture(Texture2D image)
         {
             width = image.width;
             height = image.height;
             map = image.GetPixels();
-        }
+            //Texture = image;
+		}
 
         public int getWidth()
         {
@@ -856,66 +858,70 @@ namespace Nashet.Utils
             return res;
         }
         
-        public Dictionary<Color, bool> AllUniqueColors2()
+        public HashSet<Color> GetColorsFromBorder()
         {
-            // true means is a sea
-            var res = new Dictionary<Color, bool>();
+            var res = new HashSet<Color>();
             Color nextColor = map[0];
+
             for (int y = 0; y < height; y++)
             {
-                if (nextColor != map[y * width]
-                   && !res.ContainsKey(nextColor))
+                if (nextColor != map[y * width])
                 {
 
-                    res.Add(nextColor, true);
+                    res.Add(nextColor);
                 }
                 nextColor = map[y * width];
             }
+
             for (int y = 0; y < height; y++)
             {
-                if (nextColor != map[width - 1 + y * width]
-                   && !res.ContainsKey(nextColor))
+                if (nextColor != map[width - 1 + y * width])
                 {
 
-                    res.Add(nextColor, true);
+                    res.Add(nextColor);
                 }
                 nextColor = map[width - 1 + y * width];
             }
+
             for (int x = 0; x < width; x++)
             {
-                if (nextColor != map[x]
-                   && !res.ContainsKey(nextColor))
+                if (nextColor != map[x])
                 {
 
-                    res.Add(nextColor, true);
+                    res.Add(nextColor);
                 }
                 nextColor = map[x];
             }
+
             for (int x = 0; x < width; x++)
             {
-                if (nextColor != map[x + (height - 1) * width]
-                   && !res.ContainsKey(nextColor))
+                if (nextColor != map[x + (height - 1) * width])
                 {
 
-                    res.Add(nextColor, true);
+                    res.Add(nextColor);
                 }
                 nextColor = map[x + (height - 1) * width];
             }
 
 
-            for (int y = 1; y < height - 1; y++)
-                for (int x = 1; x < width - 1; x++)
-                {
-                    if (nextColor != map[x + y * width]
-                        && !res.ContainsKey(nextColor))
-                    {
-
-                        res.Add(nextColor, false);
-                    }
-                    nextColor = map[x + y * width];
-
-                }
             return res;
         }
-    }
+
+		public HashSet<Color> AllUniqueColors3()
+		{			
+			var res = new HashSet<Color>();
+			Color nextColor = map[0];			
+
+			for (int y = 1; y < height - 1; y++)
+				for (int x = 1; x < width - 1; x++)
+				{
+					if (nextColor != map[x + y * width])
+					{
+						res.Add(nextColor);
+					}
+					nextColor = map[x + y * width];
+				}
+			return res;
+		}
+	}
 }

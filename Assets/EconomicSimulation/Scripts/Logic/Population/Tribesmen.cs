@@ -1,5 +1,6 @@
-﻿using Nashet.EconomicSimulation.Reforms;
-using Nashet.ValueSpace;
+﻿using Leopotam.EcsLite;
+using Nashet.EconomicSimulation.ECS;
+using Nashet.EconomicSimulation.Reforms;
 
 namespace Nashet.EconomicSimulation
 {
@@ -11,7 +12,17 @@ namespace Nashet.EconomicSimulation
 
         public Tribesmen(int iamount, Culture iculture, Province where) : base(iamount, PopType.Tribesmen, iculture, where)
         {
-        }
+             var entity = ECSRunner.EcsWorld.NewEntity();
+			
+			packedEntity = ECSRunner.EcsWorld.PackEntity(entity);
+			var pool = ECSRunner.EcsWorld.GetPool<ProducerComponent>();
+
+			//country.Unpack(ECSRunner.EcsWorld, out int unpackedEntity);
+			pool.Add(entity);
+
+			ref var producer = ref pool.Get(entity);
+            producer.pop = this;
+		}
 
         public override bool canThisPromoteInto(PopType targetType)
         {
@@ -26,19 +37,7 @@ namespace Nashet.EconomicSimulation
 
         public override void produce()
         {
-            Storage producedAmount;
-            var overpopulation = Province.GetOverpopulation();
-            if (overpopulation.isSmallerOrEqual(Procent.HundredProcent)) // all is OK
-                producedAmount = new Storage(Type.getBasicProduction().Product, Type.getBasicProduction().Multiply(population.Get()).Divide(1000));
-            else
-                producedAmount = new Storage(Type.getBasicProduction().Product, Type.getBasicProduction().Multiply(population.Get()).Divide(1000).Divide(overpopulation));
-
-            if (producedAmount.isNotZero())
-            {
-                storage.add(producedAmount);
-                addProduct(producedAmount);
-                calcStatistics();
-            }
+            
         }
 
         public override bool canTrade()

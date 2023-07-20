@@ -9,15 +9,15 @@ namespace Nashet.EconomicSimulation
 {
     public class SeaProvince : AbstractProvince
     {
-        public SeaProvince(string name, int ID, Color colorID) : base(name, ID, colorID)
+        public SeaProvince(string name, int ID) : base(name, ID)
         {
         }
-        public override void setUnityAPI(MeshStructure meshStructure, Dictionary<AbstractProvince, MeshStructure> neighborBorders)
+        public override void createMeshAndBorders(MeshStructure meshStructure, Dictionary<int, MeshStructure> neighborBorders)
         {
-            base.setUnityAPI(meshStructure, neighborBorders);
+            base.createMeshAndBorders(meshStructure, neighborBorders);
             meshRenderer.material = LinksManager.Get.waterMaterial;
             GameObject.AddComponent<UnityStandardAssets.Water.WaterBasic>();
-
+            Debug.LogError("Im not happening");
         }
     }
 }

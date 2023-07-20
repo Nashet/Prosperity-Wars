@@ -137,7 +137,8 @@ namespace Nashet.EconomicSimulation
             {
                 sb.Append("\nID: ").Append(Game.selectedProvince.ID);
                 sb.Append("\nNeighbors: ").Append(Game.selectedProvince.AllNeighbors().ToString(", "));
-            }
+                sb.Append($", isCoastal {Game.selectedProvince.IsCoastal}, terrain - {Game.selectedProvince.Terrain} ");
+			}
             sb.Append("\nPopulation (with families): ").Append(Game.selectedProvince.getFamilyPopulation());
 
             sb.Append("\nAverage loyalty: ").Append(Game.selectedProvince.AllPops.GetAverageProcent(x => x.loyalty));
@@ -159,8 +160,7 @@ namespace Nashet.EconomicSimulation
             sb.Append("\nClasses: ").Append(Game.selectedProvince.AllPops.Group(x => x.Type, y => y.population.Get())
                 .OrderByDescending(x => x.Value.get()).ToString(", ", 0));
 
-            if (Game.selectedProvince.getModifiers().Count > 0)
-                sb.Append("\nModifiers: ").Append(ToStringExtensions.ToString(Game.selectedProvince.getModifiers()));
+            sb.Append("\nModifiers: ").Append(ToStringExtensions.ToString(Game.selectedProvince.getModifiers()));
 
             Text text = btnOwner.GetComponentInChildren<Text>();
             text.text = "Owner: " + Game.selectedProvince.Country;
@@ -182,7 +182,7 @@ namespace Nashet.EconomicSimulation
         public override void Hide()
         {
             base.Hide();
-            MainCamera.selectProvince(-1);
+            MainCamera.selectProvince(null);
         }
     }
 }

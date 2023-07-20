@@ -1,4 +1,6 @@
-﻿using Nashet.Conditions;
+﻿using Leopotam.EcsLite;
+using Nashet.Conditions;
+using Nashet.EconomicSimulation.ECS;
 using Nashet.EconomicSimulation.Reforms;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
@@ -7,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace Nashet.EconomicSimulation
 {
@@ -72,17 +75,22 @@ namespace Nashet.EconomicSimulation
 
         public readonly ModifiersList modMyOpinionOfXCountry;
         private readonly Modifier modXHasMyCores;
+		private EcsPackedEntity entity;
 
-        /// <summary>
-        /// Don't call it directly, only from World.cs
-        /// </summary>
-        public Country(string name, Culture culture, Color color, Province capital, float money) : base(money, null)
+		/// <summary>
+		/// Don't call it directly, only from World.cs
+		/// </summary>
+		public Country(string name, Culture culture, Color color, Province capital, float money) : base(money, null)
         {
-            events = new UIEvents(this);
+			var temp = ECSRunner.EcsWorld.NewEntity();
+			entity = ECSRunner.EcsWorld.PackEntity(temp);
+			Science = new Science(this, entity);
+
+
+			events = new UIEvents(this);
             FailedPayments.Enable();
 
             Provinces = new ProvinceOwner(this);
-            Science = new Science(this);
             Diplomacy = new Diplomacy(this);
             Politics = new Politics(this);
 
@@ -211,7 +219,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public static void setUnityAPI()
+        public static void setMeshesAndMaterials()
         {
             foreach (var country in World.AllExistingCountries())
             {
@@ -222,11 +230,11 @@ namespace Nashet.EconomicSimulation
 
                 country.borderMaterial = new Material(LinksManager.Get.defaultCountryBorderMaterial) { color = country.NationalColor.getNegative() };
                 //item.ownedProvinces[0].setBorderMaterial(Game.defaultProvinceBorderMaterial);
-                foreach (var province in country.AllProvinces)
-                {
-                    province.SetBorderMaterials();
-                }
-                country.Provinces.AllProvinces.PerformAction(x => x.OnSecedeGraphic(x.Country));
+                //foreach (var province in country.AllProvinces)
+                //{
+                //    province.SetBorderMaterials();
+                //}
+                //country.Provinces.AllProvinces.PerformAction(x => x.OnSecedeGraphic(x.Country));
                 country.Flag = Nashet.Flag.Generate(128, 128);
             }
             World.UncolonizedLand.Provinces.AllProvinces.PerformAction(x => x.OnSecedeGraphic(World.UncolonizedLand));
@@ -646,12 +654,6 @@ namespace Nashet.EconomicSimulation
 
             ownershipSecurity.Add(Options.CountryOwnershipRiskRestoreSpeed, false);
             ownershipSecurity.clamp100();
-
-            // get science points
-            if (Game.devMode)
-                Science.AddPoints(Options.defaultSciencePointMultiplier * Science.modSciencePoints.getModifier(this) * 1000);
-            else
-                Science.AddPoints(Options.defaultSciencePointMultiplier * Science.modSciencePoints.getModifier(this));
 
             // put extra money in bank
             if (economy != Economy.PlannedEconomy)

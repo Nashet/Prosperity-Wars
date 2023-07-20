@@ -46,5 +46,25 @@ namespace Nashet.Utils
             color.a = 1f;
             return color;
         }
+
+        public static int ToInt(this Color color)
+        { 
+        // Pack the color components into a single 32-bit integer
+        int packedColor = ((int)(color.r * 255.0f) << 24) | ((int)(color.g * 255.0f) << 16) | ((int)(color.b * 255.0f) << 8) | (int)(color.a * 255.0f);
+            return packedColor;
+        }
+
+        public static Color ToColor(this int packedColor)
+        {
+			// Unpack the color components from the packed integer
+			float r = (packedColor >> 24) / 255.0f;
+			float g = ((packedColor >> 16) & 0xFF) / 255.0f;
+			float b = ((packedColor >> 8) & 0xFF) / 255.0f;
+			float a = (packedColor & 0xFF) / 255.0f;
+
+			// Create a new Color object from the unpacked components
+			Color unpackedColor = new Color(r, g, b, a);
+            return unpackedColor;
+		}
     }
 }

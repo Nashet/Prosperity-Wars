@@ -5,7 +5,7 @@ namespace Nashet.EconomicSimulation
 {
     public class LinksManager : MonoBehaviour
     {
-        public Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, impassableBorder;
+        public Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, impassableBorder, riverBorder;
         public Material defaultUnitSymbol;
         public GameObject UnitPrefab, UnitPanelPrefab;
         public Transform WorldSpaceCanvas;

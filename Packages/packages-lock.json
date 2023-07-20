@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.leoecscommunity.ecslite.unityeditor": {
+      "version": "https://github.com/Nashet/ecslite-unityeditor.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "2a8af59a6e15ecbd34783d32dbb37059e663e7f6"
+    },
     "com.leopotam.ecslite": {
       "version": "https://github.com/Leopotam/ecslite.git",
       "depth": 0,

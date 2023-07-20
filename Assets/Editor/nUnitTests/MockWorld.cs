@@ -15,5 +15,6 @@ public class MockWorld : World {
     {
         allCountries.Clear();
         allLandProvinces.Clear();
+        ProvincesById.Clear();
     }
 }
