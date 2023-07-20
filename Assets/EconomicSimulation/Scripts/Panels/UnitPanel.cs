@@ -1,6 +1,7 @@
 ﻿using Nashet.MapMeshes;
 using Nashet.UnitSelection;
 using Nashet.UnityUIUtils;
+using QPathFinder;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -81,7 +82,7 @@ namespace Nashet.EconomicSimulation
                         item.AddToPath(sendToPovince);
                     else
                     {
-                        Predicate<Province> predicate = item.Province.Country == Game.Player && sendToPovince.Country == Game.Player ?
+                        Predicate<IProvince> predicate = item.Province.Country == Game.Player && sendToPovince.Country == Game.Player ?
                             x => x.Country == Game.Player : null;
                         item.SetPathTo(sendToPovince, predicate);
                     }

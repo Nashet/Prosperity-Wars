@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Province : Name, IWayOfLifeChange, IHasCountry, IClickable, ISortableName, IPopulated
+    public class Province : Name, IWayOfLifeChange, IHasCountry, IClickable, ISortableName, IPopulated, IProvince
     {
         public enum TerrainTypes
         {
@@ -67,7 +67,7 @@ namespace Nashet.EconomicSimulation
 
 		private readonly Dictionary<TemporaryModifier, Date> modifiers = new Dictionary<TemporaryModifier, Date>();
 
-        public ProvinceMesh provinceMesh;
+        public ProvinceMesh provinceMesh { get; set; }
 		internal int ID;
 
 		public Province(string name, int ID, Product resource, bool isForDeletion) : base(name)

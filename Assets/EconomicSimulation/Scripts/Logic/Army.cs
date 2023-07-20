@@ -618,7 +618,7 @@ namespace Nashet.EconomicSimulation
                     if (path.Count > 0)
                     {
                         var oldProvince = Province;
-                        Province = path[0].Province;
+                        Province = path[0].Province as Province;
                         path.RemoveAt(0);
                         oldProvince.RemoveArmy(this);
 
@@ -703,7 +703,7 @@ namespace Nashet.EconomicSimulation
                 Game.provincesToRedrawArmies.Add(Province);
             }
         }
-        public void SetPathTo(Province destinationProvince, Predicate<Province> predicate = null)
+        public void SetPathTo(Province destinationProvince, Predicate<IProvince> predicate = null)
         {
             if (destinationProvince == null)
                 Path = null;

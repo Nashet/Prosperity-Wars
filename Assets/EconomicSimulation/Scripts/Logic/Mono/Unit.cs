@@ -169,7 +169,7 @@ namespace Nashet.EconomicSimulation
             Vector3[] array = new Vector3[path.Count + 1];
             for (int i = 0; i < path.Count; i++)
             {
-                array[i + 1] = path[i].Province.provinceMesh.Position;
+                array[i + 1] = path[i].Position;
                 array[i + 1].z = -2f;
             }
             return array;
@@ -181,7 +181,7 @@ namespace Nashet.EconomicSimulation
             lineRenderer.SetPositions(GetVector3Nodes(nodes));
             lineRenderer.SetPosition(0, Province.provinceMesh.Position);//currentProvince.getPosition()
 
-            this.transform.LookAt(nodes[0].Province.provinceMesh.Position, Vector3.back);
+            this.transform.LookAt(nodes[0].Position, Vector3.back);
             if (m_Animator.gameObject.activeInHierarchy)
                 m_Animator.SetFloat("Forward", 0.4f);//, 0.3f, Time.deltaTime
                                                      //if (where.armies.Count > 1)

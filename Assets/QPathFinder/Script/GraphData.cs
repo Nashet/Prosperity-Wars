@@ -3,7 +3,6 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Nashet.EconomicSimulation;
 
 namespace QPathFinder
 {
@@ -24,7 +23,7 @@ namespace QPathFinder
         public Vector3 Position { get { return position; } }
         public void SetAsOpen ( bool open ) { isOpen = open; }
         public bool IsOpen { get { return isOpen; } }
-        public Province Province;
+        public IProvince Province;
 
         [SerializeField] private Vector3 position;
         [SerializeField] private bool isOpen = true;

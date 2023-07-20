@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using QPathFinder;
-using Nashet.EconomicSimulation;
 using System;
 
 namespace QPathFinder
@@ -46,7 +45,7 @@ namespace QPathFinder
         /// <param name="callback">Callback once the path is found</param>
 
 
-        public void FindShortestPathOfNodes ( int fromNodeID, int toNodeID, Execution executionType, System.Action<List<Node>> callback, Predicate<Province> predicate = null)
+        public void FindShortestPathOfNodes ( int fromNodeID, int toNodeID, Execution executionType, System.Action<List<Node>> callback, Predicate<IProvince> predicate = null)
         {
             if ( executionType == Execution.Asynchronously )
             {
@@ -251,7 +250,7 @@ namespace QPathFinder
             yield break;
         }
 
-        private List<Node> FindShortedPathSynchronousInternal( int fromNodeID, int toNodeID, Predicate<Province> predicate = null)
+        private List<Node> FindShortedPathSynchronousInternal( int fromNodeID, int toNodeID, Predicate<IProvince> predicate = null)
         {
             int startPointID = fromNodeID; 
             int endPointID = toNodeID;
