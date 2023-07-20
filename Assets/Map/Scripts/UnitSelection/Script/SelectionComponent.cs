@@ -8,8 +8,8 @@ namespace Nashet.UnitSelection
 {
     public class SelectionComponent : MonoBehaviour
     {
-        public Action<SelectionData> OnEntitySelected;
-        public Action<SelectionData> OnProvinceSelected;
+        public Action<SelectionData> OnEntityClicked;
+        public Action<SelectionData> OnProvinceClicked;
         public static Func<int, IEnumerable<Collider>> ArmiesGetter;
 
         private bool isFrameSelecting = false;
@@ -47,13 +47,15 @@ namespace Nashet.UnitSelection
                     var collider = Utils.getRayCastMeshNumber(camera);
                     if (collider == null)
                     {
-                        OnEntitySelected?.Invoke(null);
-                        OnProvinceSelected?.Invoke(null);
+                        OnEntityClicked?.Invoke(null);
+                        OnProvinceClicked?.Invoke(null);
                     }
                     else
                     {
-                        OnProvinceSelected?.Invoke(new SelectionData(collider));
-                        OnEntitySelected?.Invoke(new SelectionData(collider));
+                        var data = new SelectionData(collider);
+
+						OnProvinceClicked?.Invoke(data);
+                        OnEntityClicked?.Invoke(data);
                     }
                 }
             }
@@ -82,8 +84,8 @@ namespace Nashet.UnitSelection
         private void EndFrameSelection()
         {
             if (selectionFrameMousePositionStart != Input.mousePosition)
-            {
-                OnEntitySelected?.Invoke(new SelectionData(ArmiesGetter(-1).Where(x => IsWithinSelectionBounds(x.transform.position))));
+            {//todo rename to Onselected
+                OnEntityClicked?.Invoke(new SelectionData(ArmiesGetter(-1).Where(x => IsWithinSelectionBounds(x.transform.position))));
             }
             isFrameSelecting = false;
         }
