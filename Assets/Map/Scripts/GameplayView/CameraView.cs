@@ -1,7 +1,6 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Nashet.GameplayView
+namespace Nashet.Map.GameplayView
 {
 	public class CameraView : MonoBehaviour
 	{

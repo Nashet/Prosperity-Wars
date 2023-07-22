@@ -1,4 +1,4 @@
-﻿using Nashet.Utils;
+﻿using Nashet.Map.Utils;
 using UnityEngine;
 
 namespace Nashet.MarchingSquares

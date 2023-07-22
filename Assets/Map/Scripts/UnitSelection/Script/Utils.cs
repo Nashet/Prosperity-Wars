@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 
 namespace Nashet.UnitSelection
 {
-    public static class Utils
+    public static class UnitSelectionUtils
     {
         static Texture2D _whiteTexture;
         private static bool IsPointerOverGameObject()
@@ -89,14 +89,14 @@ namespace Nashet.UnitSelection
 
         public static void DrawScreenRectBorder(Rect rect, float thickness, Color color)
         {
-            // Top
-            Utils.DrawScreenRect(new Rect(rect.xMin, rect.yMin, rect.width, thickness), color);
-            // Left
-            Utils.DrawScreenRect(new Rect(rect.xMin, rect.yMin, thickness, rect.height), color);
-            // Right
-            Utils.DrawScreenRect(new Rect(rect.xMax - thickness, rect.yMin, thickness, rect.height), color);
-            // Bottom
-            Utils.DrawScreenRect(new Rect(rect.xMin, rect.yMax - thickness, rect.width, thickness), color);
+			// Top
+			UnitSelectionUtils.DrawScreenRect(new Rect(rect.xMin, rect.yMin, rect.width, thickness), color);
+			// Left
+			UnitSelectionUtils.DrawScreenRect(new Rect(rect.xMin, rect.yMin, thickness, rect.height), color);
+			// Right
+			UnitSelectionUtils.DrawScreenRect(new Rect(rect.xMax - thickness, rect.yMin, thickness, rect.height), color);
+			// Bottom
+			UnitSelectionUtils.DrawScreenRect(new Rect(rect.xMin, rect.yMax - thickness, rect.width, thickness), color);
         }
     }
 }

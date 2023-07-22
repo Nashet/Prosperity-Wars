@@ -2,7 +2,7 @@
 using System.IO;
 using UnityEngine;
 
-namespace Nashet.Utils
+namespace Nashet.Map.Utils
 {
     //public static class TextureExtensions
     //{

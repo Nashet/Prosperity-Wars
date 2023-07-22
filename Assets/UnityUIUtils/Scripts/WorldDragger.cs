@@ -1,4 +1,4 @@
-﻿using Nashet.GameplayControllers;
+﻿using Nashet.Map.GameplayControllers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 

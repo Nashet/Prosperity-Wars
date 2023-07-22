@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Nashet.EconomicSimulation.Reforms;
+using Nashet.Map.Utils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
 

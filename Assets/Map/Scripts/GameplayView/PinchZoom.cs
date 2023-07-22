@@ -1,7 +1,7 @@
-﻿using Nashet.GameplayControllers;
+﻿using Nashet.Map.GameplayControllers;
 using UnityEngine;
 
-namespace Nashet.GameplayView
+namespace Nashet.Map.GameplayView
 {
 	public class PinchZoom : MonoBehaviour
 	{

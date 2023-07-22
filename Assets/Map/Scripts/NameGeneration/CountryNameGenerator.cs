@@ -1,14 +1,14 @@
-﻿using Nashet.Utils;
+﻿using Nashet.Map.Utils;
 using System.Text;
 
 namespace Nashet.NameGeneration
 {
-	public class CountryNameGenerator
+	public static class CountryNameGenerator
     {
         private static ChanceBox<string> prefix;
         private static ChanceBox<string> postfix;
 
-        public CountryNameGenerator()
+		static CountryNameGenerator()
         {
             postfix = new ChanceBox<string>();
             postfix.Add("burg", 1.2f);
@@ -55,9 +55,9 @@ namespace Nashet.NameGeneration
             prefix.Initiate();
         }
 
-        private StringBuilder result = new StringBuilder();
+        private static StringBuilder result = new StringBuilder();
 
-        public string generateCountryName()
+        public static string generateCountryName()
         {
             result.Clear();
             result.Append(prefix.GetRandom());

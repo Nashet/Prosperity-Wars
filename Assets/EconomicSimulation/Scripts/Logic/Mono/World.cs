@@ -1,4 +1,5 @@
 ﻿using Nashet.EconomicSimulation.Reforms;
+using Nashet.Map.Utils;
 using Nashet.MarchingSquares;
 using Nashet.NameGeneration;
 using Nashet.Utils;
@@ -210,9 +211,7 @@ namespace Nashet.EconomicSimulation
         }
 
         public static void CreateCountries()
-        {
-            var countryNameGenerator = new CountryNameGenerator();
-            var cultureNameGenerator = new CultureNameGenerator();
+        {            
             //int howMuchCountries =3;
             int howMuchCountries = allLandProvinces.Count / Options.ProvincesPerCountry;
             howMuchCountries += Rand.Get.Next(6);
@@ -225,12 +224,12 @@ namespace Nashet.EconomicSimulation
             {
                 //Game.updateStatus("Making countries.." + i);
 
-                Culture culture = new Culture(cultureNameGenerator.generateCultureName(), ColorExtensions.getRandomColor());
+                Culture culture = new Culture(CultureNameGenerator.generateCultureName(), ColorExtensions.getRandomColor());
                 allCultures.Add(culture);
 
                 Province province = AllProvinces.Where(x => x.Country == UncolonizedLand && !x.IsForDeletion).Random();
 
-                Country country = new Country(countryNameGenerator.generateCountryName(), culture, culture.getColor(), province, 100f);
+                Country country = new Country(CountryNameGenerator.generateCountryName(), culture, culture.getColor(), province, 100f);
                 allCountries.Add(country);
                 //count.setBank(count.bank);
 
@@ -319,7 +318,6 @@ namespace Nashet.EconomicSimulation
 
         public static void CreateProvinces(MyTexture mapTexture, bool useProvinceColors)
         {
-            ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
             if (!useProvinceColors)
             {
                 var uniqueColors = mapTexture.AllUniqueColors3();
@@ -332,7 +330,7 @@ namespace Nashet.EconomicSimulation
                     var deleteWaterProvince = Rand.Get.Next(lakechance) == 1 || borderColors.Contains(color);
                     if (!deleteWaterProvince)
                     {
-                        var province = new Province(nameGenerator.generateProvinceName(), color.ToInt(), Product.getRandomResource(false),
+                        var province = new Province(ProvinceNameGenerator.generateProvinceName(), color.ToInt(), Product.getRandomResource(false),
                             deleteWaterProvince);
 
 						allLandProvinces.Add(province);
@@ -353,7 +351,7 @@ namespace Nashet.EconomicSimulation
                     if (!(color.g + color.b >= 200f / 255f + 200f / 255f && color.r < 96f / 255f))
                     //if (color.g + color.b + color.r > 492f / 255f)
                     {
-                        var province = new Province(nameGenerator.generateProvinceName(), color.ToInt(), Product.getRandomResource(false), false);
+                        var province = new Province(ProvinceNameGenerator.generateProvinceName(), color.ToInt(), Product.getRandomResource(false), false);
 
 						allLandProvinces.Add(province);
                         ProvincesById.Add(province.ID, province);

@@ -1,4 +1,5 @@
-﻿using Nashet.UnityUIUtils;
+﻿using Nashet.Map.Utils;
+using Nashet.UnityUIUtils;
 using UnityEngine;
 using UnityEngine.UI;
 

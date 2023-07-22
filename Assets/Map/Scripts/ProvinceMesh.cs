@@ -103,7 +103,7 @@ namespace Nashet.MapMeshes
             return accu;
         }
 
-		internal void OnSecedeGraphic(Color newColor)
+		public void OnSecedeGraphic(Color newColor)
 		{
 			if (meshRenderer != null)
 				meshRenderer.material.color = newColor;
@@ -129,7 +129,7 @@ namespace Nashet.MapMeshes
 				return null;
 		}
 
-		internal void SetBorderMaterial(int id, Material material)
+		public void SetBorderMaterial(int id, Material material)
 		{
 			bordersMeshes[id].material = material;
 		}

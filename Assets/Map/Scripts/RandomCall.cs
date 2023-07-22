@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nashet.Utils
+namespace Nashet.Map.Utils
 {
     public class Rand : Random
     {

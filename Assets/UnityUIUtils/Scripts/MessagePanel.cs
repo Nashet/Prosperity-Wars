@@ -1,5 +1,5 @@
 ﻿using Nashet.EconomicSimulation;
-using Nashet.GameplayControllers;
+using Nashet.Map.GameplayControllers;
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;

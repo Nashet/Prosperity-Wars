@@ -56,7 +56,7 @@ namespace Nashet.EconomicSimulation
 
 		private void SendUnitTo()
         {
-            var collider = UnitSelection.Utils.getRayCastMeshNumber(camera);
+            var collider = UnitSelectionUtils.getRayCastMeshNumber(camera);
             if (collider != null)
             {
                 Province sendToPovince = null;

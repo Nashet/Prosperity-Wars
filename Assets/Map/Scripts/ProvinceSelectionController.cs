@@ -1,9 +1,9 @@
-﻿using Nashet.MapMeshes;
+﻿using Nashet.Map.Utils;
+using Nashet.MapMeshes;
 using Nashet.UnitSelection;
-using Nashet.Utils;
 using UnityEngine;
 
-namespace Nashet.GameplayControllers
+namespace Nashet.Map.GameplayControllers
 {
 	public delegate void OnProvinceSelected(int? provinceId);
 		public class ProvinceSelectionController : MonoBehaviour

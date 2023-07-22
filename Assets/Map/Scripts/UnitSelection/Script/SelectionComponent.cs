@@ -44,7 +44,7 @@ namespace Nashet.UnitSelection
             {
                 if (!EventSystem.current.IsPointerOverGameObject())//!hovering over UI) 
                 {
-                    var collider = Utils.getRayCastMeshNumber(camera);
+                    var collider = UnitSelectionUtils.getRayCastMeshNumber(camera);
                     if (collider == null)
                     {
                         OnEntityClicked?.Invoke(null);
@@ -95,7 +95,7 @@ namespace Nashet.UnitSelection
             if (!isFrameSelecting)
                 return false;
             
-            var viewportBounds = Utils.GetViewportBounds(camera, selectionFrameMousePositionStart, Input.mousePosition);
+            var viewportBounds = UnitSelectionUtils.GetViewportBounds(camera, selectionFrameMousePositionStart, Input.mousePosition);
             return viewportBounds.Contains(camera.WorldToViewportPoint(position));
         }
 
@@ -104,9 +104,9 @@ namespace Nashet.UnitSelection
             if (isFrameSelecting)
             {
                 // Create a rect from both mouse positions
-                var rect = Utils.GetScreenRect(selectionFrameMousePositionStart, Input.mousePosition);
-                Utils.DrawScreenRect(rect, new Color(0.8f, 0.8f, 0.95f, 0.25f));
-                Utils.DrawScreenRectBorder(rect, 2, new Color(0.8f, 0.8f, 0.95f));
+                var rect = UnitSelectionUtils.GetScreenRect(selectionFrameMousePositionStart, Input.mousePosition);
+				UnitSelectionUtils.DrawScreenRect(rect, new Color(0.8f, 0.8f, 0.95f, 0.25f));
+				UnitSelectionUtils.DrawScreenRectBorder(rect, 2, new Color(0.8f, 0.8f, 0.95f));
 
                 //// Left example
                 //Utils.DrawScreenRectBorder(new Rect(32, 32, 256, 128), 2, Color.green);

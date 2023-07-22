@@ -1,4 +1,5 @@
 ﻿using Nashet.EconomicSimulation;
+using Nashet.Map.GameplayControllers;
 using UnityEngine;
 
 namespace Nashet.GameplayControllers

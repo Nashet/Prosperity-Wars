@@ -1,4 +1,4 @@
-﻿using Nashet.Utils;
+﻿using Nashet.Map.Utils;
 using System.Text;
 
 namespace Nashet.NameGeneration
@@ -16,12 +16,12 @@ namespace Nashet.NameGeneration
 			return str.ToUpper();
 		}
 	}
-	public class CultureNameGenerator
+	public static class CultureNameGenerator
     {
         private static ChanceBox<string> prefix;
         private static ChanceBox<string> postfix;
 
-        public CultureNameGenerator()
+		static CultureNameGenerator()
         {
             postfix = new ChanceBox<string>();
             postfix.Add("nian", 1.6f);
@@ -51,9 +51,9 @@ namespace Nashet.NameGeneration
             prefix.Initiate();
         }
 
-        private StringBuilder result = new StringBuilder();
+        private static StringBuilder result = new StringBuilder();
 
-        public string generateCultureName()
+        public static string generateCultureName()
         {
             result.Clear();
             result.Append(prefix.GetRandom());

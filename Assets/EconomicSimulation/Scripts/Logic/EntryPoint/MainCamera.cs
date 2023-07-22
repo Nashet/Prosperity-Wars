@@ -1,5 +1,7 @@
 ﻿using Nashet.GameplayControllers;
-using Nashet.GameplayView;
+using Nashet.Map.GameplayControllers;
+using Nashet.Map.GameplayView;
+using Nashet.Map.Utils;
 using Nashet.MapMeshes;
 using Nashet.UISystem;
 using Nashet.UnitSelection;
@@ -259,7 +261,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (Game.MapMode == Game.MapModes.PopulationChange)
                 {
-                    int? meshNumber = ProvinceMesh.GetIdByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
+                    int? meshNumber = ProvinceMesh.GetIdByCollider(UnitSelectionUtils.getRayCastMeshNumber(camera));
                     var hoveredProvince = World.FindProvince(meshNumber);
                     if (hoveredProvince == null)// || hoveredProvince is Province
                     {
@@ -285,7 +287,7 @@ namespace Nashet.EconomicSimulation
                 }
                 else if (Game.MapMode == Game.MapModes.PopulationDensity)
                 {
-                    int? meshNumber = ProvinceMesh.GetIdByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
+                    int? meshNumber = ProvinceMesh.GetIdByCollider(UnitSelectionUtils.getRayCastMeshNumber(camera));
                     var hoveredProvince = World.FindProvince(meshNumber);
                     if (hoveredProvince == null)
                         tooltip.Hide();
@@ -302,7 +304,7 @@ namespace Nashet.EconomicSimulation
                 }
                 else if (Game.MapMode == Game.MapModes.Prosperity) //prosperity wars
                 {
-                    int? meshNumber = ProvinceMesh.GetIdByCollider(UnitSelection.Utils.getRayCastMeshNumber(camera));
+                    int? meshNumber = ProvinceMesh.GetIdByCollider(UnitSelectionUtils.getRayCastMeshNumber(camera));
                     var hoveredProvince = World.FindProvince(meshNumber);
                     if (hoveredProvince == null)
                         tooltip.Hide();

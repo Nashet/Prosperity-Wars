@@ -1,5 +1,5 @@
-﻿using Nashet.MeshData;
-using Nashet.Utils;
+﻿using Nashet.Map.Utils;
+using Nashet.MeshData;
 using System.Collections.Generic;
 using UnityEngine;
 

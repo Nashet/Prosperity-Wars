@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Nashet.Utils
+namespace Nashet.Map.Utils
 {
     /// <summary>
     /// As component it gives ability to select & deselect some GameObject with additional material

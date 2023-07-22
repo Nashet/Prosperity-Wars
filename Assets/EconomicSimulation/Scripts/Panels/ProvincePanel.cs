@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using Nashet.GameplayControllers;
+using Nashet.Map.GameplayControllers;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using UnityEngine;

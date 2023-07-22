@@ -1,25 +1,25 @@
-﻿using Nashet.GameplayView;
+﻿using Nashet.Map.GameplayView;
 using Nashet.MapMeshes;
 using UnityEngine;
 
-namespace Nashet.GameplayControllers
+namespace Nashet.Map.GameplayControllers
 {
 	public class CameraController : MonoBehaviour
 	{
 		[SerializeField] private CameraView cameraView;
 		[SerializeField] private ProvinceSelectionController provinceSelectionController;
 
-		internal void Move(float v1, float v2)
+		public void Move(float v1, float v2)
 		{
 			cameraView.Move(v1, v2);
 		}
 
-		internal void Zoom(float v)
+		public void Zoom(float v)
 		{
 			cameraView.Zoom(v);
 		}
 
-		internal void FocusOnPoint(Vector3 point) => cameraView.FocusOnPoint(point);
+		public void FocusOnPoint(Vector3 point) => cameraView.FocusOnPoint(point);
 		public void FocusOnProvince(ProvinceMesh province, bool select)
 		{
 			FocusOnPoint(province.Position);

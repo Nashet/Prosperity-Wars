@@ -1,9 +1,9 @@
-﻿using Nashet.Utils;
+﻿using Nashet.Map.Utils;
 using System.Text;
 
 namespace Nashet.NameGeneration
 {
-	public class ProvinceNameGenerator
+	public static class ProvinceNameGenerator
     {
         private static ChanceBox<string> prefix;
         private static ChanceBox<string> postfix;
@@ -145,9 +145,9 @@ namespace Nashet.NameGeneration
             consonants.Initiate();
         }
 
-        private StringBuilder result = new StringBuilder();
+        private static StringBuilder result = new StringBuilder();
 
-        public string generateProvinceName()
+        public static string generateProvinceName()
         {
             result.Clear();
             result.Append(prefix.GetRandom());

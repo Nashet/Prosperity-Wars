@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Nashet.Utils
+namespace Nashet.Map.Utils
 {
     /// <summary>
     /// Describes ability to select & deselect some GameObject.

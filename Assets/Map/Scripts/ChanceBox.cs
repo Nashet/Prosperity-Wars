@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Nashet.Utils
+namespace Nashet.Map.Utils
 {
 	public class ChanceBox<T>
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Nashet.Utils
+namespace Nashet.Map.Utils
 {
     /// <summary>
     /// As component it gives ability to select & deselect some UI element with a selectionMaterial
