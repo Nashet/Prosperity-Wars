@@ -16,7 +16,7 @@ namespace Nashet.EconomicSimulation
 	/// </summary>
 	public class Game : ThreadedJob
     {
-        public static bool devMode = true;//false;
+        public static bool devMode = false;//false;
         private static bool surrended = devMode;
         public static bool logInvestments = false;
         public static bool logMarket = false;
@@ -196,16 +196,19 @@ namespace Nashet.EconomicSimulation
 
 		private static void AddRiverBorder(Province beach1, Province beach2)
 		{
+            var logRivers = false;
             if (beach1.Terrain == Province.TerrainTypes.Mountains && beach2.Terrain == Province.TerrainTypes.Mountains)
             {
-                Debug.Log($"----river stoped because of mountain");
+                if (logRivers)
+                    Debug.Log($"----river stoped because of mountain");
 				return; 
             }
 
 			var chanceToContinue = Rand.Get.Next(Options.RiverLenght);
             if (chanceToContinue == 1)
 			{
-                Debug.Log($"----river stoped because its long enough");
+				if (logRivers)
+					Debug.Log($"----river stoped because its long enough");
 				return;
 			};
 
@@ -244,8 +247,8 @@ namespace Nashet.EconomicSimulation
                     }
                 }
 			}
-
-			Debug.Log($"{beach1}, {beach2}");
+			if (logRivers)
+				Debug.Log($"{beach1}, {beach2}");
             beach1.AddRiverBorder( beach2);
 			beach2.AddRiverBorder(beach1);
 
@@ -253,7 +256,8 @@ namespace Nashet.EconomicSimulation
 
 			if (beach3 == null)
 			{
-				Debug.Log($"----river stoped because cant find beach3");
+				if (logRivers)
+					Debug.Log($"----river stoped because cant find beach3");
 				return;
 			};
 
