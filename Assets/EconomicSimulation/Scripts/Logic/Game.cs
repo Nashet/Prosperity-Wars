@@ -24,14 +24,14 @@ namespace Nashet.EconomicSimulation
         private static MyTexture mapTexture;
 
         public static Country Player { get; set; }
-
-        public static Province selectedProvince;
-        public static Province previoslySelectedProvince;
+        
         public static List<Province> provincesToRedrawArmies = new List<Province>();
-        public static List<Army> selectedArmies = new List<Army>();
-        public static List<Province> playerVisibleProvinces = new List<Province>();
-        public static bool isInSendArmyMode { get; private set; }
-        public static Action<bool> OnIsInSendArmyModeChanged;
+		public static List<Army> selectedArmies = new List<Army>();
+		public static List<Province> playerVisibleProvinces = new List<Province>();
+		public static bool isInSendArmyMode { get; private set; }
+
+
+		public static Action<bool> OnIsInSendArmyModeChanged;
     
         private static VoxelGrid grid;
         private readonly Rect mapBorders;
@@ -297,21 +297,6 @@ namespace Nashet.EconomicSimulation
         public enum MapModes
         {
             Political, Cultures, Cores, Resources, PopulationChange, PopulationDensity, Prosperity
-        }
-
-        //case 0: //political mode
-        //    case 1: //culture mode
-        //    case 2: //cores mode
-        //    case 3: //resource mode
-        //    case 4: //population change mode
-        //    case 5: //population density mode
-        //    case 6: //prosperity map
-
-
-        public static void redrawMapAccordingToMapMode()
-        {
-            foreach (var item in World.AllProvinces)
-                item.SetColorAccordingToMapMode();
         }
 
         public static bool isPlayerSurrended()

@@ -208,7 +208,7 @@ namespace Nashet.EconomicSimulation
         public void OnSecedeGraphic(Country taker)
         {            
             ProvinceColor = taker.NationalColor.getAlmostSameColor();
-            provinceMesh.OnSecedeGraphic(getColorAccordingToMapMode());
+            provinceMesh.OnSecedeGraphic(getColorAccordingToMapMode(null));
 			UpdateBorderMaterials();
         }
 
@@ -792,11 +792,11 @@ namespace Nashet.EconomicSimulation
         {
             return modifiers.ContainsKey(modifier);
         }
-        public void SetColorAccordingToMapMode()
+        public void SetColorAccordingToMapMode(Province selectedProvince)
         {
-            provinceMesh.SetColor(getColorAccordingToMapMode());
+            provinceMesh.SetColor(getColorAccordingToMapMode(selectedProvince));
         }
-        protected Color getColorAccordingToMapMode()
+        protected Color getColorAccordingToMapMode(Province selectedProvince)
         {
             switch (Game.MapMode)
             {
@@ -812,7 +812,7 @@ namespace Nashet.EconomicSimulation
                         return culture.getColor();
 
                 case Game.MapModes.Cores: //cores mode
-                    if (Game.selectedProvince == null)
+                    if (selectedProvince == null)
                     {
                         if (isCoreFor(Country))
                             return Country.NationalColor;
@@ -827,8 +827,8 @@ namespace Nashet.EconomicSimulation
                     }
                     else
                     {
-                        if (isCoreFor(Game.selectedProvince.Country))
-                            return Game.selectedProvince.Country.NationalColor;
+                        if (isCoreFor(selectedProvince.Country))
+                            return selectedProvince.Country.NationalColor;
                         else
                         {
                             if (isCoreFor(Country))
@@ -858,7 +858,7 @@ namespace Nashet.EconomicSimulation
                     }
                 case Game.MapModes.PopulationChange: //population change mode
                     {
-                        if (Game.selectedProvince == null)
+                        if (selectedProvince == null)
                         {
                             float maxColor = 3000;
                             //can improve performance
@@ -932,8 +932,7 @@ namespace Nashet.EconomicSimulation
 
         public void OnClicked()
         {
-            //MainCamera.selectProvince(this.getID());
-            MainCamera.Get.FocusOnProvince(this, true);
+            MainCamera.Get.cameraController.FocusOnProvince(this.provinceMesh, true); //todo remove singleton
         }
 
         public IEnumerable<Owners> GetSales()

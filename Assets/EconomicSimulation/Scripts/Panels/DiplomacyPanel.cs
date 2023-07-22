@@ -1,4 +1,5 @@
 ﻿using Nashet.EconomicSimulation;
+using Nashet.GameplayControllers;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using System;
@@ -22,6 +23,9 @@ namespace Nashet.UISystem
 
         [SerializeField]
         protected RawImage flag;
+
+        [SerializeField]
+        private CameraController cameraController;
 
         private Country _selectedCountry;
         protected Country SelectedCountry {
@@ -129,7 +133,7 @@ namespace Nashet.UISystem
         public void onGoToClick()
         {
             if (_selectedCountry != World.UncolonizedLand)
-                MainCamera.Get.FocusOnProvince(_selectedCountry.Capital, true);
+				cameraController.FocusOnProvince(_selectedCountry.Capital.provinceMesh, true);
         }
 
         public void onRegainControlClick()

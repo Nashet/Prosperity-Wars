@@ -1,4 +1,5 @@
 ﻿using Nashet.EconomicSimulation;
+using Nashet.GameplayControllers;
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -17,8 +18,10 @@ namespace Nashet.UnityUIUtils
 
         [SerializeField]
         protected Toggle showDefeatingAttackerMessage;
+        [SerializeField]
+        private CameraController cameraController;
 
-        protected MainCamera mainCamera;
+		protected MainCamera mainCamera;
 
         protected static int howMuchPausedWindowsOpen;
 
@@ -96,7 +99,7 @@ namespace Nashet.UnityUIUtils
         internal void OnFocusClicked()
         {
             if (messageSource.HasFocus)
-                mainCamera.FocusOnPoint(messageSource.getFocus());
+				cameraController.FocusOnPoint(messageSource.getFocus());
         }
         #endregion
     }

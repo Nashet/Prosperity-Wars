@@ -1,4 +1,5 @@
-﻿using Nashet.GameplayView;
+﻿using Nashet.GameplayControllers;
+using Nashet.GameplayView;
 using Nashet.MapMeshes;
 using Nashet.UISystem;
 using Nashet.UnitSelection;
@@ -16,10 +17,12 @@ namespace Nashet.EconomicSimulation
     {
         [SerializeField] protected float fogOfWarDensity;
         [SerializeField] private CameraView cameraView;
+        [SerializeField] ProvinceSelectionController ProvinceSelectionController;
+        [SerializeField] ProvinceSelectionHelper provinceSelectionHelper;
+        [SerializeField] public CameraController cameraController;
 
-		private float focusHeight;
 
-        public static TopPanel topPanel;
+		public static TopPanel topPanel;
         public static ProvincePanel provincePanel;
         public static PopulationPanel populationPanel;
         public static PopUnitPanel popUnitPanel;
@@ -50,7 +53,7 @@ namespace Nashet.EconomicSimulation
         private float previousFrameTime;
         public static MainCamera Get;
 
-        public static ISelector provinceSelector;
+       
         public static ISelector fogOfWar;
 
         protected ToolTipHandler tooltip;
@@ -58,8 +61,8 @@ namespace Nashet.EconomicSimulation
         private void Start()
         {
             Get = this;
-            focusHeight = transform.position.z;
-            provinceSelector = TimedSelectorWithMaterial.AddTo(gameObject, LinksManager.Get.ProvinceSelecionMaterial, 0);
+            
+            
             fogOfWar = TimedSelectorWithMaterial.AddTo(gameObject, LinksManager.Get.FogOfWarMaterial, 0);
             //
             //var window = Instantiate(LinksManager.Get.MapOptionsPrefab, LinksManager.Get.CameraLayerCanvas.transform);
@@ -67,9 +70,27 @@ namespace Nashet.EconomicSimulation
             tooltip = GetComponent<ToolTipHandler>();
             Screen.orientation = ScreenOrientation.LandscapeLeft;
             camera = Camera.main;
-        }   
+            ProvinceSelectionController.ProvinceSelected += ProvinceSelectedHandler;
+		}
 
-        private void NonUnityLoading()
+		private void OnDestroy()
+		{
+			ProvinceSelectionController.ProvinceSelected -= ProvinceSelectedHandler;
+		}
+
+		private void ProvinceSelectedHandler(int? provinceId)
+		{
+            if (provinceId.HasValue)
+            {
+                if (Game.MapMode == Game.MapModes.Cores) //core map mode
+                {
+                    var selected = World.ProvincesById[provinceId.Value];
+                    redrawMapAccordingToMapMode(selected);
+                }
+			}
+		}
+
+		private void NonUnityLoading()
         {
             Application.runInBackground = true;
             game = new Game(MapOptions.MapImage);
@@ -87,7 +108,7 @@ namespace Nashet.EconomicSimulation
 
 		private void SetUI()
 		{
-			FocusOnProvince(Game.Player.Capital, false);
+			cameraController.FocusOnProvince(Game.Player.Capital.provinceMesh, false);
 			loadingPanel.Hide();
 			topPanel.Show();
 			bottomPanel.Show();
@@ -211,13 +232,27 @@ namespace Nashet.EconomicSimulation
                 );
             }
         }
-        private void UpdateMapTooltip()
+
+		//case 0: //political mode
+		//    case 1: //culture mode
+		//    case 2: //cores mode
+		//    case 3: //resource mode
+		//    case 4: //population change mode
+		//    case 5: //population density mode
+		//    case 6: //prosperity map
+		public void redrawMapAccordingToMapMode(Province selectedProvince)
+		{
+			foreach (var item in World.AllProvinces)
+				item.SetColorAccordingToMapMode(selectedProvince);
+		}
+
+		private void UpdateMapTooltip()
         {
             if (Game.MapMode != Game.MapModes.Political
                     //&& Date.Today.isDivisible(Options.MapRedrawRate)
                     )
             {
-                Game.redrawMapAccordingToMapMode();
+                redrawMapAccordingToMapMode(provinceSelectionHelper.selectedProvince);
             }
 
             if (!EventSystem.current.IsPointerOverGameObject())// don't force map tooltip if mouse hover UI
@@ -232,7 +267,7 @@ namespace Nashet.EconomicSimulation
                     }
                     else
                     {
-                        if (Game.selectedProvince == null)
+                        if (provinceSelectionHelper.selectedProvince == null)
                             tooltip.SetTextDynamic(() =>
                            "Country: " + hoveredProvince.Country + ", population (men): " + hoveredProvince.Country.Provinces.AllPops.Sum(x => x.population.Get())
                            + "\n" + hoveredProvince.Country.Provinces.AllPopsChanges
@@ -287,42 +322,6 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public static void selectProvince(int? Id)
-        {
-            if (!Id.HasValue || World.FindProvince(Id.Value) == Game.selectedProvince)// same province clicked, hide selection
-            {
-                var lastSelected = Game.selectedProvince;
-                Game.selectedProvince = null;
-
-                if (lastSelected != null)
-                {
-                    //lastSelected.setBorderMaterial(LinksManager.Get.defaultProvinceBorderMaterial);
-                    //lastSelected.setBorderMaterials(true);
-                    provinceSelector.Deselect(lastSelected.provinceMesh.GameObject);
-                }
-                if (provincePanel.isActiveAndEnabled)
-                    provincePanel.Hide();
-            }
-            else // new province selected
-            {
-                if (Game.selectedProvince != null)//deal with previous selection
-                {
-                    //Game.selectedProvince.setBorderMaterial(LinksManager.Get.defaultProvinceBorderMaterial);
-                    //Game.selectedProvince.setBorderMaterials(true);
-                    provinceSelector.Deselect(Game.selectedProvince.provinceMesh.GameObject);
-                }
-                // freshly selected province
-                Game.selectedProvince = World.FindProvince(Id.Value);
-                provinceSelector.Select(Game.selectedProvince.provinceMesh.GameObject);
-                //Game.selectedProvince.setBorderMaterial(LinksManager.Get.selectedProvinceBorderMaterial);
-                provincePanel.Show();
-                if (Game.MapMode == Game.MapModes.Cores) //core map mode
-                    Game.redrawMapAccordingToMapMode();
-            }
-            if (buildPanel != null && buildPanel.isActiveAndEnabled)
-                buildPanel.Refresh();
-        }
-
         private void CloseToppestPanel()
         {
             //canvas.GetComponentInChildren<DragPanel>();
@@ -335,18 +334,6 @@ namespace Nashet.EconomicSimulation
                 lastChild.SetAsFirstSibling();
                 CloseToppestPanel();
             }
-        }
-
-        public void FocusOnProvince(Province province, bool select)
-        {
-            gameObject.transform.position = new Vector3(province.provinceMesh.Position.x, province.provinceMesh.Position.y, focusHeight);
-            if (select)
-                selectProvince(province.ID);
-        }
-
-        public void FocusOnPoint(Vector2 point)
-        {
-            gameObject.transform.position = new Vector3(point.x, point.y, focusHeight);
         }
     }
 }

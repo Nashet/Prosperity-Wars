@@ -1,4 +1,5 @@
-﻿using Nashet.MapMeshes;
+﻿using Nashet.GameplayControllers;
+using Nashet.MapMeshes;
 using Nashet.UnitSelection;
 using Nashet.UnityUIUtils;
 using QPathFinder;
@@ -53,7 +54,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        private void SendUnitTo()
+		private void SendUnitTo()
         {
             var collider = UnitSelection.Utils.getRayCastMeshNumber(camera);
             if (collider != null)
@@ -64,7 +65,7 @@ namespace Nashet.EconomicSimulation
                     sendToPovince = World.FindProvince(meshNumber.Value);
                 else // better do here sort of collider layer, hitting provinces only
                 {
-                    var unit = MapClicksHandler.GetUnit(collider);
+                    var unit = UnitSelectionController.GetUnit(collider);
                     if (unit != null)
                     {
                         sendToPovince = unit.Province;

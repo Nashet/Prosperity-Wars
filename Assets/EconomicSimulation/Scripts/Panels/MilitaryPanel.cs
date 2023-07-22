@@ -1,4 +1,5 @@
-﻿using Nashet.UnityUIUtils;
+﻿using Nashet.GameplayControllers;
+using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
 using System.Collections.Generic;
@@ -23,7 +24,10 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private Button sendArmy;
 
-        private readonly StringBuilder sb = new StringBuilder();
+		[SerializeField]
+		private CameraController cameraController;		
+
+		private readonly StringBuilder sb = new StringBuilder();
 
         private readonly List<Province> availableProvinces = new List<Province>();
         //private Army virtualArmyToSend;
@@ -74,7 +78,7 @@ namespace Nashet.EconomicSimulation
             //if (Game.Player.homeArmy.getSize() == 0)
             //  Game.Player.homeArmy = new Army(Game.Player);
             Game.Player.mobilize(Game.Player.AllProvinces);
-            MainCamera.Get.FocusOnProvince(Game.Player.Capital, false);
+            cameraController.FocusOnProvince(Game.Player.Capital.provinceMesh, false);
             //onArmyLimitChanged(0f);
             //MainCamera.tradeWindow.refresh();
             refresh(false);

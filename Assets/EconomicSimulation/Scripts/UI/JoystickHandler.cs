@@ -1,7 +1,7 @@
 ﻿using Nashet.EconomicSimulation;
 using UnityEngine;
 
-namespace Nashet.GameplayController
+namespace Nashet.GameplayControllers
 {
     public class JoystickHandler : MonoBehaviour
     {

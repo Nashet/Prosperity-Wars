@@ -1,4 +1,4 @@
-﻿using Nashet.GameplayController;
+﻿using Nashet.GameplayControllers;
 using Nashet.UnityUIUtils;
 using System.Linq;
 using UnityEngine;
@@ -18,6 +18,8 @@ namespace Nashet.EconomicSimulation
         protected GameObject debugWindowPrefab;
 		[SerializeField]
 		private CameraController cameraController;
+        [SerializeField]
+        private ProvinceSelectionHelper provinceSelectionHelper;
 
         // Use this for initialization
         new private void Awake() // used to position other windows
@@ -47,7 +49,7 @@ namespace Nashet.EconomicSimulation
             if (Game.MapMode != _newMapMod)
             {
                 Game.MapMode = _newMapMod;
-                Game.redrawMapAccordingToMapMode();
+                MainCamera.Get.redrawMapAccordingToMapMode(provinceSelectionHelper.selectedProvince);
             }
         }
 
