@@ -57,8 +57,10 @@ namespace Nashet.EconomicSimulation
         private Product resource;
 
         private Country country;
+		object IProvince.Country => country;
 
-        private readonly int fertileSoil;
+
+		private readonly int fertileSoil;
 
        
         public TerrainTypes Terrain { get; protected set; }
