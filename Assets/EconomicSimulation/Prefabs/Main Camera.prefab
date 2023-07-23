@@ -22,6 +22,8 @@ GameObject:
   - component: {fileID: 802293330663342975}
   - component: {fileID: 6206722624749663044}
   - component: {fileID: 3649891456943614456}
+  - component: {fileID: 8569964117667047592}
+  - component: {fileID: 4443511390263867713}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -117,7 +119,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fogOfWarDensity: 0.6
   cameraView: {fileID: 802293330663342975}
-  ProvinceSelectionController: {fileID: 2359403229268368467}
   provinceSelectionHelper: {fileID: 6206722624749663044}
   cameraController: {fileID: 2187129235353547565}
 --- !u!114 &2415366579164586920
@@ -251,3 +252,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e86bba1dbc6cee04aa88e8c7f1dbb204, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8569964117667047592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2415366579164586932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d5c18c7df15a9c458ee64bc2cbcef8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 2187129235353547565}
+--- !u!114 &4443511390263867713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2415366579164586932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aca6d601db8cf2e4996d16b1d6bc4fba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 2187129235353547565}

@@ -38,17 +38,11 @@ namespace Nashet.Map.GameplayView
 			allowed = true;
 		}
 
-		//public void FocusOnProvince(Province province, bool select)
-		//{
-		//	gameObject.transform.position = new Vector3(province.provinceMesh.Position.x, province.provinceMesh.Position.y, focusHeight);
-		//	if (select)
-		//		selectProvince(province.ID);
-		//}
-
 		public void Move(float xMove, float yMove)
 		{
 			if (!allowed)
 				return; // map isnt done yet
+
 			var position = transform.position;
 
 
@@ -67,8 +61,6 @@ namespace Nashet.Map.GameplayView
 		{
 			if (!allowed)
 				return; // map isnt done yet
-
-			Zoom(Input.GetAxis("Mouse ScrollWheel"));
 		}
 
 		public void FocusOnPoint(Vector3 point)
