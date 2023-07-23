@@ -143,16 +143,14 @@ namespace Nashet.MarchingSquares
 
         private void findBorderMeshAndAdd(int province, Vector2 a, Vector2 b)
         {            
-            if (province != null)            
-            {
-                MeshStructure border;
-                if (!bordersMeshes.TryGetValue(province, out border))
-                {
-                    border = new MeshStructure();
-                    bordersMeshes.Add(province, border);
-                }
-                border.AddBorderQuad2(a, b);
-            }
+           MeshStructure border;
+           if (!bordersMeshes.TryGetValue(province, out border))
+           {
+                border = new MeshStructure();
+                 bordersMeshes.Add(province, border);
+           }
+           border.AddBorderQuad2(a, b);
+           
         }
 
         private void TriangulateCell(Voxel a, Voxel b, Voxel c, Voxel d, int analyzingState)

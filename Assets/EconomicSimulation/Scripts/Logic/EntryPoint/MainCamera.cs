@@ -19,7 +19,6 @@ namespace Nashet.EconomicSimulation
     {
         [SerializeField] protected float fogOfWarDensity;
         [SerializeField] private CameraView cameraView;
-        [SerializeField] ProvinceSelectionController ProvinceSelectionController;
         [SerializeField] ProvinceSelectionHelper provinceSelectionHelper;
         [SerializeField] public CameraController cameraController;
 
@@ -72,22 +71,21 @@ namespace Nashet.EconomicSimulation
             tooltip = GetComponent<ToolTipHandler>();
             Screen.orientation = ScreenOrientation.LandscapeLeft;
             camera = Camera.main;
-            ProvinceSelectionController.ProvinceSelected += ProvinceSelectedHandler;
+			provinceSelectionHelper.ProvinceSelected += ProvinceSelectedHandler;
 		}
 
 		private void OnDestroy()
 		{
-			ProvinceSelectionController.ProvinceSelected -= ProvinceSelectedHandler;
+			provinceSelectionHelper.ProvinceSelected -= ProvinceSelectedHandler;
 		}
 
-		private void ProvinceSelectedHandler(int? provinceId)
+		private void ProvinceSelectedHandler(Province province)
 		{
-            if (provinceId.HasValue)
+            if (province != null)
             {
                 if (Game.MapMode == Game.MapModes.Cores) //core map mode
                 {
-                    var selected = World.ProvincesById[provinceId.Value];
-                    redrawMapAccordingToMapMode(selected);
+                    redrawMapAccordingToMapMode(province);
                 }
 			}
 		}

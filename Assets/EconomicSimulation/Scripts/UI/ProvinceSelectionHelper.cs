@@ -4,22 +4,35 @@ using UnityEngine;
 
 namespace Nashet.GameplayControllers
 {
+	public delegate void OnProvinceSelected(Province province);
+
 	public class ProvinceSelectionHelper : MonoBehaviour
 	{
-		[SerializeField]
-		private ProvinceSelectionController provinceSelectionController;
+		public event OnProvinceSelected ProvinceSelected;
+
+		[SerializeField] private ProvinceSelectionController provinceSelectionController;
 
 		public Province selectedProvince { get; private set; }
+		public bool ProvinceChangedFromLastTick => lastTickSelectedProvince != selectedProvince;
+
+		private Province lastTickSelectedProvince;
+
 		private void Start()
 		{
-			provinceSelectionController.ProvinceSelected += ProvinceSelected;
+			provinceSelectionController.ProvinceSelected += ProvinceSelectedHandler;
 		}
 
 		private void OnDestroy()
 		{
-			provinceSelectionController.ProvinceSelected -= ProvinceSelected;
+			provinceSelectionController.ProvinceSelected -= ProvinceSelectedHandler;
 		}
-		private void ProvinceSelected(int? provinceId)
+
+		private void Update()
+		{
+			lastTickSelectedProvince = selectedProvince;
+		}
+
+		private void ProvinceSelectedHandler(int? provinceId)
 		{
 			if (provinceId.HasValue)
 			{
@@ -29,6 +42,7 @@ namespace Nashet.GameplayControllers
 			{
 				selectedProvince = null;
 			}
+			ProvinceSelected?.Invoke(selectedProvince);
 		}
 	}
 }

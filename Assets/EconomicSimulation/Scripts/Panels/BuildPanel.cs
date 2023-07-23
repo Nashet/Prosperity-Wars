@@ -26,9 +26,6 @@ namespace Nashet.EconomicSimulation
 		[SerializeField]
 		private ProvinceSelectionHelper provinceSelectionHelper;
 
-        [SerializeField]
-        private ProvinceSelectionController provinceSelectionController;
-
 		private ProductionType selectedFactoryType;
         private StringBuilder sb = new StringBuilder();
 
@@ -40,16 +37,16 @@ namespace Nashet.EconomicSimulation
             GetComponent<RectTransform>().anchoredPosition = new Vector2(50f, -340f);
             buildButton.interactable = false;
             Hide();
-            provinceSelectionController.ProvinceSelected += ProvinceSelectedhandler;
+			provinceSelectionHelper.ProvinceSelected += ProvinceSelectedhandler;
 
 		}
 
 		private void OnDestroy()
 		{
-			provinceSelectionController.ProvinceSelected -= ProvinceSelectedhandler;
+			provinceSelectionHelper.ProvinceSelected -= ProvinceSelectedhandler;
 		}
 
-		private void ProvinceSelectedhandler(int? provinceId)
+		private void ProvinceSelectedhandler(Province province)
 		{
 			if (isActiveAndEnabled)
                 Refresh();
@@ -109,7 +106,7 @@ namespace Nashet.EconomicSimulation
 
         public override void Refresh()
         {
-            if (provinceSelectionController.previoslySelectedProvince != provinceSelectionController.selectedProvince) // its ok
+            if (provinceSelectionHelper.ProvinceChangedFromLastTick)
                 selectFactoryType(null);
 
             table.Refresh();

@@ -19,27 +19,28 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private Button btnOwner, btnBuild, btAttackThat, btMobilize, btGrandIndependence;
 
-        [SerializeField]
-        private ProvinceSelectionHelper provinceSelectionHelper;
-        [SerializeField]
-        private ProvinceSelectionController ProvinceSelectionController;
+		[SerializeField]
+		private ProvinceSelectionHelper provinceSelectionHelper;
+
+		[SerializeField]
+		private ProvinceSelectionController ProvinceSelectionController;
 
 		// Use this for initialization
 		private void Start()
         {
             MainCamera.provincePanel = this;
             Hide();
-            ProvinceSelectionController.ProvinceSelected += ProvinceSelectedHandler;
+			provinceSelectionHelper.ProvinceSelected += ProvinceSelectedHandler;
 		}
 
 		private void OnDestroy()
 		{
-			ProvinceSelectionController.ProvinceSelected -= ProvinceSelectedHandler;
+			provinceSelectionHelper.ProvinceSelected -= ProvinceSelectedHandler;
 		}
 
-		private void ProvinceSelectedHandler(int? provinceId)
+		private void ProvinceSelectedHandler(Province province)
 		{
-            if (provinceId == null)
+            if (province == null)
             {
                 HideInternal();
             }
