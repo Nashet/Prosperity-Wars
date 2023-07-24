@@ -218,29 +218,24 @@ namespace Nashet.EconomicSimulation
 		public void UpdateBorderMaterials()
 		{
 			foreach (var neighbor in AllNeighbors())
-			{				
-					if (neighbor.isRiverNeighbor(this))
-					{
-						continue;
-					}
-					if (this.Country == neighbor.Country) //is border between provinces inside a country
-					{						
-                        this.provinceMesh.SetBorderMaterial(neighbor.ID, LinksManager.Get.defaultProvinceBorderMaterial);
-                        neighbor.provinceMesh.SetBorderMaterial(this.ID, LinksManager.Get.defaultProvinceBorderMaterial);
-					}
-					else
-					{
-                        //todo inmproove
-						if (this.Country == World.UncolonizedLand)
-							neighbor.provinceMesh.SetBorderMaterial(this.ID, LinksManager.Get.defaultProvinceBorderMaterial);
-						else
-							neighbor.provinceMesh.SetBorderMaterial(this.ID, this.Country.getBorderMaterial());
-
-						if (neighbor.Country == World.UncolonizedLand)
-						    this.provinceMesh.SetBorderMaterial(neighbor.ID, LinksManager.Get.defaultProvinceBorderMaterial);
-						else
-						    this.provinceMesh.SetBorderMaterial(neighbor.ID, neighbor.Country.getBorderMaterial());
-					}				
+			{
+				if (neighbor.isRiverNeighbor(this))
+				{
+					continue;
+				}
+                
+                if (this.Country == neighbor.Country) //is border between provinces inside a country
+				{
+                    this.provinceMesh.SetBorderMaterial(neighbor.ID, LinksManager.Get.defaultProvinceBorderMaterial);
+                    neighbor.provinceMesh.SetBorderMaterial(this.ID, LinksManager.Get.defaultProvinceBorderMaterial);
+				}
+				else
+				{
+                    neighbor.provinceMesh.SetBorderMaterial(this.ID,
+                        neighbor.Country == World.UncolonizedLand ? LinksManager.Get.defaultProvinceBorderMaterial : neighbor.Country.getBorderMaterial());
+				    this.provinceMesh.SetBorderMaterial(neighbor.ID,
+                        this.Country == World.UncolonizedLand ? LinksManager.Get.defaultProvinceBorderMaterial : this.Country.getBorderMaterial());
+				}
 			}
 		}
 
