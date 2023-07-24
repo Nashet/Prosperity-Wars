@@ -879,6 +879,7 @@ GameObject:
   - component: {fileID: 7350796180478402343}
   - component: {fileID: 7350796180478402336}
   - component: {fileID: 7350796180478402340}
+  - component: {fileID: 3905823646215858313}
   m_Layer: 5
   m_Name: Countries
   m_TagString: Untagged
@@ -1050,6 +1051,35 @@ MonoBehaviour:
   key: 289
   addTextInTooltip: 1
   allowsKeyHolding: 0
+--- !u!114 &3905823646215858313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7350796180478402345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1ec6ecfc283b7140ac70982b7c4713b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  requiredClicks: 5
+  coolDownSeconds: 0.2
+  onEnacted:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7350796180744652991}
+        m_TargetAssemblyTypeName: Nashet.EconomicSimulation.BottomPanel, Assembly-CSharp
+        m_MethodName: OnDebugWindowOpen
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &7350796180519443929
 GameObject:
   m_ObjectHideFlags: 0
