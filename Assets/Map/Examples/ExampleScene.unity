@@ -175,6 +175,12 @@ MonoBehaviour:
     groundColliderLayerName: Default
     nodes: []
     paths: []
+--- !u!1 &398224085 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2415366579164586932, guid: bf0dbea1d2c6f03458a2e20531d4d2c7,
+    type: 3}
+  m_PrefabInstance: {fileID: 1966831708}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &400585945
 GameObject:
   m_ObjectHideFlags: 0
@@ -407,12 +413,37 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 1966831708}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 398224085}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 13fd656757bebdf46b5c4eb81a6a3b3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &906364354 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2359403229268368467, guid: bf0dbea1d2c6f03458a2e20531d4d2c7,
+    type: 3}
+  m_PrefabInstance: {fileID: 1966831708}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 398224085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 003932cd613ff554a9ca1f5c3abc73a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &906364360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 398224085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfc084d9e91c0654385fb73f5f556607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  provinceSelectionController: {fileID: 906364354}
 --- !u!1 &1364851650
 GameObject:
   m_ObjectHideFlags: 0
