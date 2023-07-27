@@ -4,7 +4,7 @@ namespace Nashet.MapMeshes
 {
 	public class MapTextLabel
 	{		
-		public static GameObject CreateMapTextLabel(GameObject GameObject, string text, Color color, Vector3 _position)
+		public static GameObject CreateMapTextLabel(GameObject GameObject, Vector3 position, string text, Color color)
 		{
 			// Add 4 LOD levels
 			LOD[] lods = new LOD[1];
@@ -16,9 +16,9 @@ namespace Nashet.MapMeshes
 			renderers[0] = txtMeshTransform.GetComponent<Renderer>();
 			lods[0] = new LOD(0.25F, renderers);
 
-			var position = _position;
-			position.z -= 0.003f;
-			txtMeshTransform.position = position;
+			var _position = position;
+			_position.z -= 0.003f;
+			txtMeshTransform.position = _position;
 
 			TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
 
@@ -30,7 +30,7 @@ namespace Nashet.MapMeshes
 			return txtMeshGl;
 		}
 
-		public static TextMesh setCapitalTextMesh(GameObject prefab, Vector3 position, string text, Color color, int fontSize)
+		public static TextMesh CreateMapTextLabel(GameObject prefab, Vector3 position, string text, Color color, int fontSize)
 		{
 			Transform txtMeshTransform = GameObject.Instantiate(prefab).transform;			
 

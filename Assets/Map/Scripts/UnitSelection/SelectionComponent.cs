@@ -10,6 +10,9 @@ namespace Nashet.UnitSelection
     {
         public Action<SelectionData> OnEntityClicked;
         public Action<SelectionData> OnProvinceClicked;
+        /// <summary>
+        /// Can be used to select units
+        /// </summary>
         public static Func<int, IEnumerable<Collider>> ArmiesGetter;
 
         private bool isFrameSelecting = false;
@@ -20,10 +23,11 @@ namespace Nashet.UnitSelection
         private void Start()
         {
             camera = Camera.main;
-        }
+			ArmiesGetter = new Func<int, IEnumerable<Collider>>((id) => { return Enumerable.Empty<Collider>(); });
+		}
 
-        //TODO need to get rid of Update()        
-        private void Update()
+		//TODO need to get rid of Update()
+		private void Update()
         {
             HandleUnitOrProvinceClick();
             HandleFrameSelection();

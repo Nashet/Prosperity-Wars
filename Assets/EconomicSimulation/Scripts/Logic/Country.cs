@@ -305,7 +305,7 @@ namespace Nashet.EconomicSimulation
         {
             if (meshCapitalText == null)
             {
-				meshCapitalText = MapTextLabel.setCapitalTextMesh(LinksManager.Get.r3DCountryTextPrefab, newCapital.provinceMesh.Position,
+				meshCapitalText = MapTextLabel.CreateMapTextLabel(LinksManager.Get.r3DCountryTextPrefab, newCapital.provinceMesh.Position,
                     FullName, this == Game.Player ? Color.blue : Color.cyan, 32);
 				meshCapitalText.transform.SetParent(newCapital.provinceMesh.GameObject.transform, false);
 
