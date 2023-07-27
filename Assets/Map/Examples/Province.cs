@@ -28,7 +28,7 @@ namespace Nashet.Map.Examples
 		{
 			AllProvinces.Add(Id, this);
 			Terrain = TerrainTypes.Plains;
-			Rand.Call(() => Terrain = TerrainTypes.Mountains, 10);
+			Rand.Call(() => Terrain = TerrainTypes.Mountains, 3);
 			this.Id = Id;
 			this.name = name;
 		}
@@ -48,6 +48,11 @@ namespace Nashet.Map.Examples
 			provinceMesh.SetBorderMaterial(province2.Id, riverMaterial);
 			var border = neughbors.FirstOrDefault(x => x.Province == province2);
 			border.IsRiverBorder = true;
+		}
+
+		public void SetBorderMaterial(int id, Material material)
+		{
+			provinceMesh.SetBorderMaterial(id, material);
 		}
 
 		public override string ToString()
