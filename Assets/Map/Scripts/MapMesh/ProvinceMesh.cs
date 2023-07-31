@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Nashet.MapMeshes
 {
-	public class ProvinceMesh 
+	public class ProvinceMesh : IProvinceMesh
     {   
         public int ID { get; protected set; }
        
@@ -104,12 +104,6 @@ namespace Nashet.MapMeshes
             accu = accu / meshStructure.verticesCount;
             return accu;
         }
-
-		public void OnSecedeGraphic(Color newColor)
-		{
-			if (meshRenderer != null)
-				meshRenderer.material.color = newColor;
-		}
 
 		public static ProvinceMesh GetById(int id)
 		{

@@ -114,7 +114,7 @@ namespace Nashet.EconomicSimulation
                     province.provinceMesh = new ProvinceMesh(province.ID, mesh, borderMeshes, province.ProvinceColor, World.Get.transform,
 												LinksManager.Get.shoreMaterial);
 						
-					var label = MapTextLabel.CreateMapTextLabel(LinksManager.Get.r3DProvinceTextPrefab, province.ToString(), Color.black, province.provinceMesh.Position);
+					var label = MapTextLabel.CreateMapTextLabel(LinksManager.Get.r3DProvinceTextPrefab, province.provinceMesh.Position, province.ToString(), Color.black);
 					label.transform.SetParent(province.provinceMesh.GameObject.transform, false);
 
 				}

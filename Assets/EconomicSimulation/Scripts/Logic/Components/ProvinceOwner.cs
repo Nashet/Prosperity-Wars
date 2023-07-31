@@ -290,6 +290,7 @@ namespace Nashet.EconomicSimulation
             }
             return res;
         }
+
         public void TakeProvince(Province province, bool addModifier)
         {
             Country oldCountry = province.Country;

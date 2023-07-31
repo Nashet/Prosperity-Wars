@@ -104,6 +104,8 @@ namespace Nashet.EconomicSimulation
         private void UnityThreadLoading()
 		{
 			Game.setUnityMeshes();
+            if (Game.IndustrialStart)
+			    World.GiveExtraProvinces();
 		}
 
 		private void SetUI()

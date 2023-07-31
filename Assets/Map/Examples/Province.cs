@@ -12,7 +12,7 @@ namespace Nashet.Map.Examples
 	{
 		public enum TerrainTypes { Plains, Mountains }
 
-		static public Dictionary<int, Province> AllProvinces = new Dictionary<int, Province>();
+		static public readonly Dictionary<int, Province> AllProvinces = new Dictionary<int, Province>();
 
 		public object Country { set; get; }
 		public TerrainTypes Terrain { get; internal set; }

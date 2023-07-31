@@ -429,7 +429,26 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        private static void setStartResources()
+		public static void GiveExtraProvinces()
+		{
+			for (int i = 0; i < Options.ExtraProvinciesAmount; i++)
+			{
+				foreach (var item in AllExistingCountries())
+				{
+					if (item == World.UncolonizedLand)
+						continue;
+
+					var emptyProvince = item.Capital.AllNeighbors().FirstOrDefault(x => x.Country == World.UncolonizedLand);
+					if (emptyProvince != null)
+					{
+						item.Provinces.TakeProvince(emptyProvince, false);
+						emptyProvince.OnSecedeGraphic(item);
+					}
+				}
+			}
+		}
+
+		private static void setStartResources()
         {
             //Country.allCountries[0] is null country
             //Country.allCountries[0].Capital.setResource(Product.Wood;

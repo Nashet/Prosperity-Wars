@@ -158,7 +158,7 @@ namespace Nashet.EconomicSimulation
 
         /// <summary>
         /// Secedes province to Taker. Also kills old province owner if it was last province
-        /// Call it only from Country.TakeProvince()
+        /// Call it only from Country.Provinces.TakeProvince()
         /// </summary>        
         public void OnSecedeTo(Country taker, bool addModifier)
         {
@@ -211,7 +211,7 @@ namespace Nashet.EconomicSimulation
         public void OnSecedeGraphic(Country taker)
         {            
             ProvinceColor = taker.NationalColor.getAlmostSameColor();
-            provinceMesh.OnSecedeGraphic(getColorAccordingToMapMode(null));
+            provinceMesh.SetColor(getColorAccordingToMapMode(null));
 			UpdateBorderMaterials();
         }
 

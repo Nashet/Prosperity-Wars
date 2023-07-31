@@ -4,26 +4,26 @@ using UnityEngine;
 
 namespace Nashet.Map.GameplayControllers
 {
-	public class CameraController : MonoBehaviour
+	public class CameraController : MonoBehaviour, ICameraController
 	{
 		[SerializeField] private CameraView cameraView;
 		[SerializeField] private ProvinceSelectionController provinceSelectionController;
 
-		public void Move(float v1, float v2)
+		public void Move(float x, float y)
 		{
-			cameraView.Move(v1, v2);
+			cameraView.Move(x, y);
 		}
 
-		public void Zoom(float v)
+		public void Zoom(float zMove)
 		{
-			cameraView.Zoom(v);
+			cameraView.Zoom(zMove);
 		}
 
 		public void FocusOnPoint(Vector3 point) => cameraView.FocusOnPoint(point);
-		public void FocusOnProvince(ProvinceMesh province, bool select)
+		public void FocusOnProvince(ProvinceMesh province, bool selectProvince)
 		{
 			FocusOnPoint(province.Position);
-			if (select)
+			if (selectProvince)
 				provinceSelectionController.selectProvince(province.GameObject, province.ID);
 		}
 	}

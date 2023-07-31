@@ -36,7 +36,7 @@ namespace Nashet.Map.Examples
 			if (provinceId.HasValue)
 			{
 				selectedProvince = Province.AllProvinces[provinceId.Value];
-				Debug.LogError($"You selected {selectedProvince} province!");
+				Debug.LogError($"You selected {selectedProvince} province! Owner is {selectedProvince.Country}");
 			}
 			else
 			{

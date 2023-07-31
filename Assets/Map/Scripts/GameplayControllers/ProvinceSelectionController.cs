@@ -7,7 +7,7 @@ namespace Nashet.Map.GameplayControllers
 {
 	public delegate void OnProvinceSelected(int? provinceId);
 
-	public class ProvinceSelectionController : MonoBehaviour
+	public class ProvinceSelectionController : MonoBehaviour, IProvinceSelectionController
 	{
 		public event OnProvinceSelected ProvinceSelected; // todo remove from project
 
@@ -15,11 +15,11 @@ namespace Nashet.Map.GameplayControllers
 		[SerializeField] private Material provinceSelectionMaterial;
 
 		public bool isInSendArmyMode { get; private set; }
-		public GameObject previoslySelectedProvince;
-		public GameObject selectedProvince;
-		public ISelector provinceSelector;
+		private GameObject previoslySelectedProvince;
+		private GameObject selectedProvince;
+		private ISelector provinceSelector;
 
-		private SelectionComponent selector;		
+		private SelectionComponent selector;
 
 		private void Start()
 		{
@@ -47,7 +47,7 @@ namespace Nashet.Map.GameplayControllers
 
 				if (provinceId != null)
 				{
-					selectProvince(obj, provinceId);					
+					selectProvince(obj, provinceId);
 				}
 			}
 		}
