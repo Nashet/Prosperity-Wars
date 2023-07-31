@@ -319,16 +319,13 @@ namespace Nashet.Map.Examples
 
 			if (mapImage == null)
 			{
-				int mapSize;
-				int width;
-				//if (devMode)
-				{
-					mapSize = 20000;
-					width = 150 + Rand.Get.Next(60);
-				}
-				int amountOfProvince = mapSize / 140 + Rand.Get.Next(5);
+
+				var height = 230;
+				var width = 250 + Rand.Get.Next(60);
+
+				int amountOfProvince = height * width / 140 + Rand.Get.Next(5);
 				var map = new MapTextureGenerator();
-				mapTexture = map.generateMapImage(width, mapSize / width, amountOfProvince);
+				mapTexture = map.generateMapImage(width, height, amountOfProvince);
 			}
 			else
 			{

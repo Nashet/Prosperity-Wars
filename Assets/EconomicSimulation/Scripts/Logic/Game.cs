@@ -54,24 +54,24 @@ namespace Nashet.EconomicSimulation
 		{
 			if (mapImage == null)
 			{
-				int mapSize;
+				int height;
 				int width;
 				//#if UNITY_WEBGL
 				if (devMode)
 				{
-					mapSize = 20000;
+					height = 130;
 					width = 150 + Rand.Get.Next(60);
 				}
 				else
 				{
-					mapSize = 40000;
+					height = 160;
 					width = 250 + Rand.Get.Next(40);
 				}
 				//mapSize = 160000;
 				//width = 420;
-				int amountOfProvince = mapSize / 140 + Rand.Get.Next(5);
+				int amountOfProvince = width * height / 140 + Rand.Get.Next(5);
                // amountOfProvince = 136;
-				mapTexture = mapGenerator.generateMapImage(width, mapSize / width, amountOfProvince);
+				mapTexture = mapGenerator.generateMapImage(width, height, amountOfProvince);
 			}
 			else
 			{
