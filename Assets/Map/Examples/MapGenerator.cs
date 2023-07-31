@@ -38,14 +38,13 @@ namespace Nashet.Map.Examples
 		{
 			var mapTexture = PprepareTexture(null);
 			var mapBorders = new Rect(0f, 0f, mapTexture.getWidth() * cellMultiplier, mapTexture.getHeight() * cellMultiplier);
-			var colors = mapTexture.AllUniqueColors3();
 			var grid = new VoxelGrid(mapTexture.getWidth(), mapTexture.getHeight(), cellMultiplier * mapTexture.getWidth(), mapTexture);
 
 			meshes = new Dictionary<int, Dictionary<int, MeshStructure>>();
 
 			cameraView.Set(mapBorders);
 
-			CreateProvinces(colors, grid);
+			CreateProvinces(mapTexture, grid);
 
 			SetNeighbors();
 
@@ -76,9 +75,7 @@ namespace Nashet.Map.Examples
 						province.provinceMesh.SetBorderMaterial(neighbor.Id, (province.Country as Country).borderMaterial);
 					if (neighbor.Country != null)
 						neighbor.provinceMesh.SetBorderMaterial(province.Id, (neighbor.Country as Country).borderMaterial);
-
 				}
-
 			}
 		}
 
@@ -93,7 +90,7 @@ namespace Nashet.Map.Examples
 					GiveRandomNeighbor(item, around);
 				}
 			}
-			for (int i = 0; i < howMuchGive; i++)
+			for (int i = 0; i < 2; i++)
 				foreach (var item in Province.AllProvinces.Values)
 				{
 					if (item.Country != null)
@@ -118,10 +115,17 @@ namespace Nashet.Map.Examples
 			emptyProvince.Country = country;
 		}
 
-		private void CreateProvinces(HashSet<Color> colors, VoxelGrid grid)
+		private void CreateProvinces(MyTexture texture, VoxelGrid grid)
 		{
-			foreach (var colorId in colors)
+			int lakechance = 20;
+			var borderProvinces = texture.GetColorsFromBorder();
+			foreach (var colorId in texture.AllUniqueColors3())
 			{
+
+				var makeSea = borderProvinces.Contains(colorId) || Rand.Get.Next(lakechance) == 1;
+				if (makeSea)
+					continue;
+
 				var id = colorId.ToInt();
 				var meshStructure = grid.getMesh(id, out var borderMeshes);
 				var provinceMesh = new ProvinceMesh(id, meshStructure, borderMeshes, Color.yellow, this.transform, provinceShoreMaterial);
@@ -149,7 +153,9 @@ namespace Nashet.Map.Examples
 			{
 				foreach (var neighborId in meshes[province.Key])
 				{
-					var neighbor = Province.AllProvinces[neighborId.Key];
+					Province.AllProvinces.TryGetValue(neighborId.Key, out var neighbor);
+					if (neighbor == null)
+						continue;
 					province.Value.neughbors.Add(new Border(neighbor));
 				}
 			}
