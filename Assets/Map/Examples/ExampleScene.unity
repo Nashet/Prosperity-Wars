@@ -227,7 +227,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 988ce3b939004e74d8b457aa51e9ea9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  provinceShoreMaterial: {fileID: 2100000, guid: 646b0af1c88112846a59dc3db58564ce,
+  provinceShoreMaterial: {fileID: 2100000, guid: d160a04a1f7be1744bb883a2f7e80a36,
+    type: 2}
+  defaultProvinceBorderMaterial: {fileID: 2100000, guid: 646b0af1c88112846a59dc3db58564ce,
     type: 2}
   riverMaterial: {fileID: 2100000, guid: 52b7d70b1de7c4ce09662b77c14d9fda, type: 2}
   impassableBorderMaterial: {fileID: 2100000, guid: 31b82705b1a61f7418007b5e6341af2a,

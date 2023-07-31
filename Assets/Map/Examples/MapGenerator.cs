@@ -15,6 +15,7 @@ namespace Nashet.Map.Examples
 	{
 		public bool IsReady { get; private set; }
 		[SerializeField] Material provinceShoreMaterial;
+		[SerializeField] Material defaultProvinceBorderMaterial;
 		[SerializeField] Material riverMaterial;
 		[SerializeField] Material impassableBorderMaterial;
 		[SerializeField] Material defaultCountryBorderMaterial;
@@ -55,26 +56,46 @@ namespace Nashet.Map.Examples
 
 			CreateCountries();
 			GiveExtraProvinces();
-			SetCountryBordersMaterials();
+			UpdateCountryBordersMaterials();
 			return mapBorders;
 		}
 
-		private void SetCountryBordersMaterials()
+		private void UpdateCountryBordersMaterials()
 		{
 			foreach (var province in Province.AllProvinces.Values)
 			{
 				foreach (var border in province.neughbors)
 				{
 					var neighbor = border.Province;
-					if (province.Country == neighbor.Country || !border.IsPassable || border.IsRiverBorder)
+					if (!border.IsPassable || border.IsRiverBorder)
 					{
 						continue;
 					}
 
-					if (province.Country != null)
+					if (province.Country == neighbor.Country)
+					{
+						province.provinceMesh.SetBorderMaterial(neighbor.Id, defaultProvinceBorderMaterial);
+						neighbor.provinceMesh.SetBorderMaterial(province.Id, defaultProvinceBorderMaterial);
+						continue;
+					}
+
+					if (province.Country == null)
+					{
+						province.provinceMesh.SetBorderMaterial(neighbor.Id, defaultProvinceBorderMaterial);
+					}
+					else
+					{
 						province.provinceMesh.SetBorderMaterial(neighbor.Id, (province.Country as Country).borderMaterial);
-					if (neighbor.Country != null)
+					}
+
+					if (neighbor.Country == null)
+					{
+						neighbor.provinceMesh.SetBorderMaterial(province.Id, defaultProvinceBorderMaterial);
+					}
+					else
+					{
 						neighbor.provinceMesh.SetBorderMaterial(province.Id, (neighbor.Country as Country).borderMaterial);
+					}
 				}
 			}
 		}
