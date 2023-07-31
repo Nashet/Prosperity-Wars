@@ -3,9 +3,9 @@ using Nashet.MeshData;
 using Nashet.NameGeneration;
 using Nashet.Map.Utils;
 using Nashet.MapMeshes;
+using Nashet.Map.GameplayControllers;
 using System.Collections.Generic;
 using UnityEngine;
-using Nashet.Map.GameplayView;
 using QPathFinder;
 using System.Linq;
 
@@ -22,7 +22,7 @@ namespace Nashet.Map.Examples
 
 		[SerializeField] GameObject r3DProvinceTextPrefab;
 		[SerializeField] GameObject r3DCountryTextPrefab;
-		[SerializeField] CameraView cameraView;
+		[SerializeField] CameraController cameraController;
 
 		private float cellMultiplier = 1f;
 		private int amountOFCountries = 19;
@@ -43,7 +43,7 @@ namespace Nashet.Map.Examples
 
 			meshes = new Dictionary<int, Dictionary<int, MeshStructure>>();
 
-			cameraView.Set(mapBorders);
+			cameraController.Initialize(mapBorders);
 
 			CreateProvinces(mapTexture, grid);
 

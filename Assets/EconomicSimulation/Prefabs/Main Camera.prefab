@@ -118,9 +118,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fogOfWarDensity: 0.6
-  cameraView: {fileID: 802293330663342975}
-  provinceSelectionHelper: {fileID: 6206722624749663044}
   cameraController: {fileID: 2187129235353547565}
+  provinceSelectionHelper: {fileID: 6206722624749663044}
 --- !u!114 &2415366579164586920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -190,8 +189,6 @@ MonoBehaviour:
   cameraController: {fileID: 2187129235353547565}
   provinceSelectionMaterial: {fileID: 2100000, guid: c25b338ab39471d4582add0f324ced07,
     type: 2}
-  previoslySelectedProvince: {fileID: 0}
-  selectedProvince: {fileID: 0}
 --- !u!114 &2187129235353547565
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,7 +201,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcf275d9182822246a05a6dce2780687, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraView: {fileID: 802293330663342975}
   provinceSelectionController: {fileID: 2359403229268368467}
 --- !u!114 &802293330663342975
 MonoBehaviour:
@@ -227,6 +223,7 @@ MonoBehaviour:
     width: 0
     height: 0
   allowed: 0
+  cameraController: {fileID: 2187129235353547565}
 --- !u!114 &6206722624749663044
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -173,8 +173,6 @@ MonoBehaviour:
     nodeSize: 0.5
     heightFromTheGround: 0
     groundColliderLayerName: Default
-    nodes: []
-    paths: []
 --- !u!1 &398224085 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2415366579164586932, guid: bf0dbea1d2c6f03458a2e20531d4d2c7,
@@ -240,7 +238,7 @@ MonoBehaviour:
     type: 3}
   r3DCountryTextPrefab: {fileID: 1272796945191490, guid: 3f4c145e62280964ab3a83009f7ba554,
     type: 3}
-  cameraView: {fileID: 906364350}
+  cameraController: {fileID: 1966831709}
 --- !u!1 &589544137
 GameObject:
   m_ObjectHideFlags: 0
@@ -386,18 +384,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0e373e8114111ba4996381efcd920ad9, type: 3}
---- !u!114 &906364350 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 802293330663342975, guid: bf0dbea1d2c6f03458a2e20531d4d2c7,
-    type: 3}
-  m_PrefabInstance: {fileID: 1966831708}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 398224085}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13fd656757bebdf46b5c4eb81a6a3b3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &906364354 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2359403229268368467, guid: bf0dbea1d2c6f03458a2e20531d4d2c7,
@@ -694,6 +680,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 802293330663342975, guid: bf0dbea1d2c6f03458a2e20531d4d2c7,
+        type: 3}
+      propertyPath: cameraController
+      value: 
+      objectReference: {fileID: 1966831709}
     - target: {fileID: 2415366579164586926, guid: bf0dbea1d2c6f03458a2e20531d4d2c7,
         type: 3}
       propertyPath: m_RootOrder
@@ -762,3 +753,15 @@ PrefabInstance:
     - {fileID: 6206722624749663044, guid: bf0dbea1d2c6f03458a2e20531d4d2c7, type: 3}
     - {fileID: 3649891456943614456, guid: bf0dbea1d2c6f03458a2e20531d4d2c7, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: bf0dbea1d2c6f03458a2e20531d4d2c7, type: 3}
+--- !u!114 &1966831709 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2187129235353547565, guid: bf0dbea1d2c6f03458a2e20531d4d2c7,
+    type: 3}
+  m_PrefabInstance: {fileID: 1966831708}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 398224085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcf275d9182822246a05a6dce2780687, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -1,28 +1,36 @@
-﻿using UnityEngine;
+﻿using Nashet.Map.GameplayControllers;
+using UnityEngine;
 
 namespace Nashet.Map.GameplayView
 {
 	public class CameraView : MonoBehaviour
 	{
-		[SerializeField]
-		private float xzCameraSpeed = 2f;
+		[SerializeField] private float xzCameraSpeed = 2f;
 
-		[SerializeField]
-		private float yCameraSpeed = 55f;
+		[SerializeField] private float yCameraSpeed = 55f;
 
-		[SerializeField]
-		private Rect mapBorders;
+		[SerializeField] private Rect mapBorders;
 
-		[SerializeField]
-		private bool allowed;
+		[SerializeField] private bool allowed;
+		[SerializeField] private CameraController cameraController;
 		private float focusHeight;
 
-		private void Start()
+		private void Awake()
 		{
 			focusHeight = transform.position.z;
+			cameraController.CameraMoved += Move;
+			cameraController.ZoomHappened += Zoom;
+			cameraController.Initialized += Set;
+			cameraController.FocusOnPointHappened += FocusOnPoint;
 		}
 
-		public void Zoom(float zMove)
+		private void Set(Rect mapBorders)
+		{
+			this.mapBorders = mapBorders;
+			allowed = true;
+		}
+
+		private void Zoom(float zMove)
 		{
 			var position = transform.position;
 			zMove = zMove * yCameraSpeed;
@@ -32,13 +40,7 @@ namespace Nashet.Map.GameplayView
 			transform.Translate(0f, 0f, zMove, Space.World);
 		}
 
-		public void Set(Rect mapBorders)
-		{
-			this.mapBorders = mapBorders;
-			allowed = true;
-		}
-
-		public void Move(float xMove, float yMove)
+		private void Move(float xMove, float yMove)
 		{
 			if (!allowed)
 				return; // map isnt done yet
@@ -57,13 +59,7 @@ namespace Nashet.Map.GameplayView
 			transform.Translate(xMove * xzCameraSpeed, yMove * xzCameraSpeed, 0f, Space.World);
 		}
 
-		private void FixedUpdate()
-		{
-			if (!allowed)
-				return; // map isnt done yet
-		}
-
-		public void FocusOnPoint(Vector3 point)
+		private void FocusOnPoint(Vector3 point)
 		{
 			gameObject.transform.position = new Vector3(point.x, point.y, focusHeight);
 		}

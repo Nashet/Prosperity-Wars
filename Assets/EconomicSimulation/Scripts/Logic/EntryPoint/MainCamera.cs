@@ -1,6 +1,5 @@
 ﻿using Nashet.GameplayControllers;
 using Nashet.Map.GameplayControllers;
-using Nashet.Map.GameplayView;
 using Nashet.Map.Utils;
 using Nashet.MapMeshes;
 using Nashet.UISystem;
@@ -18,10 +17,8 @@ namespace Nashet.EconomicSimulation
 	public class MainCamera : MonoBehaviour
     {
         [SerializeField] protected float fogOfWarDensity;
-        [SerializeField] private CameraView cameraView;
-        [SerializeField] ProvinceSelectionHelper provinceSelectionHelper;
         [SerializeField] public CameraController cameraController;
-
+        [SerializeField] ProvinceSelectionHelper provinceSelectionHelper;
 
 		public static TopPanel topPanel;
         public static ProvincePanel provincePanel;
@@ -116,7 +113,7 @@ namespace Nashet.EconomicSimulation
 			bottomPanel.Show();
 			gameLoadingIsFinished = true;
 			SelectionComponent.ArmiesGetter = (int arg) => Game.Player.AllArmiesColliders();
-			cameraView.Set(game.getMapBorders());
+			cameraController.Initialize(game.getMapBorders());
 		}
 
 		// Update is called once per frame
