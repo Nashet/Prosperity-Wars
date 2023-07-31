@@ -157,10 +157,9 @@ namespace Nashet.EconomicSimulation
 			{
 				//var node = province.GameObject.GetComponent<Node>();
 				//node.Set(province, province.AllNeighbors());
-				var node = new Node(province.provinceMesh.Position);
+				var node = new Node(province.provinceMesh.Position, province);
 				PathFinder.instance.graphData.nodes.Add(node);
 				province.Node = node;
-				node.Province = province;
 			}
 
 			PathFinder.instance.graphData.ReGenerateIDs();

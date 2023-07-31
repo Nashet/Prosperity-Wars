@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Nashet.MarchingSquares
 {
     [SelectionBase]
-    public class VoxelGrid
+    public class VoxelGrid : IVoxelGrid
     {
         private readonly int width, height;
 

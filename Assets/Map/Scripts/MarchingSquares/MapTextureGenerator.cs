@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Nashet.MarchingSquares
 { 
-	public class MapTextureGenerator
+	public class MapTextureGenerator : IMapTextureGenerator
     {
         public MyTexture generateMapImage(int width, int heght, int amountOfProvince)
         {

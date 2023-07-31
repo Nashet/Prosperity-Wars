@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Nashet.MarchingSquares
 {
-	public class MyTexture
+	public class MyTexture : IMyTexture
     {
         private readonly int width, height;
         private readonly Color[] map;
@@ -37,7 +37,7 @@ namespace Nashet.MarchingSquares
         {
             return map[Rand.Get.Next((width * height) - 1)];
         }
-        public List<Color> AllUniqueColors()
+        public List<Color> AllUniqueColorsVictoriaFormat()
         {
             var res = new List<Color>();
             //ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();

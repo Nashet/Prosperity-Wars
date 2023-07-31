@@ -386,7 +386,7 @@ namespace QPathFinder
 
         void AddNode(Vector3 position, int addIndex = -1)
         {
-            Node nodeAdded = new Node( position );
+            Node nodeAdded = new Node( position, null );
             if (addIndex == -1)
                 script.graphData.nodes.Add( nodeAdded );
             else

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections;
+
 using UnityEngine;
 
 namespace Nashet.Map.Utils
@@ -37,7 +34,6 @@ namespace Nashet.Map.Utils
                 {
                     RemoveMaterial(item);
                 }
-
             }
         }
 
@@ -62,13 +58,13 @@ namespace Nashet.Map.Utils
             }
         }
 
-
         protected void RemoveMaterial(MeshRenderer renderer)
         {
             Material[] newArray = new Material[1];
             newArray[0] = renderer.material;
             renderer.materials = newArray;
         }
+
         protected void AddMaterial(MeshRenderer renderer)
         {
             Material[] rt = new Material[2];
@@ -87,6 +83,7 @@ namespace Nashet.Map.Utils
             added.selectionTime = selectionTime;
             return added;
         }
+
         protected IEnumerator DelayedDeselection(GameObject someObject)
         {
             yield return new WaitForSeconds(selectionTime);

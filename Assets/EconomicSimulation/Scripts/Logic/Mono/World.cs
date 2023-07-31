@@ -343,7 +343,7 @@ namespace Nashet.EconomicSimulation
             }
             else
             { // Victoria 2 format
-                var uniqueColors = mapTexture.AllUniqueColors();
+                var uniqueColors = mapTexture.AllUniqueColorsVictoriaFormat();
 
                 for (int counter = 0; counter < uniqueColors.Count; counter++)
                 {

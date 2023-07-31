@@ -10,7 +10,7 @@ namespace Nashet.Map.GameplayView
 		private Vector2 prevDist = new Vector2(0, 0);
 		private Vector2 curDist = new Vector2(0, 0);
 
-		void Update()
+		private void Update()
 		{
 			CheckForMultiTouch();
 		}
