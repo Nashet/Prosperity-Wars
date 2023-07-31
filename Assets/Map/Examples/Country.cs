@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Nashet.Map.Utils;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Nashet.Map.Examples
@@ -8,15 +9,16 @@ namespace Nashet.Map.Examples
 		static public readonly HashSet<Country> AllCountries = new HashSet<Country>();
 
 		public Color NationalColor { get; protected set; }
-		private Material borderMaterial;
+		public Material borderMaterial;
 		private string name;
 		public Province Capital;
 
-		public Country(Color nationalColor, string name)
+		public Country(Color nationalColor, string name, Material defaultCountryBorderMaterial)
 		{
-			NationalColor = nationalColor;
-			this.name = name;
 			AllCountries.Add(this);
+			this.name = name;
+			NationalColor = nationalColor;
+			borderMaterial = new Material(defaultCountryBorderMaterial) { color = NationalColor.getNegative() };
 		}
 
 		public override string ToString()

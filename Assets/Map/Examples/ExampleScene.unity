@@ -232,6 +232,8 @@ MonoBehaviour:
   riverMaterial: {fileID: 2100000, guid: 52b7d70b1de7c4ce09662b77c14d9fda, type: 2}
   impassableBorderMaterial: {fileID: 2100000, guid: 31b82705b1a61f7418007b5e6341af2a,
     type: 2}
+  defaultCountryBorderMaterial: {fileID: 2100000, guid: 52cae44ef289d54489ba5aa35d7f331b,
+    type: 2}
   r3DProvinceTextPrefab: {fileID: 1000013302798520, guid: ef9997a1e03c0eb4bb7d2c1da0a6d3ca,
     type: 3}
   r3DCountryTextPrefab: {fileID: 1272796945191490, guid: 3f4c145e62280964ab3a83009f7ba554,

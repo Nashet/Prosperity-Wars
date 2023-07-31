@@ -17,12 +17,14 @@ namespace Nashet.Map.Examples
 		[SerializeField] Material provinceShoreMaterial;
 		[SerializeField] Material riverMaterial;
 		[SerializeField] Material impassableBorderMaterial;
+		[SerializeField] Material defaultCountryBorderMaterial;
+
 		[SerializeField] GameObject r3DProvinceTextPrefab;
 		[SerializeField] GameObject r3DCountryTextPrefab;
 		[SerializeField] CameraView cameraView;
 
 		private float cellMultiplier = 1f;
-		private int amountOFCountries = 9;
+		private int amountOFCountries = 19;
 		private int riverLenght = 16;
 		private int maxRiversAmount = 8;
 		private Dictionary<int, Dictionary<int, MeshStructure>> meshes;
@@ -54,7 +56,30 @@ namespace Nashet.Map.Examples
 
 			CreateCountries();
 			GiveExtraProvinces();
+			SetCountryBordersMaterials();
 			return mapBorders;
+		}
+
+		private void SetCountryBordersMaterials()
+		{
+			foreach (var province in Province.AllProvinces.Values)
+			{
+				foreach (var border in province.neughbors)
+				{
+					var neighbor = border.Province;
+					if (province.Country == neighbor.Country || !border.IsPassable || border.IsRiverBorder)
+					{
+						continue;
+					}
+
+					if (province.Country != null)
+						province.provinceMesh.SetBorderMaterial(neighbor.Id, (province.Country as Country).borderMaterial);
+					if (neighbor.Country != null)
+						neighbor.provinceMesh.SetBorderMaterial(province.Id, (neighbor.Country as Country).borderMaterial);
+
+				}
+
+			}
 		}
 
 		public static void GiveExtraProvinces()
@@ -151,7 +176,7 @@ namespace Nashet.Map.Examples
 			{
 				var name = CountryNameGenerator.generateCountryName();
 				var color = ColorExtensions.getRandomColor();
-				var country = new Country(color, name);
+				var country = new Country(color, name, defaultCountryBorderMaterial);
 				//countriesLookup.Add(world.PackEntity(entity));
 				var random = Random.Range(0, Province.AllProvinces.Count - 1);
 				var capital = Province.AllProvinces.ElementAt(random);
