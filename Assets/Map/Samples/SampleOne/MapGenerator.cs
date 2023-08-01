@@ -57,6 +57,7 @@ namespace Nashet.Map.Examples
 			CreateCountries();
 			GiveExtraProvinces();
 			UpdateCountryBordersMaterials();
+
 			return mapBorders;
 		}
 
@@ -207,6 +208,7 @@ namespace Nashet.Map.Examples
 				var capital = Province.AllProvinces.ElementAt(random);
 				var meshCapitalText = MapTextLabel.CreateMapTextLabel(r3DCountryTextPrefab, capital.Value.Position,
 					name, Color.cyan, 32);
+				meshCapitalText.transform.SetParent(this.gameObject.transform);
 				capital.Value.Country = country;
 				country.Capital = capital.Value;
 				AnnexProvince(country, capital.Value);
@@ -339,8 +341,14 @@ namespace Nashet.Map.Examples
 			if (mapImage == null)
 			{
 
-				var height = 230;
-				var width = 250 + Rand.Get.Next(60);
+				var height = 130;
+				var width = 150 + Rand.Get.Next(30);
+
+				height = 230;
+				width = 250 + Rand.Get.Next(60);
+
+				//height = 430;
+				//width = 450 + Rand.Get.Next(60);
 
 				int amountOfProvince = height * width / 140 + Rand.Get.Next(5);
 				var map = new MapTextureGenerator();
