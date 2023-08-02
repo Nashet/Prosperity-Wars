@@ -17,7 +17,7 @@ namespace Nashet.MapMeshes
 			lods[0] = new LOD(0.25F, renderers);
 
 			var _position = position;
-			_position.z -= 0.003f;
+			_position.z -= 0.12f; //Overwise it would be covered by province border quad
 			txtMeshTransform.position = _position;
 
 			TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();

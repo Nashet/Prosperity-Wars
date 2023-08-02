@@ -20,7 +20,7 @@ namespace Nashet.Map.Examples
 			{
 				return;
 			}
-			textMesh.text = $"You selected {selectedProvince} province! Owner is {selectedProvince.Country??"No one"}";
+			textMesh.text = $"You selected {selectedProvince} province! Owner is {selectedProvince.Country ?? "No one"}";
 		}
 	}
 }

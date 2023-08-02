@@ -2,7 +2,7 @@
   "name": "com.nashet.map",
   "version": "0.1.0",
   "displayName": "Vic 2 style map generator",
-  "description": "Can generate random maps or load map from png file. Includes camera control, patch finder, map clicks handler and example with rivers and country borders", 
+  "description": "Can generate random maps or load map from png file. Includes camera control, patch finder, province name generation, map clicks handler and example with rivers and country borders", 
   "licensesUrl": "https://example.com/licensing.html",
   "dependencies": { },
   "keywords": [
