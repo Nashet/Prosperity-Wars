@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Text;
 using Nashet.EconomicSimulation.Reforms;
+using Nashet.GameplayControllers;
+using Nashet.Map.GameplayControllers;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
@@ -21,7 +23,10 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private Button buildButton;
 
-        private ProductionType selectedFactoryType;
+		[SerializeField]
+		private ProvinceSelectionHelper provinceSelectionHelper;
+
+		private ProductionType selectedFactoryType;
         private StringBuilder sb = new StringBuilder();
 
         //Province province;
@@ -32,9 +37,22 @@ namespace Nashet.EconomicSimulation
             GetComponent<RectTransform>().anchoredPosition = new Vector2(50f, -340f);
             buildButton.interactable = false;
             Hide();
-        }
+			provinceSelectionHelper.ProvinceSelected += ProvinceSelectedhandler;
 
-        public override void Show()
+		}
+
+		private void OnDestroy()
+		{
+			provinceSelectionHelper.ProvinceSelected -= ProvinceSelectedhandler;
+		}
+
+		private void ProvinceSelectedhandler(Province province)
+		{
+			if (isActiveAndEnabled)
+                Refresh();
+		}
+
+		public override void Show()
         {
             selectedFactoryType = null; // changed province
             base.Show();
@@ -49,7 +67,7 @@ namespace Nashet.EconomicSimulation
                 MoneyView cost = selectedFactoryType.GetBuildCost(Game.Player.market);
                 if (Game.Player.CanPay(cost))
                 {
-                    factory = Game.selectedProvince.BuildFactory(Game.Player, selectedFactoryType, cost);
+                    factory = provinceSelectionHelper.selectedProvince.BuildFactory(Game.Player, selectedFactoryType, cost);
                     Game.Player.PayWithoutRecord(factory, cost, Register.Account.Construction);
                     buildSomething = true;
                     MainCamera.factoryPanel.show(factory);
@@ -64,7 +82,7 @@ namespace Nashet.EconomicSimulation
                 Storage needFood = resourceToBuild.GetFirstSubstituteStorage(Product.Grain);
                 if (Game.Player.countryStorageSet.has(needFood))
                 {
-                    factory = Game.selectedProvince.BuildFactory(Game.Player, selectedFactoryType, Game.Player.market.getCost(resourceToBuild));
+                    factory = provinceSelectionHelper.selectedProvince.BuildFactory(Game.Player, selectedFactoryType, Game.Player.market.getCost(resourceToBuild));
                     Game.Player.countryStorageSet.Subtract(needFood);
                     buildSomething = true;
                     MainCamera.factoryPanel.show(factory);
@@ -88,7 +106,7 @@ namespace Nashet.EconomicSimulation
 
         public override void Refresh()
         {
-            if (Game.previoslySelectedProvince != Game.selectedProvince) // its ok
+            if (provinceSelectionHelper.ProvinceChangedFromLastTick)
                 selectFactoryType(null);
 
             table.Refresh();
@@ -112,8 +130,8 @@ namespace Nashet.EconomicSimulation
                 descriptionText.text = sb.ToString();
 
                 // fix that duplicate:
-                buildButton.interactable = selectedFactoryType.conditionsBuildThis.isAllTrue(Game.Player, Game.selectedProvince, out buildButton.GetComponent<ToolTipHandler>().text);
-                if (!selectedFactoryType.canBuildNewFactory(Game.selectedProvince, Game.Player))
+                buildButton.interactable = selectedFactoryType.conditionsBuildThis.isAllTrue(Game.Player, provinceSelectionHelper.selectedProvince, out buildButton.GetComponent<ToolTipHandler>().text);
+                if (!selectedFactoryType.canBuildNewFactory(provinceSelectionHelper.selectedProvince, Game.Player))
                     buildButton.interactable = false;
                 if (buildButton.interactable)
                     buildButton.GetComponentInChildren<Text>().text = "Build " + selectedFactoryType;
@@ -122,9 +140,9 @@ namespace Nashet.EconomicSimulation
             {
                 buildButton.interactable = false;
                 buildButton.GetComponentInChildren<Text>().text = "Select building";
-                if (Game.selectedProvince == null)
+                if (provinceSelectionHelper.selectedProvince == null)
                     descriptionText.text = "Select province where to build";
-                else if (ProductionType.getAllInventedFactories(Game.Player).Where(x => x.canBuildNewFactory(Game.selectedProvince, Game.Player)).Count() == 0)
+                else if (ProductionType.getAllInventedFactories(Game.Player).Where(x => x.canBuildNewFactory(provinceSelectionHelper.selectedProvince, Game.Player)).Count() == 0)
                     descriptionText.text = "Nothing to build now";
                 else
                     descriptionText.text = "Select building from left";

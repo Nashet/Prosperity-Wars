@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Nashet.EconomicSimulation.Reforms;
+using Nashet.Map.Utils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
 
@@ -42,7 +43,7 @@ namespace Nashet.EconomicSimulation
             else
             {
                 Rand.Call(() => checkProfit(), 10);// changes production type if needed
-                if (Rand.Chance(Options.ArtisansChangeProductionRate)) // check if it's best production type so far
+                if (RandomCall.Chance(Options.ArtisansChangeProductionRate)) // check if it's best production type so far
                     changeProductionType();
                 if (artisansProduction != null)
                 {

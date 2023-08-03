@@ -36,7 +36,7 @@ namespace Nashet.EconomicSimulation
 
         public void Learn()
         {
-            if (Rand.Chance(HundredProcent.Copy().Subtract(this)))
+            if (RandomCall.Chance(HundredProcent.Copy().Subtract(this)))
                 Add(Options.PopEducationGrowthRate);
         }
 

@@ -47,14 +47,14 @@ namespace Nashet.Conditions
         [Obsolete("use isAllTrue(object firstObject, object secondObject) instead", false)]
         public bool isAllTrue(object forWhom, out string description)
         {
-            throw new DontUseThatMethod();
+            throw new DontUseThatMethodException();
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("use isAllTrue(object firstObject, object secondObject) instead", false)]
         public bool isAllTrue(object forWhom)
         {
-            throw new DontUseThatMethod();
+            throw new DontUseThatMethodException();
         }
 
         /// <summary>Return false if any of conditions is false, supports two objects, also makes description</summary>

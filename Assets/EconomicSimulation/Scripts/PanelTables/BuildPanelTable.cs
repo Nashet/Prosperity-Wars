@@ -1,19 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Nashet.EconomicSimulation.Reforms;
+using Nashet.GameplayControllers;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
     public class BuildPanelTable : UITableNew<ProductionType>
     {
-        protected override IEnumerable<ProductionType> ContentSelector()
+		[SerializeField]
+		private ProvinceSelectionHelper provinceSelectionHelper;
+		protected override IEnumerable<ProductionType> ContentSelector()
         {
-            if (Game.selectedProvince == null)
+            if (provinceSelectionHelper.selectedProvince == null)
                 return Enumerable.Empty<ProductionType>();
             else
-                return ProductionType.getAllInventedFactories(Game.Player).Where(x => x.canBuildNewFactory(Game.selectedProvince, Game.Player));
+                return ProductionType.getAllInventedFactories(Game.Player).Where(x => x.canBuildNewFactory(provinceSelectionHelper.selectedProvince, Game.Player));
         }
 
         protected override void AddRow(ProductionType factoryType, int number)
@@ -38,7 +42,7 @@ namespace Nashet.EconomicSimulation
             if (Game.Player.economy == Economy.PlannedEconomy)
                 AddCell("unknown", factoryType);
             else
-                AddCell(factoryType.GetPossibleMargin(Game.selectedProvince).ToString(), factoryType);
+                AddCell(factoryType.GetPossibleMargin(provinceSelectionHelper.selectedProvince).ToString(), factoryType);
         }
 
         protected override void AddHeader()

@@ -290,17 +290,17 @@ namespace Nashet.EconomicSimulation
             }
             return res;
         }
+
         public void TakeProvince(Province province, bool addModifier)
         {
             Country oldCountry = province.Country;
 
             province.Country.Provinces.ownedProvinces.Remove(province);
             ownedProvinces.Add(province);
-            province.OnSecedeTo(owner, addModifier);
-            province.OnSecedeGraphic(owner);
+            province.OnSecedeTo(owner, addModifier);			
 
-            //kill country or move capital
-            if (oldCountry.Provinces.Count == 0)
+			//kill country or move capital
+			if (oldCountry.Provinces.Count == 0)
                 oldCountry.OnKillCountry(owner);
             else if (province == oldCountry.Capital)
             {
@@ -328,5 +328,5 @@ namespace Nashet.EconomicSimulation
                 result += province.AllPops.Where(x => x.Type == popType).Sum(x => x.population.Get());
             return result;
         }
-    }
+	}
 }

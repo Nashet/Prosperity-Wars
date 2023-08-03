@@ -1,4 +1,5 @@
-﻿using Assets.EconomicSimulation.Scripts.Logic.Map;
+﻿using Nashet.Map.Utils;
+using Nashet.MapMeshes;
 using Nashet.MarchingSquares;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
@@ -15,7 +16,7 @@ namespace Nashet.EconomicSimulation
 	/// </summary>
 	public class Game : ThreadedJob
     {
-        public static bool devMode = true;//false;
+        public static bool devMode = false;//false;
         private static bool surrended = devMode;
         public static bool logInvestments = false;
         public static bool logMarket = false;
@@ -24,14 +25,14 @@ namespace Nashet.EconomicSimulation
         private static MyTexture mapTexture;
 
         public static Country Player { get; set; }
-
-        public static Province selectedProvince;
-        public static Province previoslySelectedProvince;
+        
         public static List<Province> provincesToRedrawArmies = new List<Province>();
-        public static List<Army> selectedArmies = new List<Army>();
-        public static List<Province> playerVisibleProvinces = new List<Province>();
-        public static bool isInSendArmyMode { get; private set; }
-        public static Action<bool> OnIsInSendArmyModeChanged;
+		public static List<Army> selectedArmies = new List<Army>();
+		public static List<Province> playerVisibleProvinces = new List<Province>();
+		public static bool isInSendArmyMode { get; private set; }
+
+
+		public static Action<bool> OnIsInSendArmyModeChanged;
     
         private static VoxelGrid grid;
         private readonly Rect mapBorders;
@@ -39,7 +40,7 @@ namespace Nashet.EconomicSimulation
         public static bool DrawFogOfWar { get; internal set; }
         public static bool IndustrialStart { get; internal set; }
         public static MapModes MapMode { get; internal set; }
-        private MapTextureGenerator map = new MapTextureGenerator();
+        private MapTextureGenerator mapGenerator = new MapTextureGenerator();
 
         public Game(Texture2D mapImage)
 		{
@@ -53,22 +54,24 @@ namespace Nashet.EconomicSimulation
 		{
 			if (mapImage == null)
 			{
-				int mapSize;
+				int height;
 				int width;
 				//#if UNITY_WEBGL
 				if (devMode)
 				{
-					mapSize = 20000;
+					height = 130;
 					width = 150 + Rand.Get.Next(60);
 				}
 				else
 				{
-					mapSize = 40000;
+					height = 160;
 					width = 250 + Rand.Get.Next(40);
 				}
 				//mapSize = 160000;
 				//width = 420;
-				mapTexture = map.generateMapImage(mapSize, width);
+				int amountOfProvince = width * height / 140 + Rand.Get.Next(5);
+               // amountOfProvince = 136;
+				mapTexture = mapGenerator.generateMapImage(width, height, amountOfProvince);
 			}
 			else
 			{
@@ -104,24 +107,33 @@ namespace Nashet.EconomicSimulation
 
 			foreach (var province in World.AllProvinces)
             {
-                var mesh = grid.getMesh(province.ID, out var borders);
+                var mesh = grid.getMesh(province.ID, out var borderMeshes);
+
+				//if (!IsForDeletion)
+				{
+                    province.provinceMesh = new ProvinceMesh(province.ID, mesh, borderMeshes, province.ProvinceColor, World.Get.transform,
+												LinksManager.Get.shoreMaterial);
+						
+					var label = MapTextLabel.CreateMapTextLabel(LinksManager.Get.r3DProvinceTextPrefab, province.provinceMesh.Position, province.ToString(), Color.black);
+					label.transform.SetParent(province.provinceMesh.GameObject.transform, false);
+
+				}
+				province.SetNeighbors(mesh, borderMeshes);
 
 				
-				province.createMeshAndBorders(mesh, borders);
 				//World.AllSeaProvinces.PerformAction(x =>
-			}
+			}           
 
-			// create provinces
-			// create borders
-			// set rivers
-
-			Country.setMeshesAndMaterials();
+			
+            Country.setMaterial();
 
             //todo put it in some other file. World?
 			AddRivers();
-
+            foreach (var province in World.AllProvinces)
+            {
+                province.SetBorderMaterials();
+            }
 			SetPatchFinding();
-
 			// Annex all countries to P)layer
 			//foreach (var item in World.getAllExistingCountries().Where(x => x != Game.Player))
 			//{
@@ -144,11 +156,9 @@ namespace Nashet.EconomicSimulation
 			{
 				//var node = province.GameObject.GetComponent<Node>();
 				//node.Set(province, province.AllNeighbors());
-				var node = new Node(province.Position);
+				var node = new Node(province.provinceMesh.Position, province);
 				PathFinder.instance.graphData.nodes.Add(node);
 				province.Node = node;
-				province.SetBorderMaterials();
-				node.Province = province;
 			}
 
 			PathFinder.instance.graphData.ReGenerateIDs();
@@ -184,16 +194,19 @@ namespace Nashet.EconomicSimulation
 
 		private static void AddRiverBorder(Province beach1, Province beach2)
 		{
+            var logRivers = false;
             if (beach1.Terrain == Province.TerrainTypes.Mountains && beach2.Terrain == Province.TerrainTypes.Mountains)
             {
-                Debug.Log($"----river stoped because of mountain");
+                if (logRivers)
+                    Debug.Log($"----river stoped because of mountain");
 				return; 
             }
 
 			var chanceToContinue = Rand.Get.Next(Options.RiverLenght);
             if (chanceToContinue == 1)
 			{
-                Debug.Log($"----river stoped because its long enough");
+				if (logRivers)
+					Debug.Log($"----river stoped because its long enough");
 				return;
 			};
 
@@ -232,8 +245,8 @@ namespace Nashet.EconomicSimulation
                     }
                 }
 			}
-
-			Debug.Log($"{beach1}, {beach2}");
+			if (logRivers)
+				Debug.Log($"{beach1}, {beach2}");
             beach1.AddRiverBorder( beach2);
 			beach2.AddRiverBorder(beach1);
 
@@ -241,7 +254,8 @@ namespace Nashet.EconomicSimulation
 
 			if (beach3 == null)
 			{
-				Debug.Log($"----river stoped because cant find beach3");
+				if (logRivers)
+					Debug.Log($"----river stoped because cant find beach3");
 				return;
 			};
 
@@ -286,21 +300,6 @@ namespace Nashet.EconomicSimulation
         public enum MapModes
         {
             Political, Cultures, Cores, Resources, PopulationChange, PopulationDensity, Prosperity
-        }
-
-        //case 0: //political mode
-        //    case 1: //culture mode
-        //    case 2: //cores mode
-        //    case 3: //resource mode
-        //    case 4: //population change mode
-        //    case 5: //population density mode
-        //    case 6: //prosperity map
-
-
-        public static void redrawMapAccordingToMapMode()
-        {
-            foreach (var item in World.AllProvinces)
-                item.SetColorAccordingToMapMode();
         }
 
         public static bool isPlayerSurrended()

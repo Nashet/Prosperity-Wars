@@ -1,4 +1,5 @@
 ﻿using Nashet.EconomicSimulation.Reforms;
+using Nashet.Map.Utils;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
@@ -36,7 +37,7 @@ namespace Nashet.EconomicSimulation
             Country.Politics.RegisterMovement(this);
             targetReformType = reform;
             targetReformValue = goal;
-            Flag = Nashet.Flag.Rebels;
+            Flag = LinksManager.Get.rebelsFlag;
         }
 
         public static void join(PopUnit pop)
@@ -208,7 +209,7 @@ namespace Nashet.EconomicSimulation
             var separatists = getGoal() as Separatism.Goal;
             separatists.separatismTarget.onSeparatismWon(Country);
             if (!Country.isAI())//separatists.C
-                MessageSystem.Instance.NewMessage("", "Separatists won revolution - " + separatists.separatismTarget.FullName, "hmm", false, separatists.separatismTarget.Capital.Position);
+                MessageSystem.Instance.NewMessage("", "Separatists won revolution - " + separatists.separatismTarget.FullName, "hmm", false, separatists.separatismTarget.Capital.provinceMesh.Position);
         }
         public void onRevolutionWon(bool setReform)
         {
@@ -224,7 +225,7 @@ namespace Nashet.EconomicSimulation
                 {
                     targetReformType.SetValue(getGoal());//to avoid recursion            
                     if (!Country.isAI())
-                        MessageSystem.Instance.NewMessage("Rebels won", "Now you have " + targetReformValue, "Ok", false, Game.Player.Capital.Position);
+                        MessageSystem.Instance.NewMessage("Rebels won", "Now you have " + targetReformValue, "Ok", false, Game.Player.Capital.provinceMesh.Position);
                 }
 
             }
@@ -312,7 +313,7 @@ namespace Nashet.EconomicSimulation
         {
             //revolt
             if (Country == Game.Player && !Game.Player.isAI())
-                MessageSystem.Instance.NewMessage("Revolution is on", "People rebelled demanding " + targetReformValue + "\n\nTheir army is moving to our capital", "Ok", false, Game.Player.Capital.Position);
+                MessageSystem.Instance.NewMessage("Revolution is on", "People rebelled demanding " + targetReformValue + "\n\nTheir army is moving to our capital", "Ok", false, Game.Player.Capital.provinceMesh.Position);
 
             Country.rebelTo(x => x.getPopUnit().getMovement() == this, this);
 

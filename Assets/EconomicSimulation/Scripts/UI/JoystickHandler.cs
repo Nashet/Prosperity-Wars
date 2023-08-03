@@ -1,12 +1,15 @@
-﻿using UnityEngine;
+﻿using Nashet.EconomicSimulation;
+using Nashet.Map.GameplayControllers;
+using UnityEngine;
 
-namespace Nashet.EconomicSimulation
+namespace Nashet.GameplayControllers
 {
     public class JoystickHandler : MonoBehaviour
     {
         [SerializeField] private float mapDragSpeed = 0.05f;
+		[SerializeField] private CameraController cameraController;
 
-        private void Update()
+		private void Update()
         {
             HandleMapScroll();
         }
@@ -14,7 +17,7 @@ namespace Nashet.EconomicSimulation
         private void HandleMapScroll()
         {
             var joy = LinksManager.Get.scrolJoystic;
-            MainCamera.Get.Move(joy.Horizontal * mapDragSpeed, joy.Vertical * mapDragSpeed);
+			cameraController.Move(joy.Horizontal * mapDragSpeed, joy.Vertical * mapDragSpeed);
 
             return;
         }

@@ -1,5 +1,6 @@
-﻿using Nashet.UnityUIUtils;
-using System.Linq;
+﻿using Nashet.GameplayControllers;
+using Nashet.Map.GameplayControllers;
+using Nashet.UnityUIUtils;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,19 +16,21 @@ namespace Nashet.EconomicSimulation
 
         [SerializeField]
         protected GameObject debugWindowPrefab;
-        private MainCamera cameraScript;
+		[SerializeField]
+		private CameraController cameraController;
+        [SerializeField]
+        private ProvinceSelectionHelper provinceSelectionHelper;
 
         // Use this for initialization
         new private void Awake() // used to position other windows
         {
             base.Awake();
             MainCamera.bottomPanel = this;
-            generalText.text = "Prosperity Wars v0.20.10";      
+            generalText.text = "Prosperity Wars v0.20.11";
             Hide();
-            cameraScript = Camera.main.GetComponent<MainCamera>(); ;
         }
 
-        public override void Refresh()
+		public override void Refresh()
         {
         }
 
@@ -45,7 +48,7 @@ namespace Nashet.EconomicSimulation
             if (Game.MapMode != _newMapMod)
             {
                 Game.MapMode = _newMapMod;
-                Game.redrawMapAccordingToMapMode();
+                MainCamera.Get.redrawMapAccordingToMapMode(provinceSelectionHelper.selectedProvince);
             }
         }
 
@@ -60,32 +63,32 @@ namespace Nashet.EconomicSimulation
 
         public void OnScrollLeft()
         {            
-            cameraScript.Move(-1f, 0f);
+            cameraController.Move(-1f, 0f);
         }
 
         public void OnScrollRight()
         {
-            cameraScript.Move(1f, 0f);
+            cameraController.Move(1f, 0f);
         }
 
         public void OnScrollUp()
         {
-            cameraScript.Move(0f, 1f);
+            cameraController.Move(0f, 1f);
         }
 
         public void OnScrollDown()
         {
-            cameraScript.Move(0f, -1f);
+            cameraController.Move(0f, -1f);
         }
 
         public void OnScaleIn()
         {
-            cameraScript.Zoom(-0.1f);
+            cameraController.Zoom(-0.1f);
         }
 
         public void OnScaleOut()
         {
-            cameraScript.Zoom(0.1f);
+            cameraController.Zoom(0.1f);
         }
 
         public void OnTest()

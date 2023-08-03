@@ -1,13 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 namespace Nashet.EconomicSimulation
 {
     public class LinksManager : MonoBehaviour
     {
         public Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, impassableBorder, riverBorder;
         public Material defaultUnitSymbol;
-        public GameObject UnitPrefab, UnitPanelPrefab;
+		public Material shoreMaterial;
+		public GameObject UnitPrefab, UnitPanelPrefab;
         public Transform WorldSpaceCanvas;
         public GameObject r3DProvinceTextPrefab, r3DCountryTextPrefab;
         public GameObject ArmiesSelectionWindowPrefab;
@@ -15,15 +14,18 @@ namespace Nashet.EconomicSimulation
 
         [SerializeField] public Canvas CameraLayerCanvas;
         [SerializeField] public KeyCode AdditionKey = KeyCode.LeftAlt;
+		
 
-        public Material waterMaterial;
+		public Material waterMaterial;
 
         private static LinksManager thisObject;
         public Material ProvinceSelecionMaterial;
         public Material FogOfWarMaterial;
         public bl_Joystick scrolJoystic;
 
-        [SerializeField] private GameObject[] objectsToInstantiateIn2DCanvas;
+		[SerializeField] public Texture2D rebelsFlag;
+
+		[SerializeField] private GameObject[] objectsToInstantiateIn2DCanvas;
         public Canvas UICanvas;
 
         // Use this for initialization
@@ -42,18 +44,9 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-
-
-
         public static LinksManager Get
         {
             get { return thisObject; }
-        }
-
-        // Update is called once per frame
-        private void Update()
-        {
-
         }
     }
 }

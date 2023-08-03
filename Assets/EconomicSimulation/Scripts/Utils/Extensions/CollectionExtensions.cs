@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Nashet.EconomicSimulation;
+using Nashet.Map.Utils;
 using Nashet.ValueSpace;
 
 namespace Nashet.Utils

@@ -1,5 +1,8 @@
-﻿using Nashet.UnitSelection;
+﻿using Nashet.GameplayControllers;
+using Nashet.MapMeshes;
+using Nashet.UnitSelection;
 using Nashet.UnityUIUtils;
+using QPathFinder;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -51,18 +54,18 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        private void SendUnitTo()
+		private void SendUnitTo()
         {
-            var collider = UnitSelection.Utils.getRayCastMeshNumber(camera);
+            var collider = UnitSelectionUtils.getRayCastMeshNumber(camera);
             if (collider != null)
             {
                 Province sendToPovince = null;
-                int? meshNumber = Province.GetIdByCollider(collider);
+                int? meshNumber = ProvinceMesh.GetIdByCollider(collider);
                 if (meshNumber.HasValue) // send armies to another province
                     sendToPovince = World.FindProvince(meshNumber.Value);
                 else // better do here sort of collider layer, hitting provinces only
                 {
-                    var unit = MapClicksHandler.GetUnit(collider);
+                    var unit = UnitSelectionController.GetUnit(collider);
                     if (unit != null)
                     {
                         sendToPovince = unit.Province;
@@ -80,7 +83,7 @@ namespace Nashet.EconomicSimulation
                         item.AddToPath(sendToPovince);
                     else
                     {
-                        Predicate<Province> predicate = item.Province.Country == Game.Player && sendToPovince.Country == Game.Player ?
+                        Predicate<IProvince> predicate = item.Province.Country == Game.Player && sendToPovince.Country == Game.Player ?
                             x => x.Country == Game.Player : null;
                         item.SetPathTo(sendToPovince, predicate);
                     }

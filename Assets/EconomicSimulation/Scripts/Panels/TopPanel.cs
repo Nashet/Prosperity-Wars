@@ -1,4 +1,7 @@
-﻿using Nashet.UnityUIUtils;
+﻿using Nashet.GameplayControllers;
+using Nashet.Map.GameplayControllers;
+using Nashet.Map.Utils;
+using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using System;
 using System.Collections;
@@ -26,7 +29,13 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private RawImage flag;
 
-        private bool isSetFlagTexture;
+		[SerializeField]
+		private ProvinceSelectionHelper provinceSelectionHelper;
+
+        [SerializeField]
+        private CameraController cameraController;
+
+		private bool isSetFlagTexture;
         private bool firstUpdate = true;
         protected ISelector buttonSelector;
 
@@ -141,8 +150,8 @@ namespace Nashet.EconomicSimulation
         {
             if (MainCamera.productionWindow.isActiveAndEnabled)
             {
-                if (MainCamera.productionWindow.IsSelectedProvince(Game.selectedProvince)
-                    && Game.selectedProvince != null)
+                if (MainCamera.productionWindow.IsSelectedProvince(provinceSelectionHelper.selectedProvince)
+                    && provinceSelectionHelper.selectedProvince != null)
                 {
                     MainCamera.productionWindow.ClearAllFiltres();
                 }
@@ -206,7 +215,7 @@ namespace Nashet.EconomicSimulation
         public void OnFocusOnCountryClick()
         {
             if (Game.Player != null)
-                mainCamera.FocusOnProvince(Game.Player.Capital, true);
+				cameraController.FocusOnProvince(Game.Player.Capital.provinceMesh, true);
         }
 
         public void switchHaveToRunSimulation()

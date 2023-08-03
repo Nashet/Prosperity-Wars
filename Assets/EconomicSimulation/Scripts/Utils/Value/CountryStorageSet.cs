@@ -37,7 +37,7 @@ namespace Nashet.ValueSpace
         public void set(Storage inn)
         {
             Set(inn);
-            throw new DontUseThatMethod();
+            throw new DontUseThatMethodException();
         }
 
         ///// <summary>
@@ -141,7 +141,7 @@ namespace Nashet.ValueSpace
         public void SetZero()
         {
             setZero();
-            throw new DontUseThatMethod();
+            throw new DontUseThatMethodException();
         }
 
         //public PrimitiveStorageSet Divide(float v)

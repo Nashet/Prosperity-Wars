@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4436044905069597155}
   - component: {fileID: 4436044905069597154}
-  - component: {fileID: 4436044905069597164}
   m_Layer: 0
   m_Name: LinksManager
   m_TagString: Untagged
@@ -52,6 +51,7 @@ MonoBehaviour:
   impassableBorder: {fileID: 2100000, guid: 31b82705b1a61f7418007b5e6341af2a, type: 2}
   riverBorder: {fileID: 2100000, guid: 52b7d70b1de7c4ce09662b77c14d9fda, type: 2}
   defaultUnitSymbol: {fileID: 2100000, guid: 48f088514fb2aff40be5a2b4e7e408cf, type: 2}
+  shoreMaterial: {fileID: 2100000, guid: d160a04a1f7be1744bb883a2f7e80a36, type: 2}
   UnitPrefab: {fileID: 1103526154260046, guid: 276f0d334f0ce484486a922ed7928529, type: 3}
   UnitPanelPrefab: {fileID: 1967660964868196, guid: e37c4dd3883e23a479e56012b25083c2,
     type: 3}
@@ -70,18 +70,6 @@ MonoBehaviour:
     type: 2}
   FogOfWarMaterial: {fileID: 2100000, guid: 2e32210884a66044b86f2a5a9884162c, type: 2}
   scrolJoystic: {fileID: 0}
+  rebelsFlag: {fileID: 2800000, guid: 2d8f59e4263299745aa70f08c6adea8b, type: 3}
   objectsToInstantiateIn2DCanvas: []
   UICanvas: {fileID: 0}
---- !u!114 &4436044905069597164
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4436044905069597153}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69bebdb5744b8ab428a2364aa272d63a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rebels: {fileID: 2800000, guid: 2d8f59e4263299745aa70f08c6adea8b, type: 3}

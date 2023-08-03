@@ -296,6 +296,18 @@ Camera:
     type: 3}
   m_PrefabInstance: {fileID: 2415366578571687739}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1869157526 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2187129235353547565, guid: bf0dbea1d2c6f03458a2e20531d4d2c7,
+    type: 3}
+  m_PrefabInstance: {fileID: 2415366578571687739}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcf275d9182822246a05a6dce2780687, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1984424214 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7962972553268330684, guid: 1e7621bf1ccdd3e4a827873afb48c62e,
@@ -509,6 +521,30 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bf0dbea1d2c6f03458a2e20531d4d2c7, type: 3}
+--- !u!114 &2415366578571687740 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2359403229268368467, guid: bf0dbea1d2c6f03458a2e20531d4d2c7,
+    type: 3}
+  m_PrefabInstance: {fileID: 2415366578571687739}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 003932cd613ff554a9ca1f5c3abc73a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2415366578571687741 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6206722624749663044, guid: bf0dbea1d2c6f03458a2e20531d4d2c7,
+    type: 3}
+  m_PrefabInstance: {fileID: 2415366578571687739}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 354c7a84b6c40d247afb683988cbf90e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3531224256959435740
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -993,6 +1029,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5836527699662239649, guid: 445ecfee92479eb49a4cdae1b7aa3b4d,
+        type: 3}
+      propertyPath: cameraController
+      value: 
+      objectReference: {fileID: 1869157526}
     - target: {fileID: 5836527699669603400, guid: 445ecfee92479eb49a4cdae1b7aa3b4d,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -1158,6 +1199,16 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5836527699694249984, guid: 445ecfee92479eb49a4cdae1b7aa3b4d,
+        type: 3}
+      propertyPath: provinceSelectionHelper
+      value: 
+      objectReference: {fileID: 2415366578571687741}
+    - target: {fileID: 5836527699694249984, guid: 445ecfee92479eb49a4cdae1b7aa3b4d,
+        type: 3}
+      propertyPath: ProvinceSelectionController
+      value: 
+      objectReference: {fileID: 2415366578571687740}
     - target: {fileID: 5836527699702824703, guid: 445ecfee92479eb49a4cdae1b7aa3b4d,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -4118,6 +4169,16 @@ PrefabInstance:
       propertyPath: buttonObjectPool
       value: 
       objectReference: {fileID: 295778128}
+    - target: {fileID: 5836527700600604255, guid: 445ecfee92479eb49a4cdae1b7aa3b4d,
+        type: 3}
+      propertyPath: provinceSelectionHelper
+      value: 
+      objectReference: {fileID: 2415366578571687741}
+    - target: {fileID: 5836527700600604255, guid: 445ecfee92479eb49a4cdae1b7aa3b4d,
+        type: 3}
+      propertyPath: provinceSelectionController
+      value: 
+      objectReference: {fileID: 2415366578571687740}
     - target: {fileID: 5836527700600799690, guid: 445ecfee92479eb49a4cdae1b7aa3b4d,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -4223,6 +4284,16 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5836527700638615292, guid: 445ecfee92479eb49a4cdae1b7aa3b4d,
+        type: 3}
+      propertyPath: cameraController
+      value: 
+      objectReference: {fileID: 1869157526}
+    - target: {fileID: 5836527700638615292, guid: 445ecfee92479eb49a4cdae1b7aa3b4d,
+        type: 3}
+      propertyPath: provinceSelectionHelper
+      value: 
+      objectReference: {fileID: 2415366578571687741}
     - target: {fileID: 5836527700638615293, guid: 445ecfee92479eb49a4cdae1b7aa3b4d,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -4518,6 +4589,11 @@ PrefabInstance:
       propertyPath: buttonObjectPool
       value: 
       objectReference: {fileID: 295778128}
+    - target: {fileID: 5836527700788173728, guid: 445ecfee92479eb49a4cdae1b7aa3b4d,
+        type: 3}
+      propertyPath: provinceSelectionHelper
+      value: 
+      objectReference: {fileID: 2415366578571687741}
     - target: {fileID: 5836527700788173729, guid: 445ecfee92479eb49a4cdae1b7aa3b4d,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -5608,6 +5684,16 @@ PrefabInstance:
       propertyPath: mainCamera
       value: 
       objectReference: {fileID: 1869157520}
+    - target: {fileID: 5836527701075609352, guid: 445ecfee92479eb49a4cdae1b7aa3b4d,
+        type: 3}
+      propertyPath: cameraController
+      value: 
+      objectReference: {fileID: 1869157526}
+    - target: {fileID: 5836527701075609352, guid: 445ecfee92479eb49a4cdae1b7aa3b4d,
+        type: 3}
+      propertyPath: provinceSelectionHelper
+      value: 
+      objectReference: {fileID: 2415366578571687741}
     - target: {fileID: 5836527701076718836, guid: 445ecfee92479eb49a4cdae1b7aa3b4d,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -6118,6 +6204,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5836527701263062109, guid: 445ecfee92479eb49a4cdae1b7aa3b4d,
+        type: 3}
+      propertyPath: cameraController
+      value: 
+      objectReference: {fileID: 1869157526}
     - target: {fileID: 5836527701266334101, guid: 445ecfee92479eb49a4cdae1b7aa3b4d,
         type: 3}
       propertyPath: m_AnchorMax.y

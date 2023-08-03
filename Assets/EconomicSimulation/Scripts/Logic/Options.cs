@@ -86,10 +86,11 @@ namespace Nashet.EconomicSimulation
 
         /// <summary>In procent of unemployed</summary>
         public static Procent ProvinceLackWorkforce = new Procent(0.05f);
+		internal static int ExtraProvinciesAmount = 4;
 
-        //POP MIFRATION?PROMOTION
+		//POP MIFRATION?PROMOTION
 
-        public static readonly ReadOnlyValue PopMinorityMigrationBarier = new ReadOnlyValue(0.6f);
+		public static readonly ReadOnlyValue PopMinorityMigrationBarier = new ReadOnlyValue(0.6f);
         public static readonly ReadOnlyValue PopPopulationChangeChance = new ReadOnlyValue(0.1f);
 
         ///<summary> When popUnit can't fulfill needs it would demote to another class</summary>
@@ -201,9 +202,10 @@ namespace Nashet.EconomicSimulation
 
         public static readonly int ArmyTimeToOccupy = 12;
 
-        public static int MaxRiversAmount = 17;
-        public static int RiverLenght => 25;
+        public static int MaxRiversAmount => 17;
+		internal static int LakeCreationChance => 20;
 
+		public static int RiverLenght => 25;
 
 		//public static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);
 	}
