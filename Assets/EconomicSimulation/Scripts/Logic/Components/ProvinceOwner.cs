@@ -35,12 +35,22 @@ namespace Nashet.EconomicSimulation
                     yield return province;
             }
         }
-        
-        
-        /// <summary>
-        /// Has duplicates!
-        /// </summary>
-        public IEnumerable<Province> AllNeighborProvinces()
+
+		public IEnumerable<Province> AllOwnedCoreProvinces
+		{
+			get
+			{
+				foreach (var province in ownedProvinces)
+                    if (province.isCoreFor(owner))
+					    yield return province;
+			}
+		}
+
+
+		/// <summary>
+		/// Has duplicates!
+		/// </summary>
+		public IEnumerable<Province> AllNeighborProvinces()
         {
             //var res = Enumerable.Empty<Province>();
             foreach (var province in ownedProvinces)

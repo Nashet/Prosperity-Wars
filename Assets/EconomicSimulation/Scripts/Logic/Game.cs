@@ -38,7 +38,7 @@ namespace Nashet.EconomicSimulation
         private readonly Rect mapBorders;
 
         public static bool DrawFogOfWar { get; internal set; }
-        public static bool IndustrialStart { get; internal set; }
+        public static bool IndustrialStart { get; internal set; } = true;
         public static MapModes MapMode { get; internal set; }
         private MapTextureGenerator mapGenerator = new MapTextureGenerator();
 

@@ -102,8 +102,10 @@ namespace Nashet.EconomicSimulation
 		{
 			Game.setUnityMeshes();
             if (Game.IndustrialStart)
-			    World.GiveExtraProvinces();
-		}
+            {
+                World.SetIndustrialStart();
+            }
+        }
 
 		private void SetUI()
 		{

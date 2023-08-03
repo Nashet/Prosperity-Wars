@@ -297,25 +297,6 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-
-        ////cut by random
-        //seaProvince = FindProvince(mapTexture.getRandomPixel());
-        //if (!res.Contains(seaProvince))
-        //    res.Add(seaProvince);
-
-        //if (Rand.Get.Next(3) == 1)
-        //{
-        //    seaProvince = FindProvince(mapTexture.getRandomPixel());
-        //    if (!res.Contains(seaProvince))
-        //        res.Add(seaProvince);
-        //    if (Rand.Get.Next(20) == 1)
-        //    {
-        //        seaProvince = FindProvince(mapTexture.getRandomPixel());
-        //        if (!res.Contains(seaProvince))
-        //            res.Add(seaProvince);
-        //    }
-        //}
-
         public static void CreateProvinces(MyTexture mapTexture, bool useProvinceColors)
         {
             if (!useProvinceColors)
@@ -380,54 +361,72 @@ namespace Nashet.EconomicSimulation
             CreateRandomPopulation();
 
 
-            if (Game.IndustrialStart)
-                IndustrialStart();
-
-
-
-
             if (Game.devMode)
-                setStartResources(); // only for testing cause it bugs resource/factory connection
+                setStartResourcesForDevMode(); // only for testing cause it bugs resource/factory connection
             //foreach (var item in World.getAllExistingCountries())
             //{
             //    item.Capital.OnSecedeTo(item, false);
             //}
         }
 
-        private static void IndustrialStart()
+        public static void SetIndustrialStart()
         {
-            foreach (var item in AllExistingCountries())
-            {
-                item.Science.Invent(Invention.Universities);
-                item.Science.Invent(Invention.Manufactures);
-                item.Science.Invent(Invention.Metal);
-                item.Science.Invent(Invention.Gunpowder);
-
-
-
-                var resurceEnterprise = ProductionType.whoCanProduce(item.Capital.getResource());
-                var aristocrats = item.Capital.AllPops.Where(x => x.Type == PopType.Aristocrats).First() as Aristocrats;
-
-                if (resurceEnterprise != null && item.Science.IsInvented(resurceEnterprise.basicProduction.Product))
+            GiveExtraProvinces();
+			foreach (var country in AllExistingCountries())
+			{
+				country.Science.Invent(Invention.Universities);
+				country.Science.Invent(Invention.Manufactures);
+				country.Science.Invent(Invention.Metal);
+				country.Science.Invent(Invention.Gunpowder);
+				country.Science.Invent(Invention.Domestication);
+				
+                foreach (var province in country.Provinces.AllOwnedCoreProvinces)
                 {
-                    item.Capital.BuildFactory(aristocrats, resurceEnterprise, resurceEnterprise.GetBuildCost(item.market), true);
-                }
+					if (province == country.Capital)
+					{
+						AddProcessingEnterprise(country, province, 5);
+					}
+					else
+					{
+						if (province.getResource() != null)
+						{
+							var pop = new Aristocrats(PopUnit.getRandomPopulationAmount(100, 500), province.Country.Culture, province);
 
-                var processingEnterprises = ProductionType.getAllInventedFactories(item).Where(x => x.hasInput() || x == ProductionType.University);
+							pop.GiveMoneyFromNoWhere(900m);
+							pop.storage.add(new Storage(Product.Grain, 60f));
 
-                var capitalists = item.Capital.AllPops.Where(x => x.Type == PopType.Capitalists).First() as Capitalists;
-                for (int i = 0; i < 3; i++)
-                {
-                    var processingEnterprise = processingEnterprises.Random();
-                    if (processingEnterprise.canBuildNewFactory(item.Capital, capitalists))
-                        item.Capital.BuildFactory(capitalists, processingEnterprise, processingEnterprise.GetBuildCost(item.market), true);
-                }
+							new Workers(PopUnit.getRandomPopulationAmount(1800, 2000), province.Country.Culture, province);
+							AddResourceEnterprise(country, province);							
+						}
+						AddProcessingEnterprise(country, province, 1);
+					}
+				}
+			}
+		}
 
-                //ProductionType.getAllInventedFactories(Country).Where(x=>x.canBuildNewFactory);
-                //var res = new Factory(this, investor, type, cost);
-                //allFactories.Add(res);
-            }
-        }
+		private static void AddResourceEnterprise(Country country, Province province)
+		{
+			var resurceEnterprise = ProductionType.whoCanProduce(province.getResource());
+			var aristocrats = province.AllPops.Where(x => x.Type == PopType.Aristocrats).FirstOrDefault() as Aristocrats;
+
+			if (resurceEnterprise != null && country.Science.IsInvented(resurceEnterprise.basicProduction.Product))
+			{
+				province.BuildFactory(aristocrats ?? (IShareOwner)country, resurceEnterprise, resurceEnterprise.GetBuildCost(country.market), true);
+			}			
+		}
+
+		private static void AddProcessingEnterprise(Country country, Province province, int howMuchAdd)
+		{
+			var processingEnterprises = ProductionType.getAllInventedFactories(country).Where(x => x.hasInput() || x == ProductionType.University);
+
+			var capitalists = province.AllPops.Where(x => x.Type == PopType.Capitalists).FirstOrDefault() as Capitalists;
+			for (int i = 0; i < howMuchAdd; i++)
+			{
+				var processingEnterprise = processingEnterprises.Random();
+				if (processingEnterprise.canBuildNewFactory(province, capitalists))
+					province.BuildFactory(capitalists ?? (IShareOwner)country, processingEnterprise, processingEnterprise.GetBuildCost(country.market), true);
+			}
+		}
 
 		public static void GiveExtraProvinces()
 		{
@@ -443,12 +442,13 @@ namespace Nashet.EconomicSimulation
 					{
 						item.Provinces.TakeProvince(emptyProvince, false);
 						emptyProvince.OnSecedeGraphic(item);
+                        emptyProvince.AddCore(item);
 					}
 				}
 			}
 		}
 
-		private static void setStartResources()
+		private static void setStartResourcesForDevMode()
         {
             //Country.allCountries[0] is null country
             //Country.allCountries[0].Capital.setResource(Product.Wood;

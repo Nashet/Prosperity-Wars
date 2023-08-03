@@ -992,11 +992,11 @@ namespace Nashet.EconomicSimulation
 
         public Factory BuildFactory(IShareOwner investor, ProductionType type, MoneyView cost, bool instantBuild = false)
         {
-            //if (getAllFactories().Any(x => x.Type == type)) //todo temporally
-            //{
-            //    throw new Exception("Can't have 2 same factory types");
-            //}
-            //else
+            if (AllFactories.Any(x => x.Type == type)) //todo temporally
+            {
+                throw new Exception("Can't have 2 same factory types");
+            }
+            else
             {
                 var res = new Factory(this, investor, type, cost, instantBuild);
                 allFactories.Add(res);
