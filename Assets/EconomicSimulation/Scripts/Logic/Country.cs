@@ -499,6 +499,7 @@ namespace Nashet.EconomicSimulation
                                 mobilize(Provinces.AllProvinces);
                                 foreach (var army in AllArmies())
                                 {
+                                    //Ai cant send army to an unconnected province. But im ok with it.
                                     army.SetPathTo(targetProvince, x => x.Country == this || x.Country == targetCountry);
                                     //if (army.Path==null)
                                 }
