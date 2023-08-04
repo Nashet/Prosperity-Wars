@@ -1,4 +1,5 @@
 ﻿using Nashet.UnityUIUtils;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,13 +23,15 @@ namespace Nashet.EconomicSimulation
 
         [SerializeField]
         private Button generate, loadImage;
+        [SerializeField] List<GameObject> hideableElements;
 
-        internal static Texture2D MapImage;
+		internal static Texture2D MapImage;
+		private RectTransform rectTransform;
 
-        private void Start()
+		private void Start()
         {
-            //GetComponent<RectTransform>().anchoredPosition = new Vector2(800f, 200f);
-            GUIChanger.Apply(gameObject);
+			rectTransform = GetComponent<RectTransform>();
+			GUIChanger.Apply(gameObject);
             industrialStart.isOn = Game.IndustrialStart;
             if (Game.devMode)
                 Hide();
@@ -43,18 +46,31 @@ namespace Nashet.EconomicSimulation
         }
         public void OnMapFromFileToggled(bool value)
         {
-            if (value == true)
-            {
-                generate.interactable = false;
-                loadImage.interactable = true;
-            }
-            else
+			if (value == true)
+			{
+				generate.interactable = false;
+				loadImage.interactable = true;
+				rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 354);
+				SetHideableObjectsState(true);
+			}
+			else
             {
                 generate.interactable = true;
                 loadImage.interactable = false;
-            }
-        }
-        public void OnLoadImageClicked()
+				rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 140);
+				SetHideableObjectsState(false);
+			}
+		}
+
+		private void SetHideableObjectsState(bool state)
+		{
+			foreach (var item in hideableElements)
+			{
+				item.gameObject.SetActive(state);
+			}
+		}
+
+		public void OnLoadImageClicked()
         {
 
         }
@@ -84,7 +100,8 @@ namespace Nashet.EconomicSimulation
         {
             if (!randomMap.isOn)
                 generate.interactable = loadedImage.texture!=null;
-            generate.interactable = true;
+            else
+                generate.interactable = true;
         }
     }
 }
