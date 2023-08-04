@@ -1,4 +1,5 @@
 ﻿using Nashet.EconomicSimulation;
+using Nashet.Map.GameplayControllers;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,8 +12,9 @@ namespace Nashet.UnityUIUtils
     internal class MessageSystem : MonoBehaviour
     {
         [SerializeField] protected GameObject messagePanelPrefab;
+		[SerializeField] private CameraController cameraController;
 
-        internal static MessageSystem Instance { get; private set; }
+		internal static MessageSystem Instance { get; private set; }
 
         protected readonly Stack<Message> Queue = new Stack<Message>();
         protected bool showDefeatingAttackersMessages = true;
@@ -69,7 +71,7 @@ namespace Nashet.UnityUIUtils
             while (HasUnshownMessages())
             {
                 var window = Instantiate(messagePanelPrefab, LinksManager.Get.CameraLayerCanvas.transform).GetComponent<MessagePanel>();
-                window.Show(PopAndDeleteMessage(), MainCamera.Get, counter);
+                window.Show(PopAndDeleteMessage(), MainCamera.Get, counter, cameraController);
                 counter++;
             }
 

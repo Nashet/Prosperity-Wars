@@ -7897,5 +7897,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MessageSystem
       objectReference: {fileID: 0}
+    - target: {fileID: 9089641063317914603, guid: a2b8423f79fcbdd4996c34dd64db34df,
+        type: 3}
+      propertyPath: cameraController
+      value: 
+      objectReference: {fileID: 1869157526}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a2b8423f79fcbdd4996c34dd64db34df, type: 3}

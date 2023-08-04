@@ -41,10 +41,12 @@ namespace Nashet.UnityUIUtils
             return howMuchPausedWindowsOpen > 0;
         }
 
-        internal void Show(Message mess, MainCamera mainCamera, int howMuchShift)
+        internal void Show(Message mess, MainCamera mainCamera, int howMuchShift, CameraController cameraController)
         {
             this.mainCamera = mainCamera;
-            howMuchPausedWindowsOpen++;
+            this.cameraController = cameraController;
+
+			howMuchPausedWindowsOpen++;
             caption.text = mess.GetCaption();
             message.text = mess.GetText();
             closeText.text = mess.GetClosetext();
