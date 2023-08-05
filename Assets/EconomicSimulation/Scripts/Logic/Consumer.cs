@@ -212,7 +212,7 @@ namespace Nashet.EconomicSimulation
         {
             this.Pay(market, cost, Register.Account.MarketOperations);
             consumed.Add(what);
-            consumedInMarket.Add(new KeyValuePair<Market, Storage>(market, what));
+            consumedInMarket.Add(new KeyValuePair<Market, Storage>(market, what.Copy()));
             market.SendGoods(what);
 
 
