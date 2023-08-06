@@ -442,7 +442,7 @@ namespace Nashet.EconomicSimulation
 					{
 						item.Provinces.TakeProvince(emptyProvince, false);
 						emptyProvince.OnSecedeGraphic(item);
-                        emptyProvince.AddCore(item);
+                        //emptyProvince.AddCore(item);
 					}
 				}
 			}
