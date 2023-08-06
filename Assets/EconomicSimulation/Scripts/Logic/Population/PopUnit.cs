@@ -1251,7 +1251,7 @@ namespace Nashet.EconomicSimulation
             // where life is rich and I where I have some rights
             if (type != PopType.Aristocrats && type != PopType.Capitalists) // redo
 
-                foreach (var country in World.AllExistingCountries())
+                //foreach (var country in World.AllExistingCountries()) //WTF? Use normal linq..
                     //if (
                     //(country.Culture == this.culture || country.minorityPolicy.getValue() == MinorityPolicy.Equality)
                     //&& country != this.Country)
@@ -1262,7 +1262,7 @@ namespace Nashet.EconomicSimulation
                     //&& (province.Country.Culture == this.culture || province.Country.minorityPolicy.getValue() == MinorityPolicy.Equality)
                     //))
 
-                    foreach (var proposedNewProvince in Province.AllNeighbors().Where(x => x.Country != Country))
+                    foreach (var proposedNewProvince in Province.AllNeighbors().Where(x => x.Country != Country && x.Country != World.UncolonizedLand))
                     {
                         var targetPriority = proposedNewProvince.getLifeQuality(this);
                         if (targetPriority.isNotZero())
