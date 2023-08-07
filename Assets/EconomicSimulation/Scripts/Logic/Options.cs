@@ -33,7 +33,7 @@ namespace Nashet.EconomicSimulation
 
         public static readonly int ProvincesPerCountry = 6;// don't do it lees than 3 - ugly
         public static readonly float cellMultiplier = 1f;
-        public static readonly int MapRedrawRate = 20; // bigger number - less often redraw
+        public static readonly int MapRedrawRate = 16; // bigger number - less often redraw
 
         // MARKET
         public static readonly MoneyView minPrice = new MoneyView(0.001m);

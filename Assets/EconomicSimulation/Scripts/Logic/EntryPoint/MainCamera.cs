@@ -55,8 +55,9 @@ namespace Nashet.EconomicSimulation
         public static ISelector fogOfWar;
 
         protected ToolTipHandler tooltip;
+		private int frameCounter;
 
-        private void Start()
+		private void Start()
         {
             Get = this;
             
@@ -151,6 +152,7 @@ namespace Nashet.EconomicSimulation
 
 		private void EveryTickWork()
 		{
+			RedrawNonPoliticalMap();
 			UpdateMapTooltip();
 
 			if (World.Get.IsRunning && !MessagePanel.IsOpenAny())
@@ -175,11 +177,22 @@ namespace Nashet.EconomicSimulation
 				CloseToppestPanel();
 
 			DrawFogOfWar();
-
-			//if (Message.HasUnshownMessages())
-			//    MessagePanel.Instance.ShowMessageBox(LinksManager.Get.CameraLayerCanvas, this);
 		}
 
+		private void RedrawNonPoliticalMap()
+		{
+			if (frameCounter >= Options.MapRedrawRate)
+			{
+				if (Game.MapMode != Game.MapModes.Political)
+				{
+					redrawMapAccordingToMapMode(provinceSelectionHelper.selectedProvince);
+				}
+
+				frameCounter = 0;
+			}
+			frameCounter++;
+		}		
+        
 		protected void DrawFogOfWar()
         {
             if (Game.devMode == false)
@@ -249,13 +262,6 @@ namespace Nashet.EconomicSimulation
 
 		private void UpdateMapTooltip()
         {
-            if (Game.MapMode != Game.MapModes.Political
-                    //&& Date.Today.isDivisible(Options.MapRedrawRate)
-                    )
-            {
-                redrawMapAccordingToMapMode(provinceSelectionHelper.selectedProvince);
-            }
-
             if (!EventSystem.current.IsPointerOverGameObject())// don't force map tooltip if mouse hover UI
             {
                 if (Game.MapMode == Game.MapModes.PopulationChange)
