@@ -13,7 +13,10 @@ namespace Nashet.Map.GameplayView
 
 		[SerializeField] private bool allowed;
 		[SerializeField] private CameraController cameraController;
-		private float focusHeight;
+		[SerializeField] private float minimalHeight = -40;
+		[SerializeField] private float maxHeight = -500;
+		[SerializeField] private float focusHeight;
+		
 
 		private void Awake()
 		{
@@ -34,8 +37,8 @@ namespace Nashet.Map.GameplayView
 		{
 			var position = transform.position;
 			zMove = zMove * yCameraSpeed;
-			if (position.z + zMove > -40f
-				|| position.z + zMove < -500f)
+			if (position.z + zMove > minimalHeight
+				|| position.z + zMove < maxHeight)
 				zMove = 0f;
 			transform.Translate(0f, 0f, zMove, Space.World);
 		}
