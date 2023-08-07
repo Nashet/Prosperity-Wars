@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if EDITOR
+using UnityEngine;
 using UnityEditor;
 using System;
 using System.Reflection;
@@ -43,3 +44,4 @@ namespace QPathFinder
         }
     }
 }
+#endif

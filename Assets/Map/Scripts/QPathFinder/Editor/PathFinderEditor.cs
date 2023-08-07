@@ -1,3 +1,4 @@
+#if EDITOR
 using UnityEngine;
 using UnityEditor;
 using System;
@@ -535,3 +536,4 @@ namespace QPathFinder
     #endregion
     }
 }
+#endif
