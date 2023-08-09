@@ -4,7 +4,6 @@ using System.Linq;
 using Nashet.EconomicSimulation;
 using Nashet.Utils;
 using UnityEngine;
-using CollectionExtensions = Nashet.Utils.CollectionExtensions;
 
 namespace Nashet.ValueSpace
 {

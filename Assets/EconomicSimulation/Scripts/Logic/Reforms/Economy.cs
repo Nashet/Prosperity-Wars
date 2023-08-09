@@ -1,5 +1,5 @@
 ﻿using Nashet.Conditions;
-using Nashet.Utils;
+using Nashet.Map.Utils;
 using Nashet.ValueSpace;
 using System.Collections;
 using System.Collections.Generic;

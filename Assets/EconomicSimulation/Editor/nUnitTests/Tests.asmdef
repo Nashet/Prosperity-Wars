@@ -4,7 +4,8 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "Com.Nashet.ESDefault"
+        "Com.Nashet.ESDefault",
+        "Com.Nashet.Map"
     ],
     "includePlatforms": [
         "Editor"

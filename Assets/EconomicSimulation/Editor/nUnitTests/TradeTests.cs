@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using Nashet.EconomicSimulation;
 using Nashet.ValueSpace;
-using Nashet.Utils;
+using Nashet.Map.Utils;
+
 /// <summary>
 /// Remember that nUnity create persistent instance of that class
-/// Don't forget to clear it before new test start
+// Don't forget to clear it before new test start
 /// </summary>
 [TestFixture]
 

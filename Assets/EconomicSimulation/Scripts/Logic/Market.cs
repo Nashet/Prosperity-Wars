@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using Nashet.Map.Utils;
 using UnityEngine;
 
 namespace Nashet.EconomicSimulation

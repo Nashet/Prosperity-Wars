@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Nashet.Utils;
+using Nashet.Map.Utils;
 using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation

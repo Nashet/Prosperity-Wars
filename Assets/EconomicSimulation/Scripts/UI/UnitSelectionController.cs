@@ -1,6 +1,6 @@
 ﻿using Nashet.EconomicSimulation;
 using Nashet.UnitSelection;
-using Nashet.Utils;
+using Nashet.Map.Utils;
 using System;
 using System.Linq;
 using UnityEngine;

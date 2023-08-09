@@ -45,13 +45,13 @@ namespace Nashet.EconomicSimulation
         public Game(Texture2D mapImage)
 		{
 			DrawFogOfWar = true;
-			PprepareTexture(mapImage); // only can run in unity thread
+			PrepareTexture(mapImage); // only can run in unity thread
 
 			mapBorders = new Rect(0f, 0f, mapTexture.getWidth() * Options.cellMultiplier, mapTexture.getHeight() * Options.cellMultiplier);
             QPathFinder.Logger.SetLoggingLevel(devMode ? QPathFinder.Logger.Level.Warnings : QPathFinder.Logger.Level.None);
 		}
 
-		private void PprepareTexture(Texture2D mapImage)
+		private void PrepareTexture(Texture2D mapImage)
 		{
 			if (mapImage == null)
 			{
