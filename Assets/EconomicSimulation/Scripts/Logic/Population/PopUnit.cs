@@ -660,7 +660,7 @@ namespace Nashet.EconomicSimulation
                     needsFulfilled.Set(Options.PopOneThird);
                 }
                 else
-                    needsFulfilled.Set(Buy(need).Divide(need).Divide(Options.PopStrataWeight));
+                    needsFulfilled.Set(Buy(need).Copy().Divide(need).Divide(Options.PopStrataWeight));
             }
             if (type != PopType.Aristocrats)
                 storage.SetZero();
