@@ -55,7 +55,8 @@ namespace Nashet.EconomicSimulation
 
         static ProductionType()
         {
-            new ProductionType("Forestry", new Storage(Product.Wood, 2f), false);
+			new ProductionType("Farm", new Storage(Product.Grain, 2f), false, Invention.SteamPower);
+			new ProductionType("Forestry", new Storage(Product.Wood, 2f), false);
             GoldMine = new ProductionType("Gold pit", new Storage(Product.Gold, 2f * Options.goldToCoinsConvert), true);
             MetalDigging = new ProductionType("Metal pit", new Storage(Product.MetalOre, 2f), true);
             //new ProductionType("Coal pit", new Storage(Product.Coal, 6f), true);
