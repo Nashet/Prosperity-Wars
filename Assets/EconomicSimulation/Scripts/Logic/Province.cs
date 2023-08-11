@@ -202,10 +202,14 @@ namespace Nashet.EconomicSimulation
 
             country = taker;
             if (addModifier)
-                if (modifiers.ContainsKey(TemporaryModifier.recentlyConquered))
-                    modifiers[TemporaryModifier.recentlyConquered].set(Date.Today.getNewDate(20));
+            {
+                var newDate = Date.Today.getNewDate(Options.RecentlyConqueredDuration);
+
+				if (modifiers.ContainsKey(TemporaryModifier.recentlyConquered))
+                    modifiers[TemporaryModifier.recentlyConquered].set(newDate);
                 else
-                    modifiers.Add(TemporaryModifier.recentlyConquered, Date.Today.getNewDate(20));
+                    modifiers.Add(TemporaryModifier.recentlyConquered, newDate);
+            }
         }
 
         public void OnSecedeGraphic(Country taker)

@@ -117,7 +117,7 @@ namespace Nashet.EconomicSimulation
             new Modifier(Invention.SteamPower.Invented, x=>(x as PopUnit).Country, 0.25f, false),
             new Modifier(Invention.CombustionEngine.Invented, x=>(x as PopUnit).Country, 0.5f, false),
 
-            new Modifier(Economy.isStateCapitlism, x=>(x as PopUnit).Country,  0.10f, false),
+            //new Modifier(Economy.isStateCapitlism, x=>(x as PopUnit).Country,  0.10f, false),
             new Modifier(Economy.isInterventionism, x=>(x as PopUnit).Country,  0.30f, false),
             new Modifier(Economy.isLF, x=>(x as PopUnit).Country,  0.50f, false),
             new Modifier(Economy.isPlanned, x=>(x as PopUnit).Country,  -0.10f, false),
