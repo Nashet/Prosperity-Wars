@@ -11,6 +11,7 @@ namespace Nashet.EconomicSimulation
     {
         private SortOrder needsFulfillmentOrder, seekingJobOrder, loyaltyOrder, populationOrder, cashOrder,
         movementOrder, provinceOrder, cultureOrder, popTypeOrder, educationOrder;
+        private bool initialized;
 
         private void Start()
         {
@@ -32,7 +33,8 @@ namespace Nashet.EconomicSimulation
                 else
                     return x.getMovement().GetHashCode();
             });
-        }
+            initialized = true;
+		}
 
         protected override IEnumerable<PopUnit> ContentSelector()
         {
@@ -97,11 +99,13 @@ namespace Nashet.EconomicSimulation
 
         protected override void AddHeader()
         {
-            // Adding number
-            // AddButton("Number");
+			if (!initialized)
+				Start();
+			// Adding number
+			// AddButton("Number");
 
-            // Adding PopType
-            AddCell("Type" + popTypeOrder.getSymbol(), popTypeOrder);
+			// Adding PopType
+			AddCell("Type" + popTypeOrder.getSymbol(), popTypeOrder);
 
             ////Adding province
             AddCell("Province" + provinceOrder.getSymbol(), provinceOrder);
