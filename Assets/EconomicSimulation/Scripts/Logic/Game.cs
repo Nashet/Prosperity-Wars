@@ -1,6 +1,7 @@
 ﻿using Nashet.Map.Utils;
 using Nashet.MapMeshes;
 using Nashet.MarchingSquares;
+using Nashet.MeshData;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using QPathFinder;
@@ -103,30 +104,33 @@ namespace Nashet.EconomicSimulation
             if (!devMode)
 				makeHelloMessage();
 
-			//World.getAllExistingCountries().PerformAction(x => x.market.Initialize(x));  // should go after countries creation  
-			// has to be separate circle
+            //World.getAllExistingCountries().PerformAction(x => x.market.Initialize(x));  // should go after countries creation  
 
+            var borderMeshesLookup = new Dictionary<int, Dictionary<int, MeshStructure>>();
 			foreach (var province in World.AllProvinces)
             {
                 var mesh = grid.getMesh(province.ID, out var borderMeshes);
-
+                borderMeshesLookup.Add(province.ID, borderMeshes);
 				//if (!IsForDeletion)
 				{
                     province.provinceMesh = new ProvinceMesh(province.ID, mesh, borderMeshes, province.ProvinceColor, World.Get.transform,
-												LinksManager.Get.shoreMaterial);
+												LinksManager.Get.shoreMaterial, province.ShortName);
 						
 					var label = MapTextLabel.CreateMapTextLabel(LinksManager.Get.r3DProvinceTextPrefab, province.provinceMesh.Position, province.ToString(), Color.black);
 					label.transform.SetParent(province.provinceMesh.GameObject.transform, false);
 
 				}
-				province.SetNeighbors(mesh, borderMeshes);
-
-				
+				province.SetNeighbors(borderMeshes);
 				//World.AllSeaProvinces.PerformAction(x =>
-			}           
+			}
 
-			
-            Country.setMaterial();
+			foreach (var province in World.AllProvinces)//second time call needed to clear mountain locked provinces
+			{
+                province.SetNeighbors(borderMeshesLookup[province.ID]);
+			}   
+
+
+			Country.setMaterial();
 
             //todo put it in some other file. World?
 			AddRivers();

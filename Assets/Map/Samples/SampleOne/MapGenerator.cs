@@ -148,10 +148,12 @@ namespace Nashet.Map.Examples
 				if (makeSea)
 					continue;
 
+				var name = ProvinceNameGenerator.generateWord(6);
 				var id = colorId.ToInt();
 				var meshStructure = grid.getMesh(id, out var borderMeshes);
-				var provinceMesh = new ProvinceMesh(id, meshStructure, borderMeshes, Color.yellow, this.transform, provinceShoreMaterial);
-				var name = ProvinceNameGenerator.generateWord(6);
+				var provinceMesh = new ProvinceMesh(id, meshStructure, borderMeshes, Color.yellow,
+					this.transform, provinceShoreMaterial, name);
+				
 				var label = MapTextLabel.CreateMapTextLabel(r3DProvinceTextPrefab, provinceMesh.Position, name, Color.black); //walletComponent.name
 				label.transform.SetParent(provinceMesh.GameObject.transform, false);
 

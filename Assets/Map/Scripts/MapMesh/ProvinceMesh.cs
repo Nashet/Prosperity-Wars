@@ -20,12 +20,13 @@ namespace Nashet.MapMeshes
 		private static readonly Dictionary<int, ProvinceMesh> look = new Dictionary<int, ProvinceMesh>();
 
 
-		public ProvinceMesh(int ID, MeshStructure meshStructure, Dictionary<int, MeshStructure> neighborBorders, Color provinceColor, Transform parent, Material defaultBorderMaterial)
+		public ProvinceMesh(int ID, MeshStructure meshStructure, Dictionary<int, MeshStructure> neighborBorders,
+			Color provinceColor, Transform parent, Material defaultBorderMaterial, string name = "")
         {
             this.ID = ID;
         
             //spawn object
-            GameObject = new GameObject(string.Format("{0}", ID));
+            GameObject = new GameObject(string.Format("{0} {1}", ID, name));
 
             //Add Components
             MeshFilter = GameObject.AddComponent<MeshFilter>();

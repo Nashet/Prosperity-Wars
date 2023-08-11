@@ -298,7 +298,13 @@ namespace Nashet.EconomicSimulation
                 yield return item;
         }
 
-        public IEnumerable<Producer> AllProducers
+		public IEnumerable<Province> AllPhysicalNeighbors()
+		{
+			foreach (var item in physicalNeighbors)
+				yield return item;
+		}
+
+		public IEnumerable<Producer> AllProducers
         {
             get
             {
@@ -1126,10 +1132,13 @@ namespace Nashet.EconomicSimulation
         {
             public Country oldOwner { get; set; }
         }
-        public void SetNeighbors(MeshStructure meshStructure, Dictionary<int, MeshStructure> neighborBorders)
+        public void SetNeighbors(Dictionary<int, MeshStructure> neighborBorders)
         {
-            // setting neighbors            
-            foreach (var border in neighborBorders)
+			neighbors.Clear();
+            physicalNeighbors.Clear();
+
+			// setting neighbors
+			foreach (var border in neighborBorders)
             {
                 //each color is one neighbor (non repeating)
                 World.ProvincesById.TryGetValue(border.Key, out var neighbor); 
@@ -1138,14 +1147,17 @@ namespace Nashet.EconomicSimulation
                     if (neighbor.IsForDeletion)
                         this.IsCoastal = true;
                     if (!(Terrain == TerrainTypes.Mountains && neighbor.Terrain == TerrainTypes.Mountains))
-                    //this.getTerrain() == TerrainTypes.Plains || neighbor.terrain == TerrainTypes.Plains)
                     {
                         neighbors.Add(neighbor, false);
                     }                    
 				}
                 physicalNeighbors.Add(neighbor);
 			}
-        }
+            if (neighbors.Count == 0 && physicalNeighbors.Count != 0)
+            {
+				setResource(Product.Grain);//converts terrain to plains
+			}
+		}
 
         public IEnumerable<Army> AllStandingArmies()
         {
