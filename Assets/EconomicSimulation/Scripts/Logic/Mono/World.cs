@@ -304,21 +304,24 @@ namespace Nashet.EconomicSimulation
                 var uniqueColors = mapTexture.AllUniqueColors3();
                 var borderColors = mapTexture.GetColorsFromBorder();
                 int counter = 0;
-                int lakechance = Options.LakeCreationChance;
 
                 foreach (var color in uniqueColors)
                 {
-                    var deleteWaterProvince = Rand.Get.Next(lakechance) == 1 || borderColors.Contains(color);
+                    var deleteWaterProvince = Rand.Chance(Options.LakeCreationChance) || borderColors.Contains(color);
                     if (!deleteWaterProvince)
                     {
-                        var province = new Province(ProvinceNameGenerator.generateProvinceName(), color.ToInt(), Product.getRandomResource(false),
-                            deleteWaterProvince);
+                        var size = mapTexture.CountPixels(color);
+                        if (size > Options.RemoveSmallProvincesLimit)
+                        {
+                            var province = new Province(ProvinceNameGenerator.generateProvinceName(), color.ToInt(), Product.getRandomResource(false),
+                                deleteWaterProvince, size);
 
-						allLandProvinces.Add(province);
-                        ProvincesById.Add(province.ID, province);
-                        //else
-                        //    allSeaProvinces.Add(new SeaProvince("", counter, item.Key));
-                        counter++;
+                            allLandProvinces.Add(province);
+                            ProvincesById.Add(province.ID, province);
+                            //else
+                            //    allSeaProvinces.Add(new SeaProvince("", counter, item.Key));
+                            counter++;
+                        }
                     }
                 }
             }
@@ -332,7 +335,7 @@ namespace Nashet.EconomicSimulation
                     if (!(color.g + color.b >= 200f / 255f + 200f / 255f && color.r < 96f / 255f))
                     //if (color.g + color.b + color.r > 492f / 255f)
                     {
-                        var province = new Province(ProvinceNameGenerator.generateProvinceName(), color.ToInt(), Product.getRandomResource(false), false);
+                        var province = new Province(ProvinceNameGenerator.generateProvinceName(), color.ToInt(), Product.getRandomResource(false), false, 0);
 
 						allLandProvinces.Add(province);
                         ProvincesById.Add(province.ID, province);
@@ -346,7 +349,8 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public static void Create(MyTexture map)
         {
-            bool isMapRandom = MapOptions.MapImage == null;
+			var market = new Market();
+			bool isMapRandom = MapOptions.MapImage == null;
             //FactoryType.getResourceTypes(); // FORCING FactoryType to initialize?
 
             // remake it on messages?
@@ -362,12 +366,16 @@ namespace Nashet.EconomicSimulation
 
 
             if (Game.devMode)
-                setStartResourcesForDevMode(); // only for testing cause it bugs resource/factory connection
-            //foreach (var item in World.getAllExistingCountries())
+                setStartResourcesForDevMode();
+            
+            // only for testing cause it bugs resource/factory connection
+			//foreach (var item in World.getAllExistingCountries())
             //{
             //    item.Capital.OnSecedeTo(item, false);
             //}
-        }
+
+			market.Initialize(null);
+		}
 
         public static void SetIndustrialStart()
         {

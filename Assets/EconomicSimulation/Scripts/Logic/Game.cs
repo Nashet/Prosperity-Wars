@@ -89,9 +89,9 @@ namespace Nashet.EconomicSimulation
 			grid = new VoxelGrid(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture);
            
             updateStatus("Creating economic data..");
-			var m = new Market();
+			
 			World.Create(mapTexture);
-			m.Initialize(null);
+			
 			updateStatus("Finishing with non-unity loading..");
 		}
 

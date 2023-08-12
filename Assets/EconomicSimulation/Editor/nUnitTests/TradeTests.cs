@@ -26,7 +26,7 @@ public class TradeTests
     [Test]
     public void OneMarketTest()
     {
-        var province = new Province("test", 1, null, false);
+        var province = new Province("test", 1, null, false, 0);
         var country = new Country("test", null, Color.black, province, 10f);
 
         var world = new MockWorld();
@@ -57,10 +57,10 @@ public class TradeTests
     [Test]
     public void TwoMarketTest()
     {
-        var firstProvince = new Province("first province", 1, null, false);
+        var firstProvince = new Province("first province", 1, null, false, 0);
         var firstCountry = new Country("first", null, Color.black, firstProvince, 10f);
 
-        var secondProvince = new Province("second province", 1, null, false);
+        var secondProvince = new Province("second province", 1, null, false, 0);
         var secondCountry = new Country("second", null, Color.black, secondProvince, 10f);
 
 

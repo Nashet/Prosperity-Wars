@@ -6,18 +6,18 @@ using UnityEngine;
 namespace Nashet.MapMeshes
 {
 	public class ProvinceMesh : IProvinceMesh
-    {   
-        public int ID { get; protected set; }
+    {
+		private static readonly Dictionary<int, ProvinceMesh> look = new Dictionary<int, ProvinceMesh>();
+
+		public int ID { get; protected set; }
        
         public GameObject GameObject { get; protected set; }
 		protected MeshFilter MeshFilter { get; private set; }
 
         protected MeshRenderer meshRenderer;
-
-        //protected Vector3 position;
-        public Vector3 Position { get; protected set; }
-		private readonly Dictionary<int, MeshRenderer> bordersMeshes = new Dictionary<int, MeshRenderer>();
-		private static readonly Dictionary<int, ProvinceMesh> look = new Dictionary<int, ProvinceMesh>();
+		
+        public Vector3 Position { get; protected set; }		
+		private readonly Dictionary<int, MeshRenderer> bordersMeshes = new Dictionary<int, MeshRenderer>();		
 
 
 		public ProvinceMesh(int ID, MeshStructure meshStructure, Dictionary<int, MeshStructure> neighborBorders,
@@ -45,7 +45,7 @@ namespace Nashet.MapMeshes
             landMesh.RecalculateBounds();
             landMesh.name = ID.ToString();
 
-            Position = setProvinceCenter(meshStructure);
+			Position = setProvinceCenter(meshStructure);
 			
 
 			MeshCollider groundMeshCollider = GameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;

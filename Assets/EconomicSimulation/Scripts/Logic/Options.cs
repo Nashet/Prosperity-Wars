@@ -88,6 +88,7 @@ namespace Nashet.EconomicSimulation
         public static Procent ProvinceLackWorkforce = new Procent(0.05f);
 		internal static int ExtraProvinciesAmount = 4;
 		internal static int RecentlyConqueredDuration = 40;
+		internal static int RemoveSmallProvincesLimit = 50;
 
 		//POP MIFRATION?PROMOTION
 

@@ -1,4 +1,5 @@
 ﻿using Nashet.Map.Utils;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -120,6 +121,15 @@ namespace Nashet.MarchingSquares
 					nextColor = map[x + y * width];
 				}
 			return res;
+		}
+
+		public int CountPixels(Color color)
+		{
+            int size = 0;
+			for (int x = 0; x < map.Length; x++)
+                if (map[x] == color)
+                    size++;
+            return size;
 		}
 	}
 }

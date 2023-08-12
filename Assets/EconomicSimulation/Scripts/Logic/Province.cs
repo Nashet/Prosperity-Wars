@@ -72,8 +72,9 @@ namespace Nashet.EconomicSimulation
 
         public ProvinceMesh provinceMesh { get; set; }
 		internal int ID;
+		public int Size { get; protected set; }
 
-		public Province(string name, int ID, Product resource, bool isForDeletion) : base(name)
+		public Province(string name, int ID, Product resource, bool isForDeletion, int size) : base(name)
         {
             country = World.UncolonizedLand;
             ProvinceColor = country.NationalColor.getAlmostSameColor();
@@ -81,6 +82,7 @@ namespace Nashet.EconomicSimulation
             fertileSoil = 5000;
             IsForDeletion = isForDeletion;
             this.ID = ID;
+            Size = size;
         }
 
         //public Province(AbstractProvince p, Product product, bool isForDeletion) : this(p.ShortName, p.ID, product, isForDeletion)
