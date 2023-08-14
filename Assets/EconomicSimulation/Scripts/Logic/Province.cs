@@ -8,6 +8,7 @@ using Nashet.Utils;
 using Nashet.ValueSpace;
 using QPathFinder;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -217,7 +218,9 @@ namespace Nashet.EconomicSimulation
         public void OnSecedeGraphic(Country taker)
         {            
             ProvinceColor = taker.NationalColor.getAlmostSameColor();
-            provinceMesh.SetColor(getColorAccordingToMapMode(null));
+            Color? ignoreMe = null;
+
+			provinceMesh.SetColor(getColorAccordingToMapMode(null, ref ignoreMe));
 			UpdateBorderMaterials();
         }
 
@@ -378,20 +381,21 @@ namespace Nashet.EconomicSimulation
         }
 
         public Culture getMajorCulture()
-        {
-            Dictionary<Culture, int> cultures = new Dictionary<Culture, int>();
+		{
+			Dictionary<Culture, int> cultures = GetCultures();
+			return cultures.MaxBy(y => y.Value).Key as Culture;
+		}
 
-            foreach (var pop in allPopUnits)
-                //if (cultures.ContainsKey(pop.culture))
-                //    cultures[pop.culture] += pop.population.Get();
-                //else
-                //    cultures.Add(pop.culture, pop.population.Get());
-                cultures.AddAndSum(pop.culture, pop.population.Get());
-            ///allPopUnits.ForEach(x=>cultures.Add(x.culture, x.population.Get()));
-            return cultures.MaxBy(y => y.Value).Key as Culture;
-        }
+		public Dictionary<Culture, int> GetCultures()
+		{
+			Dictionary<Culture, int> cultures = new Dictionary<Culture, int>();
 
-        public bool isBelongsTo(Country country)
+			foreach (var pop in allPopUnits)
+				cultures.AddAndSum(pop.culture, pop.population.Get());
+			return cultures;
+		}
+
+		public bool isBelongsTo(Country country)
         {
             return Country == country;
         }
@@ -804,22 +808,47 @@ namespace Nashet.EconomicSimulation
         }
         public void SetColorAccordingToMapMode(Province selectedProvince)
         {
-            provinceMesh.SetColor(getColorAccordingToMapMode(selectedProvince));
+            Color? secondColor = null;
+            var mainColor = getColorAccordingToMapMode(selectedProvince, ref secondColor);
+            if (secondColor == null)
+                provinceMesh.SetColor(mainColor);
+            else
+            {
+                Material m = StripesMaterialHelper.Instance.Get(mainColor, secondColor.Value);
+                provinceMesh.SetMaterial(m);
+            }
         }
-        protected Color getColorAccordingToMapMode(Province selectedProvince)
+        protected Color getColorAccordingToMapMode(Province selectedProvince, ref Color? secondColor)
         {
             switch (Game.MapMode)
             {
                 case Game.MapModes.Political:
                     return ProvinceColor;
 
-                case Game.MapModes.Cultures: //culture mode
-                    //return World.getAllExistingCountries().FirstOrDefault(x => x.Culture == getMajorCulture()).getColor();
-                    var culture = getMajorCulture();
-                    if (culture == null)
-                        return Color.white;
-                    else
-                        return culture.getColor();
+                case Game.MapModes.Cultures:
+
+                    var cultures = GetCultures();
+                    if (cultures.Count == 0)
+						return Color.white;
+					if (cultures.Count == 1)
+						return cultures.ElementAt(0).Key.getColor();
+
+                   
+					var sortedCultures = cultures.OrderByDescending(x => x.Value).ToDictionary(x=>x.Key, y=>y.Value);
+                    int allPopulation = 0;
+
+					foreach (var item in cultures)
+                    {
+                        allPopulation += item.Value;
+                    }
+					
+                    if (sortedCultures.ElementAt(0).Value >= allPopulation * 0.5f || sortedCultures.ElementAt(1).Value < allPopulation * 0.2f)
+                        return sortedCultures.ElementAt(0).Key.getColor();
+
+                    var mainColor = sortedCultures.ElementAt(0).Key.getColor();
+					secondColor = sortedCultures.ElementAt(1).Key.getColor();
+
+                    return mainColor;
 
                 case Game.MapModes.Cores: //cores mode
                     if (selectedProvince == null)
