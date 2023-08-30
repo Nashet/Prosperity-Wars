@@ -1,5 +1,19 @@
 {
   "dependencies": {
+    "com.nashet.map": {
+      "version": "https://github.com/Nashet/NashetMap.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "5e89dd8a00ae5c8b64e9718d9cb7f4b91ffc08a1"
+    },
+    "com.nashet.utils": {
+      "version": "https://github.com/Nashet/NashetUtilsCS.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "33c39fc0fa3287317255b02c55866b84f00029ea"
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
