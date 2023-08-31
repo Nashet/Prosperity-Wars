@@ -5,7 +5,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "5e89dd8a00ae5c8b64e9718d9cb7f4b91ffc08a1"
+      "hash": "d0d95e638d4d5ec01c6f27d4d6cdec363c321490"
     },
     "com.nashet.utils": {
       "version": "https://github.com/Nashet/NashetUtilsCS.git",
