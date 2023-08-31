@@ -31,7 +31,6 @@ namespace Nashet.EconomicSimulation
 
         private GameObject unitPanelObject;
         public UnitPanel unitPanel;
-        Animator m_Animator;
 
         private readonly static List<Unit> allUnits = new List<Unit>();
 
@@ -41,7 +40,6 @@ namespace Nashet.EconomicSimulation
 
         void Awake()
         {
-            m_Animator = GetComponent<Animator>();
             allUnits.Add(this);
             lineRenderer = selectionPart.GetComponent<LineRenderer>();
             selectionPart.SetActive(false);
@@ -182,15 +180,15 @@ namespace Nashet.EconomicSimulation
             lineRenderer.SetPosition(0, Province.provinceMesh.Position);//currentProvince.getPosition()
 
             this.transform.LookAt(nodes[0].Position, Vector3.back);
-            if (m_Animator.gameObject.activeInHierarchy)
-                m_Animator.SetFloat("Forward", 0.4f);//, 0.3f, Time.deltaTime
-                                                     //if (where.armies.Count > 1)
-                                                     //    for (int i = 0; i < where.armies.Count - 1; i++)
-                                                     //    {
-                                                     //        where.armies[i].unit.unitPanel.Hide();
-                                                     //    }
-                                                     //else
-                                                     //    where.armies[0].unit.unitPanel.Show();
+           
+            //if (where.armies.Count > 1)
+            //    for (int i = 0; i < where.armies.Count - 1; i++)
+            //    {
+            //        where.armies[i].unit.unitPanel.Hide();
+            //    }
+            //else
+            //    where.armies[0].unit.unitPanel.Show();
+
             enemyDirection.positionCount = 2;
             //todo must be fixed ssize
             var linePositions = GetVector3Nodes(nodes);
@@ -205,8 +203,7 @@ namespace Nashet.EconomicSimulation
         private void Stop()
         {
             lineRenderer.positionCount = 0;
-            if (m_Animator.gameObject.activeInHierarchy)
-                m_Animator.SetFloat("Forward", 0f);
+            
             this.transform.eulerAngles = new Vector3(270f, 0f, 0f);
             //SetUnitPanel(null);
 
