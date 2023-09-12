@@ -50,6 +50,5 @@ Maps are generated randomly, you play as a leader of a country. For now you are 
 ![Imgur](https://i.imgur.com/goICtvL.png)
 ![Imgur](https://i.imgur.com/6YLDnnq.png)
 
+## License
 License is GPL-3.0
-
-

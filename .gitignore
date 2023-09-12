@@ -72,3 +72,4 @@ crashlytics-build.properties
 
 # Mine
 /MyTemp/
+Assets/makelink.*

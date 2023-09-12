@@ -6,20 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
+    path: Assets/EconomicSimulation/Test.unity
+    guid: d6985762b1714d94d882fad075c3636f
+  - enabled: 1
+    path: Assets/EconomicSimulation/MainMenu.unity
+    guid: 3eb54b1c82d21d24b87edbb172e50f92
   - enabled: 1
     path: Assets/EconomicSimulation/ES-base.unity
     guid: c25ca034a7bc9624996a4173e651572d
   - enabled: 0
-    path: Assets/EconomicSimulation/Test.unity
-    guid: d6985762b1714d94d882fad075c3636f
-  - enabled: 0
     path: Assets/StandaloneFileBrowser/Sample/CanvasSampleScene.unity
     guid: c0e4eec5741834194a946535d535405c
+  m_configObjects: {}

@@ -119,12 +119,8 @@ namespace Nashet.EconomicSimulation
 			cameraController.Initialize(game.getMapBorders());
 		}
 
-		// Update is called once per frame
 		private void Update()
         {
-            if (!MapOptions.MadeChoise && !Game.devMode)
-                return;
-
             //starts loading thread
             if (game == null)
             {

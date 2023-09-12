@@ -1,6 +1,7 @@
 ﻿using Nashet.UnityUIUtils;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Nashet.EconomicSimulation
@@ -10,8 +11,6 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     class MapOptions : Hideable
     {
-        static public bool MadeChoise;
-
         [SerializeField]
         private Toggle randomMap, industrialStart;
 
@@ -26,6 +25,7 @@ namespace Nashet.EconomicSimulation
         [SerializeField] List<GameObject> hideableElements;
 
 		internal static Texture2D MapImage;
+
 		private RectTransform rectTransform;
 
 		private void Start()
@@ -79,9 +79,8 @@ namespace Nashet.EconomicSimulation
             if (randomMap.isOn)
             {
                 Game.readMapFormFile = false;
-                MadeChoise = true;
-                Hide();
-            }
+				ProceedLoading();
+			}
             else //take picture
             { 
                 if (loadedImage.texture == null) //todo thats never true
@@ -90,12 +89,18 @@ namespace Nashet.EconomicSimulation
                 {
                     Game.readMapFormFile = true;
                     MapImage = loadedImage.texture as Texture2D;
-                    MadeChoise = true;
-                    Hide();
+					ProceedLoading();
                 }
             }
 
         }
+
+        private void ProceedLoading()
+        {
+			Hide();
+			SceneManager.LoadSceneAsync("ES-base", LoadSceneMode.Single);			
+		}
+
         private void Update()
         {
             if (!randomMap.isOn)
