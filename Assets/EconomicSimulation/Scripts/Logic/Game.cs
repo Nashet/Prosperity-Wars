@@ -111,17 +111,15 @@ namespace Nashet.EconomicSimulation
             {
                 var mesh = grid.getMesh(province.ID, out var borderMeshes);
                 borderMeshesLookup.Add(province.ID, borderMeshes);
-				//if (!IsForDeletion)
-				{
-                    province.provinceMesh = new ProvinceMesh(province.ID, mesh, borderMeshes, province.ProvinceColor, World.Get.transform,
-												LinksManager.Get.shoreMaterial,
-												new Material(Shader.Find("Standard")), province.ShortName);
-						
-					var label = MapTextLabel.CreateMapTextLabel(LinksManager.Get.r3DProvinceTextPrefab, province.provinceMesh.Position, province.ToString(), Color.black);
-					label.transform.SetParent(province.provinceMesh.GameObject.transform, false);
+				
+                province.provinceMesh = new ProvinceMesh(province.ID, mesh, borderMeshes, province.ProvinceColor, World.Get.transform,
+				  LinksManager.Get.shoreMaterial, new Material(Shader.Find("Standard")), province.ShortName);//
 
-				}
+				var label = MapTextLabel.CreateMapTextLabel(LinksManager.Get.r3DProvinceTextPrefab, province.provinceMesh.Position, province.ToString(), Color.black);
+
+				label.transform.SetParent(province.provinceMesh.GameObject.transform, false);
 				province.SetNeighbors(borderMeshes);
+
 				//World.AllSeaProvinces.PerformAction(x =>
 			}
 

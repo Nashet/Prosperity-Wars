@@ -13,7 +13,6 @@ using UnityEngine.EventSystems;
 
 namespace Nashet.EconomicSimulation
 {
-
 	public class MainCamera : MonoBehaviour
     {
         [SerializeField] protected float fogOfWarDensity;
@@ -61,14 +60,11 @@ namespace Nashet.EconomicSimulation
         {
             Get = this;
             
-            
             fogOfWar = TimedSelectorWithMaterial.AddTo(gameObject, LinksManager.Get.FogOfWarMaterial, 0);
-            //
-            //var window = Instantiate(LinksManager.Get.MapOptionsPrefab, LinksManager.Get.CameraLayerCanvas.transform);
-            //window.GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, 150f);
+           
             tooltip = GetComponent<ToolTipHandler>();
-            Screen.orientation = ScreenOrientation.LandscapeLeft;
-            camera = Camera.main;
+            Screen.orientation = ScreenOrientation.LandscapeLeft; // todo this gives non critical error message on web gl
+			camera = Camera.main;
 			provinceSelectionHelper.ProvinceSelected += ProvinceSelectedHandler;
 		}
 
