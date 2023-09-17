@@ -317,7 +317,7 @@ namespace Nashet.EconomicSimulation
                                 deleteWaterProvince, size);
 
                             allLandProvinces.Add(province);
-                            ProvincesById.Add(province.ID, province);
+                            ProvincesById.Add(province.Id, province);
                             //else
                             //    allSeaProvinces.Add(new SeaProvince("", counter, item.Key));
                             counter++;
@@ -338,7 +338,7 @@ namespace Nashet.EconomicSimulation
                         var province = new Province(ProvinceNameGenerator.generateProvinceName(), color.ToInt(), Product.getRandomResource(false), false, 0);
 
 						allLandProvinces.Add(province);
-                        ProvincesById.Add(province.ID, province);
+                        ProvincesById.Add(province.Id, province);
                     }
 				}
             }

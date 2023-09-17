@@ -109,10 +109,10 @@ namespace Nashet.EconomicSimulation
             var borderMeshesLookup = new Dictionary<int, Dictionary<int, MeshStructure>>();
 			foreach (var province in World.AllProvinces)
             {
-                var mesh = grid.getMesh(province.ID, out var borderMeshes);
-                borderMeshesLookup.Add(province.ID, borderMeshes);
+                var mesh = grid.getMesh(province.Id, out var borderMeshes);
+                borderMeshesLookup.Add(province.Id, borderMeshes);
 				
-                province.provinceMesh = new ProvinceMesh(province.ID, mesh, borderMeshes, province.ProvinceColor, World.Get.transform,
+                province.provinceMesh = new ProvinceMesh(province.Id, mesh, borderMeshes, province.ProvinceColor, World.Get.transform,
 				  LinksManager.Get.shoreMaterial, new Material(Shader.Find("Standard")), province.ShortName);//
 
 				var label = MapTextLabel.CreateMapTextLabel(LinksManager.Get.r3DProvinceTextPrefab, province.provinceMesh.Position, province.ToString(), Color.black);
@@ -125,7 +125,7 @@ namespace Nashet.EconomicSimulation
 
 			foreach (var province in World.AllProvinces)//second time call needed to clear mountain locked provinces
 			{
-                province.SetNeighbors(borderMeshesLookup[province.ID]);
+                province.SetNeighbors(borderMeshesLookup[province.Id]);
 			}   
 
 

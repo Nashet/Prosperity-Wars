@@ -72,7 +72,7 @@ namespace Nashet.EconomicSimulation
 		private readonly Dictionary<TemporaryModifier, Date> modifiers = new Dictionary<TemporaryModifier, Date>();
 
         public ProvinceMesh provinceMesh { get; set; }
-		internal int ID;
+		public int Id { get; private set; }
 		public int Size { get; protected set; }
 
 		public Province(string name, int ID, Product resource, bool isForDeletion, int size) : base(name)
@@ -82,7 +82,7 @@ namespace Nashet.EconomicSimulation
             setResource(resource);
             fertileSoil = 5000;
             IsForDeletion = isForDeletion;
-            this.ID = ID;
+            this.Id = ID;
             Size = size;
         }
 
@@ -235,14 +235,14 @@ namespace Nashet.EconomicSimulation
                 
                 if (this.Country == neighbor.Country) //is border between provinces inside a country
 				{
-                    this.provinceMesh.SetBorderMaterial(neighbor.ID, LinksManager.Get.defaultProvinceBorderMaterial);
-                    neighbor.provinceMesh.SetBorderMaterial(this.ID, LinksManager.Get.defaultProvinceBorderMaterial);
+                    this.provinceMesh.SetBorderMaterial(neighbor.Id, LinksManager.Get.defaultProvinceBorderMaterial);
+                    neighbor.provinceMesh.SetBorderMaterial(this.Id, LinksManager.Get.defaultProvinceBorderMaterial);
 				}
 				else
 				{
-                    neighbor.provinceMesh.SetBorderMaterial(this.ID,
+                    neighbor.provinceMesh.SetBorderMaterial(this.Id,
                         neighbor.Country == World.UncolonizedLand ? LinksManager.Get.defaultProvinceBorderMaterial : neighbor.Country.getBorderMaterial());
-				    this.provinceMesh.SetBorderMaterial(neighbor.ID,
+				    this.provinceMesh.SetBorderMaterial(neighbor.Id,
                         this.Country == World.UncolonizedLand ? LinksManager.Get.defaultProvinceBorderMaterial : this.Country.getBorderMaterial());
 				}
 			}
@@ -258,26 +258,26 @@ namespace Nashet.EconomicSimulation
 				{
 					if (neighbor.isRiverNeighbor(this))
 					{
-                        this.provinceMesh.SetBorderMaterial(neighbor.ID, LinksManager.Get.riverBorder);
+                        this.provinceMesh.SetBorderMaterial(neighbor.Id, LinksManager.Get.riverBorder);
 					}
 					else
 					{
 						if (this.Country == neighbor.Country) // same country
 						{
-							this.provinceMesh.SetBorderMaterial(neighbor.ID, LinksManager.Get.defaultProvinceBorderMaterial);
+							this.provinceMesh.SetBorderMaterial(neighbor.Id, LinksManager.Get.defaultProvinceBorderMaterial);
 						}
 						else
 						{
 							if (this.Country == World.UncolonizedLand)
-								this.provinceMesh.SetBorderMaterial(neighbor.ID, LinksManager.Get.defaultProvinceBorderMaterial);
+								this.provinceMesh.SetBorderMaterial(neighbor.Id, LinksManager.Get.defaultProvinceBorderMaterial);
 							else
-								this.provinceMesh.SetBorderMaterial(neighbor.ID, this.Country.getBorderMaterial());
+								this.provinceMesh.SetBorderMaterial(neighbor.Id, this.Country.getBorderMaterial());
 						}
 					}
 				}
 				else
 				{
-					this.provinceMesh.SetBorderMaterial(neighbor.ID, LinksManager.Get.impassableBorder);
+					this.provinceMesh.SetBorderMaterial(neighbor.Id, LinksManager.Get.impassableBorder);
 				}
 			}
 		}
