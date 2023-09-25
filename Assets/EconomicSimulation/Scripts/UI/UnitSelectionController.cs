@@ -15,29 +15,32 @@ namespace Nashet.GameplayControllers
 		private void Start()
 		{
 			selector = GetComponent<SelectionComponent>();
-			selector.OnEntityClicked += EntitySelectedHandler;
+			selector.OnEntitySelected += EntitySelectedHandler;
+			selector.OnMultipleEntitiesSelected += MultipleEntitiesSelectedHandler;
 		}
-
+		
 		private void OnDestroy()
 		{
-			selector.OnEntityClicked -= EntitySelectedHandler;
+			selector.OnEntitySelected -= EntitySelectedHandler;
+			selector.OnMultipleEntitiesSelected -= EntitySelectedHandler;
 		}
 
-		private void EntitySelectedHandler(SelectionData selected)
+		private void EntitySelectedHandler(SelectionData selected, int buttonNumber)
 		{
 			if (selected == null)
 			{
 				var c = Game.selectedArmies.ToList(); //to avoid collection change
 				c.PerformAction(x => x.Deselect());
 			}
-			else if (selected.MultipleSelection != null)
-			{
-				HandleMultipleSelection(selected);
-			}
 			else
 			{
 				HandleSingleSelection(selected);
 			}
+		}
+
+		private void MultipleEntitiesSelectedHandler(SelectionData data, int buttonNumber)
+		{
+			HandleMultipleSelection(data);
 		}
 
 		private static void HandleMultipleSelection(SelectionData selected)
