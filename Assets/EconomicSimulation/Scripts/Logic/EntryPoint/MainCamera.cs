@@ -86,7 +86,9 @@ namespace Nashet.EconomicSimulation
 
 		private void NonUnityLoading()
         {
+            #if !UNITY_EDITOR
             Application.runInBackground = true;
+            #endif
             game = new Game(MapOptions.MapImage);
 			
 #if UNITY_WEBGL
