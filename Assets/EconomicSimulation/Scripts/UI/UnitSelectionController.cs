@@ -15,17 +15,17 @@ namespace Nashet.GameplayControllers
 		private void Start()
 		{
 			selector = GetComponent<SelectionComponent>();
-			selector.OnEntitySelected += EntitySelectedHandler;
-			selector.OnMultipleEntitiesSelected += MultipleEntitiesSelectedHandler;
+			selector.OnEntityClicked += EntitySelectedHandler;
+			selector.OnEntityClicked += MultipleEntitiesSelectedHandler;
 		}
 		
 		private void OnDestroy()
 		{
-			selector.OnEntitySelected -= EntitySelectedHandler;
-			selector.OnMultipleEntitiesSelected -= EntitySelectedHandler;
+			selector.OnEntityClicked -= EntitySelectedHandler;
+			selector.OnEntityClicked -= MultipleEntitiesSelectedHandler;
 		}
 
-		private void EntitySelectedHandler(SelectionData selected, int buttonNumber)
+		private void EntitySelectedHandler(SelectionData selected)
 		{
 			if (selected == null)
 			{
@@ -34,12 +34,16 @@ namespace Nashet.GameplayControllers
 			}
 			else
 			{
+                if (selected?.SingleSelection == null)
+                    return;
 				HandleSingleSelection(selected);
 			}
 		}
 
-		private void MultipleEntitiesSelectedHandler(SelectionData data, int buttonNumber)
+		private void MultipleEntitiesSelectedHandler(SelectionData data)
 		{
+            if (data?.MultipleSelection == null)
+                return;
 			HandleMultipleSelection(data);
 		}
 

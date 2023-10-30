@@ -113,7 +113,7 @@ namespace Nashet.EconomicSimulation
                 borderMeshesLookup.Add(province.Id, borderMeshes);
 				
                 province.provinceMesh = new ProvinceMesh(province.Id, mesh, borderMeshes, province.ProvinceColor, World.Get.transform,
-				  LinksManager.Get.shoreMaterial, new Material(Shader.Find("Standard")), province.ShortName);//
+				  LinksManager.Get.shoreMaterial, province.ShortName, new Material(Shader.Find("Standard")));//
 
 				var label = MapTextLabel.CreateMapTextLabel(LinksManager.Get.r3DProvinceTextPrefab, province.provinceMesh.Position, province.ToString(), Color.black);
 
